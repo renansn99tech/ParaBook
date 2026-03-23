@@ -1,4 +1,6 @@
 # ProjetoIntegrador
 Repositório do Projeto de Integração do curso Programador Full Stack.
 
-Este repositório foi criado na Aula do dia 23/03 do curso do Senac para fins de acompanhamento e versionamento da aplicação desenvolvida.
+Esse repositório foi criado na Aula do dia 23/03 do curso do Senac para fins de acompanhamento e versionamento da aplicação desenvolvida.
+
+Esse será o rep principal do nosso trabalho!

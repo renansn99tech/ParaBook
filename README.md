@@ -19,3 +19,7 @@ Quando o usuário entrar na primeira página do site aparecerá um pop up depois
 Teremos vários cards interativos com o conteúdo inicial de apresentação do sistema.
 
 por fim apresentará o "FAQ" com as principais dúvidas dos leitores e um botão, caso seja necessário para escrever uma dúvida que não esteja listada.
+
+### Inclusão dos livros da biblioteca   
+
+Foi criado um acervo de livros da biblioteca

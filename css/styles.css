@@ -31,6 +31,12 @@
     --lh-body: 1.6; /* Espaçamento para o corpo do texto */
 }
 
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Garantindo que o padding e border sejam incluídos no tamanho total dos elementos */
+}
+
 /* Aplicando as Variáveis padrão no corpo da página */
 body{
     background-color: var(--color-bg-warm);
@@ -46,4 +52,18 @@ h1{
     font-weight: var(--fw-bold);
     font-size: var(--fs-h1);
     margin-bottom: 1.5rem; /* Espaçamento abaixo do título */
+}
+
+.nav{ /*Menu de navegação*/
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.menu { /*itens do menu de navegação*/
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    text-decoration: none;
 }

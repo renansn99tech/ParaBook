@@ -1,0 +1,49 @@
+/* Fontes padrão do site, a saber: Playfair Display, Montserrat, Lora e Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+    /* Paleta de Cores Terrosa (Atemporal) */
+    --color-primary-dark: #5C3B2E; /* Marrom Profundo para Títulos e elementos de destaque */
+    --color-accent-olive: #4C4A2A; /* Verde-oliva escuro (Sofisticado) para detalhes e ícones */
+    --color-neutral-tan: #C1B59F; /* Bege claro */
+    --color-bg-warm: #E6E2DB; /* Off-white para Fundo principal */
+    --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
+
+
+    /* Definindo as Fontes nas variáveis de ambiente */
+    --font-playfair: 'Playfair Display', serif; /* Fonte para títulos */
+    --font-ui: 'Montserrat', sans-serif; /* Fonte para elementos de interface, sub-títulos e legendas */
+    --font-body: 'Lora', serif; /* Fonte para o corpo do texto */
+    --font-data: 'Inter', sans-serif; /* Fonte para dados e informações */
+
+    /* 'Pesos' das fontes */
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+
+    /* Escala de tamanhos baseada no Root (1 rem = 16px) */
+    --fs-h1: 2.5rem; /* Tamanho para títulos principais (40px) */
+    --fs-h2: 2rem; /* Tamanho para títulos secundários (32px) */
+    --fs-body: 1.25rem; /* Tamanho para o corpo do texto (20px) */
+    --fs-small: 0.875rem; /* Tamanho para dados e informações (14px) */
+
+    /* Espaçamento de linhas para maior conforto */
+    --lh-body: 1.6; /* Espaçamento para o corpo do texto */
+}
+
+/* Aplicando as Variáveis padrão no corpo da página */
+body{
+    background-color: var(--color-bg-warm);
+    color: var(--color-ui-charcoal);
+    font-family: var(--font-body);
+    line-height: var(--lh-body);
+    --webkit-font-smoothing: antialiased; /* Suavização de fontes para melhor legibilidade */
+}
+
+h1{
+    font-family: var(--font-playfair);
+    color: var(--color-primary-dark);
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-h1);
+    margin-bottom: 1.5rem; /* Espaçamento abaixo do título */
+}

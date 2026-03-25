@@ -11,3 +11,11 @@ Para todos os Colaboradores, uma dica do Professor:
     após subirem as alterações para a nuvem (origin/main)!
 
     Essa prática permite uma boa higiene e maior controle de versionamento.
+
+    
+## Página inicial da nossa homepage
+Quando o usuário entrar na primeira página do site aparecerá um pop up depois de três segundos com as boas vindas do site. Ao fechar essa mensagem ele poderá verificar o conteúdo da tela de inicio do site que contém da barra de navegação.<br/>
+
+Teremos vários cards interativos com o conteúdo inicial de apresentação do sistema.
+
+por fim apresentará o "FAQ" com as principais dúvidas dos leitores e um botão, caso seja necessário para escrever uma dúvida que não esteja listada.

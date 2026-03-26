@@ -1,0 +1,120 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+body{
+    background-color: #C1B59F;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.form-container{
+    display: flex;
+    box-sizing: border-box;
+    background: #E6E2DB;
+    gap: 40px;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0px 15px rgba(0, 0, 0, 0.1);
+    width: 1500px;
+    text-align: center;
+}   
+.image-side, .form-side{
+    flex: 1;
+}
+.image-side img{
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    object-fit: cover;
+}
+.form-container h2{
+    margin-bottom: 20px;
+    color: #303136;    
+    text-align: center;
+}
+.input-box{
+    margin-top: 20px;
+    position: relative;
+}
+.input-box input{
+    width: 100%;
+    padding: 12px 15px;
+    background: none;
+    border: none;
+    outline: none;
+    color: #303136;
+    font-size: 18px;
+    border-bottom: 2px solid #303136;
+    transition: 0.4s;
+}
+.input-box input:focus{
+    border-bottom-color: #E6E2DB;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background-color: #E6E2DB;
+}
+.input-box span{
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    color: #303136;
+    font-size: 16px;
+    pointer-events: none;
+    transition: 0.4s;
+    transform: translateY(-50%);
+}
+.input-box input:focus + span,
+.input-box input:not(:placeholder-shown) + span{
+    top: -5px;
+    font-size: 12px;
+    color: #E6E2DB;
+}
+.input-box p{
+    text-align: center;
+    margin-top: 10px;
+    color: #303136;
+    font-size: 14px;
+}
+.input-box a{
+    color: #303136;
+    text-decoration: none;
+    font-weight: bold;
+    
+}
+.input-box a:hover{
+    color: #5C3B2E;
+    transition: 0.4s;
+}
+.account-box{
+    text-align: center;
+    margin-top: 150px;
+    color: #303136;
+    font-size: 14px;
+}
+.account-box a{
+    color: #303136;
+    text-decoration: none;
+    font-weight: bold;
+}
+.account-box a:hover{
+    color: #5C3B2E;
+    transition: 0.4s;
+}
+.submit-btn{
+    background: #5C3B2E;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    color: #E6E2DB;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.4s;
+    margin-top: 10px;
+}
+.submit-btn:hover{
+    background: linear-gradient(90deg, #5C3B2E, #412a20);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}

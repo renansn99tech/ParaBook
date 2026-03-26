@@ -3,8 +3,8 @@
 
 :root {
     /* Paleta de Cores Terrosa (Atemporal) */
-    --color-primary-dark: #5C3B2E; /* Marrom Profundo para Títulos e elementos de destaque */
-    --color-accent-olive: #4C4A2A; /* Verde-oliva escuro (Sofisticado) para detalhes e ícones */
+    --color-primary-dark: #5C3B2E; /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
+    --color-accent-olive: #4C4A2A; /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
     --color-neutral-tan: #C1B59F; /* Bege claro */
     --color-bg-warm: #E6E2DB; /* Off-white para Fundo principal */
     --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
@@ -22,9 +22,10 @@
     --fw-bold: 700;
 
     /* Escala de tamanhos baseada no Root (1 rem = 16px) */
-    --fs-h1: 2.5rem; /* Tamanho para títulos principais (40px) */
+    --fs-h1: 3rem; /* Tamanho para títulos principais (40px) */
     --fs-h2: 2rem; /* Tamanho para títulos secundários (32px) */
-    --fs-body: 1.25rem; /* Tamanho para o corpo do texto (20px) */
+    --fs-h3: 1.5rem; /* Tamanho para títulos terciários (24px) */
+    --fs-body: 1.125rem; /* Tamanho para o corpo do texto (18px) */
     --fs-small: 0.875rem; /* Tamanho para dados e informações (14px) */
 
     /* Espaçamento de linhas para maior conforto */
@@ -36,6 +37,11 @@
     padding: 0;
     box-sizing: border-box; /* Garantindo que o padding e border sejam incluídos no tamanho total dos elementos */
 }
+
+/*  ================================================================================================================
+        Definindo as variáveis aplicáveis para todas as páginas do site, como cores, fontes, tamanhos e espaçamento.
+    ================================================================================================================  */
+
 
 /* Aplicando as Variáveis padrão no corpo da página */
 body{
@@ -54,16 +60,196 @@ h1{
     margin-bottom: 1.5rem; /* Espaçamento abaixo do título */
 }
 
-.nav{ /*Menu de navegação*/
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
+h2{
+    font-family: var(--font-ui);
+    color: var(--color-accent-olive);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-h2);
+    letter-spacing: .1rem; /* Espaçamento entre letras para melhor legibilidade */
+    text-transform: capitalize; /* Transformando os sub-títulos para primeira letra maiúscula */
+    margin-bottom: 1rem; /* Espaçamento abaixo dos sub-títulos */
 }
 
-.menu { /*itens do menu de navegação*/
+h3{
+    font-family: var(--font-ui);
+    color: var(--color-accent-olive);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-h3);
+    letter-spacing: .1rem; /* Espaçamento entre letras para melhor legibilidade */
+    text-transform: capitalize; /* Transformando os sub-títulos para primeira letra maiúscula */
+    margin-bottom: 1rem; /* Espaçamento abaixo dos sub-títulos */
+}
+
+/*  ==============================================================================================================
+            ======================================================================================
+                Aqui serão estilizadas as variáveis específicas como Classes e IDs (por página).
+            ======================================================================================
+    ==============================================================================================================  */
+
+
+/*  ==============================================
+        Definições da Página Inicial (index.html)
+    ============================================== */
+
+
+
+    /* Classe LOGO (onde está escrito o nome ParaBook) */
+.logo{
+    margin: 2vh 2vw;
+}
+
+/*  =============================================
+        Seção do NAV (NAVEGAÇÃO e suas Classes)
+    =============================================  */
+
+.nav{ /* Menu de navegação */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+    background: linear-gradient(to bottom, var(--color-neutral-tan) 0%, var(--color-bg-warm) 100%);
+}
+
+.menu { /* itens do menu de navegação */
     list-style: none;
     display: flex;
-    gap: 20px;
+    gap: 2vw;
+}
+
+.menu a{
+    color: var(--color-primary-dark);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
     text-decoration: none;
+}
+
+.login-btn{
+    background-color: var(--color-primary-dark);
+    color: var(--color-bg-warm);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    transition: background-color .3s, color .3s;
+}
+
+/*  =======================================
+        Seção do BANNER
+    =======================================  */
+
+.banner{
+    text-align: center;
+    margin: 0vh 3vw;
+}
+
+/*  =======================================
+        Seção de DESTAQUES e suas Classes
+    =======================================  */
+
+.destaques {
+    text-align: center;
+    margin: 3vh 3vw;
+}
+
+/* Container dos cards */
+.cards-destaque{
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
+    flex-wrap: wrap;
+}
+
+/* Card individual */
+.card-link{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-neutral-tan);
+    width: 17vw;
+    padding: 2vh 1vw;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+    border: 1px solid var(--color-accent-olive);
+    transition: transform .3s, box-shadow .3s;
+    text-decoration: none;
+}
+
+/* Efeito ao passar o mouse */
+.card-link:hover {
+    transform: translateY(-1vh);
+    box-shadow: 0px 6px 14px rgba(0,0,0,0.25);
+}
+
+.card-link i{
+    font-size: var(--fs-h3);
+    color: var(--color-accent-olive);
+    margin-bottom: 1vh;
+}
+
+.card-link p{
+    font-size: var(--fs-small);
+    color: var(--color-ui-charcoal);
+}
+
+/*  =======================================================
+        Seção de DÚVIDAS FREQUENTES (FAQ) e suas Classes
+    =======================================================  */
+
+
+.duvidas-frequentes{
+    margin: 4vh 4vw;
+}
+
+.duvidas-frequentes h2{
+    text-align: center;
+}
+
+.bloco-duvidas{
+	position: relative;
+	max-inline-size: 35rem;
+	padding: 1rem;
+	margin-block: 1rem 0;
+	margin-inline: auto;
+	background-image: linear-gradient(to bottom, var(--color-bg-warm) 0, var(--color-neutral-tan) 100%);
+	border: 1px solid var(--color-accent-olive, 0.5);
+	border-radius: 0.5rem;
+}
+
+.detalhe-duvidas{
+	padding-inline: 2rem;
+	position: relative;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.detalhe-duvidas::marker {
+	content: '»';
+	content: none;
+}
+
+.detalhe-duvidas::before {
+	content: '»';
+	position: absolute;
+	inset-inline-start: 1rem;
+	inset-block-start: -0.05rem;
+	transition: rotate 0.2s;
+}
+
+.bloco-duvidas[open] .detalhe-duvidas::before {
+    rotate: 90deg;
+    inset-block-start: 0.1rem;
+}
+
+/*  =======================================================
+            Seção do Footer (Ainda em construção)
+    =======================================================  */
+
+.footer{
+    background-color: var(--color-primary-dark);
+    color: var(--color-bg-warm);
+    text-align: center;
+    padding: 2vh 0;
 }

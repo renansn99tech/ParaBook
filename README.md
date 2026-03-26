@@ -27,4 +27,4 @@ Foi criado um acervo de livros da biblioteca com os seguintes temas: **filosofia
 
 ## Status do ProjetoIntegrador
 
-Em construção da primeira página
+Em construção da primeira página.

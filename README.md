@@ -25,6 +25,7 @@ Teremos vários cards interativos com o conteúdo inicial de apresentação do s
 
 Foi criado um acervo de livros da biblioteca com os seguintes temas: **filosofia, literatura, religiosos**.
 
-## Status do ProjetoIntegrador
+## Status do ProjetoIntegrador (Última modificação em 27/03)
 
-Em construção da primeira página.
+Primeira página quase finalizada. 
+Próximo passo: integrar as telas de login e detalhar o restante dos cards nas seções da Página inicial.

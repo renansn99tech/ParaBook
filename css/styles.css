@@ -4,6 +4,7 @@
 :root {
     /* Paleta de Cores Terrosa (Atemporal) */
     --color-primary-dark: #5C3B2E; /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
+    --color-secondary:#422b21;
     --color-accent-olive: #4C4A2A; /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
     --color-neutral-tan: #C1B59F; /* Bege claro */
     --color-bg-warm: #E6E2DB; /* Off-white para Fundo principal */
@@ -113,7 +114,9 @@ h3{
 .menu { /* itens do menu de navegação */
     list-style: none;
     display: flex;
-    gap: 2vw;
+    flex-direction: row;
+    align-items: end;
+    gap: 20px;
 }
 
 .menu a{
@@ -126,12 +129,20 @@ h3{
 .login-btn{
     background-color: var(--color-primary-dark);
     color: var(--color-bg-warm);
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
     text-decoration: none;
     font-family: var(--font-ui);
     font-weight: var(--fw-medium);
     transition: background-color .3s, color .3s;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    background-color: var(--color-bg-warm);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-primary-dark);
 }
 
 /*  =======================================
@@ -156,19 +167,19 @@ h3{
 .cards-destaque{
     display: flex;
     justify-content: center;
-    gap: 2vw;
+    gap: 40px;
     flex-wrap: wrap;
 }
 
 /* Card individual */
 .card-link{
-    display: flex;
-    flex-direction: column;
+    display: grid;
     justify-content: center;
     align-items: center;
     background: var(--color-neutral-tan);
-    width: 17vw;
-    padding: 2vh 1vw;
+    width: 100%;
+    max-width: 320px;
+    padding: 20px 60px;
     border-radius: 20px;
     text-align: center;
     box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
@@ -216,6 +227,18 @@ h3{
 	background-image: linear-gradient(to bottom, var(--color-bg-warm) 0, var(--color-neutral-tan) 100%);
 	border: 1px solid var(--color-accent-olive, 0.5);
 	border-radius: 0.5rem;
+}
+
+.bloco-duvidas a{
+    color: var(--color-primary-dark);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+}
+
+.bloco-duvidas a:hover{
+    color: var(--color-bg-warm);
+    transition: 0.3s ease;
 }
 
 .detalhe-duvidas{

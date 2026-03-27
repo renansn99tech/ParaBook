@@ -173,7 +173,8 @@ h3{
 
 /* Card individual */
 .card-link{
-    display: grid;
+    display: flex;
+    flex-direction: column; /* Aplicando o Flex para Colunas de modo a centralizar os elementos (ícones e textos) */
     justify-content: center;
     align-items: center;
     background: var(--color-neutral-tan);
@@ -203,6 +204,54 @@ h3{
 .card-link p{
     font-size: var(--fs-small);
     color: var(--color-ui-charcoal);
+}
+
+/*  =======================================
+        Seção de Livros (Grid) e suas Classes
+    =======================================  */
+
+.livros-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+    padding: 2rem 4vw;
+}
+
+.card-livro {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    border: 1px solid var(--color-neutral-tan);
+}
+
+.card-livro:hover {
+    transform: scale(1.05);
+}
+
+.capa-placeholder {
+    height: 250px;
+    background-color: var(--color-neutral-tan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--color-primary-dark);
+}
+
+.card-info {
+    padding: 1rem;
+    text-align: center;
+}
+
+.btn-detalhes {
+    margin-top: 10px;
+    padding: 5px 15px;
+    background: var(--color-accent-olive);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 /*  =======================================================
@@ -275,4 +324,18 @@ h3{
     color: var(--color-bg-warm);
     text-align: center;
     padding: 2vh 0;
+}
+
+.footer-titulo{
+    font-family: var(--font-playfair);
+    font-size: var(--fs-h2);
+    justify-content: space-between;
+    color: var(--color-bg-warm);
+    margin-bottom: 0.5rem;
+}
+
+.footer span{
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    color: var(--color-bg-warm);
 }

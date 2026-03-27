@@ -113,7 +113,9 @@ h3{
 .menu { /* itens do menu de navegação */
     list-style: none;
     display: flex;
-    gap: 2vw;
+    flex-direction: row;
+    align-items: end;
+    gap: 20px;
 }
 
 .menu a{
@@ -126,12 +128,20 @@ h3{
 .login-btn{
     background-color: var(--color-primary-dark);
     color: var(--color-bg-warm);
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
     text-decoration: none;
     font-family: var(--font-ui);
     font-weight: var(--fw-medium);
     transition: background-color .3s, color .3s;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    background-color: var(--color-bg-warm);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-primary-dark);
 }
 
 /*  =======================================

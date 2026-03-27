@@ -10,6 +10,7 @@ body{
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background: linear-gradient(to bottom, #C1B59F 0%, #E6E2DB 100%);
 }
 .form-container{
     display: flex;

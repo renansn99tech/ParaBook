@@ -16,7 +16,8 @@
                 <h1 class="logo">ParaBook</h1>
                 <ul class="menu">
                     <li><a href="index.html">Início</a></li>
-                    <li><a href="livros.html">Meus Livros</a></li>
+                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
+                    <li><a href="acesso-comunidade.html"> Comunidades</a></li>
                     <li><a href="sobre.html">Sobre</a></li>
                     <button class="login-btn">Entrar</button>
                 </ul>
@@ -34,10 +35,61 @@
             </article>
         </section>
 
+            <section class="container">
+    <h2>Comunidades</h2>
+
+    <div class="grid">
+
+        <!-- Card 1 -->
+        <div class="card">
+        <img src="livros/capas_comunidades/imagemfilosofia.png" alt="Comunidade de Filosofia">
+
+        <div class="card-content">
+            <h3>Filosofia</h3>
+            <p>Discussões sobre ideias e pensamentos filosóficos.</p>
+
+<button onclick="entrarComunidade('filosofia')" class="btn">
+    Entrar
+</button>
+        </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card">
+        <img src="livros/capas_comunidades/imagemliteratura.png" alt="Comunidade de Literatura">
+
+        <div class="card-content">
+            <h3>Literatura</h3>
+            <p>Compartilhe opiniões sobre livros e autores famosos.</p>
+
+<button onclick="entrarComunidade('literatura')" class="btn">
+    Entrar
+</button>
+        </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card">
+        <img src="livros/capas_comunidades/imagemreligiosa.png.jpg" alt="Comunidade Religiosa">
+
+        <div class="card-content">
+            <h3>Religiosos</h3>
+            <p>Espaço para conteúdos e reflexões espirituais.</p>
+
+<button onclick="entrarComunidade('religioso')" class="btn">
+    Entrar
+</button>
+        </div>
+        </div>
+
+    </div>
+    </section>
 
 
     <footer class="footer">
         <p>&copy; 2026 ParaBook. Todos os direitos reservados.</p> 
     </footer>
 
+    <script src="js/script.js"></script>
+    </body>
 </html>

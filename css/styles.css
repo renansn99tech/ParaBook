@@ -339,3 +339,174 @@ h3{
     font-size: var(--fs-small);
     color: var(--color-bg-warm);
 }
+
+    .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    }
+
+    .card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    }
+
+    .card:hover {
+    transform: translateY(-5px);
+    }
+
+    .card img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    }
+
+    .card-content {
+    padding: 15px;
+    text-align: center;
+    }
+
+    .card-content h3 {
+    margin-bottom: 8px;
+    }
+
+    .card-content p {
+    font-size: 14px;
+    color: #555;
+    }
+
+    .btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    }
+
+    .card-livro {
+    width: 220px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.card-livro img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.sobre-conteudo {
+    padding: 40px 20px;
+    line-height: 1.8;
+}
+
+.sobre-conteudo h2 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.sobre-conteudo ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sobre-conteudo li {
+    margin: 10px 0;
+}
+/* ===== COMUNIDADE ===== */
+
+.banner-comunidade {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 50px 30px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1f2937, #374151);
+    color: white;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.banner-comunidade h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.banner-comunidade p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+
+/* Títulos */
+.container h3 {
+    margin: 30px 0 20px;
+    font-size: 1.5rem;
+}
+
+/* Cards dos posts */
+.post {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: 0.3s ease;
+}
+
+.post:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.post h4 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.post p {
+    line-height: 1.6;
+    color: #444;
+}
+
+/* Criar postagem */
+textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    resize: vertical;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+textarea:focus {
+    border-color: #2563eb;
+}
+
+/* Botão */
+button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+

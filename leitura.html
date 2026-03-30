@@ -1,53 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/styles.css">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitura</title>
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
 
-    <body>
+<body>
 
-        <header>
-            <nav class="container nav">
-                <h1 class="logo">ParaBook</h1>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="livros.html">Meus Livros</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <button class="login-btn">Entrar</button>
-                </ul>
-        
-            </nav>
-        </header>
+    <header>
+        <nav class="container nav">
+            <h1 class="logo">ParaBook</h1>
 
+            <ul class="menu">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="livros.html">Meus Livros</a></li>
+                <li><a href="sobre.html">Sobre</a></li>
+                <li><button class="login-btn">Entrar</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
         <section class="banner">
             <article class="container banner-content">
                 <h2>Bem-vindo ao ParaBook!</h2>
-                <p>Seu destino para encontrar e compartilhar livros incríveis.
-                    Aqui você encontrará uma ampla seleção de livros e muito mais!
-                    Explore nosso acervo e descubra novos títulos em diferentes categorias.
+                <p>
+                    Seu destino para encontrar e compartilhar livros incríveis.
+                    Explore nosso acervo e descubra novos títulos.
                 </p>
             </article>
         </section>
 
-<section class="container">
-    <h2 id="titulo"></h2>
-    <p id="autor"></p>
+        <section class="container leitura-container">
+            <section class="livro-info">
+                <h2 id="titulo"></h2>
+                <p id="autor"></p>
+            </section>
 
-    <iframe id="pdf" width="100%" height="600px"></iframe>
+            <section class="leitor-pdf">
+                <iframe
+                    id="pdf"
+                    title="Leitor de PDF do livro"
+                    width="100%"
+                    height="700">
+                    Seu navegador não suporta visualização de PDF.
+                </iframe>
+            </section>
 
-    <br><br>
-    <a href="acesso-biblioteca.html" class="btn">Voltar</a>
-</section>
-
-<script src="js/script.js"></script>
+            <div class="acoes">
+                <a href="acesso-biblioteca.html" class="btn">Voltar</a>
+            </div>
+        </section>
+    </main>
 
     <footer class="footer">
-        <h1 class="footer-titulo">&copy; ParaBook.</h1><span>2026. Todos os direitos reservados.</span>
+        <h1 class="footer-titulo">&copy; ParaBook</h1>
+        <span>2026. Todos os direitos reservados.</span>
     </footer>
 
+    <script src="js/script.js"></script>
+
+</body>
 </html>

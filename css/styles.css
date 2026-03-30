@@ -316,7 +316,7 @@ h3{
 }
 
 /*  =======================================================
-            Seção do Footer (Ainda em construção)
+        Seção do Footer (Ainda em construção)
     =======================================================  */
 
 .footer{
@@ -339,6 +339,10 @@ h3{
     font-size: var(--fs-small);
     color: var(--color-bg-warm);
 }
+
+/*  =========================================================
+        Seção da Página Comunidade e suas Classes
+    =========================================================  */
 
     .grid {
     display: grid;

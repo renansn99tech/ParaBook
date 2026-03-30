@@ -1,17 +1,21 @@
-const perfilHeader = document.getElementById('perfilHeader');
-const perfilInfo = document.getElementById('perfilInfo');
-const historico = document.getElementById('historico');
-const favoritos = document.getElementById('favoritos');
+// Script para as abas
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Remove active de todos os botões e conteúdos
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-// Função para carregar os dados do perfil
-function carregarPerfil() {
-    const nome = localStorage.getItem('nome') || 'Usuário';
-    const email = localStorage.getItem('email') || 'Não informado';
-    const avatar = localStorage.getItem('avatar') || 'img/avatar.png';
-    perfilHeader.innerHTML = `
-        <img src="${avatar}" alt="Avatar do Usuário" class="avatar">
-        <h2 id="nomePerfil">${nome}</h2>
-        <p id="userPerfil">${email}</p>
-    `;
-}
+    // Adiciona active ao clicado
+    btn.classList.add('active');
+    const tabId = btn.getAttribute('data-tab');
+    document.getElementById(tabId).classList.add('active');
+  });
+});
 
+// Preencher dados do perfil (exemplo)
+document.getElementById('nomePerfil').textContent = 'João Silva';
+document.getElementById('userPerfil').textContent = '@joaosilva';
+document.getElementById('totalLidos').textContent = '12';
+document.getElementById('emLeitura').textContent = '3';
+document.getElementById('totalAvaliados').textContent = '10';
+document.getElementById('comunidades').textContent = '5';

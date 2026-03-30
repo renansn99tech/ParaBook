@@ -1,0 +1,523 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+    /* Paleta de Cores Terrosa (Atemporal) */
+    --color-primary-dark: #5C3B2E; /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
+    --color-secondary:#422b21;
+    --color-accent-olive: #4C4A2A; /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
+    --color-neutral-tan: #C1B59F; /* Bege claro */
+    --color-bg-warm: #E6E2DB; /* Off-white para Fundo principal */
+    --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
+
+
+    /* Definindo as Fontes nas variáveis de ambiente */
+    --font-playfair: 'Playfair Display', serif; /* Fonte para títulos */
+    --font-ui: 'Montserrat', sans-serif; /* Fonte para elementos de interface, sub-títulos e legendas */
+    --font-body: 'Lora', serif; /* Fonte para o corpo do texto */
+    --font-data: 'Inter', sans-serif; /* Fonte para dados e informações */
+
+    /* 'Pesos' das fontes */
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+
+    /* Escala de tamanhos baseada no Root (1 rem = 16px) */
+    --fs-h1: 3rem; /* Tamanho para títulos principais (40px) */
+    --fs-h2: 2rem; /* Tamanho para títulos secundários (32px) */
+    --fs-h3: 1.5rem; /* Tamanho para títulos terciários (24px) */
+    --fs-body: 1.125rem; /* Tamanho para o corpo do texto (18px) */
+    --fs-small: 0.875rem; /* Tamanho para dados e informações (14px) */
+
+    /* Espaçamento de linhas para maior conforto */
+    --lh-body: 1.6; /* Espaçamento para o corpo do texto */
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Garantindo que o padding e border sejam incluídos no tamanho total dos elementos */
+}
+
+/*  ================================================================================================================
+        Definindo as variáveis aplicáveis para todas as páginas do site, como cores, fontes, tamanhos e espaçamento.
+    ================================================================================================================  */
+
+
+/* Aplicando as Variáveis padrão no corpo da página */
+body{
+    background-color: var(--color-bg-warm);
+    color: var(--color-ui-charcoal);
+    font-family: var(--font-body);
+    line-height: var(--lh-body);
+    --webkit-font-smoothing: antialiased; /* Suavização de fontes para melhor legibilidade */
+}
+
+h1{
+    font-family: var(--font-playfair);
+    color: var(--color-primary-dark);
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-h1);
+    margin-bottom: 1.5rem; /* Espaçamento abaixo do título */
+}
+
+h2{
+    font-family: var(--font-ui);
+    color: var(--color-accent-olive);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-h2);
+    letter-spacing: .1rem; /* Espaçamento entre letras para melhor legibilidade */
+    text-transform: capitalize; /* Transformando os sub-títulos para primeira letra maiúscula */
+    margin-bottom: 1rem; /* Espaçamento abaixo dos sub-títulos */
+}
+
+h3{
+    font-family: var(--font-ui);
+    color: var(--color-accent-olive);
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-h3);
+    letter-spacing: .1rem; /* Espaçamento entre letras para melhor legibilidade */
+    text-transform: capitalize; /* Transformando os sub-títulos para primeira letra maiúscula */
+    margin-bottom: 1rem; /* Espaçamento abaixo dos sub-títulos */
+}
+
+/*  ==============================================================================================================
+            ======================================================================================
+                Aqui serão estilizadas as variáveis específicas como Classes e IDs (por página).
+            ======================================================================================
+    ==============================================================================================================  */
+
+
+/*  ==============================================
+        Definições da Página Inicial (index.html)
+    ============================================== */
+
+
+
+    /* Classe LOGO (onde está escrito o nome ParaBook) */
+.logo{
+    margin: 2vh 2vw;
+}
+
+/*  =============================================
+        Seção do NAV (NAVEGAÇÃO e suas Classes)
+    =============================================  */
+
+.nav{ /* Menu de navegação */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+    background: linear-gradient(to bottom, var(--color-neutral-tan) 0%, var(--color-bg-warm) 100%);
+}
+
+.menu { /* itens do menu de navegação */
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.menu a{
+    color: var(--color-primary-dark);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+}
+
+.login-btn{
+    background-color: var(--color-primary-dark);
+    color: var(--color-bg-warm);
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    text-decoration: none;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    transition: background-color .3s, color .3s;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    background-color: var(--color-bg-warm);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-primary-dark);
+}
+
+/*  =======================================
+        Seção do BANNER
+    =======================================  */
+
+.banner{
+    text-align: center;
+    margin: 0vh 3vw;
+}
+
+/* ===== PÁGINA RECUPERAR SENHA ===== */
+
+    .recuperar-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #E6E2DB 0%, #C1B59F 100%);
+    }
+
+    .recuperar-wrapper {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 3rem;
+    max-width: 600px;
+    width: 100%;
+    }
+
+    .etapa {
+    display: none;
+    animation: fadeIn 0.3s ease;
+    }
+
+    .etapa.active {
+    display: block;
+    }
+
+    @keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+
+    .recuperar-wrapper h2 {
+    color: #5C3B2E;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    }
+
+    .recuperar-wrapper > p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+    }
+
+    /* ===== ETAPA 1: OPÇÕES ===== */
+
+    .opcoes-recuperacao {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    }
+
+    .opcao-btn {
+    background: linear-gradient(135deg, #E6E2DB, #C1B59F);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Montserrat', sans-serif;
+    }
+
+    .opcao-btn:hover {
+    border-color: #5C3B2E;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(92, 59, 46, 0.15);
+    }
+
+    .opcao-btn i {
+    font-size: 2.5rem;
+    color: #5C3B2E;
+    margin-bottom: 0.8rem;
+    display: block;
+    }
+
+    .opcao-btn h3 {
+    margin: 0.8rem 0 0.4rem;
+    color: #5C3B2E;
+    font-size: 1rem;
+    }
+
+    .opcao-btn p {
+    margin: 0;
+    color: #666;
+    font-size: 0.85rem;
+    }
+
+    .volta-login {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    }
+
+    .volta-login a {
+    color: #5C3B2E;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+    }
+
+    .volta-login a:hover {
+    color: #4C4A2A;
+    }
+
+    /* ===== FORMULÁRIOS ===== */
+
+    .form-recuperacao {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    }
+
+    .input-group {
+    position: relative;
+    margin-bottom: 0.5rem;
+    }
+
+    .input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #C1B59F;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Lora', serif;
+    transition: all 0.3s;
+    background: white;
+    }
+
+    .input-group input:focus {
+    outline: none;
+    border-color: #5C3B2E;
+    box-shadow: 0 0 0 3px rgba(92, 59, 46, 0.1);
+    }
+
+    .input-group label {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    background: white;
+    padding: 0 5px;
+    color: #5C3B2E;
+    font-size: 0.85rem;
+    font-weight: 600;
+    pointer-events: none;
+    }
+
+    .input-group .toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s;
+    }
+
+    .input-group .toggle-password:hover {
+    color: #5C3B2E;
+    }
+
+    .pergunta-seguranca {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #4C4A2A;
+    }
+
+    .pergunta-seguranca label {
+    display: block;
+    margin-bottom: 0.8rem;
+    color: #5C3B2E;
+    font-weight: 600;
+    font-size: 0.95rem;
+    }
+
+    .pergunta-seguranca input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #C1B59F;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    }
+
+    /* ===== REQUISITOS DE SENHA ===== */
+
+    .requisitos-senha {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    }
+
+    .requisitos-senha p {
+    margin: 0 0 0.8rem 0;
+    font-weight: 600;
+    color: #5C3B2E;
+    }
+
+    .requisitos-senha ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
+
+    .requisitos-senha li {
+    padding: 0.4rem 0;
+    color: #666;
+    font-size: 0.9rem;
+    }
+
+    .requisitos-senha li.atendido {
+    color: #28a745;
+    }
+
+    .requisitos-senha li.nao-atendido {
+    color: #dc3545;
+    }
+
+    /* ===== BOTÕES ===== */
+
+    .btn-submit {
+    background: linear-gradient(135deg, #5C3B2E, #4C4A2A);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 10px rgba(92, 59, 46, 0.2);
+    font-family: 'Montserrat', sans-serif;
+    }
+
+    .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(92, 59, 46, 0.3);
+    }
+
+    .btn-submit:active {
+    transform: translateY(0);
+    }
+
+    .btn-voltar {
+    background: none;
+    border: none;
+    color: #5C3B2E;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    transition: color 0.3s;
+    }
+
+    .btn-voltar:hover {
+    color: #4C4A2A;
+    }
+
+    .btn-nova-senha {
+    width: 100%;
+    margin-top: 1rem;
+    }
+
+    .btn-login {
+    display: inline-block;
+    background: linear-gradient(135deg, #5C3B2E, #4C4A2A);
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-top: 1rem;
+    transition: all 0.3s;
+    font-weight: 600;
+    }
+
+    .btn-login:hover {
+    transform: translateY(-2px);
+    }
+
+    /* ===== MENSAGENS ===== */
+
+    .mensagem-sucesso {
+    background: #d4edda;
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 1rem;
+    animation: slideIn 0.3s ease;
+    }
+
+    .mensagem-sucesso i {
+    font-size: 2rem;
+    color: #28a745;
+    display: block;
+    margin-bottom: 0.5rem;
+    }
+
+    .mensagem-sucesso p {
+    color: #155724;
+    margin: 0.5rem 0;
+    font-weight: 600;
+    }
+
+    .mensagem-sucesso small {
+    color: #155724;
+    font-size: 0.9rem;
+    display: block;
+    }
+
+    
+.footer{
+    background-color: var(--color-primary-dark);
+    color: var(--color-bg-warm);
+    text-align: center;
+    padding: 2vh 0;
+}
+
+.footer-titulo{
+    font-family: var(--font-playfair);
+    font-size: var(--fs-h2);
+    justify-content: space-between;
+    color: var(--color-bg-warm);
+    margin-bottom: 0.5rem;
+}
+
+.footer span{
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    color: var(--color-bg-warm);
+}
+
+    @keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+    .recuperar-wrapper {
+        padding: 2rem;
+    }
+
+    .opcoes-recuperacao {
+        grid-template-columns: 1fr;
+    }
+
+    .recuperar-wrapper h2 {
+        font-size: 1.5rem;
+    }
+    }

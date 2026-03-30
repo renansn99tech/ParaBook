@@ -16,7 +16,8 @@
                 <h1 class="logo">ParaBook</h1>
                 <ul class="menu">
                     <li><a href="index.html">Início</a></li>
-                    <li><a href="livros.html">Meus Livros</a></li>
+                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
+                    <li><a href="acesso-comunidade.html">Comunidades</a></li>
                     <li><a href="sobre.html">Sobre</a></li>
                     <button class="login-btn">Entrar</button>
                 </ul>
@@ -39,17 +40,26 @@
             <p id="descricao-comunidade"></p>
         </section>
 
-        <section class="container">
-            <h3>📢 Postagens</h3>
-            <div id="lista-posts"></div>
-        </section>
+<section class="posts-section">
+    <h3>📢 Postagens</h3>
+    <div id="lista-posts"></div>
+</section>
 
-        <section class="container">
-            <h3>✍️ Criar postagem</h3>
-            <input type="text" id="titulo-post" placeholder="Título">
-            <textarea id="texto-post"></textarea>
-            <button onclick="criarPost()">Publicar</button>
-        </section>
+<section class="post-form-container">
+    <h3>✍️ Criar postagem</h3>
+    
+    <div class="form-group">
+        <label for="titulo-post">Título da postagem</label>
+        <input type="text" id="titulo-post" placeholder="Qual é o assunto?">
+    </div>
+
+    <div class="form-group">
+        <label for="texto-post">Seu comentário</label>
+        <textarea id="texto-post" placeholder="Compartilhe suas ideias, dúvidas ou comentários..."></textarea>
+    </div>
+
+    <button class="btn-publicar" onclick="criarPost()">Publicar Postagem</button>
+</section>
 
         <script src="js/script.js"></script>
 

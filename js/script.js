@@ -412,3 +412,25 @@ function criarPost() {
 }
 
 carregarDetalheComunidade();
+
+/*const perfil = {
+    nome: "Usuário",
+    email: "usuario@example.com"
+};
+
+function entrarPerfil(tipo) {
+    let perfilSalvo =
+        JSON.parse(localStorage.getItem("perfil")) || [];
+
+    if (!perfilSalvo.includes(tipo)) {
+        perfilSalvo.push(tipo);
+
+        localStorage.setItem(
+            "perfil",
+            JSON.stringify(perfilSalvo)
+        );
+    }
+
+    window.location.href = "perfil.html";
+}*/
+

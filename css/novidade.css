@@ -262,7 +262,21 @@ h3{
     color: var(--color-bg-warm);
     text-align: center;
     padding: 2vh 0;
-}    
+}
+
+.footer-titulo{
+    font-family: var(--font-playfair);
+    font-size: var(--fs-h2);
+    justify-content: space-between;
+    color: var(--color-bg-warm);
+    margin-bottom: 0.5rem;
+}
+
+.footer span{
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    color: var(--color-bg-warm);
+}
     
     
     * {

@@ -115,7 +115,7 @@ h3{
     list-style: none;
     display: flex;
     flex-direction: row;
-    align-items: end;
+    align-items: center;
     gap: 20px;
 }
 

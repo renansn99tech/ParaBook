@@ -1173,6 +1173,24 @@ button:hover {
   font-size: 0.9rem;
 }
 
+/* ===== LEITURA ===== */
+.leitura-container {
+    padding: 40px 0;
+}
+
+.livro-info {
+    margin-bottom: 20px;
+}
+
+.leitor-pdf iframe {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.acoes {
+    margin-top: 20px;
+}
+
 /* ===== FAVORITOS ===== */
 
 .favoritos-grid {

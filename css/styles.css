@@ -434,6 +434,18 @@ h3{
     margin: 10px 0;
 }
 
+.comunidades-principais{
+  text-align: center;
+}
+
+.cards-destaque {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 30px;
+}
+
 .comunidades-principais {
     display: flex;
     flex-direction: column;

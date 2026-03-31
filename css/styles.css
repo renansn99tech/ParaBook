@@ -436,7 +436,9 @@ h3{
 
 .comunidades-principais {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 30px;
@@ -531,15 +533,23 @@ button:hover {
 
 /* ===== CARROSSEL COM CONTROLES ===== */
 
-    .carousel-wrapper {
+    .carousel-wrapper-destaques {
     max-width: 1200px;
     margin: 3vh auto;
-    padding: 2rem;
-    background: linear-gradient(135deg, var(--color-bg-warm), var(--color-neutral-tan));
+    padding: 1rem;
+    background: var(--color-neutral-tan);
     border-radius: 15px;
     }
 
-    .carousel-wrapper h2{
+    .carousel-wrapper-novidades {
+    max-width: 1200px;
+    margin: 3vh auto;
+    padding: 1rem;
+    background: linear-gradient(to bottom, var(--color-bg-warm) 0%, var(--color-neutral-tan) 60%);
+    border-radius: 15px;
+    }
+
+    .carousel-wrapper-novidades h2, .carousel-wrapper-destaques h2 {
     text-align: center;
     }
 
@@ -548,11 +558,12 @@ button:hover {
     display: flex;
     align-items: center;
     overflow: hidden;
+    margin-bottom: 1vh;
     }
 
     .carousel-content {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     transition: transform 0.5s ease;
     width: 100%;
     }
@@ -560,16 +571,17 @@ button:hover {
     .carousel-item {
     flex: 0 0 calc(25% - 1.5rem);
     min-height: 400px;
+    margin: 0.375rem 0.25rem;
     background: white;
     border-radius: 10px;
     overflow: hidden;
-    border: 1px solid var(--color-neutral-tan);
+    border: .1rem solid var(--color-accent-olive);
     transition: transform 0.3s;
     }
 
     .carousel-item:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 6px 14px rgba(0,0,0,0.25);
+    transform: scale(1.03);
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.25);
     }
 
     /* Botões de navegação */

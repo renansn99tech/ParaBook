@@ -298,16 +298,17 @@ h3{
     }
 
     /* The actual timeline (the vertical ruler) */
-    .timeline::after {
+.timeline::after {
     content: '';
     position: absolute;
     width: 6px;
-    background-color: white;
+    background: white;
     top: 0;
-    bottom: 0;
     left: 50%;
-    margin-left: -3px;
-    }
+    height: 0;
+
+    animation: linhaSubindo 3.5s ease forwards;
+}
 
     /* Container around content */
     .containe {
@@ -442,3 +443,52 @@ h3{
     left: 0%;
     }
     }
+
+
+    .containe {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    animation: aparecerCard 0.8s ease forwards;
+}
+
+/* Cada card entra com um pequeno atraso */
+.containe:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.containe:nth-child(2) {
+    animation-delay: 0.6s;
+}
+
+.containe:nth-child(3) {
+    animation-delay: 1s;
+}
+
+.containe:nth-child(4) {
+    animation-delay: 1.4s;
+}
+
+.containe:nth-child(5) {
+    animation-delay: 1.8s;
+}
+
+.containe:nth-child(6) {
+    animation-delay: 2.2s;
+}
+
+/* Animação */
+@keyframes aparecerCard {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes linhaSubindo {
+    from {
+        height: 0;
+    }
+    to {
+        height: 100%;
+    }
+}

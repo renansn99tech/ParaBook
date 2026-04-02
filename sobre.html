@@ -40,6 +40,7 @@
     <main class="container">
         <section class="sobre-conteudo">
 
+            <div class="fade-section">
             <h2>Quem somos</h2>
             <p>
                 Somos estudantes do curso Full Stack do Senac de Belém-Pará,
@@ -47,33 +48,42 @@
                 Nosso primeiro projeto grande foi pensado para ser um ambiente de leitura e troca de experiências,
                 oferecendo uma facilidade na navegação e no acesso aos livros e comunidades.
             </p>
+            </div>
 
+            <div class="fade-section">
             <h2>Nossa missão</h2>
             <p>
                 Incentivar o hábito da leitura de obras de dominio público,
                 criar uma comunidade que interaja entre si e permita que cada usuário sua própria biblioteca personalizada com seu gosto.
             </p>
+            </div>
 
+            <div class="fade-section">
             <h2>O que você encontra aqui</h2>
             <ul>
                 <li><i class="fa-solid fa-book"></i> Acervo de Obras Clássicas</li>
                 <li><i class="fa-solid fa-feather-pointed"></i> Grandes Obras Literárias</li>
                 <li><i class="fa-solid fa-bookmark"></i> Biblioteca Particular Com Possibilidade de Leitura</li>
             </ul>
+            </div>
 
+            <div class="fade-section">
             <h2>Por que o ParaBook?</h2>
             <p>
                 Acreditamos que por meio da leitura, e troca de experiências de obras clássicas, é possível
                 Crescer culturalmente e intelectualmente. Por conta disso, criamos essa plataforma digital que
                 Permite mais simplicidade e facilidade de uso.
             </p>
+            </div>
 
+            <div class="fade-section">
             <h2>Sobre o projeto</h2>
             <p>
                 O ParaBook representa nosso projeto web, realizado em equipe,  
                 Servindo como prática do nosso aprendizado de boas práticas em HTML,
                 CSS, JavaScript e armazenamento de dados em uma aplicação real e escalável.
             </p>
+            </div>
 
         </section>
     </main>
@@ -82,6 +92,25 @@
         <h1 class="footer-titulo">&copy; ParaBook.</h1>
         <span>2026. Todos os direitos reservados.</span>
     </footer>
+
+
+    <script>
+const sections = document.querySelectorAll(".fade-section");
+
+    function mostrarAoRolar() {
+        sections.forEach(section => {
+            const topoTela = window.innerHeight;
+            const topoElemento = section.getBoundingClientRect().top;
+
+            if (topoElemento < topoTela - 100) {
+                section.classList.add("show");
+            }
+        });
+    }
+
+    window.addEventListener("scroll", mostrarAoRolar);
+    window.addEventListener("load", mostrarAoRolar);
+</script>
 
 </body>
 

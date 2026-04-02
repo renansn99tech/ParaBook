@@ -154,6 +154,18 @@ h3{
     margin: 0vh 3vw;
 }
 
+/* ===== animação das seções ===== */
+.fade-section {
+    opacity: 0; /* começa invisível */
+    transform: translateY(40px); /* começa um pouco abaixo */
+    transition: all 0.8s ease; /* suavidade */
+}
+
+/* quando aparecer na tela */
+.fade-section.show {
+    opacity: 1;
+    transform: translateY(0);
+}
 /*  =======================================
         Seção de DESTAQUES e suas Classes
     =======================================  */

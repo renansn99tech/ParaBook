@@ -1,9 +1,11 @@
+// Script para o login
 const container = document.getElementById("container");
 const showRegister = document.getElementById("showRegister");
 const showLogin = document.getElementById("showLogin");
 const showForgot = document.getElementById("showForgot");
 const backToLogin = document.getElementById("backToLogin");
 
+// Eventos
 showRegister.addEventListener("click", function(e){
     e.preventDefault();
     container.classList.remove("forgot-active");

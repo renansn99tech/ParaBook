@@ -176,7 +176,7 @@
     }
     };
 
-    // ➕ ADICIONAR LIVRO
+    // ADICIONAR LIVRO
     function adicionarLivro(id) {
     let biblioteca = JSON.parse(localStorage.getItem("biblioteca")) || [];
 
@@ -194,7 +194,7 @@
     }
     }
 
-    // 📂 CARREGAR BIBLIOTECA
+    // CARREGAR BIBLIOTECA
 function carregarBiblioteca() {
     const container = document.getElementById("lista-livros");
     if (!container) return;
@@ -231,7 +231,7 @@ function carregarBiblioteca() {
     container.innerHTML = html;
 }
 
-    // 📖 CARREGAR LEITURA
+    // CARREGAR LEITURA
     function carregarLeitura() {
     const titulo = document.getElementById("titulo");
     if (!titulo) return;
@@ -412,25 +412,3 @@ function criarPost() {
 }
 
 carregarDetalheComunidade();
-
-/*const perfil = {
-    nome: "Usuário",
-    email: "usuario@example.com"
-};
-
-function entrarPerfil(tipo) {
-    let perfilSalvo =
-        JSON.parse(localStorage.getItem("perfil")) || [];
-
-    if (!perfilSalvo.includes(tipo)) {
-        perfilSalvo.push(tipo);
-
-        localStorage.setItem(
-            "perfil",
-            JSON.stringify(perfilSalvo)
-        );
-    }
-
-    window.location.href = "perfil.html";
-}*/
-

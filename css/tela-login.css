@@ -1,46 +1,65 @@
+/* Reset para remover espaçamentos padrão */
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Fundo principal da tela */
 body{
     background-color: #C1B59F;
+    /* Centraliza vertical e horizontal */
     display: flex;
     justify-content: center;
     align-items: center;
+    /* ocupa tela inteira */
     height: 100vh;
+    /* fundo em degradê */
     background: linear-gradient(to bottom, #C1B59F 0%, #E6E2DB 100%);
 }
+
+/* Container principal do login */
 .form-container{
     display: flex;
     box-sizing: border-box;
     background: #E6E2DB;
+    /* espaço entre imagem e formulário */
     gap: 40px;
     padding: 40px;
     border-radius: 15px;
+    /* sombra */
     box-shadow: 0 0px 15px rgba(0, 0, 0, 0.1);
     width: 1500px;
     text-align: center;
-}   
+}
+/* Cada lado ocupa metade */   
 .image-side, .form-side{
     flex: 1;
 }
+/* Imagem lateral */
 .image-side img{
     width: 100%;
     height: auto;
     border-radius: 15px;
+    /* evita distorção */
     object-fit: cover;
 }
+
+/* Título */
 .form-container h2{
     margin-bottom: 20px;
     color: #303136;    
     text-align: center;
 }
+
+/* Caixa */
 .input-box{
     margin-top: 20px;
     position: relative;
 }
+
+/* Campo */
 .input-box input{
     width: 100%;
     padding: 12px 15px;
@@ -52,11 +71,15 @@ body{
     border-bottom: 2px solid #303136;
     transition: 0.4s;
 }
+
+/* Quando clicar */
 .input-box input:focus{
     border-bottom-color: #E6E2DB;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     background-color: #E6E2DB;
 }
+
+/* Texto flutuante */
 .input-box span{
     position: absolute;
     top: 50%;
@@ -67,6 +90,8 @@ body{
     transition: 0.4s;
     transform: translateY(-50%);
 }
+
+/* Quando clicar */
 .input-box input:focus + span,
 .input-box input:not(:placeholder-shown) + span{
     top: -5px;
@@ -89,6 +114,8 @@ body{
     color: #5C3B2E;
     transition: 0.4s;
 }
+
+/* Caixa de Conta */
 .account-box{
     text-align: center;
     margin-top: 150px;
@@ -104,6 +131,8 @@ body{
     color: #5C3B2E;
     transition: 0.4s;
 }
+
+/* Botão */
 .submit-btn{
     background: #5C3B2E;
     border: none;
@@ -115,6 +144,8 @@ body{
     transition: 0.4s;
     margin-top: 10px;
 }
+
+/* Botão com Hover*/
 .submit-btn:hover{
     background: linear-gradient(90deg, #5C3B2E, #412a20);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);

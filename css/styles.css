@@ -175,7 +175,7 @@ h3{
     margin: 3vh 3vw;
 }
 
-/* Container dos cards */
+/* =====  CONTAINER DOS CARDS ===== */
 .cards-destaque{
     display: flex;
     justify-content: center;
@@ -183,7 +183,7 @@ h3{
     flex-wrap: wrap;
 }
 
-/* Card individual */
+/* =====  CARDS INDIVIDUAIS ===== */
 .card-link{
     display: flex;
     flex-direction: column; /* Aplicando o Flex para Colunas de modo a centralizar os elementos (ícones e textos) */
@@ -201,7 +201,7 @@ h3{
     text-decoration: none;
 }
 
-/* Efeito ao passar o mouse */
+/* =====  EFEITO AO PASSAR O MOUSE ===== */
 .card-link:hover {
     transform: translateY(-1vh);
     box-shadow: 0px 6px 14px rgba(0,0,0,0.25);
@@ -446,14 +446,6 @@ h3{
     margin: 10px 0;
 }
 
-/* .cards-destaque {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 30px;
-} */
-
 .comunidades-principais {
     display: flex;
     flex-direction: column;
@@ -493,7 +485,7 @@ h3{
     font-size: 1.5rem;
 }
 
-/* Cards dos posts */
+/* =====  CARDS DOS POSTS ===== */
 .post {
     background: white;
     border-radius: 14px;
@@ -518,7 +510,7 @@ h3{
     color: #444;
 }
 
-/* Criar postagem */
+/* =====  CRIAR POSTAGEM ===== */
 textarea {
     width: 100%;
     min-height: 140px;
@@ -535,7 +527,7 @@ textarea:focus {
     border-color: #2563eb;
 }
 
-/* Botão */
+/* =====  BOTÃO ===== */
 button {
     padding: 12px 22px;
     border: none;
@@ -604,7 +596,7 @@ button:hover {
     box-shadow: 0px 4px 8px rgba(0,0,0,0.25);
     }
 
-    /* Botões de navegação */
+    /* =====  BOTÕES DE NAVEGAÇÃO ===== */
     .carousel-button {
     position: absolute;
     top: 50%;
@@ -1374,7 +1366,70 @@ button:hover {
   color: white;
 }
 
-    /* Responsivo */
+/* =====  CONTATO ===== */
+.contato {
+    padding: 40px 20px;
+    line-height: 1.8;
+}
+
+.contato p{
+    line-height: 1.6;
+    color: #444;
+}
+
+/* =====  SOBRE SUPORTE ===== */
+.sobre-suporte {
+    padding: 40px 20px;
+    line-height: 1.8;
+}
+
+.sobre-suporte h2 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.sobre-suporte ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sobre-suporte li {
+    margin: 10px 0;
+}
+
+.sobre-suporte p{
+    line-height: 1.6;
+    color: #444;
+}
+
+.sobre-suporte ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sobre-suporte li {
+    margin: 10px 0;
+}
+
+/* ==== ENVIAR MENSAGEM ==== */
+
+.enviar-mensagem {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--color-bg-warm) 0%, var(--color-neutral-tan) 100%);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+legend {
+    padding: 0.5em;
+    font-weight: bold;
+    color: var(--color-primary-dark);
+    font-size: 1.3em;
+}
+
+    /* =====  RESPONSIVO ===== */
     @media (max-width: 768px) {
     .perfil-content {
         flex-direction: column;

@@ -10,17 +10,16 @@
     </head>
 
     <body>
-
         <header>
             <nav class="container nav">
                 <h1 class="logo">ParaBook</h1>
                 <ul class="menu">
                     <li><a href="index.html">Início</a></li>
-                    <li><a href="livros.html">Meus Livros</a></li>
+                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
+                    <li><a href="acesso-comunidade.html"> Comunidades</a></li>
                     <li><a href="sobre.html">Sobre</a></li>
-                    <button class="login-btn">Entrar</button>
+                    <li><a href="tela-login.html"><button class="login-btn">Entrar</button></a></li>
                 </ul>
-        
             </nav>
         </header>
 
@@ -34,8 +33,43 @@
             </article>
         </section>
 
+            <!--Suporte-->
+            <section id="sobre-suporte">
+            <h2>Nosso Suporte</h2>
+            <p>Aqui fornecemos informações sobre principais dúvidas e problemas relacionados ao suporte, como horários de atendimento e formas para entrar em contato</p>
+        </section>
+        
+        <!-- Contato -->
+        <section id="contato">
+            <h2>Contato</h2>
+            <p>Para entrar em contato com o suporte, você pode utilizar os seguintes meios:</p>
+            <ul>
+                <li>Email: parabook@gmail.com</li>
+                <li>Telefone: (91) 8446-0404</li>
+                <li>Horário de atendimento: Segunda a Sexta, das 8:00 ás 18:00</li>
+            </ul>
+        </section>
+        
+        <!-- Envie uma mensagem -->
+        <section id="enviar-mensagem">
+    <form action="#" method="post" autocomplete="off">
+            <legend>Formulário de contato</legend>
+            <label for="name">Nome</label>
+            <input type="text" name="name" id="name" required placeholder="Digite seu nome completo" />
+            <label for="email">E-mail</label>
+            <input type="email" name="email" id="email" required placeholder="Digite um e-mail válido" />
+            <label for="subject">Assunto</label>
+            <input type="text" name="subject" id="subject" />
+            <label for="message">Mensagem</label>
+            <textarea style="width: 60%;" name="message" id="message" rows="7" required maxlength="1000" minlength="20"
+                placeholder="Descreva sua mensagem"></textarea>
+            <button type="submit" class="btn">Enviar</button>
+    </form>
+        </section>
+
     <footer class="footer">
-        <h1 class="footer-titulo">&copy; ParaBook.</h1><span>2026. Todos os direitos reservados.</span>
+        <h1 class="footer-titulo">&copy; ParaBook.</h1>
+        <span>2026. Todos os direitos reservados.</span>
     </footer>
 
     </body>

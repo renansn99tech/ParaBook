@@ -10,47 +10,109 @@
 
     <body>
 
-        <section class="form-container">
+    <section class="form-container" id="container">
 
-            <!-- Imagem ilustrativa de login-->
-            <section class="image-side">
-                <img src="https://img.freepik.com/fotos-gratis/pessoas-de-alto-angulo-lendo-juntas_23-2150062128.jpg?semt=ais_hybrid&w=740&q=80" alt="login-image">
-            </section>
-
-            <!-- Formulário de login -->
-            <section class="form-side">
-                <h2>Login</h2>
-        
-                <article class="input-box">
-                    <input type="text" placeholder="">
-                    <span>Usuário</span>
-                </article>
-
-                <article class="input-box">
-                    <input type="email" placeholder="">
-                    <span>E-mail</span>
-                </article>
-
-                <article class="input-box">
-                    <input type="password" placeholder="">
-                    <span>Senha</span>
-                </article>
-
-                <article class="button-box">
-                    <button class="submit-btn">Entrar</button>
-                </article>
-
-                <article class="input-box">
-                    <p>Esqueceu <a href="recuperar-senha.html">nome de Usuário/Senha?</a></p>
-                </article>
-
-                <article class="account-box">
-                    <p><a href="tela-cadastro.html">Crie sua Conta →</a></p>
-                </article>
-
-            </section>
-
+        <section class="image-side">
+            <img
+                src="https://img.freepik.com/fotos-gratis/pessoas-de-alto-angulo-lendo-juntas_23-2150062128.jpg?semt=ais_hybrid&w=740&q=80"
+                alt="imagem-login"
+            />
         </section>
 
+        <!-- LOGIN -->
+        <section class="form-side login-form">
+            <h2>Login</h2>
+
+            <article class="input-box">
+                <input type="text" required />
+                <span>Usuário</span>
+            </article>
+
+            <article class="input-box">
+                <input type="email" required />
+                <span>E-mail</span>
+            </article>
+
+            <article class="input-box">
+                <input type="password" required />
+                <span>Senha</span>
+            </article>
+
+            <article class="button-box">
+                <button class="submit-btn">Entrar</button>
+            </article>
+
+            <article class="input-box">
+                <p>Esqueceu <a href="#" id="showForgot">nome de usuário/senha?</a></p>
+            </article>
+
+            <article class="account-box">
+                <p>
+                    Não tem conta?
+                    <a href="#" id="showRegister">Crie sua Conta →</a>
+                </p>
+            </article>
+        </section>
+
+        <!-- CADASTRO -->
+        <section class="form-side register-form">
+            <h2>Criar Conta</h2>
+
+            <article class="input-box">
+                <input type="text" required />
+                <span>Nome de Usuário</span>
+            </article>
+
+            <article class="input-box">
+                <input type="email" required />
+                <span>Email</span>
+            </article>
+
+            <article class="input-box">
+                <input type="password" required />
+                <span>Senha</span>
+            </article>
+
+            <article class="input-box">
+                <input type="password" required />
+                <span>Confirmar Senha</span>
+            </article>
+
+            <article class="button-box">
+                <button class="submit-btn">Cadastrar</button>
+            </article>
+
+            <article class="account-box">
+                <p>
+                    Já tem conta?
+                    <a href="#" id="showLogin">Entrar →</a>
+                </p>
+            </article>
+        </section>
+
+        <!-- RECUPERAR SENHA -->
+        <section class="form-side forgot-form">
+    <h2>Recuperar Senha</h2>
+
+    <article class="input-box">
+        <input type="email" required />
+        <span>Digite seu e-mail</span>
+    </article>
+
+    <article class="button-box">
+        <button class="submit-btn">Enviar link</button>
+    </article>
+
+    <article class="account-box">
+        <p>
+            Lembrou a senha?
+            <a href="#" id="backToLogin">Entrar →</a>
+        </p>
+    </article>
+</section>
+
+    </section>
+
+        <script src="js/auth.js"></script>
 </body>
 </html>

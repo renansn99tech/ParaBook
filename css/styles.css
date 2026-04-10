@@ -1002,9 +1002,9 @@ button:hover {
 }
 
 .stat-icon {
-  font-size: 2.5rem;
+  font-size: 2rem;
   min-width: 60px;
-  text-align: center;
+  /*text-align: center;*/
 }
 
 .stat-info {
@@ -1413,20 +1413,80 @@ button:hover {
 
 /* ==== ENVIAR MENSAGEM ==== */
 
-.enviar-mensagem {
-  max-width: 800px;
-  margin: 3rem auto;
-  padding: 2rem;
-  background: linear-gradient(135deg, var(--color-bg-warm) 0%, var(--color-neutral-tan) 100%);
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+.contact-section {
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
 }
 
-legend {
-    padding: 0.5em;
+.contact-form {
+    width: 100%;
+    max-width: 650px;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.contact-legend {
+    font-size: 28px;
     font-weight: bold;
-    color: var(--color-primary-dark);
-    font-size: 1.3em;
+    margin-bottom: 15px;
+    color: #222;
+    text-align: center;
+}
+
+.contact-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #444;
+}
+
+.contact-input,
+.contact-textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.contact-input:focus,
+.contact-textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+}
+
+.contact-textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.contact-btn {
+    margin-top: 15px;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #007bff;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.contact-btn:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+.contact-btn:active {
+    transform: translateY(0);
 }
 
     /* =====  RESPONSIVO ===== */

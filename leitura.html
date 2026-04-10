@@ -8,6 +8,23 @@
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
 </head>
+    <style>
+    .leitor-pdf {
+        width: 80%;
+        height: 600px;
+        border: 3px none;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        margin: 20px auto;
+        overflow: hidden;
+    }
+
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+</style>
 
 <body>
 
@@ -16,24 +33,12 @@
             <h1 class="logo">ParaBook</h1>
 
             <ul class="menu">
-                <li><a href="index.html">Início</a></li>
-                <li><a href="livros.html">Meus Livros</a></li>
-                <li><a href="sobre.html">Sobre</a></li>
-                <li><a href="tela-login.html"><button class="login-btn">Entrar</button></a></li>
+                <li><a href="index.html"><button class="login-btn">Início</button></a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <section class="banner">
-            <article class="container banner-content">
-                <h2>Bem-vindo ao ParaBook!</h2>
-                <p>
-                    Seu destino para encontrar e compartilhar livros incríveis.
-                    Explore nosso acervo e descubra novos títulos.
-                </p>
-            </article>
-        </section>
 
         <!-- registro da leitura do livro-->
         <section class="container leitura-container">
@@ -47,8 +52,7 @@
                 <iframe
                     id="pdf"
                     title="Leitor de PDF do livro"
-                    width="100%"
-                    height="700">
+>
                     Seu navegador não suporta visualização de PDF.
                 </iframe>
             </section>

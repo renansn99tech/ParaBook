@@ -387,6 +387,14 @@ h3{
     border-radius: 6px;
     }
 
+    .content img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+    
+    }
+
     .containe left {
     animation: deslizetexto1 1s ease-in-out;
     }

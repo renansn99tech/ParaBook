@@ -24,7 +24,7 @@
             <div class="recuperar-wrapper">
                 <!-- ETAPA 1: ESCOLHER MÉTODO -->
                 <div id="etapa-1" class="etapa active">
-                    <h2>🔐 Recuperar Acesso</h2>
+                    <h2>Recuperar Acesso</h2>
                     <p>Escolha como deseja recuperar sua conta:</p>
 
                     <div class="opcoes-recuperacao">
@@ -34,11 +34,11 @@
                             <p>Receberá um link no seu e-mail</p>
                         </button>
 
-                        <button class="opcao-btn" onclick="mostrarEtapa(3)">
+                    <!-- <button class="opcao-btn" onclick="mostrarEtapa(3)">
                             <i class="fa-solid fa-user"></i>
                             <h3>Por Usuário</h3>
                             <p>Responda perguntas de segurança</p>
-                        </button>
+                        </button> -->
 
                         <button class="opcao-btn" onclick="mostrarEtapa(4)">
                             <i class="fa-solid fa-phone"></i>
@@ -56,7 +56,7 @@
                 <div id="etapa-2" class="etapa">
                     <button class="btn-voltar" onclick="mostrarEtapa(1)">← Voltar</button>
                     
-                    <h2>📧 Recuperar por E-mail</h2>
+                    <h2>Recuperar por E-mail</h2>
                     <p>Digite o e-mail associado à sua conta</p>
 
                     <form class="form-recuperacao" onsubmit="recuperarPorEmail(event)">
@@ -70,16 +70,16 @@
 
                     <div id="mensagem-email" class="mensagem-sucesso" style="display: none;">
                         <i class="fa-solid fa-check-circle"></i>
-                        <p>✅ Link enviado com sucesso!</p>
+                        <p>Link enviado com sucesso!</p>
                         <small>Verifique sua caixa de entrada e spam</small>
                     </div>
                 </div>
 
                 <!-- ETAPA 3: RECUPERAÇÃO POR USUÁRIO -->
-                <div id="etapa-3" class="etapa">
+                <!-- <div id="etapa-3" class="etapa">
                     <button class="btn-voltar" onclick="mostrarEtapa(1)">← Voltar</button>
                     
-                    <h2>👤 Recuperar por Usuário</h2>
+                    <h2>Recuperar por Usuário</h2>
                     <p>Responda suas perguntas de segurança</p>
 
                     <form class="form-recuperacao" onsubmit="recuperarPorUsuario(event)">
@@ -103,17 +103,17 @@
 
                     <div id="mensagem-usuario" class="mensagem-sucesso" style="display: none;">
                         <i class="fa-solid fa-check-circle"></i>
-                        <p>✅ Respostas verificadas!</p>
+                        <p>Respostas verificadas!</p>
                         <small>Você pode criar uma nova senha</small>
                         <button onclick="mostrarEtapa(5)" class="btn-nova-senha">Criar Nova Senha</button>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- ETAPA 4: RECUPERAÇÃO POR TELEFONE -->
                 <div id="etapa-4" class="etapa">
                     <button class="btn-voltar" onclick="mostrarEtapa(1)">← Voltar</button>
                     
-                    <h2>📱 Recuperar por Telefone</h2>
+                    <h2>Recuperar por Telefone</h2>
                     <p>Digite o telefone associado à sua conta</p>
 
                     <form class="form-recuperacao" onsubmit="recuperarPorTelefone(event)">
@@ -127,7 +127,7 @@
 
                     <div id="mensagem-telefone" class="mensagem-sucesso" style="display: none;">
                         <i class="fa-solid fa-check-circle"></i>
-                        <p>✅ Código enviado para seu telefone!</p>
+                        <p> Código enviado para seu telefone!</p>
                         
                         <div class="input-group">
                             <input type="text" id="codigo-sms" placeholder="000000" maxlength="6">
@@ -140,7 +140,7 @@
 
                 <!-- ETAPA 5: CRIAR NOVA SENHA -->
                 <div id="etapa-5" class="etapa">
-                    <h2>🔑 Criar Nova Senha</h2>
+                    <h2> Criar Nova Senha</h2>
                     <p>Digite sua nova senha com segurança</p>
 
                     <form class="form-recuperacao" onsubmit="criarNovaSenha(event)">
@@ -172,7 +172,7 @@
 
                     <div id="mensagem-sucesso-final" class="mensagem-sucesso" style="display: none;">
                         <i class="fa-solid fa-check-circle"></i>
-                        <p>✅ Senha alterada com sucesso!</p>
+                        <p> Senha alterada com sucesso!</p>
                         <a href="tela-login.html" class="btn-login">Ir para Login</a>
                     </div>
                 </div>

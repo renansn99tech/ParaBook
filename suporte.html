@@ -50,22 +50,30 @@
             </ul>
         </section>
         
-        <!-- Envie uma mensagem -->
-        <section id="enviar-mensagem">
-    <form action="#" method="post" autocomplete="off">
-            <legend>Formulário de contato</legend>
-            <label for="name">Nome</label>
-            <input type="text" name="name" id="name" required placeholder="Digite seu nome completo" />
-            <label for="email">E-mail</label>
-            <input type="email" name="email" id="email" required placeholder="Digite um e-mail válido" />
-            <label for="subject">Assunto</label>
-            <input type="text" name="subject" id="subject" />
-            <label for="message">Mensagem</label>
-            <textarea style="width: 60%;" name="message" id="message" rows="7" required maxlength="1000" minlength="20"
-                placeholder="Descreva sua mensagem"></textarea>
-            <button type="submit" class="btn">Enviar</button>
+<!-- Envie uma mensagem -->
+<section id="enviar-mensagem" class="contact-section">
+    <form action="#" method="post" autocomplete="off" class="contact-form">
+        <legend class="contact-legend">Formulário de contato</legend>
+
+        <label for="name" class="contact-label">Nome</label>
+        <input type="text" name="name" id="name" class="contact-input"
+            required placeholder="Digite seu nome completo" />
+
+        <label for="email" class="contact-label">E-mail</label>
+        <input type="email" name="email" id="email" class="contact-input"
+            required placeholder="Digite um e-mail válido" />
+
+        <label for="subject" class="contact-label">Assunto</label>
+        <input type="text" name="subject" id="subject" class="contact-input" />
+
+        <label for="message" class="contact-label">Mensagem</label>
+        <textarea name="message" id="message" class="contact-textarea"
+            rows="7" required maxlength="1000" minlength="20"
+            placeholder="Descreva sua mensagem"></textarea>
+
+        <button type="submit" class="contact-btn">Enviar</button>
     </form>
-        </section>
+</section>
 
     <footer class="footer">
         <h1 class="footer-titulo">&copy; ParaBook.</h1>

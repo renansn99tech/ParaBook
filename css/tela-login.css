@@ -1,66 +1,105 @@
-/* Reset para remover espaçamentos padrão */
-*{
+    /* Reset */
+    *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Fundo principal da tela */
-body{
-    background-color: #C1B59F;
-    /* Centraliza vertical e horizontal */
+    }
+    /* Fundo */
+    body{
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* ocupa tela inteira */
-    height: 100vh;
-    /* fundo em degradê */
     background: linear-gradient(to bottom, #C1B59F 0%, #E6E2DB 100%);
-}
-
-/* Container principal do login */
-.form-container{
-    display: flex;
-    box-sizing: border-box;
+    padding: 20px;
+    }
+    /* Container principal */
+    .form-container{
+    position: relative;
+    width: 1100px;
+    height: 600px;
     background: #E6E2DB;
-    /* espaço entre imagem e formulário */
-    gap: 40px;
-    padding: 40px;
     border-radius: 15px;
-    /* sombra */
-    box-shadow: 0 0px 15px rgba(0, 0, 0, 0.1);
-    width: 1500px;
-    text-align: center;
-}
-/* Cada lado ocupa metade */   
-.image-side, .form-side{
-    flex: 1;
-}
-/* Imagem lateral */
-.image-side img{
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    /* Lado da imagem */
+    .image-side{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 45%;
+    height: 100%;
+    transition: transform 0.6s ease;
+    }
+    .image-side img{
     width: 100%;
-    height: auto;
-    border-radius: 15px;
-    /* evita distorção */
+    height: 100%;
     object-fit: cover;
-}
-
-/* Título */
-.form-container h2{
+    border-radius: 15px 0 0 15px;
+    }
+    /* Área dos formulários */
+    .form-side{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 55%;
+    height: 100%;
+    padding: 50px;
+    background: #E6E2DB;
+    transition: transform 0.6s ease;
+    }
+    /* Formulários */
+    .login-form,
+    .register-form,
+    .forgot-form{
+    position: absolute;
+    width: calc(60% - 100px);
+    transition: transform 0.6s ease;
+    }
+    /* Estados iniciais */
+    .login-form{
+    transform: translateX(0);
+    }
+    .register-form{
+    transform: translateX(100%);
+    }
+    .forgot-form{
+    transform: translateX(100%);
+    }
+    /* Cadastro */
+    .form-container.active .login-form{
+    transform: translateX(100%);
+    }
+    .form-container.active .register-form{
+    transform: translateX(0);
+    }
+    /* Recuperação */
+    .form-container.forgot-active .login-form{
+    transform: translateX(100%);
+    }
+    .form-container.forgot-active .forgot-form{
+    transform: translateX(0);
+    }
+    /* Animação imagem */
+    .form-container.active .image-side,
+    .form-container.forgot-active .image-side{
+    transform: translateX(-40px) scale(1.02);
+    }
+    /* Título */
+    h2{
     margin-bottom: 20px;
-    color: #303136;    
+    color: #303136;
     text-align: center;
-}
-
-/* Caixa */
-.input-box{
+    }
+    /* Caixa input */
+    .input-box{
     margin-top: 20px;
     position: relative;
-}
-
-/* Campo */
-.input-box input{
+    }
+    /* Campo */
+    .input-box input{
     width: 100%;
     padding: 12px 15px;
     background: none;
@@ -70,17 +109,14 @@ body{
     font-size: 18px;
     border-bottom: 2px solid #303136;
     transition: 0.4s;
-}
-
-/* Quando clicar */
-.input-box input:focus{
-    border-bottom-color: #E6E2DB;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    background-color: #E6E2DB;
-}
-
-/* Texto flutuante */
-.input-box span{
+    }
+    /* Focus */
+    .input-box input:focus{
+    border-bottom-color: #5C3B2E;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    /* Texto flutuante */
+    .input-box span{
     position: absolute;
     top: 50%;
     left: 15px;
@@ -89,64 +125,47 @@ body{
     pointer-events: none;
     transition: 0.4s;
     transform: translateY(-50%);
-}
-
-/* Quando clicar */
-.input-box input:focus + span,
-.input-box input:not(:placeholder-shown) + span{
+    }
+    /* Float label */
+    .input-box input:focus + span,
+    .input-box input:not(:placeholder-shown) + span{
     top: -5px;
     font-size: 12px;
-    color: #E6E2DB;
-}
-.input-box p{
-    text-align: center;
-    margin-top: 10px;
-    color: #303136;
-    font-size: 14px;
-}
-.input-box a{
+    color: #5C3B2E;
+    }
+    /* Links */
+    a{
     color: #303136;
     text-decoration: none;
     font-weight: bold;
-    
-}
-.input-box a:hover{
+    }
+    a:hover{
     color: #5C3B2E;
     transition: 0.4s;
-}
-
-/* Caixa de Conta */
-.account-box{
+    }
+    /* Conta */
+    .account-box{
     text-align: center;
-    margin-top: 150px;
+    margin-top: 30px;
     color: #303136;
     font-size: 14px;
-}
-.account-box a{
-    color: #303136;
-    text-decoration: none;
-    font-weight: bold;
-}
-.account-box a:hover{
-    color: #5C3B2E;
-    transition: 0.4s;
-}
-
-/* Botão */
-.submit-btn{
+    }
+    /* Botão */
+    .submit-btn{
+    width: 100%;
     background: #5C3B2E;
     border: none;
-    padding: 12px 30px;
+    padding: 14px;
     border-radius: 25px;
     color: #E6E2DB;
     font-weight: bold;
     cursor: pointer;
     transition: 0.4s;
-    margin-top: 10px;
-}
-
-/* Botão com Hover*/
-.submit-btn:hover{
+    margin-top: 20px;
+    }
+    /* Hover */
+    .submit-btn:hover{
     background: linear-gradient(90deg, #5C3B2E, #412a20);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+    }

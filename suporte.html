@@ -7,9 +7,11 @@
         <title>ParaBook</title>
         <link rel="icon" type="image/x-icon" href="img/favicon.ico">
         <link rel="stylesheet" href="css/styles.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     </head>
 
     <body>
+
         <header>
             <nav class="container nav">
                 <h1 class="logo">ParaBook</h1>
@@ -23,62 +25,107 @@
             </nav>
         </header>
 
-        <section class="banner">
-            <article class="container banner-content">
-                <h2>Bem-vindo ao ParaBook!</h2>
-                <p>Seu destino para encontrar e compartilhar livros incríveis.
-                    Aqui você encontrará uma ampla seleção de livros e muito mais!
-                    Explore nosso acervo e descubra novos títulos em diferentes categorias.
-                </p>
-            </article>
-        </section>
 
-            <!--Suporte-->
-            <section id="sobre-suporte">
+        <!-- Suporte -->
+        <section id="sobre-suporte">
             <h2>Nosso Suporte</h2>
-            <p>Aqui fornecemos informações sobre principais dúvidas e problemas relacionados ao suporte, como horários de atendimento e formas para entrar em contato</p>
+            <p>Aqui fornecemos informações sobre principais dúvidas e problemas ...............(pendente)</p>
         </section>
-        
-        <!-- Contato -->
-        <section id="contato">
-            <h2>Contato</h2>
-            <p>Para entrar em contato com o suporte, você pode utilizar os seguintes meios:</p>
-            <ul>
-                <li>Email: parabook@gmail.com</li>
-                <li>Telefone: (91) 8446-0404</li>
-                <li>Horário de atendimento: Segunda a Sexta, das 8:00 ás 18:00</li>
-            </ul>
+
+        <!-- Envie uma mensagem -->
+        <section id="enviar-mensagem" class="contact-section">
+            <form action="#" method="post" autocomplete="off" class="contact-form">
+                <legend class="contact-legend">Formulário de contato</legend>
+
+                <label for="name" class="contact-label">Nome</label>
+                <input type="text" name="name" id="name" class="contact-input"
+                    required placeholder="Digite seu nome completo" />
+
+                <label for="email" class="contact-label">E-mail</label>
+                <input type="email" name="email" id="email" class="contact-input"
+                    required placeholder="Digite um e-mail válido" />
+
+                <label for="subject" class="contact-label">Assunto</label>
+                <input type="text" name="subject" id="subject" class="contact-input" />
+
+                <label for="message" class="contact-label">Mensagem</label>
+                <textarea name="message" id="message" class="contact-textarea"
+                    rows="7" required maxlength="1000" minlength="20"
+                    placeholder="Descreva sua mensagem"></textarea>
+
+                <button type="submit" class="contact-btn">Enviar</button>
+            </form>
         </section>
-        
-<!-- Envie uma mensagem -->
-<section id="enviar-mensagem" class="contact-section">
-    <form action="#" method="post" autocomplete="off" class="contact-form">
-        <legend class="contact-legend">Formulário de contato</legend>
 
-        <label for="name" class="contact-label">Nome</label>
-        <input type="text" name="name" id="name" class="contact-input"
-            required placeholder="Digite seu nome completo" />
+        <footer>
+            <div id="footer_content">
 
-        <label for="email" class="contact-label">E-mail</label>
-        <input type="email" name="email" id="email" class="contact-input"
-            required placeholder="Digite um e-mail válido" />
+                <div id="footer-padrao"> <!-- Sub-seção "padrão" -->
+                    <h1>&copy; ParaBook.</h1>
+                    <p> O melhor site de livros.</p>
 
-        <label for="subject" class="contact-label">Assunto</label>
-        <input type="text" name="subject" id="subject" class="contact-input" />
+                <div id="footer_social_media">
+                    <a href="#" class="footer-link" id="instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
 
-        <label for="message" class="contact-label">Mensagem</label>
-        <textarea name="message" id="message" class="contact-textarea"
-            rows="7" required maxlength="1000" minlength="20"
-            placeholder="Descreva sua mensagem"></textarea>
+                        <a href="#" class="footer-link" id="facebook">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
 
-        <button type="submit" class="contact-btn">Enviar</button>
-    </form>
-</section>
+                        <a href="#" class="footer-link" id="whatsapp">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a> 
+                    </div>
 
-    <footer class="footer">
-        <h1 class="footer-titulo">&copy; ParaBook.</h1>
-        <span>2026. Todos os direitos reservados.</span>
-    </footer>
+                    <p>2026. Todos os direitos reservados.</p>
+                </div>
+
+                <div> <!-- Sub-seção de Suporte/Contato -->
+
+                    <h3>Conheça nosso Suporte ao Usuário</h3>
+
+                    <p>Para o caso de dúvidas a respeito do Site
+                        e problemas na leitura.
+                    </p>
+
+                    <div>
+
+                        <p><strong>Entre em contato conosco pelos seguintes canais:</strong></p>
+
+                        <ul class="footer-list">
+                            <li>
+                                <a href="#" class="footer-link">Email: parabook@gmail.com</a>
+                            </li>
+                            <li>
+                                <a href="#" class="footer-link">Telefone: (91) 8446-0404</a>
+                            </li>
+                        </ul>
+
+                        <p>Atendimento de Segunda a Sexta entre 8:00 às 18:00.</p>
+
+                    </div>
+
+                </div>
+
+                <div id="footer_subscribe"> <!-- Sub-seção de Feedback -->
+                    <h3>Teve uma experiência ruim?</h3>
+
+                    <p>
+                        Coloque seu e-mail e a Ouvidoria entrará
+                        em contato em breve:
+                    </p>
+
+                    <div id="input_group">
+                        <input type="email" id="email">
+                        <button>
+                            <i class="fa-regular fa-envelope"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </footer>
 
     </body>
 

@@ -533,12 +533,26 @@ footer p {
     }
 
     .content img {
-    width: 100%;
+    /*width: 100%;
     height: auto;
     border-radius: 6px;
-    display: block;
-    
+    display: block;*/
+    max-width: 100%;       /* Responsivo */
+        height: auto;          /* Mantém proporção */
+        border-radius: 12px;   /* Cantos arredondados */
+        border: 3px solid #ccc;/* Borda */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* Sombra */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
     }
+
+    /* Efeito ao passar o mouse */
+    .content img:hover {
+        transform: scale(1.02); /* Zoom suave */
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    
+    
 
     .containe left {
     animation: deslizetexto1 1s ease-in-out;

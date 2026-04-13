@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ParaBook</title>
+        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+        <link rel="stylesheet" href="carrossel.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    </head>
+
+    <body>
+
+        <header>
+            <nav class="container nav">
+                <h1 class="logo">ParaBook</h1>
+                <ul class="menu">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
+                    <li><a href="comunidade.html"> Comunidades</a></li>
+                    <li><a href="sobre.html">Sobre</a></li>
+                    <li><a href="tela-login.html"><button class="login-btn">Entrar</button></a></li>
+                </ul>
+            </nav>
+        </header>
+
+
+<h1>Carrossel de Livros - Modelo para usarmos no Projeto</h1>
+
+    <div class="container">
+    <div class="card-carousel">
+        <div class="card" id="1">
+        <div class="image-container"></div>
+        <p><strong>Inácio de Loyola</strong> - O amar e servir sob o olhar de Santo Inácio de Loyola</p>
+        </div>
+        <div class="card" id="2">
+        <div class="image-container"></div>
+        <p><strong>Platão</strong> - A República</p>
+        </div>
+        <div class="card" id="3">
+        <div class="image-container"></div>
+        <p><strong>George Orwell</strong> - A Revolução dos Bichos</p>
+        </div>  
+        <div class="card" id="4">
+        <div class="image-container"></div>
+        <p><strong>Machado de Assis</strong> - O Alienista</p>
+        </div>
+        <div class="card" id="5">
+        <div class="image-container"></div>
+        <p><strong>João Hobuss</strong> - Introdução a Historia da Filosofia Antiga</p>
+        </div>
+    </div>
+    <a href="#" class="visuallyhidden card-controller">Carousel controller</a>
+    </div>
+
+    <script src="carrossel.js"></script>
+
+    </body>
+
+    <footer>
+        <div id="footer_content">
+
+            <div id="footer-padrao"> <!-- Sub-seção "padrão" -->
+                <h1>&copy; ParaBook.</h1>
+                <p> O melhor site de livros.</p>
+
+            <div id="footer_social_media">
+                <a href="#" class="footer-link" id="instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a href="#" class="footer-link" id="facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+
+                    <a href="#" class="footer-link" id="whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a> 
+                </div>
+
+                <p>2026. Todos os direitos reservados.</p>
+            </div>
+
+            <div> <!-- Sub-seção de Suporte/Contato -->
+
+                <h3>Conheça nosso Suporte ao Usuário</h3>
+
+                <p>Para o caso de dúvidas a respeito do Site
+                    e problemas na leitura.
+                </p>
+
+                <div>
+
+                    <p><strong>Entre em contato conosco pelos seguintes canais:</strong></p>
+
+                    <ul class="footer-list">
+                        <li>
+                            <a href="#" class="footer-link">Email: parabook@gmail.com</a>
+                        </li>
+                        <li>
+                            <a href="#" class="footer-link">Telefone: (91) 8446-0404</a>
+                        </li>
+                        <li>
+                            <a href="suporte.html" class="footer-link">Clique para enviar um formulário</a>
+                        </li>
+                    </ul>
+
+                    <p>Atendimento de Segunda a Sexta entre 8:00 às 18:00.</p>
+
+                </div>
+
+            </div>
+
+            <div id="footer_subscribe"> <!-- Sub-seção de Feedback -->
+                <h3>Teve uma experiência ruim?</h3>
+
+                <p>
+                    Coloque seu e-mail e a Ouvidoria entrará
+                    em contato em breve:
+                </p>
+
+                <div id="input_group">
+                    <input type="email" id="email">
+                    <button>
+                        <i class="fa-regular fa-envelope"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+</html>

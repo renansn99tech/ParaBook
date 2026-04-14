@@ -3,11 +3,11 @@
 
 :root {
     /* Paleta de Cores Terrosa (Atemporal) */
-    --color-primary-dark: #5C3B2E; /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
-    --color-secondary:#422b21;
-    --color-accent-olive: #4C4A2A; /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
-    --color-neutral-tan: #C1B59F; /* Bege claro */
-    --color-bg-warm: #E6E2DB; /* Off-white para Fundo principal */
+    --color-primary-dark: #14213d; /*#5C3B2E;*/ /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
+    --color-secondary: #4D4AE8;  /* #422b21;*/
+    --color-accent-olive: #58504a;  /* #4C4A2A; */ /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
+    --color-neutral-tan: #e9ecef; /* #C1B59F; */ /* Bege claro */
+    --color-bg-warm: #F5FFFA; /*#E6E2DB;*/ /* Off-white para Fundo principal */
     --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
 
 
@@ -439,7 +439,6 @@ footer p {
 #footer_subscribe {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding-bottom: 1rem;
 }
 
@@ -752,6 +751,21 @@ textarea {
 textarea:focus {
     border-color: #2563eb;
 }
+
+    .leitor-pdf {
+        width: 80%;
+        height: 600px;
+        border: 3px none;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        margin: 20px auto;
+        overflow: hidden;
+        max-height: 100%;
+        max-width:100%;
+        overflow: scroll; 
+        overflow-x: hidden;
+    }
+
 
 /* =====  BOTÃO ===== */
 button {

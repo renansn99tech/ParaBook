@@ -3,11 +3,11 @@
 
 :root {
     /* Paleta de Cores Terrosa (Atemporal) */
-    --color-primary-dark: #5C3B2E; /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
-    --color-secondary:#422b21;
-    --color-accent-olive: #4C4A2A; /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
-    --color-neutral-tan: #C1B59F; /* Bege claro */
-    --color-bg-warm: #E6E2DB; /* Off-white para Fundo principal */
+    --color-primary-dark: #14213d; /*#5C3B2E;*/ /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
+    --color-secondary: #4D4AE8;  /* #422b21;*/
+    --color-accent-olive: #58504a;  /* #4C4A2A; */ /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
+    --color-neutral-tan: #e9ecef; /* #C1B59F; */ /* Bege claro */
+    --color-bg-warm: #F5FFFA; /*#E6E2DB;*/ /* Off-white para Fundo principal */
     --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
 
     /* Definindo as Fontes nas variáveis de ambiente */
@@ -314,7 +314,7 @@ footer p {
 #footer_content { /* ID Pai onde ficam organizados os "cards" da grid */
     background-color: var(--color-primary-dark);
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     padding: 3rem 3rem;
 }
@@ -388,7 +388,6 @@ footer p {
 #footer_subscribe {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding-bottom: 1rem;
 }
 
@@ -662,4 +661,86 @@ footer p {
     to {
         height: 100%;
     }
+}
+
+/* ==========================================
+   FORMULÁRIO NO FOOTER
+========================================== */
+
+#footer_form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#footer_form p {
+    margin: 0.5rem 0 1rem 0;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.contact-label {
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    color: var(--color-bg-warm);
+    margin-bottom: 0.2rem;
+}
+
+/* Inputs */
+.contact-input,
+.contact-textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    background-color: rgba(255,255,255,0.08);
+    color: var(--color-bg-warm);
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+/* Remove aparência padrão */
+.contact-input,
+.contact-textarea,
+.contact-btn {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Placeholder */
+.contact-input::placeholder,
+.contact-textarea::placeholder {
+    color: rgba(255,255,255,0.55);
+}
+
+/* Efeito ao clicar */
+.contact-input:focus,
+.contact-textarea:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+}
+
+/* Botão */
+.contact-btn {
+    background-color: var(--color-secondary);
+    color: var(--color-bg-warm);
+    border: none;
+    padding: 0.9rem;
+    border-radius: 8px;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+/* Hover */
+.contact-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
 }

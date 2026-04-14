@@ -11,7 +11,7 @@
     republica: {
         nome: "A República",
         autor: "Platão",
-        caminho: "/livros/Filosofia/livro2.pdf",
+        caminho: "livros/Filosofia/livro2.pdf",
         capa: "/livros/capas_livros/arepublica.png"
     },
     pensamento_inquieto: {
@@ -231,28 +231,109 @@ function carregarBiblioteca() {
     container.innerHTML = html;
 }
 
-    // CARREGAR LEITURA
-    function carregarLeitura() {
+ let pdfDoc = null;
+let paginaAtual = 1;
+let totalPaginas = 0;
+let livroAtualId = null;
+
+function carregarLeitura() {
     const titulo = document.getElementById("titulo");
     if (!titulo) return;
 
     const params = new URLSearchParams(window.location.search);
     const id = params.get("livro");
 
+    livroAtualId = id;
+
     const livro = livros[id];
+
     if (!livro) {
         titulo.innerText = "Livro não encontrado";
         return;
     }
 
     document.getElementById("titulo").innerText = livro.nome;
-    document.getElementById("autor").innerText = "Autor: " + livro.autor;
-    document.getElementById("pdf").src = livro.caminho;
-    }
+    document.getElementById("autor").innerText =
+        "Autor: " + livro.autor;
+
+    // recupera última página salva
+    paginaAtual =
+        Number(localStorage.getItem(`pagina_${id}`)) || 1;
+
+    carregarPDF(livro.caminho);
+}
 
     // 🚀 EXECUÇÃO
     carregarBiblioteca();
     carregarLeitura();
+
+    function carregarPDF(caminho) {
+    pdfjsLib.getDocument(caminho).promise.then(pdf => {
+        pdfDoc = pdf;
+        totalPaginas = pdf.numPages;
+
+        if (paginaAtual > totalPaginas) {
+            paginaAtual = 1;
+        }
+
+        renderizarPagina(paginaAtual);
+    });
+}
+
+function renderizarPagina(numero) {
+    pdfDoc.getPage(numero).then(page => {
+        const canvas = document.getElementById("pdf-canvas");
+        const ctx = canvas.getContext("2d");
+
+        const viewport = page.getViewport({ scale: 1.5 });
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        page.render({
+            canvasContext: ctx,
+            viewport: viewport
+        });
+
+        paginaAtual = numero;
+
+        salvarProgresso();
+        atualizarBarra();
+        atualizarPaginaInfo();
+    });
+}
+
+function proximaPagina() {
+    if (paginaAtual < totalPaginas) {
+        renderizarPagina(paginaAtual + 1);
+    }
+}
+
+function paginaAnterior() {
+    if (paginaAtual > 1) {
+        renderizarPagina(paginaAtual - 1);
+    }
+}
+
+function atualizarBarra() {
+    const porcentagem =
+        (paginaAtual / totalPaginas) * 100;
+
+    document.getElementById("barra-progresso").style.width =
+        porcentagem + "%";
+}
+
+function atualizarPaginaInfo() {
+    document.getElementById("pagina-info").innerText =
+        `Página ${paginaAtual} de ${totalPaginas}`;
+}
+
+function salvarProgresso() {
+    localStorage.setItem(
+        `pagina_${livroAtualId}`,
+        paginaAtual
+    );
+}
 
 
     function entrarComunidade(tipo) {

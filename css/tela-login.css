@@ -186,3 +186,86 @@
     cursor: pointer;
     font-size: 18px;
 }
+
+
+/* ===== RESPONSIVO LOGIN ===== */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+        align-items: flex-start;
+    }
+
+    .form-container {
+        width: 100%;
+        max-width: 420px;
+        height: auto;
+        min-height: 650px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    /* Esconde a imagem no mobile */
+    .image-side {
+        display: none;
+    }
+
+    .form-side {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 2rem 1.5rem;
+        right: auto;
+        top: auto;
+    }
+
+    .login-form,
+    .register-form,
+    .forgot-form {
+        position: relative;
+        width: 100%;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .input-box input {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    .submit-btn {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    .account-box {
+        font-size: 0.9rem;
+    }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
+    .form-container {
+        border-radius: 10px;
+        min-height: 600px;
+    }
+
+    .form-side {
+        padding: 1.5rem 1rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    .input-box input {
+        font-size: 16px;
+    }
+
+    .toggle-password {
+        font-size: 16px;
+        right: 8px;
+    }
+}

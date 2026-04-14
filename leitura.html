@@ -47,15 +47,19 @@
                 <p id="autor"></p>
             </section>
 
-            <!--leitor em pdf -->
-            <section class="leitor-pdf">
-                <iframe
-                    id="pdf"
-                    title="Leitor de PDF do livro"
->
-                    Seu navegador não suporta visualização de PDF.
-                </iframe>
-            </section>
+ <section class="leitor-pdf">
+    <canvas id="pdf-canvas"></canvas>
+</section>
+
+<div class="progresso-container">
+    <div id="barra-progresso"></div>
+</div>
+
+<div class="controles-leitura">
+    <button onclick="paginaAnterior()" class="btn">Voltar página</button>
+    <span id="pagina-info">Página 1</span>
+    <button onclick="proximaPagina()" class="btn">Próxima página</button>
+</div>
 
             <!-- opção de voltar-->
             <div class="acoes">
@@ -68,8 +72,8 @@
         <h1 class="footer-titulo">&copy; ParaBook</h1>
         <span>2026. Todos os direitos reservados.</span>
     </footer>
-
-    <script src="js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="js/script.js"></script>
 
 </body>
 </html>

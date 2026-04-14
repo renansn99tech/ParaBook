@@ -11,7 +11,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(to bottom, #C1B59F 0%, #E6E2DB 100%);
+    background: #F5FFFA; /*linear-gradient(to bottom, #C1B59F 0%, #E6E2DB 100%); */
     padding: 20px;
     }
     /* Container principal */
@@ -19,7 +19,7 @@
     position: relative;
     width: 1100px;
     height: 600px;
-    background: #E6E2DB;
+    background: #e9ecef; /*#E6E2DB; */
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
@@ -34,7 +34,7 @@
     transition: transform 0.6s ease;
     }
     .image-side img{
-    width: 100%;
+    width: 118%; /*100%;*/
     height: 100%;
     object-fit: cover;
     border-radius: 15px 0 0 15px;
@@ -47,7 +47,7 @@
     width: 55%;
     height: 100%;
     padding: 50px;
-    background: #E6E2DB;
+    background: #e9ecef; /*#E6E2DB; */
     transition: transform 0.6s ease;
     }
     /* Formulários */
@@ -153,7 +153,7 @@
     /* Botão */
     .submit-btn{
     width: 100%;
-    background: #5C3B2E;
+    background: #58504a; /*#5C3B2E; */
     border: none;
     padding: 14px;
     border-radius: 25px;
@@ -165,7 +165,24 @@
     }
     /* Hover */
     .submit-btn:hover{
-    background: linear-gradient(90deg, #5C3B2E, #412a20);
+    background: #58504a; /*linear-gradient(90deg, #5C3B2E, #412a20);*/
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     transform: translateY(-2px);
     }
+
+
+
+    .password-box {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+}

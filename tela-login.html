@@ -6,6 +6,7 @@
         <title>Login</title>
         <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
         <link rel="stylesheet" href="css/tela-login.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     </head>
 
     <body>
@@ -24,22 +25,23 @@
             <h2>Login</h2>
 
             <article class="input-box">
-                <input type="text" required />
+                <input type="text" id="loginUser" required placeholder=" " />
                 <span>Usuário</span>
             </article>
 
             <article class="input-box">
-                <input type="email" required />
+                <input type="email" id="loginEmail" required placeholder=" " />
                 <span>E-mail</span>
             </article>
 
-            <article class="input-box">
-                <input type="password" required />
-                <span>Senha</span>
-            </article>
+<article class="input-box password-box">
+        <input type="password" id="loginPassword" required placeholder=" " />
+        <span>Senha</span>
+        <button type="button" class="toggle-password" data-target="loginPassword">👁</button>
+    </article>
 
             <article class="button-box">
-                <button class="submit-btn">Entrar</button>
+                <button class="submit-btn" id="btnLogin">Entrar</button>
             </article>
 
             <article class="input-box">
@@ -59,27 +61,29 @@
             <h2>Criar Conta</h2>
 
             <article class="input-box">
-                <input type="text" required />
-                <span>Nome de Usuário</span>
+            <input type="text" id="registerUser" required placeholder=" " />
+        <span>Nome de Usuário</span>
             </article>
 
             <article class="input-box">
-                <input type="email" required />
+                <input type="email" id="registerEmail" required placeholder=" " />
                 <span>Email</span>
             </article>
 
-            <article class="input-box">
-                <input type="password" required />
-                <span>Senha</span>
-            </article>
+    <article class="input-box password-box">
+        <input type="password" id="registerPassword" required placeholder=" " />
+        <span>Senha</span>
+        <button type="button" class="toggle-password" data-target="registerPassword">👁</button>
+    </article>
 
-            <article class="input-box">
-                <input type="password" required />
-                <span>Confirmar Senha</span>
-            </article>
+    <article class="input-box password-box">
+        <input type="password" id="confirmPassword" required placeholder=" " />
+        <span>Confirmar Senha</span>
+        <button type="button" class="toggle-password" data-target="confirmPassword">👁</button>
+    </article>
 
             <article class="button-box">
-                <button class="submit-btn">Cadastrar</button>
+                <button class="submit-btn" id="btnRegister">Cadastrar</button>
             </article>
 
             <article class="account-box">

@@ -1730,8 +1730,18 @@ button {
 
 
 
-    /* =====  RESPONSIVO ===== */
-    @media (max-width: 768px) {
+ /* ===== RESPONSIVO ===== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .carousel-item {
+        flex: 0 0 calc(33.33% - 1rem);
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    /* Perfil */
     .perfil-content {
         flex-direction: column;
         align-items: center;
@@ -1750,6 +1760,8 @@ button {
 
     .tabs-nav {
         gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .tab-btn {
@@ -1768,22 +1780,150 @@ button {
     .favoritos-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
+
+    /* Banner */
+    .banner {
+        margin: 1rem;
+        padding: 1rem;
     }
 
-    @media (max-width: 1024px) {
-    .carousel-item {
-        flex: 0 0 calc(33.33% - 1.5rem);
-    }
+    .banner p {
+        font-size: 0.95rem;
+        line-height: 1.6;
     }
 
-    @media (max-width: 768px) {
+    /* Carrossel */
+    .carousel {
+        padding: 0 2.5rem;
+    }
+
     .carousel-item {
         flex: 0 0 calc(50% - 1rem);
     }
+
+    .carousel-button {
+        padding: 8px 12px;
+        font-size: 1rem;
     }
 
-    @media (max-width: 480px) {
+    /* Formulário */
+    .contact-form {
+        padding: 1rem;
+    }
+
+    .contact-input,
+    .contact-textarea {
+        font-size: 16px;
+    }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
     .carousel-item {
         flex: 0 0 100%;
     }
+
+    .carousel {
+        padding: 0 1rem;
     }
+
+    .carousel-button {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    .banner {
+        margin: 0.5rem;
+        padding: 0.8rem;
+    }
+}
+
+
+/* ===== INDEX RESPONSIVO ===== */
+@media (max-width: 768px) {
+
+    /* MENU */
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .menu {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu a {
+        display: block;
+        width: 100%;
+    }
+
+    /* BANNER */
+    .banner-content {
+        padding: 1rem;
+    }
+
+    .banner-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .banner-content p {
+        font-size: 0.95rem;
+    }
+
+    /* CARDS */
+    .cards-destaque {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .card-link {
+        width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    /* CARROSSEL */
+    .carousel-content {
+        gap: 1rem;
+    }
+
+    .carousel-item {
+        flex: 0 0 100%;
+        min-height: auto;
+    }
+
+    .capa-placeholder {
+        height: 220px;
+    }
+
+    .capa-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* FOOTER */
+    #footer_content {
+        grid-template-columns: 1fr;
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+
+    #footer-padrao {
+        margin-left: 0;
+    }
+
+    #footer_social_media {
+        justify-content: center;
+    }
+}

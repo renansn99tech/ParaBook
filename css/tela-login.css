@@ -239,82 +239,104 @@
 
 /* ===== RESPONSIVO LOGIN ===== */
 @media (max-width: 768px) {
-    body {
-        padding: 1rem;
-        align-items: flex-start;
+    body{
+        padding: 16px;
+        overflow-x: hidden;
     }
 
-    .form-container {
+    .nav{
+        margin: 20px 0;
+        justify-content: center;
+    }
+
+    .menu{
         width: 100%;
-        max-width: 420px;
-        height: auto;
-        min-height: 650px;
-        display: flex;
-        flex-direction: column;
-        position: relative;
+        justify-content: center;
     }
 
-    /* Esconde a imagem no mobile */
-    .image-side {
+    .voltar-btn{
+        width: 100%;
+        max-width: 220px;
+    }
+
+    .form-container{
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: auto;
+        margin: 20px auto;
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .image-side{
         display: none;
     }
 
-    .form-side {
+    .form-side{
         position: relative;
         width: 100%;
         height: auto;
-        padding: 2rem 1.5rem;
-        right: auto;
-        top: auto;
+        padding: 24px 16px;
+        right: unset;
+        top: unset;
     }
 
     .login-form,
     .register-form,
-    .forgot-form {
+    .forgot-form{
         position: relative;
         width: 100%;
+        transform: none !important;
     }
 
-    h2 {
-        font-size: 1.5rem;
+    .form-container.active .login-form,
+    .form-container.active .register-form,
+    .form-container.forgot-active .login-form,
+    .form-container.forgot-active .forgot-form{
+        transform: none !important;
     }
 
-    .input-box input {
+    h2{
+        font-size: 24px;
+    }
+
+    .input-box input{
         font-size: 16px;
-        padding: 12px;
+        padding: 14px 40px 14px 12px;
     }
 
-    .submit-btn {
-        padding: 12px;
-        font-size: 1rem;
+    .submit-btn{
+        font-size: 16px;
+        padding: 14px;
     }
 
-    .account-box {
-        font-size: 0.9rem;
+    .toggle-password{
+        right: 12px;
+        font-size: 16px;
     }
 }
 
-/* Mobile pequeno */
-@media (max-width: 480px) {
-    .form-container {
-        border-radius: 10px;
-        min-height: 600px;
+/* ===== CELULAR PEQUENO ===== */
+@media (max-width: 480px){
+    .form-container{
+        margin: 10px auto;
     }
 
-    .form-side {
-        padding: 1.5rem 1rem;
+    .form-side{
+        padding: 20px 14px;
     }
 
-    h2 {
-        font-size: 1.3rem;
+    h2{
+        font-size: 22px;
     }
 
-    .input-box input {
+    .input-box input{
         font-size: 16px;
     }
 
-    .toggle-password {
-        font-size: 16px;
-        right: 8px;
+    .submit-btn{
+        padding: 12px;
     }
 }

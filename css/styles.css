@@ -375,8 +375,24 @@ hr {
 
 
 /* ==========================================
+
+#faq-form {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+#faq-form h3 {
+  margin: 0;
+  padding: 0;
+}
+
+#faq-form p {
+    margin: .3rem 0;
       FORMULÁRIO DO FAQ
-========================================== */
 
 #faq_form {
     display: flex;
@@ -427,7 +443,7 @@ hr {
 /* Placeholder */
 .contact-input::placeholder,
 .contact-textarea::placeholder {
-    color: rgba(255,255,255,0.55);
+    color: rgba(43, 26, 26, 0.55);
 }
 
 /* Efeito ao clicar */
@@ -447,7 +463,7 @@ hr {
     font-family: var(--font-ui);
     font-size: 1rem;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: 0.5s ease;
 }
 
 /* Hover */
@@ -1900,6 +1916,25 @@ button {
 
 /* Mobile pequeno */
 @media (max-width: 480px) {
+
+    .carousel-button {
+        padding: 8px 12px;
+        font-size: 1rem;
+    }
+
+    /* Formulário */
+    .contact-form {
+        padding: .1rem;
+    }
+
+    .contact-input,
+    .contact-textarea {
+        font-size: 16px;
+    }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
     .carousel-item {
         flex: 0 0 100%;
     }
@@ -2013,6 +2048,7 @@ button {
 
 
 .grid-container {
+    margin-top: 1rem;
     width: min(75rem, 100%);
     margin-inline: auto;
     display: grid;
@@ -2057,8 +2093,9 @@ button {
 .title {
     font-size: 1.5rem;
     grid-area: title;
-    align-self: end;
+    align-self: center;
     text-transform: uppercase;
+    text-align: center;
     font-weight: 500;
 }
 

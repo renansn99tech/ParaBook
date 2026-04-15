@@ -33,7 +33,7 @@
         <main>
             <hr>
             <section class="carrosseis">
-                <div class="grid-container">
+                <article class="grid-container">
 
                     <div class="card-novo">
                         <a href="biblioteca.html" class="card-link">
@@ -70,9 +70,9 @@
                             </div>
                         </a>
                     </div>
-                </div>
+                </article>
 
-                <div class="container">
+                <article class="container">
                     <div class="card-carousel">
                         <div class="card" id="1">
                         <div class="image-container"></div>
@@ -96,7 +96,7 @@
                         </div>
                     </div>
                     <a href="#" class="visuallyhidden card-controller">Carousel controller</a>
-                </div>
+                </article>
             </section>
             <hr>
            <!-------------------- SEÇÃO DO FAQ (PERGUNTAS FREQUENTES) -------------------->
@@ -132,21 +132,64 @@
                     </details>
                 </article>
 
-                <article id="faq_form">
+            <h2 class="titulo-duvidas">FAQ</h2>
+            <!-------------------- SEÇÃO DO FAQ (PERGUNTAS FREQUENTES) -------------------->
+            <section id="secao-FAQ">
+                <article class="duvidas-frequentes">
+                    <details class="bloco-duvidas" name="parabook-informacao">
+                        <summary class="detalhe-duvidas">Quais Gêneros dos Livros?</summary>
+                        <div class="conteudo-duvidas">
+                            <p>Religião, literatura, filosofia entre outros.</p>
+                            <a href="biblioteca.html">Acessar →</a>
+                        </div>
+                    </details>
+
+                    <details class="bloco-duvidas" name="parabook-informacao">
+                        <summary class="detalhe-duvidas">Como criar uma conta?</summary>
+                        <div class="conteudo-duvidas">
+                            <p>Crie uma conta no botão <strong>"Entrar"</strong> para acessar todos os recursos do ParaBook.</p>
+                            <a href="tela-login.html">Saiba mais →</a>
+                        </div>
+                    </details>
+
+                    <details class="bloco-duvidas" name="parabook-informacao">
+                        <summary class="detalhe-duvidas">Posso participar de comunidades?</summary>
+                        <div class="conteudo-duvidas">
+                            <p>Sim, temos diversas comunidades para você participar.</p>
+                            <a href="comunidade.html">Participar →</a>
+                        </div>
+                    </details>
+
+                    <details class="bloco-duvidas" name="parabook-informacao">
+                        <summary class="detalhe-duvidas">Não encontrou a resposta que procurava?</summary>
+                        <div class="conteudo-duvidas">
+                            <p>Entre em contato e tiraremos suas dúvidas.</p>
+                            <a href="suporte.html">Enviar Mensagem →</a>
+                        </div>
+                    </details>
+            
+                    <details class="bloco-duvidas" name="parabook-informacao">
+                        <summary class="detalhe-duvidas">Posso participar de comunidades?</summary>
+                        <div class="conteudo-duvidas">
+                            <p>Sim, temos diversas comunidades para você participar.</p>
+                            <a href="comunidade.html">Participar →</a>
+                        </div>
+                    </details>
+                </article>
+
+                <article id="faq-form">
                     <h3>Fale Conosco</h3>
-                    <p>
-                        Envie sua mensagem diretamente pelo rodapé.
-                        Coloque seu e-mail e a Ouvidoria entrará em contato.
-                    </p>
+                    <p>Envie sua mensagem diretamente pelo rodapé.</p>
+                    <p>Coloque seu e-mail e a Ouvidoria entrará em contato.</p>
                     <form action="#" method="post" class="contact-form">
-                        <label for="form-name">Nome</label>
-                        <input type="text" id="form-name" class="contact-input">
+                        <label for="form-name"></label>
+                        <input type="text" id="form-name" class="contact-input" placeholder="Seu nome">
 
-                        <label for="form-email">E-mail</label>
-                        <input type="email" id="form-email" class="contact-input">
+                        <label for="form-email"></label>
+                        <input type="email" id="form-email" class="contact-input" placeholder="Seu email">
 
-                        <label for="form-message">Mensagem</label>
-                        <textarea id="form-message" class="contact-textarea" rows="4"></textarea>
+                        <label for="form-message"></label>
+                        <textarea id="form-message" class="contact-textarea" rows="3" placeholder="Conte aqui o que aconteceu"></textarea>
 
                         <button type="submit" class="contact-btn">
                             Enviar

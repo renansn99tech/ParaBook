@@ -103,6 +103,16 @@ h3{
     margin: 2vh 2vw;
 }
 
+.logo-container{
+    display: flex;
+    align-items: center;
+}
+
+.logo-img{
+    height: 70px;
+    margin-right: -20px;
+}
+
 .para {
   background: linear-gradient(90deg, #E53935, #6A1B9A);
   -webkit-background-clip: text;

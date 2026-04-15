@@ -103,6 +103,8 @@ h3{
     margin: 2vh 2vw;
 }
 
+
+
 /*  =============================================
         Seção do NAV (NAVEGAÇÃO e suas Classes)
     =============================================  */
@@ -181,23 +183,23 @@ h3{
     flex-direction: column; /* Aplicando o Flex para Colunas de modo a centralizar os elementos (ícones e textos) */
     justify-content: center;
     align-items: center;
-    background: var(--color-neutral-tan);
+    /*background: var(--color-neutral-tan);*/
     width: 100%;
     max-width: 320px;
     padding: 20px 60px;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+   /* box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
     border: 1px solid var(--color-accent-olive);
-    transition: transform .3s, box-shadow .3s;
+    transition: transform .3s, box-shadow .3s;*/
     text-decoration: none;
 }
 
-/* =====  EFEITO AO PASSAR O MOUSE ===== */
+/* =====  EFEITO AO PASSAR O MOUSE ===== 
 .card-link:hover {
     transform: translateY(-1vh);
     box-shadow: 0px 6px 14px rgba(0,0,0,0.25);
-}
+}*/
 
 .card-link i{
     font-size: var(--fs-h3);
@@ -283,12 +285,20 @@ hr {
     =======================================================  */
 
 
-.duvidas-frequentes{
-    margin: 4vh 4vw;
+#secao-FAQ {
+  position: relative;
+  /* display: grid;
+  grid-template-columns: repeat(2, 1fr); */
+  display: flex;
+  justify-content: space-around;
 }
 
-.duvidas-frequentes h2{
-    text-align: center;
+.titulo-faq {
+  text-align: left;
+}
+
+.duvidas-frequentes{
+    margin: 4vh 4vw;
 }
 
 .bloco-duvidas{
@@ -339,8 +349,91 @@ hr {
     inset-block-start: 0.1rem;
 }
 
+
+/* ==========================================
+      FORMULÁRIO DO FAQ
+========================================== */
+
+#faq_form {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+#faq_form p {
+    margin: 0.5rem 0 1rem 0;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.contact-label {
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    color: var(--color-bg-warm);
+    margin-bottom: 0.2rem;
+}
+
+/* Inputs */
+.contact-input,
+.contact-textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    background-color: rgba(255,255,255,0.08);
+    color: var(--color-bg-warm);
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+/* Remove aparência padrão */
+.contact-input,
+.contact-textarea,
+.contact-btn {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Placeholder */
+.contact-input::placeholder,
+.contact-textarea::placeholder {
+    color: rgba(255,255,255,0.55);
+}
+
+/* Efeito ao clicar */
+.contact-input:focus,
+.contact-textarea:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+}
+
+/* Botão */
+.contact-btn {
+    background-color: var(--color-secondary);
+    color: var(--color-bg-warm);
+    border: none;
+    padding: 0.9rem;
+    border-radius: 8px;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+/* Hover */
+.contact-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
 /*  =======================================================
-          Seção do Footer
+          Seção do Footer e suas classes
     =======================================================  */
 
 footer {
@@ -378,7 +471,7 @@ footer p {
 #footer_content { /* ID Pai onde ficam organizados os "cards" da grid */
     background-color: var(--color-primary-dark);
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     padding: 3rem 3rem;
 }
@@ -485,87 +578,9 @@ footer p {
     opacity: 0.8;
 }
 
-/* ==========================================
-   FORMULÁRIO NO FOOTER
-========================================== */
-
-#footer_form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-#footer_form p {
-    margin: 0.5rem 0 1rem 0;
-}
-
-.contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-.contact-label {
-    font-family: var(--font-ui);
-    font-size: var(--fs-small);
-    color: var(--color-bg-warm);
-    margin-bottom: 0.2rem;
-}
-
-/* Inputs */
-.contact-input,
-.contact-textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    background-color: rgba(255,255,255,0.08);
-    color: var(--color-bg-warm);
-    font-family: var(--font-ui);
-    font-size: 0.95rem;
-    outline: none;
-    transition: 0.3s ease;
-}
-
-/* Remove aparência padrão */
-.contact-input,
-.contact-textarea,
-.contact-btn {
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-/* Placeholder */
-.contact-input::placeholder,
-.contact-textarea::placeholder {
-    color: rgba(255,255,255,0.55);
-}
-
-/* Efeito ao clicar */
-.contact-input:focus,
-.contact-textarea:focus {
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
-}
-
-/* Botão */
-.contact-btn {
-    background-color: var(--color-secondary);
-    color: var(--color-bg-warm);
-    border: none;
-    padding: 0.9rem;
-    border-radius: 8px;
-    font-family: var(--font-ui);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s ease;
-}
-
-/* Hover */
-.contact-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-}
+/*  =======================================================
+          FIM DA SEÇÃO FOOTER E SUAS CLASSES/IDS
+    =======================================================  */
 
 /*  =========================================================
         Seção da Página comunidade.html e suas Classes
@@ -1713,7 +1728,7 @@ button {
 
 .contact-form {
     width: 100%;
-    max-width: 650px;
+    max-width: 500px;
     padding: 35px;
     border-radius: 16px;
     /*box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);*/
@@ -1958,3 +1973,220 @@ button {
         justify-content: center;
     }
 }
+
+
+.grid-container {
+    width: min(75rem, 100%);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: 2rem;
+}
+
+.card-novo {
+    --grad: red, blue;
+    padding: 2.5rem;
+    background-image: linear-gradient(to bottom left, #e0e4e5, #f2f6f9);
+    border-radius: 2rem;
+    /*gap: 1.5rem;*/
+    display: grid;
+    /*grid-template:
+        "title icon"
+        "content content"
+        "bar bar" / 1fr auto;*/
+    font-family: system-ui, sans-serif;
+    color: #444447;
+    box-shadow:
+        inset -2px 2px hsl(0 0 100% / 1),
+        -20px 20px 40px hsl(0 0 0 / .25);
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-novo-link {
+    display: contents;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-novo:hover {
+    animation: pulse 0.8s ease;
+    cursor: pointer;
+    box-shadow:
+        inset -2px 2px hsl(0 0 100% / 1),
+        -25px 25px 50px hsl(0 0 0 / .30);
+}
+
+.title {
+    font-size: 1.5rem;
+    grid-area: title;
+    align-self: end;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.icon {
+    grid-area: icon;
+    font-size: 3rem;
+}
+
+.icon i {
+    color: transparent;
+    background: linear-gradient(to right, red, blue);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.content {
+    grid-area: content;
+}
+
+.card-novo::after {
+    content: "";
+    grid-area: bar;
+    height: 2px;
+    background-image: linear-gradient(90deg, red, blue);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.03);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+.visuallyhidden {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  opacity: 0;
+  
+}
+
+h1 {
+  /*text-align: center;*/
+  margin-top: 1em;
+}
+
+.container {
+  overflow: hidden;
+  padding: 20px;
+  margin-top: 2em;
+}
+
+.card-carousel {
+  --card-width: 80%;
+  --card-max-width: 280px;
+  --card-height: 350px;
+  --carousel-min-width: 600px;
+  z-index: 1;
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  height: var(--card-height);
+  min-width: var(--carousel-min-width);
+  transition: filter .3s ease;
+}
+
+@media screen and (max-width: 640px) {
+  .card-carousel {
+    margin-left: calc((100vw - var(--carousel-min-width) - 40px) / 2)
+  }
+}
+
+.card-carousel.smooth-return {
+  transition: all .2s ease;
+}
+
+.card-carousel .card {
+  background: whitesmoke;
+  width: var(--card-width);
+  max-width: var(--card-max-width);
+  text-align: center;
+  padding: 1em;
+  min-width: 250px;
+  height: var(--card-height);
+  position: absolute;
+  margin: 0 auto;
+  color: rgba(0,0,0,.5);
+  transition: inherit;
+  -webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+  box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+  border-radius: 1em;
+  filter: brightness(.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card.highlight {
+  filter: brightness(1)
+}
+
+
+.card:nth-of-type(1) .image-container {
+    background-image: url("/livros/capas_livros/amareservir.png")
+}
+ 
+.card:nth-of-type(2) .image-container {
+  background-image: url("/livros/capas_livros/arepublica.png")
+}
+
+.card:nth-of-type(3) .image-container {
+  background-image: url("/livros/capas_livros/arevoluçãodosbichos.png")
+}
+.card:nth-of-type(4) .image-container {
+  background-image: url("/livros/capas_livros/alienista.png")
+}
+.card:nth-of-type(5) .image-container {
+  background-image: url("/livros/capas_livros/introduçãoahistoriadafilosofiaantiga.png")
+}
+
+
+
+.image-container {
+  width: 140px;
+  height: 210px;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 2em;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.image-container::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: solid 2px rgba(0,0,0,.1);
+  border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+h2 {
+  padding: 1em;
+  margin-top: 1em;
+  /*background: rgba(0,0,0,.3);*/
+  text-align: center;
+  
+  border-radius: .2em;
+  display: inline-block;
+  transform: translateX(calc((100vw - 100%) / 2))
+}
+
+h2 a {
+  color: #f5b916
+}
+

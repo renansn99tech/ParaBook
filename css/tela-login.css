@@ -1,3 +1,13 @@
+    :root{
+        --color-primary-dark: #14213d;
+        --color-secondary: #203562;
+        --color-accent-olive: #58504a;
+        --color-neutral-tan: #e9ecef;
+        --color-bg-warm: #F5FFFA;
+        --color-ui-charcoal: #303136;
+    }    
+    
+    
     /* Reset */
     *{
     margin: 0;
@@ -6,14 +16,51 @@
     font-family: Arial, Helvetica, sans-serif;
     }
     /* Fundo */
-    body{
-    min-height: 100vh;
+
+.nav{ /*Menu de navegação*/
     display: flex;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: flex-end;
+    background-color: white;
+    margin-top: 40px;
+    margin-right: 30px;
+}
+
+.menu { /* itens do menu de navegação */
+    list-style: none;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    background: #F5FFFA; /*linear-gradient(to bottom, #C1B59F 0%, #E6E2DB 100%); */
-    padding: 20px;
-    }
+    gap: 20px;
+}
+
+.menu a{
+    color: var(--color-primary-dark);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+}
+
+.voltar-btn{
+    background-color: var(--color-primary-dark);
+    color: var(--color-bg-warm);
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    text-decoration: none;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    transition: background-color .3s, color .3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.voltar-btn:hover{
+    background-color: var(--color-bg-warm);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-primary-dark);
+}
+
     /* Container principal */
     .form-container{
     position: relative;
@@ -23,6 +70,8 @@
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    margin-top: 5%;
+    margin-left: 22%;
     }
     /* Lado da imagem */
     .image-side{
@@ -112,7 +161,7 @@
     }
     /* Focus */
     .input-box input:focus{
-    border-bottom-color: #5C3B2E;
+    border-bottom-color: var(--color-secondary);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     /* Texto flutuante */
@@ -131,7 +180,7 @@
     .input-box input:not(:placeholder-shown) + span{
     top: -5px;
     font-size: 12px;
-    color: #5C3B2E;
+    color: var(--color-secondary);
     }
     /* Links */
     a{
@@ -140,7 +189,7 @@
     font-weight: bold;
     }
     a:hover{
-    color: #5C3B2E;
+    color: var(--color-secondary);
     transition: 0.4s;
     }
     /* Conta */
@@ -153,7 +202,7 @@
     /* Botão */
     .submit-btn{
     width: 100%;
-    background: #58504a; /*#5C3B2E; */
+    background: var(--color-primary-dark); /*#5C3B2E; */
     border: none;
     padding: 14px;
     border-radius: 25px;
@@ -165,7 +214,7 @@
     }
     /* Hover */
     .submit-btn:hover{
-    background: #58504a; /*linear-gradient(90deg, #5C3B2E, #412a20);*/
+    background: var(--color-secondary); /*linear-gradient(90deg, #5C3B2E, #412a20);*/
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     transform: translateY(-2px);
     }
@@ -190,82 +239,104 @@
 
 /* ===== RESPONSIVO LOGIN ===== */
 @media (max-width: 768px) {
-    body {
-        padding: 1rem;
-        align-items: flex-start;
+    body{
+        padding: 16px;
+        overflow-x: hidden;
     }
 
-    .form-container {
+    .nav{
+        margin: 20px 0;
+        justify-content: center;
+    }
+
+    .menu{
         width: 100%;
-        max-width: 420px;
-        height: auto;
-        min-height: 650px;
-        display: flex;
-        flex-direction: column;
-        position: relative;
+        justify-content: center;
     }
 
-    /* Esconde a imagem no mobile */
-    .image-side {
+    .voltar-btn{
+        width: 100%;
+        max-width: 220px;
+    }
+
+    .form-container{
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: auto;
+        margin: 20px auto;
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .image-side{
         display: none;
     }
 
-    .form-side {
+    .form-side{
         position: relative;
         width: 100%;
         height: auto;
-        padding: 2rem 1.5rem;
-        right: auto;
-        top: auto;
+        padding: 24px 16px;
+        right: unset;
+        top: unset;
     }
 
     .login-form,
     .register-form,
-    .forgot-form {
+    .forgot-form{
         position: relative;
         width: 100%;
+        transform: none !important;
     }
 
-    h2 {
-        font-size: 1.5rem;
+    .form-container.active .login-form,
+    .form-container.active .register-form,
+    .form-container.forgot-active .login-form,
+    .form-container.forgot-active .forgot-form{
+        transform: none !important;
     }
 
-    .input-box input {
+    h2{
+        font-size: 24px;
+    }
+
+    .input-box input{
         font-size: 16px;
-        padding: 12px;
+        padding: 14px 40px 14px 12px;
     }
 
-    .submit-btn {
-        padding: 12px;
-        font-size: 1rem;
+    .submit-btn{
+        font-size: 16px;
+        padding: 14px;
     }
 
-    .account-box {
-        font-size: 0.9rem;
+    .toggle-password{
+        right: 12px;
+        font-size: 16px;
     }
 }
 
-/* Mobile pequeno */
-@media (max-width: 480px) {
-    .form-container {
-        border-radius: 10px;
-        min-height: 600px;
+/* ===== CELULAR PEQUENO ===== */
+@media (max-width: 480px){
+    .form-container{
+        margin: 10px auto;
     }
 
-    .form-side {
-        padding: 1.5rem 1rem;
+    .form-side{
+        padding: 20px 14px;
     }
 
-    h2 {
-        font-size: 1.3rem;
+    h2{
+        font-size: 22px;
     }
 
-    .input-box input {
+    .input-box input{
         font-size: 16px;
     }
 
-    .toggle-password {
-        font-size: 16px;
-        right: 8px;
+    .submit-btn{
+        padding: 12px;
     }
 }

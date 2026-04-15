@@ -14,12 +14,17 @@
 
         <header>
             <nav class="container nav">
-                <h1 class="logo">ParaBook</h1>
+                
+                <div class="logo-container">
+                <img src="img/logo-nova.jpg" alt="Logo Parabook" class="logo-img">    
+                <h1 class="logo"><span class="para">Para</span><span class="book">Book</span></h1>
+                </div>
                 <ul class="menu">
                     <li><a href="index.html">Início</a></li>
                     <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
                     <li><a href="comunidade.html">Comunidades</a></li>
                     <li><a href="sobre.html">Sobre</a></li>
+                    <li><a href="perfil.html">Perfil</a></li>
                     <li><a href="tela-login.html"><button class="login-btn">Entrar</button></a></li>
                 </ul>
             </nav>
@@ -93,6 +98,39 @@
                     <a href="#" class="visuallyhidden card-controller">Carousel controller</a>
                 </article>
             </section>
+            <hr>
+           <!-------------------- SEÇÃO DO FAQ (PERGUNTAS FREQUENTES) -------------------->
+            <!--<h2 class="titulo-faq">FAQ</h2> -->
+            <h1 class="titulo-faq">FAQ</h1>
+            <section id="secao-FAQ">
+                
+                <article class="duvidas-frequentes">
+                    <h3>Dúvidas Frequentes</h3>
+
+                    <details class="bloco-duvidas" name="parabook-informacao">
+                        <summary class="detalhe-duvidas">Quais Gêneros dos Livros?</summary>
+                        <div class="conteudo-duvidas">
+                            <p>Religião, literatura, filosofia entre outros.</p>
+                            <a href="biblioteca.html">Acessar →</a>
+                        </div>
+                    </details>
+
+                        <details class="bloco-duvidas" name="parabook-informacao">
+                        <summary class="detalhe-duvidas">Posso participar de comunidades?</summary>
+                        <div class="conteudo-duvidas">
+                            <p>Sim, temos diversas comunidades para você participar.</p>
+                            <a href="comunidade.html">Participar →</a>
+                        </div>
+                    </details>
+
+                    <details class="bloco-duvidas" name="parabook-informacao">
+                        <summary class="detalhe-duvidas">Como criar uma conta?</summary>
+                        <div class="conteudo-duvidas">
+                            <p>Crie uma conta no botão <strong>"Entrar"</strong> para acessar todos os recursos do ParaBook.</p>
+                            <a href="tela-login.html">Saiba mais →</a>
+                        </div>
+                    </details>
+                </article>
 
             <h2 class="titulo-duvidas">FAQ</h2>
             <!-------------------- SEÇÃO DO FAQ (PERGUNTAS FREQUENTES) -------------------->
@@ -161,11 +199,11 @@
            </section>
 
         </main>
-        <!--href="https://youtube.com/@cssweekly?sub_confirmation=1" target="_blank" rel="noopener noreferrer"-->
-    
+
     <!-- JavaScript Carrossel e Footer Padronizado -->
     <script src="js/carrossel.js"></script>
     <footer id="footer-global"></footer>
     <script src="js/footer.js"></script>
+
     </body>
 </html>

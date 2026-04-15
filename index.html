@@ -18,318 +18,240 @@
                 <ul class="menu">
                     <li><a href="index.html">Início</a></li>
                     <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html"> Comunidades</a></li>
+                    <li><a href="comunidade.html">Comunidades</a></li>
                     <li><a href="sobre.html">Sobre</a></li>
                     <li><a href="tela-login.html"><button class="login-btn">Entrar</button></a></li>
                 </ul>
             </nav>
         </header>
 
-        <section class="banner">
-            <article class="container banner-content">
-                <h2>Bem-vindo ao ParaBook!</h2>
-                <p>Seu destino para encontrar e compartilhar livros incríveis.
-                    Aqui você encontrará uma ampla seleção de livros e muito mais!
-                    Explore nosso acervo e descubra novos títulos em diferentes categorias.
-                </p>
-            </article>
-        </section>
+        <main>
 
-        <!--card destaques-->
-        <section class="destaques">
-            <h2>Destaques da Plataforma</h2>
-            <article class="cards-destaque">
-                <a href="biblioteca.html" class="card-link">
-                    <i class="fa-solid fa-book-bookmark"></i>
-                    <h3>Livros Mais Procurados</h3>
-                    <p>Descubra quais os títulos mais acessados.</p>
-                </a>
+            <!-------------------- BANNER PRINCIPAL -------------------->
+            <section class="banner">
+                <article class="container banner-content">
+                    <h2>Bem-vindo ao ParaBook!</h2>
+                    <p>Seu destino para encontrar e compartilhar livros incríveis.
+                        Aqui você encontrará uma ampla seleção de livros e muito mais!
+                        Explore nosso acervo e descubra novos títulos em diferentes categorias.
+                    </p>
+                </article>
+            </section>
 
-                <a href="comunidade.html" class="card-link">
-                    <i class="fa-solid fa-users-line"></i>
-                    <h3>Comunidades Ativas</h3>
-                    <p>Conheça pessoas que gostam dos mesmos assuntos.</p>
-                </a>
+            <!-------------------- CARD DE DESTAQUES -------------------->
+            <section class="destaques">
+                <h2>Destaques da Plataforma</h2>
+                <article class="cards-destaque">
+                    <a href="biblioteca.html" class="card-link">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <h3>Livros Mais Procurados</h3>
+                        <p>Descubra quais os títulos mais acessados.</p>
+                    </a>
 
-                <a href="novidade.html" class="card-link">
-                    <i class="fa-solid fa-star"></i>
-                    <h3>Novidades</h3>
-                    <p>Novos livros disponibilizados e comunidades abertas mensalmente.</p>
-                </a>
-            </article>
-        </section>
+                    <a href="comunidade.html" class="card-link">
+                        <i class="fa-solid fa-users-line"></i>
+                        <h3>Comunidades Ativas</h3>
+                        <p>Conheça pessoas que gostam dos mesmos assuntos.</p>
+                    </a>
 
-        <!-- ===== CARROSSEL DE LIVROS EM DESTAQUE ===== -->
-        <section class="carousel-wrapper-destaques">
-            <h2>Destaques</h2>
-            
-            <div class="carousel">
-                <button class="carousel-button prev">❮</button>
+                    <a href="novidade.html" class="card-link">
+                        <i class="fa-solid fa-star"></i>
+                        <h3>Novidades</h3>
+                        <p>Novos livros disponibilizados e comunidades abertas mensalmente.</p>
+                    </a>
+                </article>
+            </section>
+
+            <!-------------------- CARROSSEL DE LIVROS EM DESTAQUE -------------------->
+            <section class="carousel-wrapper-destaques">
+                <h2>Destaques</h2>
                 
-                <div class="carousel-content">
-                    <!-- Livro 1 -->
-                    <article class="carousel-item">
-                        <div class="capa-placeholder">
-                            <img src="livros/capas_livros/amareservir.png" alt="Confissões">
-                        </div>
-                        <div class="card-info">
-                            <h4>O amar e servir sob o olhar de Santo Inácio de Loyola</h4>
-                            <p>Inácio de Loyola</p>
-                            <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
-                        </div>
-                    </article>
+                <div class="carousel">
+                    <button class="carousel-button prev">❮</button>
+                    
+                    <div class="carousel-content">
+                        <!-- Livro 1 -->
+                        <article class="carousel-item">
+                            <div class="capa-placeholder">
+                                <img src="livros/capas_livros/amareservir.png" alt="Confissões">
+                            </div>
+                            <div class="card-info">
+                                <h4>O amar e servir sob o olhar de Santo Inácio de Loyola</h4>
+                                <p>Inácio de Loyola</p>
+                                <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
+                            </div>
+                        </article>
 
-                    <!-- Livro 2 -->
-                    <article class="carousel-item">
-                        <div class="capa-placeholder">
-                            <img src="livros/capas_livros/arepublica.png" alt="A República">
-                        </div>
-                        <div class="card-info">
-                            <h4>A República</h4>
-                            <p>Platão</p>
-                            <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
-                        </div>
-                    </article>
+                        <!-- Livro 2 -->
+                        <article class="carousel-item">
+                            <div class="capa-placeholder">
+                                <img src="livros/capas_livros/arepublica.png" alt="A República">
+                            </div>
+                            <div class="card-info">
+                                <h4>A República</h4>
+                                <p>Platão</p>
+                                <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
+                            </div>
+                        </article>
 
-                    <!-- Livro 3 -->
-                    <article class="carousel-item">
-                        <div class="capa-placeholder">
-                            <img src="livros/capas_livros/arevoluçãodosbichos.png" alt="Pensamento Inquieto">
-                        </div>
-                        <div class="card-info">
-                            <h4>A Revolução dos Bichos</h4>
-                            <p>George Orwell</p>
-                            <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
-                        </div>
-                    </article>
+                        <!-- Livro 3 -->
+                        <article class="carousel-item">
+                            <div class="capa-placeholder">
+                                <img src="livros/capas_livros/arevoluçãodosbichos.png" alt="Pensamento Inquieto">
+                            </div>
+                            <div class="card-info">
+                                <h4>A Revolução dos Bichos</h4>
+                                <p>George Orwell</p>
+                                <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
+                            </div>
+                        </article>
 
-                    <!-- Livro 4 -->
-                    <article class="carousel-item">
-                        <div class="capa-placeholder">
-                            <img src="livros/capas_livros/alienista.png" alt="O Alienista">
-                        </div>
-                        <div class="card-info">
-                            <h4>O Alienista</h4>
-                            <p>Machado de Assis</p>
-                            <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
-                        </div>
-                    </article>
+                        <!-- Livro 4 -->
+                        <article class="carousel-item">
+                            <div class="capa-placeholder">
+                                <img src="livros/capas_livros/alienista.png" alt="O Alienista">
+                            </div>
+                            <div class="card-info">
+                                <h4>O Alienista</h4>
+                                <p>Machado de Assis</p>
+                                <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
+                            </div>
+                        </article>
 
-                    <!-- Livro 5 -->
-                    <article class="carousel-item">
-                        <div class="capa-placeholder">
-                            <img src="livros/capas_livros/introduçãoahistoriadafilosofiaantiga.png" alt="O Cortiço">
-                        </div>
-                        <div class="card-info">
-                            <h4>Introdução a Historia da Filosofia Antiga</h4>
-                            <p>João Hobuss</p>
-                            <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
-                        </div>
-                    </article>         
+                        <!-- Livro 5 -->
+                        <article class="carousel-item">
+                            <div class="capa-placeholder">
+                                <img src="livros/capas_livros/introduçãoahistoriadafilosofiaantiga.png" alt="O Cortiço">
+                            </div>
+                            <div class="card-info">
+                                <h4>Introdução a Historia da Filosofia Antiga</h4>
+                                <p>João Hobuss</p>
+                                <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ler Agora</button>
+                            </div>
+                        </article>         
+                    </div>
+
+                    <button class="carousel-button next">❯</button>
                 </div>
+            </section>
+            
+            <!-------------------- COMUNIDADES -------------------->
+            <section class="comunidades-principais">
+                <h2>Principais Comunidades</h2>
 
-                <button class="carousel-button next">❯</button>
-            </div>
-        </section>
-        
-        <!-- card comunidades-->
-        <section class="comunidades-principais">
-            <h2>Principais Comunidades</h2>
+                <article class="cards-destaque">
+                    <a href="comunidade.html" class="card-link">
+                        <i class="fa-solid fa-book-bible"></i>
+                        <h3>Religiosos</h3>
+                        <p>Discussões sobre fé e leitura cristã.</p>
+                    </a>
 
-            <article class="cards-destaque">
-                <a href="comunidade.html" class="card-link">
-                    <i class="fa-solid fa-book-bible"></i>
-                    <h3>Religiosos</h3>
-                    <p>Discussões sobre fé e leitura cristã.</p>
-                </a>
+                    <a href="comunidade.html" class="card-link">
+                        <i class="fa-solid fa-brain"></i>
+                        <h3>Filosofia</h3>
+                        <p>Debates sobre Platão, Aristóteles e filosofia moderna.</p>
+                    </a>
 
-                <a href="comunidade.html" class="card-link">
-                    <i class="fa-solid fa-brain"></i>
-                    <h3>Filosofia</h3>
-                    <p>Debates sobre Platão, Aristóteles e filosofia moderna.</p>
-                </a>
+                    <a href="comunidade.html" class="card-link">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                        <h3>Literatura</h3>
+                        <p>Clássicos da literatura e recomendações de leitura.</p>
+                    </a>
+                </article>
+            </section>
 
-                <a href="comunidade.html" class="card-link">
-                    <i class="fa-solid fa-book-open-reader"></i>
-                    <h3>Literatura</h3>
-                    <p>Clássicos da literatura e recomendações de leitura.</p>
-                </a>
-            </article>
-        </section>
+            <!-------------------- CARD DE NOVIDADES -------------------->
+            <section class="carousel-wrapper-novidades">
+                <h2>Principais Novidades</h2>
 
-        <!-- card novidades-->
-        <section class="carousel-wrapper-novidades">
-            <h2>Principais Novidades</h2>
+                <div class="carousel">
+                    <button class="carousel-button prev">❮</button>
 
-            <div class="carousel">
-                <button class="carousel-button prev">❮</button>
+                    <div class="carousel-content">
 
-                <div class="carousel-content">
+                        <article class="carousel-item">
+                            <div class="capa-placeholder">
+                                <i class="fa-solid fa-fire"></i>
+                            </div>
+                            <div class="card-info">
+                                <h4>Novo livro adicionado "O Banquete"</h4>
+                                <p>Essa obra foi adicionada este mês</p>
+                                <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ver Agora</button>
+                            </div>
+                        </article>
 
-                    <article class="carousel-item">
-                        <div class="capa-placeholder">
-                            <i class="fa-solid fa-fire"></i>
-                        </div>
-                        <div class="card-info">
-                            <h4>Novo livro adicionado "O Banquete"</h4>
-                            <p>Essa obra foi adicionada este mês</p>
-                            <button class="btn-detalhes" onclick="window.location.href='biblioteca.html'">Ver Agora</button>
-                        </div>
-                    </article>
+                        <article class="carousel-item">
+                            <div class="capa-placeholder">
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <div class="card-info">
+                                <h4>Novas Comunidades</h4>
+                                <p>3 comunidades adicionadas</p>
+                                <button class="btn-detalhes" onclick="window.location.href='comunidade.html'">Explorar</button>
+                            </div>
+                        </article>
 
-                    <article class="carousel-item">
-                        <div class="capa-placeholder">
-                            <i class="fa-solid fa-star"></i>
-                        </div>
-                        <div class="card-info">
-                            <h4>Novas Comunidades</h4>
-                            <p>3 comunidades adicionadas</p>
-                            <button class="btn-detalhes" onclick="window.location.href='comunidade.html'">Explorar</button>
-                        </div>
-                    </article>
+                        <article class="carousel-item">
+                            <div class="capa-placeholder">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div class="card-info">
+                                <h4>Novas Funcionalidades</h4>
+                                <p>Possibilidade de editar o perfil do seu jeito</p>
+                                <button class="btn-detalhes" onclick="window.location.href='perfil.html'">Participar</button>
+                            </div>
+                        </article>
 
-                    <article class="carousel-item">
-                        <div class="capa-placeholder">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
-                        <div class="card-info">
-                            <h4>Novas Funcionalidades</h4>
-                            <p>Possibilidade de editar o perfil do seu jeito</p>
-                            <button class="btn-detalhes" onclick="window.location.href='perfil.html'">Participar</button>
-                        </div>
-                    </article>
+                    </div>
 
+                    <button class="carousel-button next">❯</button>
                 </div>
-
-                <button class="carousel-button next">❯</button>
-            </div>
-        </section>
+            </section>
 
 
-        <!-- ===== SEÇÃO FAQ ===== -->
-        <section class="duvidas-frequentes">
-            <h2 class="titulo-duvidas">FAQ</h2>
+            <!-------------------- SEÇÃO DO FAQ (PERGUNTAS FREQUENTES) -------------------->
+            <section class="duvidas-frequentes">
+                <h2 class="titulo-duvidas">FAQ</h2>
 
-            <details class="bloco-duvidas" name="parabook-informacao">
-                <summary class="detalhe-duvidas">Quais Gêneros dos Livros?</summary>
-                <div class="conteudo-duvidas">
-                    <p>Religião, literatura, filosofia entre outros.</p>
-                    <a href="biblioteca.html">Acessar →</a>
-                </div>
-            </details>
+                <details class="bloco-duvidas" name="parabook-informacao">
+                    <summary class="detalhe-duvidas">Quais Gêneros dos Livros?</summary>
+                    <div class="conteudo-duvidas">
+                        <p>Religião, literatura, filosofia entre outros.</p>
+                        <a href="biblioteca.html">Acessar →</a>
+                    </div>
+                </details>
 
-            <details class="bloco-duvidas" name="parabook-informacao">
-                <summary class="detalhe-duvidas">Como criar uma conta?</summary>
-                <div class="conteudo-duvidas">
-                    <p>Crie uma conta no botão <strong>"Entrar"</strong> para acessar todos os recursos do ParaBook.</p>
-                    <a href="tela-login.html">Saiba mais →</a>
-                </div>
-            </details>
+                <details class="bloco-duvidas" name="parabook-informacao">
+                    <summary class="detalhe-duvidas">Como criar uma conta?</summary>
+                    <div class="conteudo-duvidas">
+                        <p>Crie uma conta no botão <strong>"Entrar"</strong> para acessar todos os recursos do ParaBook.</p>
+                        <a href="tela-login.html">Saiba mais →</a>
+                    </div>
+                </details>
 
-            <details class="bloco-duvidas" name="parabook-informacao">
-                <summary class="detalhe-duvidas">Posso participar de comunidades?</summary>
-                <div class="conteudo-duvidas">
-                    <p>Sim, temos diversas comunidades para você participar.</p>
-                    <a href="comunidade.html">Participar →</a>
-                </div>
-            </details>
+                <details class="bloco-duvidas" name="parabook-informacao">
+                    <summary class="detalhe-duvidas">Posso participar de comunidades?</summary>
+                    <div class="conteudo-duvidas">
+                        <p>Sim, temos diversas comunidades para você participar.</p>
+                        <a href="comunidade.html">Participar →</a>
+                    </div>
+                </details>
 
-            <details class="bloco-duvidas" name="parabook-informacao">
-                <summary class="detalhe-duvidas">Não encontrou a resposta que procurava?</summary>
-                <div class="conteudo-duvidas">
-                    <p>Entre em contato e tiraremos suas dúvidas.</p>
-                    <a href="suporte.html">Enviar Mensagem →</a>
-                </div>
-            </details>
-        </section>
+                <details class="bloco-duvidas" name="parabook-informacao">
+                    <summary class="detalhe-duvidas">Não encontrou a resposta que procurava?</summary>
+                    <div class="conteudo-duvidas">
+                        <p>Entre em contato e tiraremos suas dúvidas.</p>
+                        <a href="suporte.html">Enviar Mensagem →</a>
+                    </div>
+                </details>
+            </section>
+
+        </main>
         <!--href="https://youtube.com/@cssweekly?sub_confirmation=1" target="_blank" rel="noopener noreferrer"-->
     
-            <!-- JavaScript Carrossel -->
-    <script src="js/carousel.js"></script>
-
+    <!-- JavaScript Carrossel e Footer Padronizado -->
+    <script src="js/carrossel.js"></script>
+    <footer id="footer-global"></footer>
+    <script src="js/footer.js"></script>
     </body>
-
-<footer>
-    <div id="footer_content">
-
-        <div id="footer-padrao">
-            <h1>&copy; ParaBook.</h1>
-            <p>O melhor site de livros.</p>
-
-            <div id="footer_social_media">
-                <a href="#" class="footer-link" id="instagram">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-
-                <a href="#" class="footer-link" id="facebook">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </a>
-
-                <a href="#" class="footer-link" id="whatsapp">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </a>
-            </div>
-
-            <p>2026. Todos os direitos reservados.</p>
-        </div>
-
-        <div>
-            <h3>Conheça nosso Suporte ao Usuário</h3>
-
-            <p>Para dúvidas a respeito do site e problemas na leitura.</p>
-
-            <p><strong>Entre em contato conosco:</strong></p>
-
-            <ul class="footer-list">
-                <li>
-                    <a href="#" class="footer-link">
-                        Email: parabook@gmail.com
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="footer-link">
-                        Telefone: (91) 8446-0404
-                    </a>
-                </li>
-            </ul>
-
-            <p>Segunda a Sexta, 8h às 18h.</p>
-        </div>
-
-        <div id="footer_form">
-            <h3>Fale Conosco</h3>
-            <p>Envie sua mensagem diretamente pelo rodapé.</p>
-
-            <form action="#" method="post" class="contact-form">
-                <label for="footer-name">Nome</label>
-                <input type="text" id="footer-name" class="contact-input">
-
-                <label for="footer-email">E-mail</label>
-                <input type="email" id="footer-email" class="contact-input">
-
-                <label for="footer-message">Mensagem</label>
-                <textarea id="footer-message" class="contact-textarea" rows="5"></textarea>
-
-                <button type="submit" class="contact-btn">
-                    Enviar
-                </button>
-            </form>
-        </div>
-
-        <div id="footer_subscribe">
-            <h3>Teve uma experiência ruim?</h3>
-
-            <p>Coloque seu e-mail e a Ouvidoria entrará em contato.</p>
-
-            <div id="input_group">
-                <input type="email" id="feedback-email">
-                <button>
-                    <i class="fa-regular fa-envelope"></i>
-                </button>
-            </div>
-        </div>
-
-    </div>
-</footer>
-
 </html>

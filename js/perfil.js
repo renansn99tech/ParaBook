@@ -1,4 +1,7 @@
 // Script para as abas
+
+// Aqui o JS ouve cliques nos .tab-btn e alterna a classe "active" nos .tab-content correspondentes
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     // Remove active de todos os botões e conteúdos

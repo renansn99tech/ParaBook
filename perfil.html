@@ -26,356 +26,279 @@
             </nav>
         </header>
 
-        <section class="banner">
-            <article class="container banner-content">
-                <h2>👤 Meu Perfil</h2>
-                <p>Gerencie suas informações e acompanhe seu progresso de leitura</p>
-            </article>
-        </section>
+        <main>
 
-        <!-- ===== SEÇÃO DE PERFIL HEADER ===== -->
-        <section class="perfil-header">
-            <div class="perfil-cover"></div>
-            
-            <div class="perfil-content">
-                <div class="perfil-avatar-section">
-                    <img src="img/avatar.png" alt="Avatar do Usuário" class="perfil-avatar">
-                    <button class="btn-editar-avatar">📷 Alterar Foto</button>
-                </div>
+            <section class="banner">
+                <article class="container banner-content">
+                    <h2>👤 Meu Perfil</h2>
+                    <p>Gerencie suas informações e acompanhe seu progresso de leitura</p>
+                </article>
+            </section>
 
-                <div class="perfil-user-info">
-                    <h1 id="nomePerfil" class="perfil-nome">João Silva</h1>
-                    <p id="userPerfil" class="perfil-username">@joaosilva</p>
-                    <p class="perfil-bio">Apaixonado por leitura e compartilhar conhecimento 📚</p>
-                    
-                    <div class="perfil-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">Membro desde</span>
-                            <span class="meta-value">Janeiro 2024</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Localização</span>
-                            <span class="meta-value">São Paulo, Brasil</span>
-                        </div>
+            <!-- ===== SEÇÃO DE PERFIL HEADER ===== -->
+            <section class="perfil-header">
+                <div class="perfil-cover"></div>
+                
+                <div class="perfil-content">
+                    <div class="perfil-avatar-section">
+                        <img src="img/avatar.png" alt="Avatar do Usuário" class="perfil-avatar">
+                        <button class="btn-editar-avatar">📷 Alterar Foto</button>
                     </div>
 
-                    <button class="btn-editar-perfil">✏️ Editar Perfil</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO DE ESTATÍSTICAS ===== -->
-        <section class="perfil-stats">
-            <div class="container">
-                <div class="stats-container">
-                    <div class="stat-box">
-                        <div class="stat-icon">📚</div>
-                        <div class="stat-info">
-                            <p class="stat-number" id="totalLidos">0</p>
-                            <p class="stat-label">Livros Lidos</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-box">
-                        <div class="stat-icon">📖</div>
-                        <div class="stat-info">
-                            <p class="stat-number" id="emLeitura">0</p>
-                            <p class="stat-label">Lendo Agora</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-box">
-                        <div class="stat-icon">⭐</div>
-                        <div class="stat-info">
-                            <p class="stat-number" id="totalAvaliados">0</p>
-                            <p class="stat-label">Avaliados</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-box">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-info">
-                            <p class="stat-number" id="comunidades">0</p>
-                            <p class="stat-label">Comunidades</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== SEÇÃO ABAS ===== -->
-        <section class="perfil-tabs">
-            <div class="container">
-                <div class="tabs-nav">
-                    <button class="tab-btn active" data-tab="info">ℹ️ Informações</button>
-                    <button class="tab-btn" data-tab="historico">📜 Histórico</button>
-                    <button class="tab-btn" data-tab="favoritos">❤️ Favoritos</button>
-                    <button class="tab-btn" data-tab="configuracoes">⚙️ Configurações</button>
-                </div>
-
-                <!-- TAB: INFORMAÇÕES -->
-                <div id="info" class="tab-content active">
-                    <div class="perfil-info-grid">
-                        <div class="info-card">
-                            <h3>Gêneros Favoritos</h3>
-                            <div class="genres-list">
-                                <span class="genre-tag">Filosofia</span>
-                                <span class="genre-tag">Literatura</span>
-                                <span class="genre-tag">Religioso</span>
-                                <span class="genre-tag">Ficção</span>
+                    <div class="perfil-user-info">
+                        <h1 id="nomePerfil" class="perfil-nome">João Silva</h1>
+                        <p id="userPerfil" class="perfil-username">@joaosilva</p>
+                        <p class="perfil-bio">Apaixonado por leitura e compartilhar conhecimento 📚</p>
+                        
+                        <div class="perfil-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Membro desde</span>
+                                <span class="meta-value">Janeiro 2024</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Localização</span>
+                                <span class="meta-value">São Paulo, Brasil</span>
                             </div>
                         </div>
 
-                        <div class="info-card">
-                            <h3>Autores Favoritos</h3>
-                            <ul class="authors-list">
-                                <li>Machado de Assis</li>
-                                <li>Platão</li>
-                                <li>Santo Agostinho</li>
-                                <li>George Orwell</li>
-                            </ul>
+                        <button class="btn-editar-perfil">✏️ Editar Perfil</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== SEÇÃO DE ESTATÍSTICAS ===== -->
+            <section class="perfil-stats">
+                <div class="container">
+                    <div class="stats-container">
+                        <div class="stat-box">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-info">
+                                <p class="stat-number" id="totalLidos">0</p>
+                                <p class="stat-label">Livros Lidos</p>
+                            </div>
                         </div>
 
-                        <div class="info-card full-width">
-                            <h3>Sobre Você</h3>
-                            <p class="bio-text">Sou um leitor apaixonado que adora descobrir novos livros e compartilhar minhas experiências com outras pessoas. Acredito que a leitura é uma forma poderosa de aprendizado e conexão humana.</p>
-                            <button class="btn-editar-bio">Editar Bio</button>
+                        <div class="stat-box">
+                            <div class="stat-icon">📖</div>
+                            <div class="stat-info">
+                                <p class="stat-number" id="emLeitura">0</p>
+                                <p class="stat-label">Lendo Agora</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-box">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-info">
+                                <p class="stat-number" id="totalAvaliados">0</p>
+                                <p class="stat-label">Avaliados</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-box">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <p class="stat-number" id="comunidades">0</p>
+                                <p class="stat-label">Comunidades</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- TAB: HISTÓRICO -->
-                <div id="historico" class="tab-content">
-                    <div class="historico-list">
-                        <div class="historico-item">
-                            <div class="historico-icon">✅</div>
-                            <div class="historico-info">
-                                <h4>Concluiu "Confissões"</h4>
-                                <p class="historico-date">Santo Agostinho • 5 de março de 2026</p>
-                                <div class="historico-rating">
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-regular fa-star"></i>
+            <!-- ===== SEÇÃO ABAS ===== -->
+            <section class="perfil-tabs">
+                <div class="container">
+                    <div class="tabs-nav">
+                        <button class="tab-btn active" data-tab="info">ℹ️ Informações</button>
+                        <button class="tab-btn" data-tab="historico">📜 Histórico</button>
+                        <button class="tab-btn" data-tab="favoritos">❤️ Favoritos</button>
+                        <button class="tab-btn" data-tab="configuracoes">⚙️ Configurações</button>
+                    </div>
+
+                    <!-- TAB: INFORMAÇÕES -->
+                    <div id="info" class="tab-content active">
+                        <div class="perfil-info-grid">
+                            <div class="info-card">
+                                <h3>Gêneros Favoritos</h3>
+                                <div class="genres-list">
+                                    <span class="genre-tag">Filosofia</span>
+                                    <span class="genre-tag">Literatura</span>
+                                    <span class="genre-tag">Religioso</span>
+                                    <span class="genre-tag">Ficção</span>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <h3>Autores Favoritos</h3>
+                                <ul class="authors-list">
+                                    <li>Machado de Assis</li>
+                                    <li>Platão</li>
+                                    <li>Santo Agostinho</li>
+                                    <li>George Orwell</li>
+                                </ul>
+                            </div>
+
+                            <div class="info-card full-width">
+                                <h3>Sobre Você</h3>
+                                <p class="bio-text">Sou um leitor apaixonado que adora descobrir novos livros e compartilhar minhas experiências com outras pessoas. Acredito que a leitura é uma forma poderosa de aprendizado e conexão humana.</p>
+                                <button class="btn-editar-bio">Editar Bio</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: HISTÓRICO -->
+                    <div id="historico" class="tab-content">
+                        <div class="historico-list">
+                            <div class="historico-item">
+                                <div class="historico-icon">✅</div>
+                                <div class="historico-info">
+                                    <h4>Concluiu "Confissões"</h4>
+                                    <p class="historico-date">Santo Agostinho • 5 de março de 2026</p>
+                                    <div class="historico-rating">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="historico-item">
+                                <div class="historico-icon">📖</div>
+                                <div class="historico-info">
+                                    <h4>Iniciou "A República"</h4>
+                                    <p class="historico-date">Platão • 2 de março de 2026</p>
+                                </div>
+                            </div>
+
+                            <div class="historico-item">
+                                <div class="historico-icon">💬</div>
+                                <div class="historico-info">
+                                    <h4>Deixou uma crítica em "O Alienista"</h4>
+                                    <p class="historico-date">Machado de Assis • 28 de fevereiro de 2026</p>
+                                </div>
+                            </div>
+
+                            <div class="historico-item">
+                                <div class="historico-icon">👥</div>
+                                <div class="historico-info">
+                                    <h4>Entrou na comunidade "Leitores de Machado"</h4>
+                                    <p class="historico-date">26 de fevereiro de 2026</p>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="historico-item">
-                            <div class="historico-icon">📖</div>
-                            <div class="historico-info">
-                                <h4>Iniciou "A República"</h4>
-                                <p class="historico-date">Platão • 2 de março de 2026</p>
+                    <!-- TAB: FAVORITOS -->
+                    <div id="favoritos" class="tab-content">
+                        <div class="favoritos-grid">
+                            <div class="favorito-card">
+                                <div class="favorito-capa">
+                                    <i class="fa-solid fa-book"></i>
+                                </div>
+                                <div class="favorito-info">
+                                    <h4>Confissões</h4>
+                                    <p>Santo Agostinho</p>
+                                    <div class="favorito-rating">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                    <button class="btn-remover-favorito">❌ Remover</button>
+                                </div>
+                            </div>
+
+                            <div class="favorito-card">
+                                <div class="favorito-capa">
+                                    <i class="fa-solid fa-book"></i>
+                                </div>
+                                <div class="favorito-info">
+                                    <h4>A República</h4>
+                                    <p>Platão</p>
+                                    <div class="favorito-rating">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
+                                    <button class="btn-remover-favorito">❌ Remover</button>
+                                </div>
+                            </div>
+
+                            <div class="favorito-card">
+                                <div class="favorito-capa">
+                                    <i class="fa-solid fa-book"></i>
+                                </div>
+                                <div class="favorito-info">
+                                    <h4>O Alienista</h4>
+                                    <p>Machado de Assis</p>
+                                    <div class="favorito-rating">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                    <button class="btn-remover-favorito">❌ Remover</button>
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="historico-item">
-                            <div class="historico-icon">💬</div>
-                            <div class="historico-info">
-                                <h4>Deixou uma crítica em "O Alienista"</h4>
-                                <p class="historico-date">Machado de Assis • 28 de fevereiro de 2026</p>
+                    <!-- TAB: CONFIGURAÇÕES -->
+                    <div id="configuracoes" class="tab-content">
+                        <div class="config-container">
+                            <div class="config-section">
+                                <h3>Privacidade</h3>
+                                <div class="config-item">
+                                    <label>
+                                        <input type="checkbox" checked>
+                                        <span>Perfil público</span>
+                                    </label>
+                                </div>
+                                <div class="config-item">
+                                    <label>
+                                        <input type="checkbox" checked>
+                                        <span>Permitir que outros vejam meus livros</span>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="historico-item">
-                            <div class="historico-icon">👥</div>
-                            <div class="historico-info">
-                                <h4>Entrou na comunidade "Leitores de Machado"</h4>
-                                <p class="historico-date">26 de fevereiro de 2026</p>
+                            <div class="config-section">
+                                <h3>Notificações</h3>
+                                <div class="config-item">
+                                    <label>
+                                        <input type="checkbox" checked>
+                                        <span>Notificações de novas comunidades</span>
+                                    </label>
+                                </div>
+                                <div class="config-item">
+                                    <label>
+                                        <input type="checkbox" checked>
+                                        <span>Notificações de comentários</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="config-section">
+                                <h3>Conta</h3>
+                                <button class="btn-config btn-danger">🔐 Alterar Senha</button>
+                                <button class="btn-config btn-danger">🗑️ Deletar Conta</button>
                             </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- TAB: FAVORITOS -->
-                <div id="favoritos" class="tab-content">
-                    <div class="favoritos-grid">
-                        <div class="favorito-card">
-                            <div class="favorito-capa">
-                                <i class="fa-solid fa-book"></i>
-                            </div>
-                            <div class="favorito-info">
-                                <h4>Confissões</h4>
-                                <p>Santo Agostinho</p>
-                                <div class="favorito-rating">
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                </div>
-                                <button class="btn-remover-favorito">❌ Remover</button>
-                            </div>
-                        </div>
+        </main>
 
-                        <div class="favorito-card">
-                            <div class="favorito-capa">
-                                <i class="fa-solid fa-book"></i>
-                            </div>
-                            <div class="favorito-info">
-                                <h4>A República</h4>
-                                <p>Platão</p>
-                                <div class="favorito-rating">
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-regular fa-star"></i>
-                                </div>
-                                <button class="btn-remover-favorito">❌ Remover</button>
-                            </div>
-                        </div>
 
-                        <div class="favorito-card">
-                            <div class="favorito-capa">
-                                <i class="fa-solid fa-book"></i>
-                            </div>
-                            <div class="favorito-info">
-                                <h4>O Alienista</h4>
-                                <p>Machado de Assis</p>
-                                <div class="favorito-rating">
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                </div>
-                                <button class="btn-remover-favorito">❌ Remover</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB: CONFIGURAÇÕES -->
-                <div id="configuracoes" class="tab-content">
-                    <div class="config-container">
-                        <div class="config-section">
-                            <h3>Privacidade</h3>
-                            <div class="config-item">
-                                <label>
-                                    <input type="checkbox" checked>
-                                    <span>Perfil público</span>
-                                </label>
-                            </div>
-                            <div class="config-item">
-                                <label>
-                                    <input type="checkbox" checked>
-                                    <span>Permitir que outros vejam meus livros</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="config-section">
-                            <h3>Notificações</h3>
-                            <div class="config-item">
-                                <label>
-                                    <input type="checkbox" checked>
-                                    <span>Notificações de novas comunidades</span>
-                                </label>
-                            </div>
-                            <div class="config-item">
-                                <label>
-                                    <input type="checkbox" checked>
-                                    <span>Notificações de comentários</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="config-section">
-                            <h3>Conta</h3>
-                            <button class="btn-config btn-danger">🔐 Alterar Senha</button>
-                            <button class="btn-config btn-danger">🗑️ Deletar Conta</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        
-<footer>
-    <div id="footer_content">
-
-        <div id="footer-padrao">
-            <h1>&copy; ParaBook.</h1>
-            <p>O melhor site de livros.</p>
-
-            <div id="footer_social_media">
-                <a href="#" class="footer-link" id="instagram">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-
-                <a href="#" class="footer-link" id="facebook">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </a>
-
-                <a href="#" class="footer-link" id="whatsapp">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </a>
-            </div>
-
-            <p>2026. Todos os direitos reservados.</p>
-        </div>
-
-        <div>
-            <h3>Conheça nosso Suporte ao Usuário</h3>
-
-            <p>Para dúvidas a respeito do site e problemas na leitura.</p>
-
-            <p><strong>Entre em contato conosco:</strong></p>
-
-            <ul class="footer-list">
-                <li>
-                    <a href="#" class="footer-link">
-                        Email: parabook@gmail.com
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="footer-link">
-                        Telefone: (91) 8446-0404
-                    </a>
-                </li>
-            </ul>
-
-            <p>Segunda a Sexta, 8h às 18h.</p>
-        </div>
-
-        <div id="footer_form">
-            <h3>Fale Conosco</h3>
-            <p>Envie sua mensagem diretamente pelo rodapé.</p>
-
-            <form action="#" method="post" class="contact-form">
-                <label for="footer-name">Nome</label>
-                <input type="text" id="footer-name" class="contact-input">
-
-                <label for="footer-email">E-mail</label>
-                <input type="email" id="footer-email" class="contact-input">
-
-                <label for="footer-message">Mensagem</label>
-                <textarea id="footer-message" class="contact-textarea" rows="5"></textarea>
-
-                <button type="submit" class="contact-btn">
-                    Enviar
-                </button>
-            </form>
-        </div>
-
-        <div id="footer_subscribe">
-            <h3>Teve uma experiência ruim?</h3>
-
-            <p>Coloque seu e-mail e a Ouvidoria entrará em contato.</p>
-
-            <div id="input_group">
-                <input type="email" id="feedback-email">
-                <button>
-                    <i class="fa-regular fa-envelope"></i>
-                </button>
-            </div>
-        </div>
-
-    </div>
-</footer>
-
+        <footer id="footer-global"></footer>
+        <script src="js/footer.js"></script>
         <script src="js/perfil.js"></script>
     </body>
 </html>

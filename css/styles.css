@@ -293,8 +293,12 @@ hr {
   justify-content: space-around;
 }
 
-.titulo-faq {
+/*.titulo-faq {
   text-align: left;
+}*/
+
+.titulo-faq {
+  text-align: center;
 }
 
 .duvidas-frequentes{
@@ -320,7 +324,7 @@ hr {
 }
 
 .bloco-duvidas a:hover{
-    color: var(--color-bg-warm);
+    color: var(--color-ui-charcoal);
     transition: 0.3s ease;
 }
 
@@ -591,6 +595,15 @@ footer p {
   padding: 3vh 2vw;
 }
 
+.pagina-comunidade h3 {
+  text-align: center;
+}
+
+.pagina-comunidade p {
+  text-align: center;
+}
+
+
 .grid {
   margin-top: 1rem;
   display: grid;
@@ -662,7 +675,7 @@ footer p {
 
 .container-biblioteca {
   padding: 0 2rem 2rem 2rem;
-  text-align: center;
+  /*text-align: center;*/
 }
 
 .banner-biblioteca {
@@ -703,6 +716,7 @@ footer p {
     opacity: 0; /* começa invisível */
     transform: translateY(40px); /* começa um pouco abaixo */
     transition: all 0.8s ease; /* suavidade */
+    text-align:start;
 }
 
 /* quando aparecer na tela */
@@ -1729,7 +1743,7 @@ button {
 .contact-form {
     width: 100%;
     max-width: 500px;
-    padding: 35px;
+    padding-bottom: 35px;
     border-radius: 16px;
     /*box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);*/
     display: flex;
@@ -1915,10 +1929,12 @@ button {
     /* BANNER */
     .banner-content {
         padding: 1rem;
+        
     }
 
     .banner-content h2 {
         font-size: 1.5rem;
+        
     }
 
     .banner-content p {
@@ -2077,7 +2093,7 @@ h1 {
 .container {
   overflow: hidden;
   padding: 20px;
-  margin-top: 2em;
+  /*margin-top: 2em;*/
 }
 
 .card-carousel {
@@ -2175,16 +2191,16 @@ h1 {
   left: 0;
 }
 
-h2 {
+/*h2 {
   padding: 1em;
   margin-top: 1em;
   /*background: rgba(0,0,0,.3);*/
-  text-align: center;
+  /*text-align: center;
   
   border-radius: .2em;
   display: inline-block;
   transform: translateX(calc((100vw - 100%) / 2))
-}
+}*/
 
 h2 a {
   color: #f5b916

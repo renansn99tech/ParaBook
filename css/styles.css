@@ -283,11 +283,22 @@ hr {
     =======================================================  */
 
 
-.duvidas-frequentes{
-    margin: 4vh 4vw;
+#secao-FAQ { /* ID Pai referente à Section */
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /* display: flex;
+  justify-content: space-around; */
+  margin-bottom: .5rem;
 }
 
-.duvidas-frequentes h2{
+.titulo-faq { /* Título da Seção (fora da Section por enquanto) */
+  margin: 2rem 0 1rem 0;
+  padding: 0;
+}
+
+.duvidas-frequentes{
+    margin: 4vh 4vw;
     text-align: center;
 }
 
@@ -337,6 +348,102 @@ hr {
 .bloco-duvidas[open] .detalhe-duvidas::before {
     rotate: 90deg;
     inset-block-start: 0.1rem;
+}
+
+
+/* ==========================================
+      FORMULÁRIO DO FAQ - ENVIAR MENSAGEM
+========================================== */
+
+#faq-form {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+#faq-form h3 {
+  margin: 0;
+  padding: 0;
+}
+
+#faq-form p {
+    margin: .3rem 0;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem;
+    border-radius: 16px;
+    box-sizing: border-box;
+    border: var(--color-primary-dark) 1px solid;
+    gap: .5rem;
+}
+
+
+/* Inputs */
+.contact-input,
+.contact-textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    background-color: #F4F4F6;
+    color: var(--color-ui-charcoal);
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    outline: none;
+    transition: 0.5s ease;
+}
+
+/* Remove aparência padrão */
+.contact-input,
+.contact-textarea,
+.contact-btn {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Placeholder */
+.contact-input::placeholder,
+.contact-textarea::placeholder {
+    color: rgba(43, 26, 26, 0.55);
+}
+
+/* Efeito ao clicar */
+.contact-input:focus,
+.contact-textarea:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.15);
+}
+
+.contact-textarea {
+    resize: vertical;
+    min-height: 120px; /* Define a altura mínima do textarea (área da mensagem do formulário) */
+}
+
+/* Botão */
+.contact-btn {
+    background-color: var(--color-secondary);
+    color: var(--color-bg-warm);
+    border: none;
+    padding: 0.9rem;
+    border-radius: 8px;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.5s ease;
+}
+
+/* Hover */
+.contact-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
 }
 
 /*  =======================================================
@@ -1703,66 +1810,19 @@ button {
     margin: 10px 0;
 }
 
-/* ==== ENVIAR MENSAGEM ==== */
 
-.contact-section {
-    padding: 60px 20px;
-    display: flex;
-    justify-content: center;
+ /* ===== RESPONSIVO ===== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .carousel-item {
+        flex: 0 0 calc(33.33% - 1rem);
+    }
 }
 
-.contact-form {
-    width: 100%;
-    max-width: 650px;
-    padding: 35px;
-    border-radius: 16px;
-    /*box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);*/
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.contact-legend {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #222;
-    text-align: center;
-}
-
-.contact-label {
-    font-size: 15px;
-    font-weight: 600;
-    color: #444;
-}
-
-.contact-input,
-.contact-textarea {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid #dcdcdc;
-    border-radius: 10px;
-    font-size: 16px;
-    outline: none;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-}
-
-.contact-input:focus,
-.contact-textarea:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
-}
-
-.contact-textarea {
-    resize: vertical;
-    min-height: 150px;
-}
-
-
-
-    /* =====  RESPONSIVO ===== */
-    @media (max-width: 768px) {
+/* Mobile */
+@media (max-width: 768px) {
+    /* Perfil */
     .perfil-content {
         flex-direction: column;
         align-items: center;
@@ -1811,10 +1871,349 @@ button {
     .carousel-item {
         flex: 0 0 calc(50% - 1rem);
     }
+
+    .carousel-button {
+        padding: 8px 12px;
+        font-size: 1rem;
     }
 
-    @media (max-width: 480px) {
+    /* Formulário */
+    .contact-form {
+        padding: .1rem;
+    }
+
+    .contact-input,
+    .contact-textarea {
+        font-size: 16px;
+    }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
     .carousel-item {
         flex: 0 0 100%;
     }
+
+    .carousel {
+        padding: 0 1rem;
     }
+
+    .carousel-button {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    .banner {
+        margin: 0.5rem;
+        padding: 0.8rem;
+    }
+}
+
+
+/* ===== INDEX RESPONSIVO ===== */
+@media (max-width: 768px) {
+
+    /* MENU */
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .menu {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu a {
+        display: block;
+        width: 100%;
+    }
+
+    /* BANNER */
+    .banner-content {
+        padding: 1rem;
+    }
+
+    .banner-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .banner-content p {
+        font-size: 0.95rem;
+    }
+
+    /* CARDS */
+    .cards-destaque {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .card-link {
+        width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    /* CARROSSEL */
+    .carousel-content {
+        gap: 1rem;
+    }
+
+    .carousel-item {
+        flex: 0 0 100%;
+        min-height: auto;
+    }
+
+    .capa-placeholder {
+        height: 220px;
+    }
+
+    .capa-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* FOOTER */
+    #footer_content {
+        grid-template-columns: 1fr;
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+
+    #footer-padrao {
+        margin-left: 0;
+    }
+
+    #footer_social_media {
+        justify-content: center;
+    }
+}
+
+
+.grid-container {
+    margin-top: 1rem;
+    width: min(75rem, 100%);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: 2rem;
+}
+
+.card-novo {
+    --grad: red, blue;
+    padding: 2.5rem;
+    background-image: linear-gradient(to bottom left, #e0e4e5, #f2f6f9);
+    border-radius: 2rem;
+    /*gap: 1.5rem;*/
+    display: grid;
+    /*grid-template:
+        "title icon"
+        "content content"
+        "bar bar" / 1fr auto;*/
+    font-family: system-ui, sans-serif;
+    color: #444447;
+    box-shadow:
+        inset -2px 2px hsl(0 0 100% / 1),
+        -20px 20px 40px hsl(0 0 0 / .25);
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-novo-link {
+    display: contents;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-novo:hover {
+    animation: pulse 0.8s ease;
+    cursor: pointer;
+    box-shadow:
+        inset -2px 2px hsl(0 0 100% / 1),
+        -25px 25px 50px hsl(0 0 0 / .30);
+}
+
+.title {
+    font-size: 1.5rem;
+    grid-area: title;
+    align-self: center;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 500;
+}
+
+.icon {
+    grid-area: icon;
+    font-size: 3rem;
+}
+
+.icon i {
+    color: transparent;
+    background: linear-gradient(to right, red, blue);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.content {
+    grid-area: content;
+}
+
+.card-novo::after {
+    content: "";
+    grid-area: bar;
+    height: 2px;
+    background-image: linear-gradient(90deg, red, blue);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.03);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+.visuallyhidden {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  opacity: 0;
+  
+}
+
+h1 {
+  /*text-align: center;*/
+  margin-top: 1em;
+}
+
+.container {
+  overflow: hidden;
+  padding: 20px;
+  margin-top: 2em;
+}
+
+.card-carousel {
+  --card-width: 80%;
+  --card-max-width: 280px;
+  --card-height: 350px;
+  --carousel-min-width: 600px;
+  z-index: 1;
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  height: var(--card-height);
+  min-width: var(--carousel-min-width);
+  transition: filter .3s ease;
+}
+
+@media screen and (max-width: 640px) {
+  .card-carousel {
+    margin-left: calc((100vw - var(--carousel-min-width) - 40px) / 2)
+  }
+}
+
+.card-carousel.smooth-return {
+  transition: all .2s ease;
+}
+
+.card-carousel .card {
+  background: whitesmoke;
+  width: var(--card-width);
+  max-width: var(--card-max-width);
+  text-align: center;
+  padding: 1em;
+  min-width: 250px;
+  height: var(--card-height);
+  position: absolute;
+  margin: 0 auto;
+  color: rgba(0,0,0,.5);
+  transition: inherit;
+  -webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+  box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+  border-radius: 1em;
+  filter: brightness(.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card.highlight {
+  filter: brightness(1)
+}
+
+
+.card:nth-of-type(1) .image-container {
+    background-image: url("/livros/capas_livros/amareservir.png")
+}
+ 
+.card:nth-of-type(2) .image-container {
+  background-image: url("/livros/capas_livros/arepublica.png")
+}
+
+.card:nth-of-type(3) .image-container {
+  background-image: url("/livros/capas_livros/arevoluçãodosbichos.png")
+}
+.card:nth-of-type(4) .image-container {
+  background-image: url("/livros/capas_livros/alienista.png")
+}
+.card:nth-of-type(5) .image-container {
+  background-image: url("/livros/capas_livros/introduçãoahistoriadafilosofiaantiga.png")
+}
+
+
+
+.image-container {
+  width: 140px;
+  height: 210px;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 2em;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.image-container::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: solid 2px rgba(0,0,0,.1);
+  border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+h2 {
+  padding: 1em;
+  margin-top: 1em;
+  /*background: rgba(0,0,0,.3);*/
+  text-align: center;
+  
+  border-radius: .2em;
+  display: inline-block;
+  transform: translateX(calc((100vw - 100%) / 2))
+}
+
+h2 a {
+  color: #f5b916
+}
+

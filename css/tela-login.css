@@ -1,3 +1,13 @@
+    :root{
+        --color-primary-dark: #14213d;
+        --color-secondary: #203562;
+        --color-accent-olive: #58504a;
+        --color-neutral-tan: #e9ecef;
+        --color-bg-warm: #F5FFFA;
+        --color-ui-charcoal: #303136;
+    }    
+    
+    
     /* Reset */
     *{
     margin: 0;
@@ -6,21 +16,14 @@
     font-family: Arial, Helvetica, sans-serif;
     }
     /* Fundo */
-    body{
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #F5FFFA; /*linear-gradient(to bottom, #C1B59F 0%, #E6E2DB 100%); */
-    padding: 20px;
-    }
 
-.nav{ /* Menu de navegação */
+.nav{ /*Menu de navegação*/
     display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 20px 0;
-    background: linear-gradient(to bottom, var(--color-neutral-tan) 0%, var(--color-bg-warm) 100%);
+    flex-direction: row;
+    justify-content: flex-end;
+    background-color: white;
+    margin-top: 40px;
+    margin-right: 30px;
 }
 
 .menu { /* itens do menu de navegação */
@@ -50,7 +53,6 @@
     transition: background-color .3s, color .3s;
     cursor: pointer;
     position: relative;
-    top: -50px;
 }
 
 .voltar-btn:hover{
@@ -68,6 +70,8 @@
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    margin-top: 5%;
+    margin-left: 22%;
     }
     /* Lado da imagem */
     .image-side{
@@ -157,7 +161,7 @@
     }
     /* Focus */
     .input-box input:focus{
-    border-bottom-color: #5C3B2E;
+    border-bottom-color: var(--color-secondary);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     /* Texto flutuante */
@@ -176,7 +180,7 @@
     .input-box input:not(:placeholder-shown) + span{
     top: -5px;
     font-size: 12px;
-    color: #5C3B2E;
+    color: var(--color-secondary);
     }
     /* Links */
     a{
@@ -185,7 +189,7 @@
     font-weight: bold;
     }
     a:hover{
-    color: #5C3B2E;
+    color: var(--color-secondary);
     transition: 0.4s;
     }
     /* Conta */
@@ -198,7 +202,7 @@
     /* Botão */
     .submit-btn{
     width: 100%;
-    background: #58504a; /*#5C3B2E; */
+    background: var(--color-primary-dark); /*#5C3B2E; */
     border: none;
     padding: 14px;
     border-radius: 25px;
@@ -210,7 +214,7 @@
     }
     /* Hover */
     .submit-btn:hover{
-    background: #58504a; /*linear-gradient(90deg, #5C3B2E, #412a20);*/
+    background: var(--color-secondary); /*linear-gradient(90deg, #5C3B2E, #412a20);*/
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     transform: translateY(-2px);
     }

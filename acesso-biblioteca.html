@@ -18,183 +18,106 @@
                 <ul class="menu">
                     <li><a href="index.html">Início</a></li>
                     <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="acesso-comunidade.html"> Comunidades</a></li>
+                    <li><a href="comunidade.html">Comunidades</a></li>
                     <li><a href="sobre.html">Sobre</a></li>
                     <li><a href="tela-login.html"><button class="login-btn">Entrar</button></a></li>
                 </ul>
-        
             </nav>
         </header>
 
-        <section class="banner">
+        <main class="container-biblioteca">
+
+            <section class="banner-biblioteca">
             <article class="container banner-content">
                 <h2> Minha Biblioteca</h2>
                 <p>Aqui estão todos os livros que você adicionou. Organize sua coleção e acompanhe suas leituras!</p>
             </article>
-        </section>
+            </section>
 
-        <!-- SEÇÃO DE FILTROS -->
-        <section class="biblioteca-filters">
-            <div class="container">
-                <div class="filter-group">
-                    <input type="text" id="buscar-livros" class="filter-input" placeholder="🔍 Buscar livro por título ou autor...">
+            <!-- SEÇÃO DE FILTROS -->
+            <section class="biblioteca-filters">
+                <div class="container">
+                    <div class="filter-group">
+                        <input type="text" id="buscar-livros" class="filter-input" placeholder="🔍 Buscar livro por título ou autor...">
+                        
+                        <select id="filtro-genero" class="filter-select">
+                            <option value="">Todos os gêneros</option>
+                            <option value="filosofia">Filosofia</option>
+                            <option value="literatura">Literatura</option>
+                            <option value="religioso">Religioso</option>
+                        </select>
+
+                        <select id="filtro-status" class="filter-select">
+                            <option value="">Todos os status</option>
+                            <option value="lendo">Lendo</option>
+                            <option value="concluido">Concluído</option>
+                            <option value="desejo">Desejo ler</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO PRINCIPAL DE LIVROS -->
+            <section class="biblioteca-section">
+                <div class="container">
+                    <h3 class="biblioteca-title">Seus Livros</h3>
                     
-                    <select id="filtro-genero" class="filter-select">
-                        <option value="">Todos os gêneros</option>
-                        <option value="filosofia">Filosofia</option>
-                        <option value="literatura">Literatura</option>
-                        <option value="religioso">Religioso</option>
-                    </select>
+                    <div id="lista-livros" class="biblioteca-grid"></div>
 
-                    <select id="filtro-status" class="filter-select">
-                        <option value="">Todos os status</option>
-                        <option value="lendo">Lendo</option>
-                        <option value="concluido">Concluído</option>
-                        <option value="desejo">Desejo ler</option>
-                    </select>
+                    <!-- ESTADO VAZIO -->
+                    <div id="empty-state" class="empty-state" style="display: none;">
+                        <i class="fa-solid fa-book-open"></i>
+                        <p>Você ainda não adicionou nenhum livro à sua biblioteca.</p>
+                        <a href="index.html" class="btn-empty-state">Explorar Livros</a>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- SEÇÃO PRINCIPAL DE LIVROS -->
-        <section class="biblioteca-section">
-            <div class="container">
-                <h3 class="biblioteca-title">Seus Livros</h3>
-                
-                <div id="lista-livros" class="biblioteca-grid"></div>
-
-                <!-- ESTADO VAZIO -->
-                <div id="empty-state" class="empty-state" style="display: none;">
-                    <i class="fa-solid fa-book-open"></i>
-                    <p>Você ainda não adicionou nenhum livro à sua biblioteca.</p>
-                    <a href="index.html" class="btn-empty-state">Explorar Livros</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ESTATÍSTICAS -->
-        <section class="biblioteca-stats">
-            <div class="container">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📚</div>
-                        <div class="stat-content">
-                            <p class="stat-label">Total de Livros</p>
-                            <p class="stat-value" id="total-livros">0</p>
+            <!-- ESTATÍSTICAS -->
+            <section class="biblioteca-stats">
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-content">
+                                <p class="stat-label">Total de Livros</p>
+                                <p class="stat-value" id="total-livros">0</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon">✅</div>
-                        <div class="stat-content">
-                            <p class="stat-label">Concluídos</p>
-                            <p class="stat-value" id="livros-concluidos">0</p>
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-content">
+                                <p class="stat-label">Concluídos</p>
+                                <p class="stat-value" id="livros-concluidos">0</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon">📖</div>
-                        <div class="stat-content">
-                            <p class="stat-label">Lendo Agora</p>
-                            <p class="stat-value" id="livros-lendo">0</p>
+                        <div class="stat-card">
+                            <div class="stat-icon">📖</div>
+                            <div class="stat-content">
+                                <p class="stat-label">Lendo Agora</p>
+                                <p class="stat-value" id="livros-lendo">0</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon">❤️</div>
-                        <div class="stat-content">
-                            <p class="stat-label">Desejo ler</p>
-                            <p class="stat-value" id="livros-desejo">0</p>
+                        <div class="stat-card">
+                            <div class="stat-icon">❤️</div>
+                            <div class="stat-content">
+                                <p class="stat-label">Desejo ler</p>
+                                <p class="stat-value" id="livros-desejo">0</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-
-<footer>
-    <div id="footer_content">
-
-        <div id="footer-padrao">
-            <h1>&copy; ParaBook.</h1>
-            <p>O melhor site de livros.</p>
-
-            <div id="footer_social_media">
-                <a href="#" class="footer-link" id="instagram">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-
-                <a href="#" class="footer-link" id="facebook">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </a>
-
-                <a href="#" class="footer-link" id="whatsapp">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </a>
-            </div>
-
-            <p>2026. Todos os direitos reservados.</p>
-        </div>
-
-        <div>
-            <h3>Conheça nosso Suporte ao Usuário</h3>
-
-            <p>Para dúvidas a respeito do site e problemas na leitura.</p>
-
-            <p><strong>Entre em contato conosco:</strong></p>
-
-            <ul class="footer-list">
-                <li>
-                    <a href="#" class="footer-link">
-                        Email: parabook@gmail.com
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="footer-link">
-                        Telefone: (91) 8446-0404
-                    </a>
-                </li>
-            </ul>
-
-            <p>Segunda a Sexta, 8h às 18h.</p>
-        </div>
-
-        <div id="footer_form">
-            <h3>Fale Conosco</h3>
-            <p>Envie sua mensagem diretamente pelo rodapé.</p>
-
-            <form action="#" method="post" class="contact-form">
-                <label for="footer-name">Nome</label>
-                <input type="text" id="footer-name" class="contact-input">
-
-                <label for="footer-email">E-mail</label>
-                <input type="email" id="footer-email" class="contact-input">
-
-                <label for="footer-message">Mensagem</label>
-                <textarea id="footer-message" class="contact-textarea" rows="5"></textarea>
-
-                <button type="submit" class="contact-btn">
-                    Enviar
-                </button>
-            </form>
-        </div>
-
-        <div id="footer_subscribe">
-            <h3>Teve uma experiência ruim?</h3>
-
-            <p>Coloque seu e-mail e a Ouvidoria entrará em contato.</p>
-
-            <div id="input_group">
-                <input type="email" id="feedback-email">
-                <button>
-                    <i class="fa-regular fa-envelope"></i>
-                </button>
-            </div>
-        </div>
-
-    </div>
-</footer>
-
-    <script src="js/script.js"></script>
+        </main>
+        
+        <footer id="footer-global"></footer>
+        <script src="js/footer.js"></script>
+        <script src="js/script.js"></script>
+        
+    </body>
 
 </html>

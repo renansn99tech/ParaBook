@@ -178,24 +178,21 @@
 
     // ADICIONAR LIVRO
     function adicionarLivro(id) {
-    let biblioteca = JSON.parse(localStorage.getItem("biblioteca")) || [];
+    const estante = JSON.parse(localStorage.getItem("estante") || "[]");
 
-    if (!livros[id]) {
-        console.warn("Livro não encontrado:", id);
+    // Evita duplicatas
+    if (estante.includes(id)) {
+        alert("Este livro já está na sua estante!");
         return;
     }
 
-    if (!biblioteca.includes(id)) {
-        biblioteca.push(id);
-        localStorage.setItem("biblioteca", JSON.stringify(biblioteca));
-        alert("Livro adicionado à sua biblioteca!");
-    } else {
-        alert("Esse livro já está na sua biblioteca!");
-    }
+    estante.push(id);
+    localStorage.setItem("estante", JSON.stringify(estante));
+    alert("Livro adicionado à sua estante! 📚");
     }
 
     // CARREGAR BIBLIOTECA
-function carregarBiblioteca() {
+    function carregarBiblioteca() {
     const container = document.getElementById("lista-livros");
     if (!container) return;
 
@@ -231,7 +228,7 @@ function carregarBiblioteca() {
     container.innerHTML = html;
 }
 
- let pdfDoc = null;
+let pdfDoc = null;
 let paginaAtual = 1;
 let totalPaginas = 0;
 let livroAtualId = null;

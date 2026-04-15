@@ -741,7 +741,8 @@ footer p {
     margin: 40px auto;
     padding: 50px 30px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #1f2937, #374151);
+    background: linear-gradient(15deg, #94a6bf, #6880b5);
+    /*background: linear-gradient(135deg, #1f2937, #374151);*/
     color: white;
     text-align: center;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);

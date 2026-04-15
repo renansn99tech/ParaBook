@@ -1841,6 +1841,8 @@ button {
 
     .tabs-nav {
         gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .tab-btn {
@@ -1859,18 +1861,45 @@ button {
     .favoritos-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
+
+    /* Banner */
+    .banner {
+        margin: 1rem;
+        padding: 1rem;
     }
 
-    @media (max-width: 1024px) {
-    .carousel-item {
-        flex: 0 0 calc(33.33% - 1.5rem);
-    }
+    .banner p {
+        font-size: 0.95rem;
+        line-height: 1.6;
     }
 
-    @media (max-width: 768px) {
+    /* Carrossel */
+    .carousel {
+        padding: 0 2.5rem;
+    }
+
     .carousel-item {
         flex: 0 0 calc(50% - 1rem);
     }
+
+    .carousel-button {
+        padding: 8px 12px;
+        font-size: 1rem;
+    }
+
+    /* Formulário */
+    .contact-form {
+        padding: 1rem;
+    }
+
+    .contact-input,
+    .contact-textarea {
+        font-size: 16px;
+    }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
 
     .carousel-button {
         padding: 8px 12px;

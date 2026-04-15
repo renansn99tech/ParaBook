@@ -744,3 +744,61 @@ footer p {
     opacity: 0.9;
     transform: translateY(-1px);
 }
+
+
+
+/* ===== INDEX RESPONSIVO ===== */
+@media (max-width: 768px) {
+
+    /* MENU */
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .menu {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu a {
+        display: block;
+        width: 100%;
+    }
+
+    /* BANNER */
+    .banner-content {
+        padding: 1rem;
+    }
+
+    .banner-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .banner-content p {
+        font-size: 0.95rem;
+    }
+
+    /* FOOTER */
+    #footer_content {
+        grid-template-columns: 1fr;
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+
+    #footer-padrao {
+        margin-left: 0;
+    }
+
+    #footer_social_media {
+        justify-content: center;
+    }
+}

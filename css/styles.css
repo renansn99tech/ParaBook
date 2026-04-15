@@ -115,14 +115,14 @@ h3{
 
 .para {
   background: linear-gradient(90deg, #E53935, #6A1B9A);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  --webkit-background-clip: text;
+  --webkit-text-fill-color: transparent;
 }
 
 .book {
   background: linear-gradient(90deg, #6a1b9b, #1E40FF);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  --webkit-background-clip: text;
+  --webkit-text-fill-color: transparent;
 }
 
 /*  =============================================

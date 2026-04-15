@@ -14,6 +14,51 @@
     background: #F5FFFA; /*linear-gradient(to bottom, #C1B59F 0%, #E6E2DB 100%); */
     padding: 20px;
     }
+
+.nav{ /* Menu de navegação */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+    background: linear-gradient(to bottom, var(--color-neutral-tan) 0%, var(--color-bg-warm) 100%);
+}
+
+.menu { /* itens do menu de navegação */
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.menu a{
+    color: var(--color-primary-dark);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+}
+
+.voltar-btn{
+    background-color: var(--color-primary-dark);
+    color: var(--color-bg-warm);
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    text-decoration: none;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-medium);
+    transition: background-color .3s, color .3s;
+    cursor: pointer;
+    position: relative;
+    top: -50px;
+}
+
+.voltar-btn:hover{
+    background-color: var(--color-bg-warm);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-primary-dark);
+}
+
     /* Container principal */
     .form-container{
     position: relative;

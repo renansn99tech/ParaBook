@@ -46,35 +46,8 @@ document.getElementById("footer-global").innerHTML = `
             </div>
 
             <div id="footer_form">
-                <h3>Fale Conosco</h3>
-                <p>Envie sua mensagem diretamente pelo rodapé.</p>
-
-                <form action="#" method="post" class="contact-form">
-                    <label for="footer-name">Nome</label>
-                    <input type="text" id="footer-name" class="contact-input">
-
-                    <label for="footer-email">E-mail</label>
-                    <input type="email" id="footer-email" class="contact-input">
-
-                    <label for="footer-message">Mensagem</label>
-                    <textarea id="footer-message" class="contact-textarea" rows="5"></textarea>
-
-                    <button type="submit" class="contact-btn">
-                        Enviar
-                    </button>
-                </form>
-            </div>
-
-            <div id="footer_subscribe">
-                <h3>Teve uma experiência ruim?</h3>
-
-                <p>Coloque seu e-mail e a Ouvidoria entrará em contato.</p>
-
-                <div id="input_group">
-                    <input type="email" id="feedback-email">
-                    <button>
-                        <i class="fa-regular fa-envelope"></i>
-                    </button>
-                </div>
+                <h3>Sobre Nós</h3>
+                <p>
+Somos estudantes do curso Full Stack do Senac de Belém-Pará, Pensando em criar uma plataforma de leitura digital intuitiva, desenvolvemos o ParaBook. Nosso primeiro projeto grande foi pensado para ser um ambiente de leitura e troca de experiências, oferecendo uma facilidade na navegação e no acesso aos livros e comunidades.
             </div>
         </div>`;

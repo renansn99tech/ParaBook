@@ -1,0 +1,103 @@
+/* ===== PÁGINA ACESSO COMUNIDADE ===== */
+
+.comunidades-salvas {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+.comunidades-salvas h3 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--color-primary-dark);
+    font-family: var(--font-playfair);
+    border-bottom: 2px solid var(--color-accent-olive);
+    padding-bottom: 0.8rem;
+}
+
+/* CONTAINER DAS COMUNIDADES */
+#lista-comunidades-salvas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* CARD DE COMUNIDADE */
+.comunidade-card {
+    background: white;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 5px solid var(--color-primary-dark);
+}
+
+.comunidade-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* TÍTULO DA COMUNIDADE */
+.comunidade-card h4 {
+    font-size: 1.2rem;
+    color: var(--color-primary-dark);
+    margin-bottom: 0.8rem;
+}
+
+/* DESCRIÇÃO */
+.comunidade-card p {
+    color: var(--color-ui-charcoal);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* BOTÃO */
+.comunidade-card .btn {
+    background: linear-gradient(
+        135deg,
+        var(--color-primary-dark),
+        var(--color-accent-olive)
+    );
+    color: white;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: var(--fw-medium);
+    transition: all 0.3s ease;
+}
+
+.comunidade-card .btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+/* ESTADO VAZIO */
+.empty-comunidade {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.empty-comunidade p {
+    color: #777;
+    font-size: 1rem;
+}
+
+/* ===== RESPONSIVO ===== */
+
+@media (max-width: 768px) {
+    .comunidades-salvas {
+        padding: 0 1rem;
+    }
+
+    .comunidades-salvas h3 {
+        font-size: 1.6rem;
+    }
+
+    #lista-comunidades-salvas {
+        grid-template-columns: 1fr;
+    }
+}

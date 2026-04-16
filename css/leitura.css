@@ -1,0 +1,207 @@
+/* ===== RESET BÁSICO ===== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    color: #222;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+
+header {
+    background: #14213d;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.menu {
+    list-style: none;
+}
+
+.menu a {
+    text-decoration: none;
+}
+
+.login-btn {
+    background: white;
+    color: #14213d;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== MAIN ===== */
+
+main {
+    flex: 1;
+    padding: 2rem 1rem;
+}
+
+.leitura-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* ===== INFO LIVRO ===== */
+
+.livro-info {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.livro-info h2 {
+    font-size: 2rem;
+    color: #14213d;
+    margin-bottom: 0.5rem;
+}
+
+.livro-info p {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* ===== PDF ===== */
+
+.leitor-pdf {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+#pdf-canvas {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    background: white;
+}
+
+/* ===== BARRA DE PROGRESSO ===== */
+
+.progresso-container {
+    width: 100%;
+    height: 12px;
+    background: #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+}
+
+#barra-progresso {
+    width: 0%;
+    height: 100%;
+    background: #14213d;
+    transition: width 0.3s ease;
+}
+
+/* ===== CONTROLES ===== */
+
+.controles-leitura {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.btn {
+    background: #14213d;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #203562;
+    transform: translateY(-2px);
+}
+
+#pagina-info {
+    font-weight: 600;
+    color: #333;
+}
+
+/* ===== AÇÕES ===== */
+
+.acoes {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* ===== FOOTER ===== */
+
+.footer {
+    background: #14213d;
+    color: white;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    margin-top: auto;
+}
+
+.footer-titulo {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ===== RESPONSIVO ===== */
+
+@media (max-width: 768px) {
+    .leitura-container {
+        padding: 1rem;
+    }
+
+    .livro-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .controles-leitura {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}

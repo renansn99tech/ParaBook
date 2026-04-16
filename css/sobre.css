@@ -1,0 +1,79 @@
+/* =================================
+   PÁGINA SOBRE
+================================= */
+
+.sobre-conteudo {
+    padding: 40px 20px;
+    line-height: 1.8;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* =================================
+   SEÇÕES DE CONTEÚDO
+================================= */
+
+.sobre-conteudo h2 {
+    margin-top: 30px;
+    margin-bottom: 12px;
+    text-align: center;
+    color: var(--color-primary-dark);
+}
+
+.sobre-conteudo p {
+    text-align: justify;
+    margin-bottom: 1rem;
+    color: var(--color-ui-charcoal);
+}
+
+.sobre-conteudo ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.sobre-conteudo li {
+    margin: 12px 0;
+    font-size: 1rem;
+    color: var(--color-ui-charcoal);
+}
+
+.sobre-conteudo li i {
+    margin-right: 8px;
+    color: var(--color-primary-dark);
+}
+
+/* =================================
+   ANIMAÇÃO DE SCROLL
+================================= */
+
+.fade-section {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+}
+
+.fade-section.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* =================================
+   RESPONSIVO
+================================= */
+
+@media (max-width: 768px) {
+    .sobre-conteudo {
+        padding: 2rem 1rem;
+    }
+
+    .sobre-conteudo h2 {
+        font-size: 1.5rem;
+    }
+
+    .sobre-conteudo p,
+    .sobre-conteudo li {
+        font-size: 0.95rem;
+    }
+}

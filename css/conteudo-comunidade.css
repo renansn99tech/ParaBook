@@ -1,0 +1,202 @@
+/* ===== PÁGINA CONTEÚDO DA COMUNIDADE ===== */
+
+/* ===== BANNER ===== */
+
+.banner-comunidade {
+    max-width: 1200px;
+    margin: 3rem auto 2rem;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    background: linear-gradient(
+        135deg,
+        var(--color-primary-dark),
+        var(--color-accent-olive)
+    );
+    color: white;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.banner-comunidade h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    font-family: var(--font-playfair);
+}
+
+.banner-comunidade p {
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 800px;
+}
+
+/* ===== POSTS ===== */
+
+.posts-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.posts-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary-dark);
+    border-bottom: 2px solid var(--color-accent-olive);
+    padding-bottom: 0.8rem;
+}
+
+#lista-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* CARD DO POST */
+.post-card {
+    background: white;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid var(--color-primary-dark);
+    transition: all 0.3s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.post-card h4 {
+    color: var(--color-primary-dark);
+    margin-bottom: 0.8rem;
+    font-size: 1.2rem;
+}
+
+.post-card p {
+    color: var(--color-ui-charcoal);
+    line-height: 1.6;
+}
+
+/* ===== FORMULÁRIO ===== */
+
+.post-form-container {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.post-form-container h3 {
+    margin-bottom: 1.5rem;
+    color: var(--color-primary-dark);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    margin-bottom: 0.6rem;
+    font-weight: var(--fw-medium);
+    color: var(--color-primary-dark);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--color-primary-dark);
+    box-shadow: 0 0 8px rgba(20, 33, 61, 0.15);
+}
+
+/* BOTÃO */
+.btn-publicar {
+    background: linear-gradient(
+        135deg,
+        var(--color-primary-dark),
+        var(--color-accent-olive)
+    );
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: var(--fw-bold);
+    transition: all 0.3s ease;
+}
+
+.btn-publicar:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+/* ===== RODAPÉ ===== */
+
+footer {
+    margin-top: 4rem;
+    padding: 3rem 2rem;
+    background: var(--color-primary-dark);
+    color: white;
+}
+
+#footer_content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.footer-link {
+    color: white;
+    text-decoration: none;
+}
+
+/* BOTÃO FORM RODAPÉ */
+.contact-btn {
+    background: white;
+    color: var(--color-primary-dark);
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+/* ===== RESPONSIVO ===== */
+
+@media (max-width: 768px) {
+    .banner-comunidade,
+    .posts-section,
+    .post-form-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .banner-comunidade h2 {
+        font-size: 1.8rem;
+    }
+
+    .post-form-container {
+        margin: 2rem 1rem;
+    }
+}

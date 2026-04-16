@@ -1,0 +1,189 @@
+/* =================================
+   PÁGINA MINHA BIBLIOTECA
+================================= */
+
+.container-biblioteca {
+    padding: 0 2rem 2rem 2rem;
+}
+
+/* =================================
+   BANNER
+================================= */
+
+.banner-biblioteca {
+    margin-bottom: 2rem;
+}
+
+.titulo-biblioteca {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.banner-content {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(
+        135deg,
+        var(--color-neutral-tan),
+        var(--color-bg-warm)
+    );
+    border-radius: 16px;
+}
+
+/* =================================
+   FILTROS
+================================= */
+
+.biblioteca-filters {
+    margin: 2rem 0;
+}
+
+.filter-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-input,
+.filter-select {
+    padding: 12px 16px;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    font-size: 1rem;
+    min-width: 250px;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 8px rgba(77, 74, 232, 0.2);
+}
+
+/* =================================
+   GRID DE LIVROS
+================================= */
+
+.biblioteca-section {
+    margin: 2rem 0;
+}
+
+.biblioteca-title {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.biblioteca-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+/* =================================
+   EMPTY STATE
+================================= */
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #999;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.btn-empty-state {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 10px 20px;
+    background: var(--color-primary-dark);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s ease;
+}
+
+.btn-empty-state:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* =================================
+   ESTATÍSTICAS
+================================= */
+
+.biblioteca-stats {
+    margin-top: 3rem;
+    padding: 2rem 0;
+    background: linear-gradient(
+        135deg,
+        var(--color-neutral-tan),
+        var(--color-bg-warm)
+    );
+    border-radius: 16px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.stat-icon {
+    font-size: 2rem;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--color-primary-dark);
+}
+
+/* =================================
+   RESPONSIVO
+================================= */
+
+@media (max-width: 768px) {
+    .container-biblioteca {
+        padding: 1rem;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .filter-input,
+    .filter-select {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}

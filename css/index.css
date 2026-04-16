@@ -33,37 +33,60 @@
 }
 
 body {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    min-height: 100vh;
-    background-color: var(--color-bg-warm);
-    color: var(--color-ui-charcoal);
-    font-family: var(--font-body);
-    line-height: var(--lh-body);
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
 }
 
 .nav {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
-    background: linear-gradient(to bottom, var(--color-neutral-tan) 0%, var(--color-bg-warm) 100%);
+    padding: 20px 60px;
+    background: rgba(2,6,23,0.7);
+    backdrop-filter: blur(10px);
 }
 
-.menu {
-    list-style: none;
+.menu{
     display: flex;
+    align-items: center;
+    text-decoration: none;
+    list-style: none;
     gap: 20px;
 }
 
-.login-btn {
-    background-color: var(--color-primary-dark);
-    color: var(--color-bg-warm);
-    padding: 10px 20px;
-    border-radius: 25px;
-    border: none;
+.menu li a {
+    color: #9CA3AF;
+    text-decoration: none;
+    transition: 0.3s;
 }
 
+.menu li a:hover {
+    color: #E5E7EB;
+}
+
+.login-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    transform: scale(1.1);
+    transition: 0.5s ease;
+    background-color: #1d9f4c;
+    color: white;
+}
+main hr {
+    border: none;
+    height: 1px;
+    background: #1F2937;
+    margin: 20px 0;
+}
 /* ===============================
    LOGO
 ================================= */
@@ -108,19 +131,17 @@ body {
 }
 
 .card-novo {
-    padding: 2.5rem;
-    background-image: linear-gradient(to bottom left, #e0e4e5, #f2f6f9);
-    border-radius: 2rem;
-    display: grid;
-    box-shadow:
-        inset -2px 2px hsl(0 0 100% / 1),
-        -20px 20px 40px hsl(0 0 0 / .25);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 2rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 20px;
+    border: 1px solid #1F2937;
+    backdrop-filter: blur(12px);
+    transition: 0.3s;
 }
 
 .card-novo:hover {
-    animation: pulse 0.8s ease;
-    cursor: pointer;
+    transform: translateY(-6px);
+    border: 1px solid #374151;
 }
 
 .card-link {
@@ -129,18 +150,21 @@ body {
 }
 
 .title {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     text-align: center;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .icon {
-    font-size: 3rem;
+    font-size: 2.2rem;
     text-align: center;
+    margin: 10px 0;
+    color: #6366F1;
 }
 
 .content {
     text-align: center;
+    color: #9CA3AF;
 }
 
 /* ===============================
@@ -150,43 +174,112 @@ body {
 .container {
     overflow: hidden;
     padding: 20px;
+    position: relative;
 }
 
 .card-carousel {
-    --card-width: 80%;
-    --card-max-width: 280px;
-    --card-height: 350px;
-    --carousel-min-width: 600px;
-
     position: relative;
-    margin: 0 auto;
-    width: 100%;
-    height: var(--card-height);
-    min-width: var(--carousel-min-width);
+    height: 400px;
+    margin-top: 40px;
 }
 
 .card-carousel .card {
-    background: whitesmoke;
-    width: var(--card-width);
-    max-width: var(--card-max-width);
-    padding: 1em;
-    min-width: 250px;
-    height: var(--card-height);
-    position: absolute;
-    border-radius: 1em;
+    position: absolute; /* OBRIGATÓRIO */
+
+    width: 220px;
+    height: 320px;
+
+    background: #111827;
+    border: 1px solid #1F2937;
+    border-radius: 16px;
+
+    padding: 1rem;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    transition: all 0.4s ease;
+
+    /* efeito visual */
+    filter: blur(2px);
+    opacity: 0.5;
+}
+
+.card.highlight {
+    transform: scale(1.15) !important;
+    filter: blur(0);
+    opacity: 1;
+    z-index: 10;
+}
+
+.card-carousel.smooth-return .card {
+    transition: all 0.5s ease;
+}
+
+.card-carousel .card:hover {
+    transform: scale(1.05);
+}
+
+.carousel-buttons {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10%;
+    pointer-events: none;
+}
+
+.carousel-btn {
+    pointer-events: all;
+    background: rgba(17, 24, 39, 0.8);
+    border: 1px solid #1F2937;
+    color: #E5E7EB;
+
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.carousel-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    background: rgba(99,102,241,0.3);
 }
 
 .image-container {
     width: 140px;
     height: 210px;
+    border-radius: 10px;
     background-size: cover;
     background-position: center;
-    margin-bottom: 2em;
-    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.card p {
+    color: #9CA3AF;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.btn-main {
+    background: #22C55E;
+    padding: 10px 20px;
+    border-radius: 999px;
+    color: #020617;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
 }
 
 /* ===============================
@@ -195,52 +288,161 @@ body {
 
 .titulo-faq {
     text-align: center;
+    font-size: 2rem;
+    margin: 40px 0 20px;
+    color: #E5E7EB;
 }
 
 #secao-FAQ {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 600px;
+    padding: 40px;
+    flex-wrap: wrap;
 }
 
+/* BLOCO ESQUERDO */
 .duvidas-frequentes {
-    margin: 4vh 4vw;
+    width: 500px;
 }
 
+.duvidas-frequentes h3 {
+    margin-bottom: 20px;
+    color: #E5E7EB;
+}
+
+/* CADA PERGUNTA */
 .bloco-duvidas {
-    max-inline-size: 35rem;
-    padding: 1rem;
-    margin-block: 1rem 0;
-    background-image: linear-gradient(to bottom, var(--color-bg-warm) 0, var(--color-neutral-tan) 100%);
-    border-radius: 0.5rem;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.bloco-duvidas:hover {
+    border-color: #374151;
+}
+
+/* HEADER (PERGUNTA) */
+.detalhe-duvidas {
+    padding: 15px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #E5E7EB;
+}
+
+/* REMOVE SETINHA PADRÃO */
+summary::-webkit-details-marker {
+    display: none;
+}
+
+/* CONTEÚDO */
+.conteudo-duvidas {
+    padding: 0 15px 15px;
+    color: #9CA3AF;
+}
+
+.conteudo-duvidas a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #6366F1;
+    text-decoration: none;
 }
 
 /* ===============================
-   FORMULÁRIO
+   FORMULÁRIO (DIREITA)
 ================================= */
 
+#faq-form {
+    width: 400px;
+    border-radius: 16px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+}
+
+#faq-form h3 {
+    margin-bottom: 10px;
+}
+
+#faq-form p {
+    color: #9CA3AF;
+    font-size: 0.9rem;
+}
+
 .contact-form {
-    width: 100%;
-    max-width: 500px;
+    margin-top: 15px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
 }
 
 .contact-input,
 .contact-textarea {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid #dcdcdc;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #1F2937;
+    background: #020617;
+    color: white;
 }
 
 .contact-btn {
-    background-color: var(--color-secondary);
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.contact-btn:hover {
+    transform: scale(1.05);
+}
+
+/* ===============================
+   FORMULÁRIO MODERNO
+================================= */
+
+#faq-form {
+    flex: 1;
+}
+
+#faq-form h3 {
+    margin-bottom: 10px;
+}
+
+.contact-form {
+    margin-top: 20px;
+}
+
+.contact-input,
+.contact-textarea {
+    background: #020617;
+    border: 1px solid #1F2937;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.contact-input:focus,
+.contact-textarea:focus {
+    outline: none;
+    border-color: #6366F1;
+}
+
+/* Botão */
+.contact-btn {
+    background: linear-gradient(90deg, #6366F1, #4F46E5);
     color: white;
     border: none;
-    padding: 0.9rem;
-    border-radius: 8px;
+    padding: 12px;
+    border-radius: 10px;
     cursor: pointer;
+    transition: 0.3s;
+}
+
+.contact-btn:hover {
+    opacity: 0.9;
 }
 
 /* ===============================
@@ -273,4 +475,58 @@ body {
     .grid-container {
         grid-template-columns: 1fr;
     }
+}
+
+/* ===============================
+   FOOTER
+================================= */
+
+.footer {
+    background: #020617;
+    border-top: 1px solid #1F2937;
+    padding: 40px 60px 20px;
+    color: #9CA3AF;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer h2, .footer {
+    color: #E5E7EB;
+    text-align: center;
+}
+
+.footer-links a {
+    display: block;
+    color: #9CA3AF;
+    text-decoration: none;
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #6366F1;
+}
+
+.footer-social .icons i {
+    font-size: 1.4rem;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.footer-social .icons i:hover {
+    color: #6366F1;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    border-top: 1px solid #1F2937;
+    padding-top: 10px;
+    font-size: 0.9rem;
 }

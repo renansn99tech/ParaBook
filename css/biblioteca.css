@@ -1,9 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+    --color-primary-dark: #14213d;
+    --color-secondary: #4D4AE8;
+    --color-accent-olive: #58504a;
+    --color-neutral-tan: #e9ecef;
+    --color-bg-warm: #F5FFFA;
+    --color-ui-charcoal: #303136;
+
+    --font-playfair: 'Playfair Display', serif;
+    --font-ui: 'Montserrat', sans-serif;
+    --font-body: 'Lora', serif;
+    --font-data: 'Inter', sans-serif;
+
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+
+    --fs-h1: 3rem;
+    --fs-h2: 2rem;
+    --fs-h3: 1.5rem;
+    --fs-body: 1.125rem;
+    --fs-small: 0.875rem;
+
+    --lh-body: 1.6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: rgba(2,6,23,0.7);
+    backdrop-filter: blur(10px);
+}
+
+.menu{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    list-style: none;
+    gap: 20px;
+}
+
+.menu li a {
+    color: #9CA3AF;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.menu li a:hover {
+    color: #E5E7EB;
+}
+
+.login-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    transform: scale(1.1);
+    transition: 0.5s ease;
+    background-color: #1d9f4c;
+    color: white;
+}
+main hr {
+    border: none;
+    height: 1px;
+    background: #1F2937;
+    margin: 20px 0;
+}
+/* ===============================
+   LOGO
+================================= */
+
+.logo {
+    margin: 2vh 2vw;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 70px;
+    margin-right: -20px;
+}
+
+.para {
+    background: linear-gradient(90deg, #E53935, #6A1B9A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.book {
+    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 /* ===== PÁGINA BIBLIOTECA ===== */
 
 .genero-titulo {
     font-size: 2rem;
     font-family: var(--font-playfair);
-    color: var(--color-primary-dark);
+    /*color: var(--color-primary-dark);*/
     margin: 2.5rem 2rem 1.5rem;
     padding-left: 0.5rem;
     border-left: 5px solid var(--color-accent-olive);
@@ -101,4 +219,58 @@ hr {
         font-size: 1.6rem;
         margin: 2rem 1rem 1rem;
     }
+}
+
+/* ===============================
+   FOOTER
+================================= */
+
+.footer {
+    background: #020617;
+    border-top: 1px solid #1F2937;
+    padding: 40px 60px 20px;
+    color: #9CA3AF;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer h2, .footer {
+    color: #E5E7EB;
+    text-align: center;
+}
+
+.footer-links a {
+    display: block;
+    color: #9CA3AF;
+    text-decoration: none;
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #6366F1;
+}
+
+.footer-social .icons i {
+    font-size: 1.4rem;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.footer-social .icons i:hover {
+    color: #6366F1;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    border-top: 1px solid #1F2937;
+    padding-top: 10px;
+    font-size: 0.9rem;
 }

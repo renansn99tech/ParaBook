@@ -1,3 +1,146 @@
+/* Fontes padrão do site, a saber: Playfair Display, Montserrat, Lora e Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+    /* Paleta de Cores Terrosa (Atemporal) */
+    --color-primary-dark: #14213d; /*#5C3B2E;*/ /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
+    --color-secondary: #4D4AE8;  /* #422b21;*/
+    --color-accent-olive: #58504a;  /* #4C4A2A; */ /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
+    --color-neutral-tan: #e9ecef; /* #C1B59F; */ /* Bege claro */
+    --color-bg-warm: #F5FFFA; /*#E6E2DB;*/ /* Off-white para Fundo principal */
+    --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
+
+    /* Definindo as Fontes nas variáveis de ambiente */
+    --font-playfair: 'Playfair Display', serif; /* Fonte para títulos */
+    --font-ui: 'Montserrat', sans-serif; /* Fonte para elementos de interface, sub-títulos e legendas */
+    --font-body: 'Lora', serif; /* Fonte para o corpo do texto */
+    --font-data: 'Inter', sans-serif; /* Fonte para dados e informações */
+
+    /* 'Pesos' das fontes */
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+
+    /* Escala de tamanhos baseada no Root (1 rem = 16px) */
+    --fs-h1: 3rem; /* Tamanho para títulos principais (40px) */
+    --fs-h2: 2rem; /* Tamanho para títulos secundários (32px) */
+    --fs-h3: 1.5rem; /* Tamanho para títulos terciários (24px) */
+    --fs-body: 1.125rem; /* Tamanho para o corpo do texto (18px) */
+    --fs-small: 0.875rem; /* Tamanho para dados e informações (14px) */
+
+    /* Espaçamento de linhas para maior conforto */
+    --lh-body: 1.6; /* Espaçamento para o corpo do texto */
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Garantindo que o padding e border sejam incluídos no tamanho total dos elementos */
+}
+
+/*  ================================================================================================================
+        Definindo as variáveis aplicáveis para todas as páginas do site, como cores, fontes, tamanhos e espaçamento.
+    ================================================================================================================  */
+
+
+/* Aplicando as Variáveis padrão no corpo da página */
+
+body {
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
+}
+
+/*  ==============================================
+        Definições da Página Inicial (index.html)
+    ============================================== */
+
+
+
+    /* Classe LOGO (onde está escrito o nome ParaBook) */
+
+.logo {
+    margin: 2vh 2vw;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 70px;
+    margin-right: -20px;
+}
+
+.para {
+    background: linear-gradient(90deg, #E53935, #6A1B9A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.book {
+    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+/*  =============================================
+        Seção do NAV (NAVEGAÇÃO e suas Classes)
+    =============================================  */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: rgba(2,6,23,0.7);
+    backdrop-filter: blur(10px);
+}
+
+
+.menu{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    list-style: none;
+    gap: 20px;
+}
+
+.menu li a {
+    color: #9CA3AF;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.menu li a:hover {
+    color: #E5E7EB;
+}
+
+.login-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    transform: scale(1.1);
+    transition: 0.5s ease;
+    background-color: #1d9f4c;
+    color: white;
+}
+main hr {
+    border: none;
+    height: 1px;
+    background: #1F2937;
+    margin: 20px 0;
+}
+
+
 /* ===== PÁGINA ACESSO COMUNIDADE ===== */
 
 .comunidades-salvas {
@@ -9,7 +152,7 @@
 .comunidades-salvas h3 {
     font-size: 2rem;
     margin-bottom: 2rem;
-    color: var(--color-primary-dark);
+    /*color: var(--color-primary-dark);*/
     font-family: var(--font-playfair);
     border-bottom: 2px solid var(--color-accent-olive);
     padding-bottom: 0.8rem;
@@ -100,4 +243,55 @@
     #lista-comunidades-salvas {
         grid-template-columns: 1fr;
     }
+}
+
+
+.footer {
+    background: #020617;
+    border-top: 1px solid #1F2937;
+    padding: 40px 60px 20px;
+    color: #9CA3AF;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer h2, .footer {
+    color: #E5E7EB;
+    text-align: center;
+}
+
+.footer-links a {
+    display: block;
+    color: #9CA3AF;
+    text-decoration: none;
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #6366F1;
+}
+
+.footer-social .icons i {
+    font-size: 1.4rem;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.footer-social .icons i:hover {
+    color: #6366F1;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    border-top: 1px solid #1F2937;
+    padding-top: 10px;
+    font-size: 0.9rem;
 }

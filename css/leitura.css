@@ -1,63 +1,152 @@
-/* ===== RESET BÁSICO ===== */
+/* Fontes padrão do site, a saber: Playfair Display, Montserrat, Lora e Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
-* {
+:root {
+    /* Paleta de Cores Terrosa (Atemporal) */
+    --color-primary-dark: #14213d; /*#5C3B2E;*/ /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
+    --color-secondary: #4D4AE8;  /* #422b21;*/
+    --color-accent-olive: #58504a;  /* #4C4A2A; */ /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
+    --color-neutral-tan: #e9ecef; /* #C1B59F; */ /* Bege claro */
+    --color-bg-warm: #F5FFFA; /*#E6E2DB;*/ /* Off-white para Fundo principal */
+    --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
+
+    /* Definindo as Fontes nas variáveis de ambiente */
+    --font-playfair: 'Playfair Display', serif; /* Fonte para títulos */
+    --font-ui: 'Montserrat', sans-serif; /* Fonte para elementos de interface, sub-títulos e legendas */
+    --font-body: 'Lora', serif; /* Fonte para o corpo do texto */
+    --font-data: 'Inter', sans-serif; /* Fonte para dados e informações */
+
+    /* 'Pesos' das fontes */
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+
+    /* Escala de tamanhos baseada no Root (1 rem = 16px) */
+    --fs-h1: 3rem; /* Tamanho para títulos principais (40px) */
+    --fs-h2: 2rem; /* Tamanho para títulos secundários (32px) */
+    --fs-h3: 1.5rem; /* Tamanho para títulos terciários (24px) */
+    --fs-body: 1.125rem; /* Tamanho para o corpo do texto (18px) */
+    --fs-small: 0.875rem; /* Tamanho para dados e informações (14px) */
+
+    /* Espaçamento de linhas para maior conforto */
+    --lh-body: 1.6; /* Espaçamento para o corpo do texto */
+}
+
+*{
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Garantindo que o padding e border sejam incluídos no tamanho total dos elementos */
 }
+
+/*  ================================================================================================================
+        Definindo as variáveis aplicáveis para todas as páginas do site, como cores, fontes, tamanhos e espaçamento.
+    ================================================================================================================  */
+
+
+/* Aplicando as Variáveis padrão no corpo da página */
 
 body {
-    font-family: Arial, sans-serif;
-    background: #f8f9fa;
-    color: #222;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
 }
 
-/* ===== HEADER ===== */
 
-header {
-    background: #14213d;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+
+/*  ==============================================================================================================
+            ======================================================================================
+                Aqui serão estilizadas as variáveis específicas como Classes e IDs (por página).
+            ======================================================================================
+    ==============================================================================================================  */
+
+
+/*  ==============================================
+        Definições da Página Inicial (index.html)
+    ============================================== */
+
+
+
+    /* Classe LOGO (onde está escrito o nome ParaBook) */
+
+.logo {
+    margin: 2vh 2vw;
 }
 
-.nav {
-    max-width: 1200px;
-    margin: 0 auto;
+.logo-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
-.logo {
-    color: white;
-    font-size: 1.8rem;
-    font-weight: bold;
+.logo-img {
+    height: 70px;
+    margin-right: -20px;
 }
 
-.menu {
-    list-style: none;
+.para {
+    background: linear-gradient(90deg, #E53935, #6A1B9A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.menu a {
+.book {
+    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/*  =============================================
+        Seção do NAV (NAVEGAÇÃO e suas Classes)
+    =============================================  */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: rgba(2,6,23,0.7);
+    backdrop-filter: blur(10px);
+}
+
+
+.menu{
+    display: flex;
+    align-items: center;
     text-decoration: none;
+    list-style: none;
+    gap: 20px;
 }
 
-.login-btn {
-    background: white;
-    color: #14213d;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
+.menu li a {
+    color: #9CA3AF;
+    text-decoration: none;
     transition: 0.3s;
 }
 
-.login-btn:hover {
-    transform: translateY(-2px);
+.menu li a:hover {
+    color: #E5E7EB;
+}
+
+.login-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    transform: scale(1.1);
+    transition: 0.5s ease;
+    background-color: #1d9f4c;
+    color: white;
+}
+main hr {
+    border: none;
+    height: 1px;
+    background: #1F2937;
+    margin: 20px 0;
 }
 
 /* ===== MAIN ===== */

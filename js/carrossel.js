@@ -6,8 +6,8 @@ class DraggingEvent {
         this.target = target;
     }
 
-    event(callback) {}
-    getDistance(callback) {}
+    event(callback) { }
+    getDistance(callback) { }
 }
 
 // ===============================
@@ -17,29 +17,31 @@ class DraggingEvent {
 class CardCarousel extends DraggingEvent {
     constructor(container, controller = undefined) {
         super(container)
-        
+
         this.container = container
+        this.gap = 5;
+
         this.controllerElement = controller
         this.cards = container.querySelectorAll(".card")
-        
+
         this.centerIndex = (this.cards.length - 1) / 2;
         this.cardWidth = this.cards[0].offsetWidth / this.container.offsetWidth * 100
         this.xScale = {};
-        
+
         window.addEventListener("resize", this.updateCardWidth.bind(this))
-        
+
         if (this.controllerElement) {
-            this.controllerElement.addEventListener("keydown", this.controller.bind(this))      
+            this.controllerElement.addEventListener("keydown", this.controller.bind(this))
         }
 
         this.build()
     }
-    
+
     updateCardWidth() {
         this.cardWidth = this.cards[0].offsetWidth / this.container.offsetWidth * 100
         this.build()
     }
-    
+
     build() {
         for (let i = 0; i < this.cards.length; i++) {
             const x = i - this.centerIndex;
@@ -47,9 +49,9 @@ class CardCarousel extends DraggingEvent {
             const scale2 = this.calcScale2(x)
             const zIndex = -(Math.abs(i - this.centerIndex))
             const leftPos = this.calcPos(x, scale2)
-            
+
             this.xScale[x] = this.cards[i]
-            
+
             this.updateCards(this.cards[i], {
                 x: x,
                 scale: scale,
@@ -58,10 +60,10 @@ class CardCarousel extends DraggingEvent {
             })
         }
     }
-    
+
     controller(e) {
-        const temp = {...this.xScale};
-        
+        const temp = { ...this.xScale };
+
         if (e.keyCode === 39) {
             for (let x in this.xScale) {
                 const newX = (parseInt(x) - 1 < -this.centerIndex)
@@ -71,7 +73,7 @@ class CardCarousel extends DraggingEvent {
                 temp[newX] = this.xScale[x]
             }
         }
-        
+
         if (e.keyCode == 37) {
             for (let x in this.xScale) {
                 const newX = (parseInt(x) + 1 > this.centerIndex)
@@ -81,9 +83,9 @@ class CardCarousel extends DraggingEvent {
                 temp[newX] = this.xScale[x]
             }
         }
-        
+
         this.xScale = temp;
-        
+
         for (let x in temp) {
             const scale = this.calcScale(x),
                 scale2 = this.calcScale2(x),
@@ -98,51 +100,50 @@ class CardCarousel extends DraggingEvent {
             })
         }
     }
-    
+
     calcPos(x, scale) {
-        if (x < 0) {
-            return (scale * 100 - this.cardWidth) / 2
+        const base = 50; // centro do carrossel
+        const offset = x * (this.cardWidth * 0.8 + this.gap);
+
+        return base + offset - (this.cardWidth / 2);
+    }
+
+updateCards(card, data) {
+    if (data.x || data.x == 0) {
+        card.setAttribute("data-x", data.x)
+    }
+
+    if (data.scale || data.scale == 0) {
+        card.style.transform = `scale(${data.scale}) translateY(${Math.abs(data.x) * 10}px)`
+        card.style.opacity = data.scale === 0 ? 0 : 1
+    }
+
+    if (data.leftPos) {
+        card.style.left = `${data.leftPos}%`
+    }
+
+    if (data.zIndex || data.zIndex == 0) {
+        if (data.zIndex == 0) {
+            card.classList.add("highlight")
         } else {
-            return 100 - (scale * 100 + this.cardWidth) / 2
+            card.classList.remove("highlight")
         }
+        card.style.zIndex = data.zIndex
     }
-    
-    updateCards(card, data) {
-        if (data.x || data.x == 0) {
-            card.setAttribute("data-x", data.x)
-        }
-        
-        if (data.scale || data.scale == 0) {
-            card.style.transform = `scale(${data.scale}) translateY(${Math.abs(data.x) * 10}px)`
-            card.style.opacity = data.scale === 0 ? 0 : 1
-        }
-    
-        if (data.leftPos) {
-            card.style.left = `${data.leftPos}%`        
-        }
-        
-        if (data.zIndex || data.zIndex == 0) {
-            if (data.zIndex == 0) {
-                card.classList.add("highlight")
-            } else {
-                card.classList.remove("highlight")
-            }
-            card.style.zIndex = data.zIndex  
-        }
+}
+
+calcScale2(x) {
+    if (x <= 0) {
+        return 1 + (1 / 5 * x)
+    } else {
+        return 1 - (1 / 5 * x)
     }
-    
-    calcScale2(x) {
-        if (x <= 0) {
-            return 1 + (1/5 * x)
-        } else {
-            return 1 - (1/5 * x)
-        }
-    }
-    
-    calcScale(x) {
-        const formula = 1 - 1 / 5 * Math.pow(x, 2)
-        return formula <= 0 ? 0 : formula
-    }
+}
+
+calcScale(x) {
+    const formula = 1 - 0.15 * Math.pow(x, 2)
+    return formula <= 0 ? 0 : formula
+}
 }
 
 // ===============================

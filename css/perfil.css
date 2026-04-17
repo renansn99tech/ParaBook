@@ -209,13 +209,15 @@ main hr {
   transform: translateY(-2px);
 }
 
-.perfil-user-info {
-  flex: 1;
-  background: white;
+  .perfil-user-info {
+  background: rgba(255, 255, 255, 0.03);
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
 
 .perfil-nome {
   font-size: 2rem;
@@ -287,14 +289,15 @@ main hr {
   gap: 1.5rem;
 }
 
-.stat-box {
-  background: red;
+  .stat-box {
+  background: rgba(255, 255, 255, 0.04);
   padding: 1.5rem;
   border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 1.5rem;
-}
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
 /* ===== ABAS ===== */
 
@@ -341,10 +344,16 @@ main hr {
   gap: 2rem;
 }
 
-.info-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
+
+.info-card,
+.historico-item,
+.favorito-card,
+.config-section {
+ background: rgba(255, 255, 255, 0.03);
+ padding: 1.5rem;
+ border-radius: 12px;
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .info-card.full-width {

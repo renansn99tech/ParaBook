@@ -163,35 +163,102 @@ main hr {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
+    align-items: stretch;
+}
+
+#lista-comunidades-salvas > * {
+    height: 100%;
 }
 
 /* CARD DE COMUNIDADE */
 .comunidade-card {
-    background: white;
+    /*background: white;
     border-radius: 14px;
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
-    border-left: 5px solid var(--color-primary-dark);
+    border-left: 5px solid var(--color-primary-dark);*/
+        background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+
+    padding: 1.5rem;
+
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+
+    transition: all 0.3s ease;
 }
 
 .comunidade-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    /*transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);*/
+        transform: translateY(-6px) scale(1.02);
+
+    border-color: rgba(255, 255, 255, 0.15);
+
+    box-shadow: 
+        0 20px 50px rgba(0,0,0,0.6),
+        0 0 20px rgba(77, 74, 232, 0.2);
 }
 
+.comunidade-card h4 {
+    color: #E5E7EB;
+}
+
+.comunidade-card p {
+    color: #9CA3AF;
+}
+
+.btn {
+    background: linear-gradient(135deg, #4D4AE8, #6366F1);
+    color: white;
+
+    border: none;
+    border-radius: 10px;
+
+    padding: 10px 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    cursor: pointer;
+
+    text-decoration: none; /* 🔥 removido */
+
+    transition: all 0.3s ease;
+
+    box-shadow: 0 4px 15px rgba(77, 74, 232, 0.3);
+}
+
+.btn:hover {
+    transform: translateY(-2px) scale(1.03);
+
+    box-shadow: 
+        0 10px 25px rgba(77, 74, 232, 0.5),
+        0 0 10px rgba(99, 102, 241, 0.6);
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
 /* TÍTULO DA COMUNIDADE */
 .comunidade-card h4 {
-    font-size: 1.2rem;
+    /*font-size: 1.2rem;
     color: var(--color-primary-dark);
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.8rem;*/
+    color: #E5E7EB;
 }
 
 /* DESCRIÇÃO */
 .comunidade-card p {
-    color: var(--color-ui-charcoal);
+    /*color: var(--color-ui-charcoal);
     line-height: 1.6;
-    margin-bottom: 1rem;
+    margin-bottom: 1rem;*/
+    color: #9CA3AF;
 }
 
 /* BOTÃO */
@@ -217,11 +284,14 @@ main hr {
 
 /* ESTADO VAZIO */
 .empty-comunidade {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+
     text-align: center;
     padding: 3rem;
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .empty-comunidade p {

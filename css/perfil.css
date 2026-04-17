@@ -174,6 +174,7 @@ main hr {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
+  isolation: isolate;
 }
 
 .perfil-avatar-section {
@@ -194,18 +195,20 @@ main hr {
 }
 
 .btn-editar-avatar {
-  background: var(--color-primary-dark);
-  color: white;
-  border: none;
-  padding: 8px 16px;
+  background: rgba(255,255,255,0.05);
+  color: #E5E7EB;
+
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.3s;
+
+  backdrop-filter: blur(6px);
+
+  transition: all 0.3s ease;
 }
 
 .btn-editar-avatar:hover {
-  background: var(--color-accent-olive);
+  background: rgba(255,255,255,0.1);
+
   transform: translateY(-2px);
 }
 
@@ -220,25 +223,24 @@ main hr {
 
 
 .perfil-nome {
-  font-size: 2rem;
-  color: var(--color-primary-dark);
-  margin-bottom: 0.5rem;
-  font-family: var(--font-playfair);
+  color: #E5E7EB;
 }
 
 .perfil-username {
-  color: var(--color-accent-olive);
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  font-weight: var(--fw-medium);
+  color: #9CA3AF;
 }
 
 .perfil-bio {
-  color: var(--color-ui-charcoal);
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  color: #D1D5DB;
 }
 
+.meta-value {
+  color: #E5E7EB;
+}
+
+.meta-label {
+  color: #9CA3AF;
+}
 .perfil-meta {
   display: flex;
   gap: 2rem;
@@ -252,33 +254,40 @@ main hr {
   flex-direction: column;
 }
 
-.meta-label {
-  font-size: 0.85rem;
-  color: #888;
-  font-family: var(--font-ui);
-  margin-bottom: 0.3rem;
-}
-
-.meta-value {
-  font-weight: var(--fw-medium);
-  color: var(--color-primary-dark);
-}
 
 .btn-editar-perfil {
-  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-accent-olive));
-  color: white;
-  border: none;
-  padding: 10px 25px;
+  background: linear-gradient(135deg, #0F172A, #1F2937);
+  color: #E5E7EB;
+
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 25px;
+
+  padding: 10px 25px;
+
   cursor: pointer;
   font-weight: var(--fw-bold);
-  transition: all 0.3s;
+
+  transition: all 0.3s ease;
+
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.btn-editar-perfil:hover {
+  transform: translateY(-2px) scale(1.03);
+
+  background: linear-gradient(135deg, #020617, #111827);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.8),
+    0 0 10px rgba(255,255,255,0.05);
 }
 
 /* ===== ESTATÍSTICAS ===== */
 
 .perfil-stats {
-  background: linear-gradient(135deg, var(--color-neutral-tan) 0%, var(--color-bg-warm) 100%);
+  /*background: linear-gradient(135deg, var(--color-neutral-tan) 0%, var(--color-bg-warm) 100%);*/
+  background: #111827;
+  border: 1px solid #1F2937;
   padding: 2rem 0;
   margin: 2rem 0;
 }
@@ -310,7 +319,7 @@ main hr {
 .tabs-nav {
   display: flex;
   gap: 1rem;
-  border-bottom: 2px solid var(--color-neutral-tan);
+  /*border-bottom: 2px solid var(--color-neutral-tan);*/
   margin-bottom: 2rem;
   flex-wrap: wrap;
 }
@@ -320,7 +329,9 @@ main hr {
   border: none;
   padding: 1rem 1.5rem;
   cursor: pointer;
-  background-color: white;
+  /*background-color: white;*/
+  background: #111827;
+  border: 1px solid #1F2937;
 }
 
 .tab-btn.active {
@@ -345,15 +356,40 @@ main hr {
 }
 
 
+.perfil-user-info,
 .info-card,
 .historico-item,
 .favorito-card,
-.config-section {
- background: rgba(255, 255, 255, 0.03);
- padding: 1.5rem;
- border-radius: 12px;
- backdrop-filter: blur(10px);
- border: 1px solid rgba(255, 255, 255, 0.08);
+.config-section,
+.stat-box {
+  background: rgba(255, 255, 255, 0.035);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+
+  transition: all 0.3s ease;
+}
+
+.perfil-user-info:hover,
+.info-card:hover,
+.historico-item:hover,
+.favorito-card:hover,
+.config-section:hover,
+.stat-box:hover {
+  transform: translateY(-6px);
+
+  border-color: rgba(255,255,255,0.15);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.7),
+    0 0 20px rgba(0, 0, 0, 0.4);
 }
 
 .info-card.full-width {
@@ -370,10 +406,14 @@ main hr {
 
 .historico-item {
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  display: flex;
-  gap: 1.5rem;
+}
+
+.favorito-card {
+  background: white;
+}
+
+.config-section {
+  background: white;
 }
 
 /* ===== FAVORITOS ===== */

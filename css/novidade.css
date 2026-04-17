@@ -44,41 +44,15 @@
 
 
 /* Aplicando as Variáveis padrão no corpo da página */
-body{
-    background-color: var(--color-bg-warm);
-    color: var(--color-ui-charcoal);
-    font-family: var(--font-body);
-    line-height: var(--lh-body);
-    --webkit-font-smoothing: antialiased; /* Suavização de fontes para melhor legibilidade */
+
+body {
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
 }
 
-h1{
-    font-family: var(--font-playfair);
-    color: var(--color-primary-dark);
-    font-weight: var(--fw-bold);
-    font-size: var(--fs-h1);
-    margin-bottom: 1.5rem; /* Espaçamento abaixo do título */
-}
 
-h2{
-    font-family: var(--font-ui);
-    color: var(--color-accent-olive);
-    font-weight: var(--fw-medium);
-    font-size: var(--fs-h2);
-    letter-spacing: .1rem; /* Espaçamento entre letras para melhor legibilidade */
-    text-transform: capitalize; /* Transformando os sub-títulos para primeira letra maiúscula */
-    margin-bottom: 1rem; /* Espaçamento abaixo dos sub-títulos */
-}
 
-h3{
-    font-family: var(--font-ui);
-    color: var(--color-accent-olive);
-    font-weight: var(--fw-medium);
-    font-size: var(--fs-h3);
-    letter-spacing: .1rem; /* Espaçamento entre letras para melhor legibilidade */
-    text-transform: capitalize; /* Transformando os sub-títulos para primeira letra maiúscula */
-    margin-bottom: 1rem; /* Espaçamento abaixo dos sub-títulos */
-}
 
 /*  ==============================================================================================================
             ======================================================================================
@@ -94,55 +68,88 @@ h3{
 
 
     /* Classe LOGO (onde está escrito o nome ParaBook) */
-.logo{
+
+.logo {
     margin: 2vh 2vw;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 70px;
+    margin-right: -20px;
+}
+
+.para {
+    background: linear-gradient(90deg, #E53935, #6A1B9A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.book {
+    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /*  =============================================
         Seção do NAV (NAVEGAÇÃO e suas Classes)
     =============================================  */
-
-.nav{ /* Menu de navegação */
+.nav {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
-    background: linear-gradient(to bottom, var(--color-neutral-tan) 0%, var(--color-bg-warm) 100%);
+    padding: 20px 60px;
+    background: rgba(2,6,23,0.7);
+    backdrop-filter: blur(10px);
 }
 
-.menu { /* itens do menu de navegação */
-    list-style: none;
+
+.menu{
     display: flex;
-    flex-direction: row;
-    align-items: end;
+    align-items: center;
+    text-decoration: none;
+    list-style: none;
     gap: 20px;
 }
 
-.menu a{
-    color: var(--color-primary-dark);
-    font-family: var(--font-ui);
-    font-weight: var(--fw-medium);
+.menu li a {
+    color: #9CA3AF;
     text-decoration: none;
+    transition: 0.3s;
 }
 
-.login-btn{
-    background-color: var(--color-primary-dark);
-    color: var(--color-bg-warm);
-    padding: 10px 20px;
-    border-radius: 25px;
+.menu li a:hover {
+    color: #E5E7EB;
+}
+
+.login-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
     border: none;
-    text-decoration: none;
-    font-family: var(--font-ui);
-    font-weight: var(--fw-medium);
-    transition: background-color .3s, color .3s;
     cursor: pointer;
 }
 
 .login-btn:hover{
-    background-color: var(--color-bg-warm);
-    color: var(--color-primary-dark);
-    border: 1px solid var(--color-primary-dark);
+    transform: scale(1.1);
+    transition: 0.5s ease;
+    background-color: #1d9f4c;
+    color: white;
 }
+main hr {
+    border: none;
+    height: 1px;
+    background: #1F2937;
+    margin: 20px 0;
+}
+
+
 
 /*  =======================================
         Seção do BANNER
@@ -257,170 +264,55 @@ h3{
             Seção do Footer 
     =======================================================  */
 
-.footer{
-    background-color: var(--color-primary-dark);
-    color: var(--color-bg-warm);
-    text-align: center;
-    padding: 2vh 0;
+.footer {
+    background: #020617;
+    border-top: 1px solid #1F2937;
+    padding: 40px 60px 20px;
+    color: #9CA3AF;
 }
 
-.footer-titulo{
-    font-family: var(--font-playfair);
-    font-size: var(--fs-h2);
+.footer-container {
+    display: flex;
     justify-content: space-between;
-    color: var(--color-bg-warm);
-    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 40px;
 }
 
-.footer span{
-    font-family: var(--font-ui);
-    font-size: var(--fs-small);
-    color: var(--color-bg-warm);
+.footer h2, .footer {
+    color: #E5E7EB;
+    text-align: center;
 }
 
-
-footer {
-    width: 100%;
-    color: var(--color-bg-warm);
-}
-
-footer h1 {
-    font-family: var(--font-playfair);
-    font-size: var(--fs-h2);
-    color: var(--color-bg-warm);
-    margin: 0 0 1.5rem 0;
-}
-
-footer h3 {
-    font-family: var(--font-playfair);
-    font-size: var(--fs-h3);
-    color: var(--color-bg-warm);
-    margin: .5rem 0 0 0;
-}
-
-footer p {
-    font-family: var(--font-ui);
-    font-size: var(--fs-small);
-    margin: 2.5vh 0vw;
-}
-
-/*  ===============================================
-    Classes e IDs utilizadas na construção das sub-seções 
-    =============================================== */
-
-
-/* Seção CONTENT Onde ficam as IDs */
-
-#footer_content { /* ID Pai onde ficam organizados os "cards" da grid */
-    background-color: var(--color-primary-dark);
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    padding: 3rem 3rem;
-}
-
-/* Sub-seção "padrão" onde fica o nome da marca */
-#footer-padrao {
-    margin-left: 2rem;
-}
-
-#footer_social_media { /* Essa ID fica onde estão os ícones das redes sociais */
-    display: flex;
-    gap: 2rem;
-    margin-top: .5rem;
-}
-
-.footer-link {
+.footer-links a {
+    display: block;
+    color: #9CA3AF;
     text-decoration: none;
+    margin: 5px 0;
+    transition: 0.3s;
 }
 
-#footer_social_media .footer-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 2.5rem;
-    width: 2.5rem;
-    color: var(--color-bg-warm);
-    border-radius: 50%;
-    transition: all 0.4s;
+.footer-links a:hover {
+    color: #6366F1;
 }
 
-#footer_social_media .footer-link i {
-    font-size: 1.5rem;    
-}
-
-#footer_social_media .footer-link:hover {
-    opacity: 0.8;
-}
-
-#instagram {
-    background: linear-gradient(#7f37c9, #ff2992, #ff9807);
-}
-
-#facebook {
-    background-color: #4267b3;
-}
-
-#whatsapp {
-    background-color: #25d366;
-}
-
-/* Sub-seção SUPORTE ao Usuário*/
-
-.footer-list {
-    display: flex;
-    flex-direction: column;
-    list-style: none;
-    line-height: var(--lh-body)
-}
-
-.footer-list .footer-link {
-    color: var(--color-bg-warm);
-    transition: all 0.4s;
-}
-
-.footer-list .footer-link:hover {
-    color: var(--color-neutral-tan);
-}
-
-/* Sub-seção FEEDBACK (Entre em contato por email) */
-
-#footer_subscribe {
-    display: flex;
-    flex-direction: column;
-    padding-bottom: 1rem;
-}
-
-#input_group {
-    display: flex;
-    align-items: center;
-    background-color: var(--color-neutral-tan);
-    color: var(--color-ui-charcoal);
-    border-radius: 4px;
-}
-
-#input_group input {
-    all: unset;
-    padding: 0.75rem;
-    width: 100%;
-}
-
-#input_group button {
-    background-color:  var(--color-secondary);
-    border: none;
-    color: var(--color-bg-warm);
-    padding: 0px 1.25rem;
-    font-size: 1.125rem;
-    height: 100%;
-    border-radius: 0px 4px 4px 0px;
+.footer-social .icons i {
+    font-size: 1.4rem;
+    margin-right: 10px;
     cursor: pointer;
-    transition: all 0.4s;
+    transition: 0.3s;
 }
 
-#input_group button:hover {
-    opacity: 0.8;
+.footer-social .icons i:hover {
+    color: #6366F1;
 }
 
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    border-top: 1px solid #1F2937;
+    padding-top: 10px;
+    font-size: 0.9rem;
+}
 
     
     * {
@@ -526,9 +418,10 @@ footer p {
     /* The actual content */
     .content {
     padding: 20px 30px;
-    background-color: white;
+    background-color: #111827;
     position: relative;
     border-radius: 6px;
+    border: 1px solid #1F2937;
     }
 
     .content img {

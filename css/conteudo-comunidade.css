@@ -197,20 +197,73 @@ main hr {
 }
 
 /* ===== FORMULÁRIO ===== */
+/* =========================================================
+   CONTAINER DO FORMULÁRIO (ESTILO MODERNO + GLASS)
+   ========================================================= */
 
 .post-form-container {
     max-width: 900px;
     margin: 3rem auto;
     padding: 2rem;
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+
+    /* 🔥 substitui fundo branco por efeito glass */
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+
+    /* 🔥 efeito vidro */
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    /* 🔥 borda suave */
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+
+    /* 🔥 sombra mais profunda */
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+
+    /* 🔥 animação suave */
+    transition: all 0.3s ease;
+
+    position: relative;
+    overflow: hidden;
 }
+
+/* 🔥 efeito glow sutil */
+.post-form-container::before {
+    content: '';
+    position: absolute;
+
+    width: 250px;
+    height: 250px;
+
+    background: radial-gradient(circle, rgba(99,102,241,0.2), transparent);
+
+    top: -80px;
+    right: -80px;
+
+    filter: blur(70px);
+}
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
 
 .post-form-container h3 {
     margin-bottom: 1.5rem;
-    color: var(--color-primary-dark);
+
+    /* 🔥 cor clara padrão dark */
+    color: #E5E7EB;
+
+    /* 🔥 fonte mais moderna */
+    font-family: 'Poppins', sans-serif;
+
+    font-size: 1.6rem;
 }
+
+/* =========================================================
+   GRUPOS DE INPUT
+   ========================================================= */
 
 .form-group {
     display: flex;
@@ -218,57 +271,97 @@ main hr {
     margin-bottom: 1.5rem;
 }
 
+/* label */
 .form-group label {
     margin-bottom: 0.6rem;
+
     font-weight: var(--fw-medium);
-    color: var(--color-primary-dark);
+
+    /* 🔥 cor adaptada ao tema dark */
+    color: #9CA3AF;
 }
 
+/* inputs e textarea */
 .form-group input,
 .form-group textarea {
     width: 100%;
     padding: 14px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
+
+    /* 🔥 fundo escuro moderno */
+    background: #020617;
+
+    border: 1px solid #1F2937;
+    border-radius: 12px;
+
     font-size: 1rem;
+    color: #E5E7EB;
+
     outline: none;
+
     transition: all 0.3s ease;
+
     box-sizing: border-box;
 }
 
+/* altura do textarea */
 .form-group textarea {
     min-height: 150px;
     resize: vertical;
 }
 
+/* foco */
 .form-group input:focus,
 .form-group textarea:focus {
-    border-color: var(--color-primary-dark);
-    box-shadow: 0 0 8px rgba(20, 33, 61, 0.15);
+    border-color: #6366F1;
+
+    /* 🔥 glow ao focar */
+    box-shadow: 0 0 10px rgba(99,102,241,0.4);
 }
 
-/* BOTÃO */
+/* =========================================================
+   BOTÃO PUBLICAR (PADRÃO MODERNO DO SISTEMA)
+   ========================================================= */
+
 .btn-publicar {
-    background: linear-gradient(
-        135deg,
-        var(--color-primary-dark),
-        var(--color-accent-olive)
-    );
-    color: white;
-    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     padding: 12px 22px;
-    border-radius: 8px;
+
+    /* 🔥 borda arredondada padrão moderno */
+    border-radius: 999px;
+    border: none;
+
+    /* 🔥 gradiente mais chamativo */
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+
+    color: white;
+
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+
     cursor: pointer;
-    font-weight: var(--fw-bold);
+
     transition: all 0.3s ease;
+
+    /* 🔥 sombra glow */
+    box-shadow: 0 8px 20px rgba(99,102,241,0.3);
 }
 
+/* hover */
 .btn-publicar:hover {
-    transform: translateY(-2px);
-    opacity: 0.95;
+    transform: translateY(-2px) scale(1.03);
+
+    box-shadow:
+        0 10px 30px rgba(99,102,241,0.6),
+        0 0 15px rgba(139,92,246,0.6);
 }
 
-
+/* clique */
+.btn-publicar:active {
+    transform: scale(0.97);
+}
 
 /* ===== RODAPÉ ===== */
 

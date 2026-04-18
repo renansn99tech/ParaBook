@@ -55,15 +55,15 @@ const comunidades = {
     let html = "";
     salvas.forEach(tipo => {
         const c = comunidades[tipo];
-        html += `
-    <div class="post">
+html += `
+<div class="comunidade-card">
     <h4>${c.titulo}</h4>
     <p>${c.descricao}</p>
     <a href="conteudo-comunidade.html?tipo=${tipo}" class="btn">
-                Acessar
+        Acessar
     </a>
-    </div>
-        `;
+</div>
+`;
     });
     container.innerHTML = html;
     }
@@ -78,7 +78,7 @@ const comunidades = {
     let html = "";
     c.posts.forEach(post => {
         html += `
-    <div class="post">
+    <div class="comunidade-card">
     <h4>${post.titulo}</h4>
     <p>${post.texto}</p>
     </div>

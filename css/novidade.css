@@ -474,7 +474,39 @@ margin: 2rem auto 0;
         box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
     
-    
+    .content a {
+    display: inline-block;
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: #FFFFFF;
+
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    transition: all 0.3s ease;
+
+    box-shadow: 0 8px 20px rgba(99,102,241,0.3);
+}
+
+.content a:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 20px rgba(99,102,241,0.6);
+}
+
+.content a:active {
+    transform: scale(0.97);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
 
     .containe left {
     animation: deslizetexto1 1s ease-in-out;

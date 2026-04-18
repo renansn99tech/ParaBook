@@ -196,6 +196,9 @@ main hr {
         inset 0 1px 0 rgba(255,255,255,0.05);
 
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 250px;
 }
 
 .comunidade-card:hover {
@@ -216,6 +219,7 @@ main hr {
 
 .comunidade-card p {
     color: #9CA3AF;
+    flex-grow: 1;
 }
 
 .btn {
@@ -267,11 +271,11 @@ main hr {
 
 /* BOTÃO */
 .comunidade-card .btn {
-    background: linear-gradient(
+    /*background: linear-gradient(
         135deg,
         var(--color-primary-dark),
         var(--color-accent-olive)
-    );
+    );*/
     color: white;
     border: none;
     padding: 0.7rem 1.2rem;
@@ -279,6 +283,7 @@ main hr {
     cursor: pointer;
     font-weight: var(--fw-medium);
     transition: all 0.3s ease;
+    margin-top: auto;
 }
 
 .comunidade-card .btn:hover {

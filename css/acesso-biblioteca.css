@@ -214,148 +214,282 @@ main hr {
     text-align: center;
 }
 
+/* =========================================================
+   GRID PRINCIPAL DA BIBLIOTECA
+   ========================================================= */
+
+/* Container dos livros em formato de grid responsivo */
 .biblioteca-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.5rem;
-    align-items: stretch; /* garante altura consistente */
+
+    /* Cria colunas automáticas com tamanho mínimo de 240px */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+    /* Espaçamento entre os cards */
+    gap: 25px;
+
+    /* Garante que todos os cards tenham a mesma altura */
+    align-items: stretch;
+
+    margin-top: 2rem;
 }
 
+/* Garante que todos os filhos ocupem 100% da altura */
 .biblioteca-grid > * {
     height: 100%;
 }
 
+
+/* =========================================================
+   CARD DE LIVRO (ESTILO MODERNO GLASS)
+   ========================================================= */
+
 .card-livro {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    /* Fundo com efeito glassmorphism */
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
 
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
+    /* Efeito de vidro */
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 
-    box-shadow: 
-        0 10px 30px rgba(0,0,0,0.4),
+    /* Borda sutil */
+    border: 1px solid rgba(255,255,255,0.08);
+
+    /* Bordas arredondadas */
+    border-radius: 18px;
+
+    /* Sombra para profundidade */
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.5),
         inset 0 1px 0 rgba(255,255,255,0.05);
 
-    transition: all 0.3s ease;
+    /* Animação suave */
+    transition: all 0.35s ease;
+
+    /* Evita que elementos internos escapem */
+    overflow: hidden;
+
+    /* Necessário para efeitos internos */
+    position: relative;
 }
 
+/* Glow moderno no card */
+.card-livro::before {
+    content: '';
+    position: absolute;
+
+    width: 200px;
+    height: 200px;
+
+    background: radial-gradient(circle, rgba(99,102,241,0.25), transparent);
+
+    top: -60px;
+    right: -60px;
+
+    filter: blur(60px);
+}
+
+/* Efeito ao passar o mouse */
 .card-livro:hover {
-    transform: translateY(-6px) scale(1.02);
+    transform: translateY(-8px) scale(1.02);
 
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255,255,255,0.15);
 
-    box-shadow: 
-        0 20px 50px rgba(0,0,0,0.6),
-        0 0 20px rgba(77, 74, 232, 0.2);
+    box-shadow:
+        0 25px 70px rgba(0,0,0,0.8),
+        0 0 25px rgba(99,102,241,0.3);
 }
-/* =================================
-   EMPTY STATE
-================================= */
+
+.card-livro img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+
+    /* 🔥 melhora percepção visual */
+    image-rendering: auto;
+    filter: contrast(1.05) brightness(1.05);
+
+    /* 🔥 suaviza serrilhado leve */
+    transform: translateZ(0);
+    background: #0f172a;
+}
+
+/* =========================================================
+   ESTADO VAZIO (SEM LIVROS)
+   ========================================================= */
 
 .empty-state {
     text-align: center;
     padding: 3rem 2rem;
-    color: #999;
+    color: #9CA3AF;
 }
 
+/* Ícone grande */
 .empty-state i {
     font-size: 3rem;
     margin-bottom: 1rem;
+    color: #6366F1;
 }
 
+/* Botão do estado vazio */
 .btn-empty-state {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     margin-top: 1rem;
-    padding: 10px 20px;
-    background: var(--color-primary-dark);
+    padding: 10px 22px;
+
+    border-radius: 999px;
+    border: none;
+
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
     color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: 0.3s ease;
+
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.3s;
+
+    box-shadow: 0 8px 20px rgba(99,102,241,0.3);
 }
 
-/*Botão de LER*/
+.btn-empty-state:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 20px rgba(99,102,241,0.6);
+}
+
+
+/* =========================================================
+   BOTÃO "LER"
+   ========================================================= */
 
 .btn {
-    background: rgba(255, 255, 255, 0.05);
-    color: #E5E7EB;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    padding: 10px 18px;
 
-    padding: 10px 16px;
+    border-radius: 999px;
+    border: none;
 
-    backdrop-filter: blur(8px);
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: #FFFFFF;
 
-    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
 
     text-decoration: none;
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    box-shadow: 0 8px 20px rgba(99,102,241,0.3);
 }
 
 .btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-
-    border-color: rgba(255, 255, 255, 0.2);
-
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 20px rgba(99,102,241,0.6);
 }
 
-/* =================================
-   ESTATÍSTICAS
-================================= */
+.btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+
+/* =========================================================
+   SEÇÃO DE ESTATÍSTICAS
+   ========================================================= */
 
 .biblioteca-stats {
     margin-top: 3rem;
     padding: 2rem 0;
-    border-radius: 16px;
 }
 
+/* Grid das estatísticas */
 .stats-grid {
     display: grid;
+
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
+
+    gap: 20px;
 }
 
+/* Card de estatística */
 .stat-card {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(10px);
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
 
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
+    backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
 
     padding: 1.5rem;
+
     display: flex;
     align-items: center;
     gap: 1rem;
 
     transition: 0.3s;
+
+    position: relative;
+    overflow: hidden;
 }
 
+/* Glow sutil */
+.stat-card::before {
+    content: '';
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    background: radial-gradient(circle, rgba(99,102,241,0.2), transparent);
+
+    top: -40px;
+    right: -40px;
+
+    filter: blur(50px);
+}
+
+/* Hover */
 .stat-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     border-color: rgba(255,255,255,0.15);
+
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
 }
 
+/* Ícone */
 .stat-icon {
     font-size: 2rem;
+    color: #6366F1;
 }
 
+/* Conteúdo */
 .stat-content {
     display: flex;
     flex-direction: column;
 }
 
+/* Label */
 .stat-label {
-    font-size: 0.9rem;
-    color: #777;
+    font-size: 0.85rem;
+    color: #9CA3AF;
 }
 
+/* Valor */
 .stat-value {
     font-size: 1.6rem;
-    font-weight: bold;
-    color: var(--color-primary-dark);
+    font-weight: 700;
+    color: #E5E7EB;
 }
+
+
 
 /* ===============================
    FOOTER
@@ -476,3 +610,16 @@ main hr {
     }
 }
 
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 768px) {
+    .biblioteca-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}

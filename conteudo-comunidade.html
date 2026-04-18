@@ -33,6 +33,8 @@
             </nav>
         </header>
 
+        <main>
+
         <!-- banner, titulo e descrição da comunidade -->
         <section class="banner-comunidade">
             <h2 id="titulo-comunidade"></h2>
@@ -40,60 +42,61 @@
         </section>
 
         <!-- posts da comunidade -->
-<section class="posts-section">
-    <h3>Postagens</h3>
-    <div id="lista-posts"></div>
-</section>
+        <section class="posts-section">
+            <h3>Postagens</h3>
+            <div id="lista-posts"></div>
+        </section>
 
-    <!-- criação de post da comunidade-->
-<section class="post-form-container">
-    <h3> Adicionar postagem</h3>
-    
-    <div class="form-group">
-        <label for="titulo-post">Título da postagem</label>
-        <input type="text" id="titulo-post" placeholder="Sobre o que deseja falar?">
-    </div>
-
-    <div class="form-group">
-        <label for="texto-post">Seu comentário</label>
-        <textarea id="texto-post" placeholder="Deixe seu comentários..."></textarea>
-    </div>
-
-    <button class="btn-publicar" onclick="criarPost()">Publicar</button>
-</section>
-
-        
-
-   <footer class="footer">
-    <div class="footer-container">
-
-        <div class="footer-brand">
-            <h2>ParaBook</h2>
-            <p>O melhor site de livros.</p>
-        </div>
-
-        <div class="footer-links">
-            <h4>Links</h4>
-            <a href="#">Início</a>
-            <a href="#">Biblioteca</a>
-            <a href="#">Comunidades</a>
-        </div>
-
-        <div class="footer-social">
-            <h4>Redes</h4>
-            <div class="icons">
-                <i class="fa-brands fa-instagram"></i>
-                <i class="fa-brands fa-facebook"></i>
-                <i class="fa-brands fa-github"></i>
+        <!-- criação de post da comunidade-->
+        <section class="post-form-container">
+            <h3> Adicionar postagem</h3>
+            
+            <div class="form-group">
+                <label for="titulo-post">Título da postagem</label>
+                <input type="text" id="titulo-post" placeholder="Sobre o que deseja falar?">
             </div>
-        </div>
 
-    </div>
+            <div class="form-group">
+                <label for="texto-post">Seu comentário</label>
+                <textarea id="texto-post" placeholder="Deixe seu comentários..."></textarea>
+            </div>
 
-    <div class="footer-bottom">
-        <p>© 2026 ParaBook. Todos os direitos reservados.</p>
-    </div>
-</footer>
+            <button class="btn-publicar" onclick="criarPost()">Publicar</button>
+        </section>
+
+        </main>
+        
+        <footer class="footer">
+            <div class="footer-container">
+
+                <div class="footer-brand">
+                    <h2>ParaBook</h2>
+                    <p>O melhor site de livros.</p>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Links</h4>
+                    <a href="index.html">Início</a>
+                    <a href="biblioteca.html">Biblioteca</a>
+                    <a href="comunidade.html">Comunidades</a>
+                </div>
+
+                <div class="footer-social">
+                    <h4>Redes</h4>
+                    <div class="icons">
+                        <i class="fa-brands fa-instagram"></i>
+                        <i class="fa-brands fa-facebook"></i>
+                        <i class="fa-brands fa-github"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026. Todos os direitos reservados.</p>
+            </div>
+        </footer>
+        <hr class="footer-bottom-line">
 
 <script src="js/script.js"></script>
 

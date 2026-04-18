@@ -123,6 +123,7 @@ body {
     border-radius: 45px;
     padding: 8px 18px;
     font-weight: bold;
+    font-size: var(--fs-small);
     border: none;
     cursor: pointer;
 }
@@ -797,18 +798,26 @@ button {
 /*  =======================================================
           Seção do Footer e suas classes
     =======================================================  */
+    
 .footer {
     background: #020617;
     border-top: 1px solid #1F2937;
-    padding: 40px 60px 20px;
+    padding: 40px 60px 20px 60px;
     color: #9CA3AF;
 }
 
 .footer-container {
     display: flex;
     justify-content: space-between;
+    align-items:center;
     flex-wrap: wrap;
     gap: 40px;
+}
+
+.footer-brand {
+    position: relative;
+    top: -12px;
+    line-height: 2;
 }
 
 .footer h2, .footer {
@@ -816,11 +825,15 @@ button {
     text-align: center;
 }
 
+.footer-links {
+    margin-right: 30px;
+}
+
 .footer-links a {
     display: block;
     color: #9CA3AF;
     text-decoration: none;
-    margin: 5px 0;
+    margin: 5px;
     transition: 0.3s;
 }
 
@@ -830,9 +843,14 @@ button {
 
 .footer-social .icons i {
     font-size: 1.4rem;
-    margin-right: 10px;
+    margin: 12px 8px 5px 8px;
     cursor: pointer;
     transition: 0.3s;
+}
+
+.footer-social h4 {
+    position: relative;
+    top: -10px;
 }
 
 .footer-social .icons i:hover {
@@ -841,8 +859,16 @@ button {
 
 .footer-bottom {
     text-align: center;
+    letter-spacing: .1rem;
     margin-top: 30px;
-    border-top: 1px solid #1F2937;
     padding-top: 10px;
     font-size: 0.9rem;
+}
+
+.footer-bottom-line {
+    position: relative;
+    top: -60px;
+    height: 1px;
+    background: #1F2937;
+    border: none;
 }

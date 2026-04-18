@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leitura</title>
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-    <link rel="stylesheet" href="css/leitura.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Leitura</title>
+        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+        <link rel="stylesheet" href="css/leitura.css">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    </head>
 
-<body>
-
-            <header>
+    <body>
+        <header>
             <nav class="container nav">
 
                 <div class="logo-container">
@@ -21,51 +22,76 @@
                             class="book">Book</span></h1>
                 </div>
                 <ul class="menu">
-<li><a href="index.html"><button class="login-btn">Início</button></a></li>
+                    <li><a href="index.html"><button class="login-btn">Início</button></a></li>
                 </ul>
             </nav>
         </header>
 
+        <main>
 
+            <!-- registro da leitura do livro-->
+            <section class="container leitura-container">
+                <section class="livro-info">
+                    <h2 id="titulo"></h2>
+                    <p id="autor"></p>
+                </section>
 
+                <section class="leitor-pdf">
+                    <canvas id="pdf-canvas"></canvas>
+                </section>
 
-    <main>
+                <div class="progresso-container">
+                    <div id="barra-progresso"></div>
+                </div>
 
-        <!-- registro da leitura do livro-->
-        <section class="container leitura-container">
-            <section class="livro-info">
-                <h2 id="titulo"></h2>
-                <p id="autor"></p>
+                <div class="controles-leitura">
+                    <button onclick="paginaAnterior()" class="btn">Voltar página</button>
+                    <span id="pagina-info">Página 1</span>
+                    <button onclick="proximaPagina()" class="btn">Próxima página</button>
+                </div>
+
+                <!-- opção de voltar-->
+                <div class="acoes">
+                    <a href="acesso-biblioteca.html" class="btn">Voltar</a>
+                </div>
             </section>
+        </main>
 
-<section class="leitor-pdf">
-    <canvas id="pdf-canvas"></canvas>
-</section>
+        <footer class="footer">
+            <div class="footer-container">
 
-<div class="progresso-container">
-    <div id="barra-progresso"></div>
-</div>
+                <div class="footer-brand">
+                    <h2>ParaBook</h2>
+                    <p>O melhor site de livros.</p>
+                </div>
 
-<div class="controles-leitura">
-    <button onclick="paginaAnterior()" class="btn">Voltar página</button>
-    <span id="pagina-info">Página 1</span>
-    <button onclick="proximaPagina()" class="btn">Próxima página</button>
-</div>
+                <div class="footer-links">
+                    <h4>Links</h4>
+                    <a href="index.html">Início</a>
+                    <a href="biblioteca.html">Biblioteca</a>
+                    <a href="comunidade.html">Comunidades</a>
+                </div>
 
-            <!-- opção de voltar-->
-            <div class="acoes">
-                <a href="acesso-biblioteca.html" class="btn">Voltar</a>
+                <div class="footer-social">
+                    <h4>Redes</h4>
+                    <div class="icons">
+                        <i class="fa-brands fa-instagram"></i>
+                        <i class="fa-brands fa-facebook"></i>
+                        <i class="fa-brands fa-github"></i>
+                    </div>
+                </div>
+
             </div>
-        </section>
-    </main>
 
-    <footer class="footer">
-        <h1 class="footer-titulo">&copy; ParaBook</h1>
-        <span>2026. Todos os direitos reservados.</span>
-    </footer>
-<script src="js/biblioteca.js"></script>
-<script src="js/leitura.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+            <div class="footer-bottom">
+                <p>© 2026. Todos os direitos reservados.</p>
+            </div>
+        </footer>
+        <hr class="footer-bottom-line">
 
-</body>
+    <script src="js/biblioteca.js"></script>
+    <script src="js/leitura.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    </body>
 </html>

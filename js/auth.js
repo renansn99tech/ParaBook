@@ -65,7 +65,7 @@ btnRegister.addEventListener("click", function(){
 });
 
 // LOGIN
-btnLogin.addEventListener("click", function(){
+/*btnLogin.addEventListener("click", function(){
     const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
 
@@ -79,6 +79,30 @@ btnLogin.addEventListener("click", function(){
     }
 
     alert(`Bem-vindo, ${user.user}!`);
+});*/
+
+btnLogin.addEventListener("click", function(e){
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const user = users.find(
+        u => u.email === email && u.password === password
+    );
+
+    if(!user){
+        alert("E-mail ou senha incorretos.");
+        return;
+    }
+
+    // ✅ SALVA USUÁRIO LOGADO
+    localStorage.setItem("usuarioLogado", JSON.stringify(user));
+
+    alert(`Bem-vindo, ${user.user}!`);
+
+    // ✅ REDIRECIONA
+    window.location.href = "index.html";
 });
 
 // Mostrar senha

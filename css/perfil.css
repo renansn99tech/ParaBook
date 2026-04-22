@@ -119,7 +119,7 @@ main hr {
 
 .perfil-cover {
     height: 260px;
-    background: linear-gradient(135deg, #1E40FF, #8B5CF6, #111827);
+    background: linear-gradient(180deg, #1E40FF, #8B5CF6, #111827);
     /*position: relative;*/
     overflow: hidden;
 }
@@ -373,6 +373,7 @@ main hr {
     position: relative;
     overflow: hidden;
     transition: 0.4s;
+    margin-top: 20px;
 }
 
 .info-card::before,

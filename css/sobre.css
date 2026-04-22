@@ -189,13 +189,35 @@ main hr {
 }
 
 /* =================================
-   ANIMAÇÃO DE SCROLL
+    ANIMAÇÃO DE SCROLL
 ================================= */
 
-.fade-section {
+/* .fade-section {
     opacity: 0;
     transform: translateY(40px);
     transition: all 0.8s ease;
+} */
+
+.fade-section {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efeito elástico */
+}
+
+.fade-section img {
+    max-width: 100%;
+}
+
+/* Efeito de Hover e Scale */
+.fade-section:hover {
+    transform: translateY(-10px) scale(1.02);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: #6366F1; /* Cor de destaque */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .fade-section.show {
@@ -203,8 +225,185 @@ main hr {
     transform: translateY(0);
 }
 
+.sobre-conteudo h2 {
+    margin: .5rem;
+    font-family: var(--font-playfair);
+    font-style: normal;
+    font-size: var(--fs-h2);
+    letter-spacing: .5px;
+    background: linear-gradient(to right, #fff, #9CA3AF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.sobre-conteudo li i {
+    background: linear-gradient(90deg, #E53935, #6A1B9A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.fade-section:hover li i {
+    transform: rotate(15deg) scale(1.2);
+}
+
+/* =================== Container Principal da Seção ROADMAP =================== */
+.timeline-container {
+    position: relative;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px 0;
+}
+
+/* A Linha Vertical Central */
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, #E53935, #6A1B9A, #1E40FF, rgba(30, 64, 255, 0));
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+    padding-left: 60px;
+}
+
+/* O Ponto na Linha */
+.timeline-dot {
+    position: absolute;
+    left: 12px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #020617;
+    border: 2px solid #6366F1;
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+/* Conteúdo do Card */
+.timeline-content {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    transition: 0.3s ease;
+}
+
+.timeline-content .date {
+    font-family: var(--font-data); /* Inter */
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #6366F1;
+    letter-spacing: 2px;
+}
+
+.timeline-content h3 {
+    font-family: var(--font-ui); /* Montserrat */
+    margin: 10px 0;
+    font-size: 1.2rem;
+}
+
+/* --- ESTADOS DA TIMELINE --- */
+
+/* Item Ativo (Destaque para o que será apresentado em Junho) */
+.timeline-item.done .timeline-dot {
+    background: #E53935;
+    border-color: #E53935;
+    box-shadow: 0 0 15px rgba(229, 57, 53, 0.5);
+}
+
+.timeline-item.done .timeline-content .date {
+    color: #E53935;
+}
+
+.timeline-item.active .timeline-dot {
+    background: #6A1B9A;
+    border-color: #6A1B9A;
+    box-shadow: 0 0 20px rgba(106, 27, 154, 0.8);
+    animation: pulse-purple 2s infinite;
+}
+
+.timeline-item.active .timeline-content {
+    border-color: rgba(138, 88, 172, 0.5);
+    background: rgba(106, 27, 154, 0.08); /* Glow roxo sutil no card */
+}
+
+.timeline-item.active .timeline-content .date {
+    color: #6A1B9A;
+}
+
+/* Animação de Pulso em Roxo */
+@keyframes pulse-purple {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(106, 27, 154, 0.7); }
+    70% { transform: scale(1.2); box-shadow: 0 0 0 12px rgba(106, 27, 154, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(106, 27, 154, 0); }
+}
+
+/* Hover refinado com a cor principal */
+.timeline-content:hover {
+    border-color: rgba(106, 27, 154, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(10px);
+}
+
+/* Estilo para itens FUTUROS (Blue/Deep Ocean) */
+.timeline-item.future .timeline-dot {
+    background: transparent;
+    border-color: #1E40FF;
+    box-shadow: 0 0 10px rgba(30, 64, 255, 0.4);
+}
+
+.timeline-item.future .timeline-content .date {
+    color: #1E40FF;
+}
+
+/* Item Futuro (Mais apagado/nebuloso) */
+.timeline-item.future {
+    opacity: 0.6;
+}
+
+.timeline-item.future .timeline-dot {
+    border-style: dotted;
+}
+
+/* Estilo para a bolinha do projeto futuro */
+.timeline-item.future .timeline-dot {
+    background: #020617; /* Fundo escuro para destacar a borda neon */
+    border: 2px solid #1E40FF; /* Azul intenso da sua logo */
+    box-shadow: 0 0 10px rgba(30, 64, 255, 0.6), 
+                inset 0 0 5px rgba(30, 64, 255, 0.4);
+    animation: breath-blue 3s ease-in-out infinite; /* Animação mais suave que o pulso */
+}
+
+/* Animação de "Respiração" Azul */
+@keyframes breath-blue {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 10px rgba(30, 64, 255, 0.6); 
+        border-color: #1E40FF;
+    }
+    50% { 
+        transform: scale(1.1); 
+        box-shadow: 0 0 20px rgba(30, 64, 255, 0.9); 
+        border-color: #6366F1; /* Leve transição para um azul mais claro no auge */
+    }
+}
+
+/* Ajuste no texto da data para combinar */
+.timeline-item.future .timeline-content .date {
+    color: #1E40FF;
+    text-shadow: 0 0 8px rgba(30, 64, 255, 0.3);
+}
+
 /* =================================
-   RESPONSIVO
+    RESPONSIVO
 ================================= */
 
 @media (max-width: 768px) {

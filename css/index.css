@@ -163,12 +163,19 @@ main hr{
    TITULO
 ================================= */
 
-.hero-img{
+.hero-img {
    width: 100%;
    height: 50%;
    margin-top: -410px;
    margin-bottom: -470px;
    z-index: -1;
+}
+
+@media (max-width: 768px) {
+    .hero-img {
+        display: none;
+        margin: 0;
+    }
 }
 
 

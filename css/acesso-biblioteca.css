@@ -223,17 +223,15 @@ main hr {
 
 /* Container dos livros em formato de grid responsivo */
 .biblioteca-grid {
-    display: grid;
-
-    /* Cria colunas automáticas com tamanho mínimo de 240px */
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+   
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 
     /* Espaçamento entre os cards */
-    gap: 25px;
-
-    /* Garante que todos os cards tenham a mesma altura */
-    align-items: stretch;
-
+    gap: 30px;
     margin-top: 2rem;
 }
 
@@ -248,6 +246,19 @@ main hr {
    ========================================================= */
 
 .card-livro {
+
+    width: 100%;
+    max-width: 400px;
+    
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 15px;
+
     /* Fundo com efeito glassmorphism */
     background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
 
@@ -304,7 +315,10 @@ main hr {
 }
 
 .card-livro img {
-    width: 100%;
+    width: 80%;
+    margin: 20px auto; /* centraliza de verdade */
+    display: block;
+    border-radius: 15px;
     aspect-ratio: 2 / 3;
     object-fit: cover;
 
@@ -336,7 +350,7 @@ main hr {
 
 /* Botão do estado vazio */
 .btn-empty-state {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
 
@@ -369,10 +383,12 @@ main hr {
    ========================================================= */
 
 .btn {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     gap: 6px;
+
 
     padding: 10px 18px;
 
@@ -624,6 +640,10 @@ main hr {
 
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+
+    .card-livro{
+        margin: 0 auto;
     }
 }
 

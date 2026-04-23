@@ -443,11 +443,17 @@ margin: 2rem auto 0;
 
     /* The actual content */
     .content {
+    /*padding: 20px 30px;
+    background-color: #111827;
+    position: relative;
+    border-radius: 6px;
+    border: 1px solid #1F2937;*/
     padding: 20px 30px;
     background-color: #111827;
     position: relative;
     border-radius: 6px;
     border: 1px solid #1F2937;
+    overflow: hidden; /* impede qualquer vazamento */
     }
 
     .content img {
@@ -462,10 +468,17 @@ margin: 2rem auto 0;
     /*    box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* Sombra */
     /*    transition: transform 0.3s ease, box-shadow 0.3s ease;
         cursor: pointer;*/
-            width: 180px;
+    /*width: 180px;
     height: 260px;
     object-fit: cover;
+    border-radius: 8px;*/
+    width: 100%;        /* ocupa o espaço disponível */
+    max-width: 180px;   /* limite máximo */
+    height: auto;       /* mantém proporção */
+    object-fit: cover;
     border-radius: 8px;
+    display: block;
+    margin: 0 auto;     /* centraliza */
     }
 
     /* Efeito ao passar o mouse */

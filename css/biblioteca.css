@@ -233,6 +233,24 @@ hr {
     }
 }
 
+ @media (max-width: 768px) {
+    .nav {
+        flex-direction: column;
+    }
+
+    .menu {
+        flex-direction: column;
+    }
+
+    #secao-FAQ {
+        flex-direction: column;
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ===============================
    FOOTER
 ================================= */

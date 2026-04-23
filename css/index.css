@@ -360,6 +360,7 @@ main hr{
     color: #9CA3AF;
     text-align: center;
     font-size: 0.9rem;
+    margin-top: 20px;
 }
 
 .btn-main {
@@ -642,4 +643,146 @@ summary::-webkit-details-marker {
     height: 1px;
     background: #1F2937;
     border: none;
+}
+
+/* ===============================
+   LIGHT MODE
+================================= */
+
+body.light-mode {
+    background: #F5FFFA;
+    color: #020617;
+}
+
+/* NAVBAR */
+body.light-mode .nav {
+    background: rgba(255,255,255,0.8);
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* MENU */
+body.light-mode .menu li a {
+    color: #374151;
+}
+
+body.light-mode .menu li a:hover {
+    color: #020617;
+}
+
+/* BOTÃO LOGIN */
+body.light-mode .login-btn {
+    background: #22C55E;
+    color: #020617;
+}
+
+/* TÍTULO */
+body.light-mode .titulo h2,
+body.light-mode .titulo p {
+    color: #020617;
+}
+
+/* BOTÃO HERO */
+body.light-mode .titulo-btn {
+    background-image: 
+        linear-gradient(#ffffff, #ffffff), 
+        linear-gradient(to right,#1E40FF, #6A1B9A);
+    
+    color: #020617;
+}
+
+/* CARDS SUPERIORES */
+body.light-mode .card-novo {
+    background: rgba(0,0,0,0.03);
+    border: 1px solid #d1d5db;
+}
+
+body.light-mode .card-novo:hover {
+    border: 1px solid #9ca3af;
+}
+
+body.light-mode .content {
+    color: #4b5563;
+}
+
+/* CARROSSEL */
+body.light-mode .card-carousel .card {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+}
+
+body.light-mode .card p {
+    color: #374151;
+}
+
+/* BOTÕES CARROSSEL */
+body.light-mode .carousel-btn {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #d1d5db;
+    color: #020617;
+}
+
+/* FAQ */
+body.light-mode .titulo-faq {
+    color: #020617;
+}
+
+body.light-mode .duvidas-frequentes h3 {
+    color: #020617;
+}
+
+body.light-mode .detalhe-duvidas {
+    color: #020617;
+}
+
+body.light-mode .conteudo-duvidas {
+    color: #4b5563;
+}
+
+body.light-mode .conteudo-duvidas a {
+    color: #4F46E5;
+}
+
+/* FORM */
+body.light-mode .contact-input,
+body.light-mode .contact-textarea {
+    background: #ffffff;
+    color: #020617;
+    border: 1px solid #d1d5db;
+}
+
+body.light-mode .contact-input::placeholder,
+body.light-mode .contact-textarea::placeholder {
+    color: #6b7280;
+}
+
+/* FOOTER */
+body.light-mode .footer {
+    background: #e5e7eb;
+    border-top: 1px solid #d1d5db;
+    color: #374151;
+}
+
+body.light-mode .footer h2 {
+    color: #020617;
+}
+
+body.light-mode .footer-links a {
+    color: #374151;
+}
+
+body.light-mode .footer-links a:hover {
+    color: #4F46E5;
+}
+
+body.light-mode .footer-social .icons i {
+    color: #374151;
+}
+
+body.light-mode .footer-bottom-line {
+    background: #d1d5db;
+}
+
+/* LINHAS */
+body.light-mode main hr {
+    background: #d1d5db;
 }

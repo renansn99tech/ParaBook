@@ -419,7 +419,19 @@ main hr {
     box-shadow: 0 5px 15px rgba(0,0,0,0.4);
 }
 
+.btn.remover-btn {
+  background: #dc2626 !important;
+}
 
+.btn.remover-btn:hover {
+  background: #b91c1c !important;
+}
+
+.card-acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
 /* =========================================================
    SEÇÃO DE ESTATÍSTICAS
    ========================================================= */

@@ -18,7 +18,7 @@
     paginaAtual = Number(localStorage.getItem(`pagina_${id}`)) || 1;
     carregarPDF(livro.caminho);
     }
-    function carregarPDF(caminho) {
+    /*function carregarPDF(caminho) {
     if (!window.pdfjsLib) {
         console.error("PDF.js não carregado");
         return;
@@ -29,6 +29,21 @@
         if (paginaAtual > totalPaginas) paginaAtual = 1;
         renderizarPagina(paginaAtual);
     });
+    }*/
+    function carregarPDF(caminho) {
+        if (!window.pdfjsLib) return;
+
+        pdfjsLib.getDocument(caminho).promise.then(pdf => {
+            pdfDoc = pdf;
+            totalPaginas = pdf.numPages;
+
+            // 👇 SALVA TOTAL DE PÁGINAS
+            localStorage.setItem(`total_${livroAtualId}`, totalPaginas);
+
+            if (paginaAtual > totalPaginas) paginaAtual = 1;
+
+            renderizarPagina(paginaAtual);
+        });
     }
     function renderizarPagina(numero) {
     if (!pdfDoc) return;

@@ -679,4 +679,27 @@ main hr {
     .grid-container {
         grid-template-columns: 1fr;
     }
+    .footer {
+        padding: 40px 20px; /* Reduz o padding lateral que era muito grande */
+    }
+
+    .footer-container {
+        flex-direction: column; /* Empilha os itens verticalmente */
+        text-align: center;     /* Centraliza o texto de tudo */
+        gap: 30px;              /* Espaçamento entre as seções */
+    }
+
+    .footer-brand, .footer-links, .footer-social {
+        margin: 0;
+        top: 0;                 /* Remove os offsets negativos que desalinhariam no mobile */
+    }
+
+    .footer-links {
+        margin-right: 0;        /* Remove a margem lateral específica */
+    }
+
+    .footer-bottom-line {
+        top: 0;                 /* Ajusta a linha para não sobrepor o conteúdo */
+        margin-bottom: 20px;
+    }
 }

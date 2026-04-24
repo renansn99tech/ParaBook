@@ -36,57 +36,103 @@ const comunidades = {
         ]
     }
 };
-    function entrarComunidade(tipo) {
+
+/* =====================================================
+   DARK MODE / LIGHT MODE
+===================================================== */
+
+function aplicarTema() {
+    const temaSalvo = localStorage.getItem("tema");
+
+    if (temaSalvo === "light") {
+        document.body.classList.add("light-mode");
+    } else {
+        document.body.classList.remove("light-mode");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    aplicarTema();
+    mostrarComunidadesSalvas();
+    carregarDetalheComunidade();
+});
+
+/* =====================================================
+   COMUNIDADES
+===================================================== */
+
+function entrarComunidade(tipo) {
     let salvas = JSON.parse(localStorage.getItem("comunidades")) || [];
+
     if (!salvas.includes(tipo)) {
         salvas.push(tipo);
         localStorage.setItem("comunidades", JSON.stringify(salvas));
     }
+
     window.location.href = "acesso-comunidade.html";
-    }
-    function mostrarComunidadesSalvas() {
+}
+
+function mostrarComunidadesSalvas() {
     const container = document.getElementById("lista-comunidades-salvas");
+
     if (!container) return;
+
     let salvas = JSON.parse(localStorage.getItem("comunidades")) || [];
+
     if (salvas.length === 0) {
         container.innerHTML = "<p>Você ainda não entrou em nenhuma comunidade.</p>";
         return;
     }
+
     let html = "";
+
     salvas.forEach(tipo => {
         const c = comunidades[tipo];
-html += `
-<div class="comunidade-card">
-    <h4>${c.titulo}</h4>
-    <p>${c.descricao}</p>
-    <a href="conteudo-comunidade.html?tipo=${tipo}" class="btn">
-        Acessar
-    </a>
-</div>
-`;
-    });
-    container.innerHTML = html;
-    }
-    function carregarDetalheComunidade() {
-    const titulo = document.getElementById("titulo-comunidade");
-    if (!titulo) return;
-    const tipo = new URLSearchParams(window.location.search).get("tipo");
-    const c = comunidades[tipo];
-    if (!c) return;
-    titulo.innerText = c.titulo;
-    document.getElementById("descricao-comunidade").innerText = c.descricao;
-    let html = "";
-    c.posts.forEach(post => {
+
         html += `
-    <div class="comunidade-card">
-    <h4>${post.titulo}</h4>
-    <p>${post.texto}</p>
-    </div>
+            <div class="comunidade-card">
+                <h4>${c.titulo}</h4>
+                <p>${c.descricao}</p>
+                <a href="conteudo-comunidade.html?tipo=${tipo}" class="btn">
+                    Acessar
+                </a>
+            </div>
         `;
     });
-    document.getElementById("lista-posts").innerHTML = html;
+
+    container.innerHTML = html;
+}
+
+function carregarDetalheComunidade() {
+    const titulo = document.getElementById("titulo-comunidade");
+
+    if (!titulo) return;
+
+    const tipo = new URLSearchParams(window.location.search).get("tipo");
+    const c = comunidades[tipo];
+
+    if (!c) return;
+
+    titulo.innerText = c.titulo;
+
+    const descricao = document.getElementById("descricao-comunidade");
+    if (descricao) {
+        descricao.innerText = c.descricao;
     }
-    document.addEventListener("DOMContentLoaded", () => {
-    mostrarComunidadesSalvas();
-    carregarDetalheComunidade();
+
+    let html = "";
+
+    c.posts.forEach(post => {
+        html += `
+            <div class="comunidade-card">
+                <h4>${post.titulo}</h4>
+                <p>${post.texto}</p>
+            </div>
+        `;
     });
+
+    const listaPosts = document.getElementById("lista-posts");
+    if (listaPosts) {
+        listaPosts.innerHTML = html;
+    }
+}

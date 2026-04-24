@@ -248,7 +248,7 @@
         capa: "/livros/capas_livros/100historia.png"
     },
     
-    }; // mantém exatamente como você já tem
+    };
     
     // ADICIONAR LIVRO
     function adicionarLivro(id) {
@@ -348,4 +348,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("filtro-status")
         ?.addEventListener("change", carregarBiblioteca);
+});
+
+/* =========================
+   DARK / LIGHT MODE GLOBAL
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+    const temaSalvo = localStorage.getItem("theme");
+
+    if (temaSalvo === "light") {
+        document.body.classList.add("light-mode");
+    } else {
+        document.body.classList.remove("light-mode");
+    }
 });

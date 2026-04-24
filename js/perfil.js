@@ -1,24 +1,46 @@
-// Script para as abas
+document.addEventListener("DOMContentLoaded", () => {
 
-// Aqui o JS ouve cliques nos .tab-btn e alterna a classe "active" nos .tab-content correspondentes
+    /* =========================================
+       APLICAR TEMA SALVO
+    ========================================= */
 
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    // Remove active de todos os botões e conteúdos
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const temaSalvo = localStorage.getItem("theme");
 
-    // Adiciona active ao clicado
-    btn.classList.add('active');
-    const tabId = btn.getAttribute('data-tab');
-    document.getElementById(tabId).classList.add('active');
-  });
+    if (temaSalvo === "light") {
+        document.body.classList.add("light-mode");
+    } else {
+        document.body.classList.remove("light-mode");
+    }
+
+    /* =========================================
+       FUNCIONAMENTO DAS ABAS
+    ========================================= */
+
+    const botoes = document.querySelectorAll(".tab-btn");
+    const conteudos = document.querySelectorAll(".tab-content");
+
+    botoes.forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            botoes.forEach(b => b.classList.remove("active"));
+            conteudos.forEach(c => c.classList.remove("active"));
+
+            btn.classList.add("active");
+
+            const tabId = btn.dataset.tab;
+            document.getElementById(tabId).classList.add("active");
+        });
+    });
+
+    /* =========================================
+       DADOS DE EXEMPLO
+    ========================================= */
+
+    document.getElementById("nomePerfil").textContent = "João Silva";
+    document.getElementById("userPerfil").textContent = "@joaosilva";
+    document.getElementById("totalLidos").textContent = "12";
+    document.getElementById("emLeitura").textContent = "3";
+    document.getElementById("totalAvaliados").textContent = "10";
+    document.getElementById("comunidades").textContent = "5";
+
 });
-
-// Preencher dados do perfil (exemplo)
-document.getElementById('nomePerfil').textContent = 'João Silva';
-document.getElementById('userPerfil').textContent = '@joaosilva';
-document.getElementById('totalLidos').textContent = '12';
-document.getElementById('emLeitura').textContent = '3';
-document.getElementById('totalAvaliados').textContent = '10';
-document.getElementById('comunidades').textContent = '5';

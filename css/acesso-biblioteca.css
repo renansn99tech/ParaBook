@@ -703,3 +703,83 @@ main hr {
         margin-bottom: 20px;
     }
 }
+
+/* =========================
+   LIGHT MODE
+========================= */
+
+body.light-mode {
+    background: #F8FAFC;
+    color: #1F2937;
+}
+
+/* NAV */
+
+body.light-mode .nav {
+    background: rgba(255,255,255,0.85);
+}
+
+body.light-mode .menu li a {
+    color: #374151;
+}
+
+body.light-mode .menu li a:hover {
+    color: #111827;
+}
+
+/* CARDS */
+
+body.light-mode .card-livro,
+body.light-mode .stat-card {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #D1D5DB;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+body.light-mode .card-livro h3,
+body.light-mode .stat-value,
+body.light-mode .biblioteca-title,
+body.light-mode .titulo-biblioteca {
+    color: #111827;
+}
+
+body.light-mode .card-livro p,
+body.light-mode .stat-label,
+body.light-mode .empty-state {
+    color: #6B7280;
+}
+
+/* INPUTS */
+
+body.light-mode .filter-input,
+body.light-mode .filter-select {
+    background: white;
+    color: #111827;
+    border: 1px solid #D1D5DB;
+}
+
+body.light-mode .filter-input::placeholder {
+    color: #6B7280;
+}
+
+/* FOOTER */
+
+body.light-mode .footer {
+    background: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+    color: #6B7280;
+}
+
+body.light-mode .footer h2,
+body.light-mode .footer h4,
+body.light-mode .footer-bottom {
+    color: #111827;
+}
+
+body.light-mode .footer-links a {
+    color: #4B5563;
+}
+
+body.light-mode .footer-bottom-line {
+    background: #E5E7EB;
+}

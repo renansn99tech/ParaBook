@@ -1,3 +1,18 @@
+// ===============================
+// VERIFICAR TEMA SALVO (INDEX → LOGIN)
+// ===============================
+
+window.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "light") {
+        document.body.classList.add("light-mode");
+    } else {
+        document.body.classList.remove("light-mode");
+    }
+});
+
+
 const container = document.getElementById("container");
 const showRegister = document.getElementById("showRegister");
 const showLogin = document.getElementById("showLogin");

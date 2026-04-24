@@ -12,43 +12,64 @@ document.addEventListener("DOMContentLoaded", () => {
         if (perfilLink) perfilLink.style.display = "none";
     }
 
-    // ===============================
+    // ==================================================
     // DARK / LIGHT MODE
-    // ===============================
+    // ==================================================
 
     const toggleBtn = document.getElementById("theme-toggle");
     const body = document.body;
     const heroImg = document.getElementById("hero-image");
 
-    const darkImage = "/img/hero-bg.jpg";
-    const lightImage = "/img/hero-light-bg.jpg"; // SUA IMAGEM CLARA
+    const darkImage = "img/hero-bg.jpg";
+    const lightImage = "img/hero-light-bg.jpg";
 
     function applyTheme(theme) {
         if (theme === "light") {
             body.classList.add("light-mode");
-            heroImg.src = lightImage;
-            toggleBtn.textContent = "🌙";
+
+            if (heroImg) {
+                heroImg.src = lightImage;
+            }
+
+            if (toggleBtn) {
+                toggleBtn.textContent = "🌙";
+            }
+
         } else {
             body.classList.remove("light-mode");
-            heroImg.src = darkImage;
-            toggleBtn.textContent = "☀️";
+
+            if (heroImg) {
+                heroImg.src = darkImage;
+            }
+
+            if (toggleBtn) {
+                toggleBtn.textContent = "☀️";
+            }
         }
     }
 
-    // carrega tema salvo
+    // ==================================================
+    // CARREGA O TEMA SALVO EM TODAS AS PÁGINAS
+    // ==================================================
+
     const savedTheme = localStorage.getItem("theme") || "dark";
     applyTheme(savedTheme);
 
-    // botão toggle
-    toggleBtn.addEventListener("click", () => {
-        const isLight = body.classList.contains("light-mode");
+    // ==================================================
+    // BOTÃO TOGGLE (somente existe na index)
+    // ==================================================
 
-        if (isLight) {
-            localStorage.setItem("theme", "dark");
-            applyTheme("dark");
-        } else {
-            localStorage.setItem("theme", "light");
-            applyTheme("light");
-        }
-    });
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            const isLight = body.classList.contains("light-mode");
+
+            if (isLight) {
+                localStorage.setItem("theme", "dark");
+                applyTheme("dark");
+            } else {
+                localStorage.setItem("theme", "light");
+                applyTheme("light");
+            }
+        });
+    }
 });

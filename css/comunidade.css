@@ -874,3 +874,118 @@ button {
         margin-bottom: 20px;
     }
 }
+
+/* =====================================================
+   LIGHT MODE / DARK MODE
+   Adicione este bloco no FINAL do seu comunidade.css
+===================================================== */
+
+/* ---------- LIGHT MODE ---------- */
+
+body.light-mode {
+    background: #ffffff;
+    color: #1F2937;
+}
+
+/* NAV */
+body.light-mode .nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #E5E7EB;
+}
+
+body.light-mode .menu li a {
+    color: #374151;
+}
+
+body.light-mode .menu li a:hover {
+    color: #111827;
+}
+
+/* Títulos e textos */
+body.light-mode .pagina-comunidade h2,
+body.light-mode .pagina-comunidade h3,
+body.light-mode .card-content h3,
+body.light-mode .footer h2,
+body.light-mode .footer h4 {
+    color: #111827;
+}
+
+body.light-mode .pagina-comunidade p,
+body.light-mode .card-content p,
+body.light-mode .footer p,
+body.light-mode .footer-links a {
+    color: #4B5563;
+}
+
+/* Cards */
+body.light-mode .card {
+    background: #ffffff;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+body.light-mode .card::before {
+    background: radial-gradient(circle, rgba(99,102,241,0.12), transparent);
+}
+
+body.light-mode .card:hover {
+    box-shadow: 0 18px 40px rgba(0,0,0,0.10);
+}
+
+/* Footer */
+body.light-mode .footer {
+    background: #F9FAFB;
+    border-top: 1px solid #E5E7EB;
+}
+
+body.light-mode .footer-bottom-line {
+    background: #D1D5DB;
+}
+
+/* Botão login */
+body.light-mode .login-btn {
+    background: #22C55E;
+    color: white;
+}
+
+body.light-mode .login-btn:hover {
+    background: #16A34A;
+    color: white;
+}
+
+/* Botões padrão */
+body.light-mode .btn {
+    background: linear-gradient(90deg, #4F46E5, #7C3AED);
+    color: white;
+}
+
+/* Posts */
+body.light-mode .post-card {
+    background: #ffffff;
+    border-left: 5px solid #4F46E5;
+}
+
+body.light-mode .post-content {
+    color: #374151;
+}
+
+body.light-mode .post-title {
+    color: #111827;
+}
+
+/* Inputs */
+body.light-mode textarea,
+body.light-mode #titulo-post,
+body.light-mode #texto-post {
+    background: white;
+    color: #111827;
+    border: 1px solid #D1D5DB;
+}
+
+/* ---------- DARK MODE (garantia visual) ---------- */
+
+body:not(.light-mode) {
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+}

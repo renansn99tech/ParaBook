@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme(savedTheme);
 
     // ==================================================
-    // BOTÃO TOGGLE (somente existe na index)
+    // BOTÃO TOGGLE
     // ==================================================
 
     if (toggleBtn) {

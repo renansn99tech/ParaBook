@@ -248,7 +248,7 @@
         capa: "/livros/capas_livros/100historia.png"
     },
     
-    }; // mantém exatamente como você já tem
+    };
     
     // ADICIONAR LIVRO
     function adicionarLivro(id) {

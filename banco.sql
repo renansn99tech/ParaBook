@@ -2,7 +2,7 @@ Table usuarios {
 id int [pk, increment]
 nome varchar(100)
 email varchar(150) [unique]
-senha varchar(255)
+senha number
 perfil varchar(255)
 descricao text
 criado_em datetime
@@ -21,6 +21,7 @@ imagem varchar(255)
 ano_publicacao int
 isbn varchar(20) //identificador universal de livros
 genero varchar(100)
+livro_genero int 
 autor_id int [ref: > autores.id]
 }
 
@@ -30,6 +31,7 @@ usuario_id int [ref: > usuarios.id]
 livro_id int [ref: > livros.id]
 status enum("desejo ler", "lendo", "concluido", "desisti")
 nota int
+favorito boolean
 atualizado_em datetime
 }
 
@@ -37,6 +39,13 @@ Table reviews {
 id int [pk, increment]
 usuario_id int [ref: > usuarios.id]
 livro_id int [ref: > livros.id]
-comentario text
-criado_em datetime
+nota
+comentario
+}
+
+Table comunidades {
+    id int [pk, increment]
+    comunidades
+    posts
+    comentarios
 }

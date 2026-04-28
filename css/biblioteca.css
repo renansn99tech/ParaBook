@@ -189,13 +189,9 @@ main hr {
     margin-top: auto;
     padding: 0.9rem 1rem;
     border: none;
-    border-radius: 8px;
-    background: linear-gradient(
-        135deg,
-        var(--color-primary-dark),
-        var(--color-accent-olive)
-    );
-    color: white;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: #FFFFFF;
     font-weight: var(--fw-medium);
     cursor: pointer;
     transition: all 0.3s ease;

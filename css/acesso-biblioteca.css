@@ -30,7 +30,16 @@
 
     /* Espaçamento de linhas para maior conforto */
     --lh-body: 1.6; /* Espaçamento para o corpo do texto */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --border: rgba(148, 163, 184, 0.2);
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
 }
+
+
 
 *{
     margin: 0;
@@ -176,34 +185,78 @@ main hr {
    FILTROS
 ================================= */
 
+/* =========================
+   FILTRO (BIBLIOTECA)
+========================= */
 .biblioteca-filters {
-    margin: 2rem 0;
+  padding: 20px 0;
 }
 
 .filter-group {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.filter-input,
+/* INPUT BUSCA */
+.filter-input {
+  flex: 1 1 260px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text);
+  outline: none;
+  transition: 0.25s;
+}
+
+.filter-input::placeholder {
+  color: var(--text-muted);
+}
+
+.filter-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+/* =========================
+   SELECT MODERNO
+========================= */
 .filter-select {
-    padding: 12px 16px;
-    border: 1px solid #dcdcdc;
-    border-radius: 10px;
-    font-size: 1rem;
-    min-width: 250px;
-    outline: none;
-    transition: 0.3s ease;
+  flex: 1 1 180px;
+  padding: 12px 40px 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: 0.25s;
+
+  /* remove estilo padrão */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* seta custom */
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(1em + 2px),
+    calc(100% - 13px) calc(1em + 2px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
 }
 
-.filter-input:focus,
+.filter-select:hover {
+  border-color: var(--accent);
+}
+
 .filter-select:focus {
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 8px rgba(77, 74, 232, 0.2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
 }
-
 /* =================================
    GRID DE LIVROS
 ================================= */

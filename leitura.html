@@ -27,35 +27,55 @@
             </nav>
         </header>
 
-        <main>
+ <main>
 
-            <!-- registro da leitura do livro-->
-            <section class="container leitura-container">
-                <section class="livro-info">
-                    <h2 id="titulo"></h2>
-                    <p id="autor"></p>
-                </section>
+        <section class="container leitura-container">
 
-                <section class="leitor-pdf">
-                    <canvas id="pdf-canvas"></canvas>
-                </section>
-
-                <div class="progresso-container">
-                    <div id="barra-progresso"></div>
-                </div>
-
-                <div class="controles-leitura">
-                    <button onclick="paginaAnterior()" class="btn">Página Anterior</button>
-                    <span id="pagina-info">Página 1</span>
-                    <button onclick="proximaPagina()" class="btn">Próxima página</button>
-                </div>
-
-                <!-- opção de voltar-->
-                <div class="acoes">
-                    <a href="acesso-biblioteca.html" class="btn">Voltar à Biblioteca</a>
-                </div>
+            <!-- INFO DO LIVRO -->
+            <section class="livro-info">
+                <h2 id="titulo"></h2>
+                <p id="autor"></p>
             </section>
-        </main>
+
+            <!-- LOADING STATE (UX MELHORADA) -->
+            <div id="loading" class="loading-state">
+            </div>
+
+            <!-- VISUALIZAÇÃO PDF -->
+            <section class="leitor-pdf">
+                <canvas id="pdf-canvas"></canvas>
+            </section>
+
+            <!-- PROGRESSO -->
+            <div class="progresso-container">
+                <div id="barra-progresso"></div>
+            </div>
+
+            <!-- CONTROLES -->
+            <div class="controles-leitura">
+
+                <button onclick="paginaAnterior()" class="btn">
+                    <i class="fa-solid fa-arrow-left"></i> Anterior
+                </button>
+
+                <span id="pagina-info">Página 1</span>
+
+                <button onclick="proximaPagina()" class="btn">
+                    Próxima <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+            </div>
+
+            <!-- AÇÕES -->
+            <div class="acoes">
+                <a href="acesso-biblioteca.html" class="btn secondary">
+                    Voltar à Biblioteca
+                </a>
+            </div>
+
+        </section>
+    </main>
+
 
         <footer class="footer">
             <div class="footer-container">

@@ -33,94 +33,97 @@
             </nav>
         </header>
 
-        <main class="container-biblioteca">
+<main class="container-biblioteca">
 
-            <section class="banner-biblioteca">
-            <article class="container banner-content">
-                <h2 class="titulo-biblioteca"> Minha Biblioteca</h2>
-                <p>Aqui estão todos os livros que você adicionou. Organize sua coleção e acompanhe suas leituras!</p>
-            </article>
-            </section>
+    <section class="banner-biblioteca">
+        <article class="container banner-content">
+            <h2 class="titulo-biblioteca">Minha Biblioteca</h2>
+            <p>Aqui estão todos os livros que você adicionou. Organize sua coleção e acompanhe suas leituras!</p>
+        </article>
+    </section>
 
-            <!-- SEÇÃO DE FILTROS -->
-            <section class="biblioteca-filters">
-                <div class="container">
-                    <div class="filter-group">
-                        <input type="text" id="buscar-livros" class="filter-input" placeholder="🔍 Buscar livro por título ou autor...">
-                        
-                        <select id="filtro-genero" class="filter-select">
-                            <option value="">Todos os gêneros</option>
-                            <option value="filosofia">Filosofia</option>
-                            <option value="literatura">Literatura</option>
-                            <option value="religioso">Religioso</option>
-                        </select>
+    <section class="biblioteca-filters">
+        <div class="container">
+            <div class="filter-group">
 
-                        <select id="filtro-status" class="filter-select">
-                            <option value="">Todos os status</option>
-                            <option value="lendo">Lendo</option>
-                            <option value="concluido">Concluído</option>
-                            <option value="desejo">Desejo ler</option>
-                        </select>
+                <input type="text" id="buscar-livros" class="filter-input"
+                    placeholder="🔍 Buscar livro por título ou autor...">
+
+                <select id="filtro-genero" class="filter-select">
+                    <option value="">Todos os gêneros</option>
+                    <option value="filosofia">Filosofia</option>
+                    <option value="literatura">Literatura</option>
+                    <option value="religioso">Religioso</option>
+                </select>
+
+                <select id="filtro-status" class="filter-select">
+                    <option value="">Todos os status</option>
+                    <option value="lendo">Lendo</option>
+                    <option value="concluido">Concluído</option>
+                    <option value="desejo">Desejo ler</option>
+                </select>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="biblioteca-section">
+        <div class="container">
+            <h3 class="biblioteca-title">Seus Livros</h3>
+
+            <div id="lista-livros" class="biblioteca-grid"></div>
+
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <i class="fa-solid fa-book-open"></i>
+                <p>Você ainda não adicionou nenhum livro à sua biblioteca.</p>
+                <a href="index.html" class="btn-empty-state">Explorar Livros</a>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="biblioteca-stats">
+        <div class="container">
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-content">
+                        <p class="stat-label">Total de Livros</p>
+                        <p class="stat-value" id="total-livros">0</p>
                     </div>
                 </div>
-            </section>
 
-            <!-- SEÇÃO PRINCIPAL DE LIVROS -->
-            <section class="biblioteca-section">
-                <div class="container">
-                    <h3 class="biblioteca-title">Seus Livros</h3>
-                    
-                    <div id="lista-livros" class="biblioteca-grid"></div>
-
-                    <!-- ESTADO VAZIO -->
-                    <div id="empty-state" class="empty-state" style="display: none;">
-                        <i class="fa-solid fa-book-open"></i>
-                        <p>Você ainda não adicionou nenhum livro à sua biblioteca.</p>
-                        <a href="index.html" class="btn-empty-state">Explorar Livros</a>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <p class="stat-label">Concluídos</p>
+                        <p class="stat-value" id="livros-concluidos">0</p>
                     </div>
                 </div>
-            </section>
 
-            <!-- ESTATÍSTICAS -->
-            <section class="biblioteca-stats">
-                <div class="container">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">📚</div>
-                            <div class="stat-content">
-                                <p class="stat-label">Total de Livros</p>
-                                <p class="stat-value" id="total-livros">0</p>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-icon">✅</div>
-                            <div class="stat-content">
-                                <p class="stat-label">Concluídos</p>
-                                <p class="stat-value" id="livros-concluidos">0</p>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-icon">📖</div>
-                            <div class="stat-content">
-                                <p class="stat-label">Lendo Agora</p>
-                                <p class="stat-value" id="livros-lendo">0</p>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-icon">❤️</div>
-                            <div class="stat-content">
-                                <p class="stat-label">Desejo ler</p>
-                                <p class="stat-value" id="livros-desejo">0</p>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📖</div>
+                    <div class="stat-content">
+                        <p class="stat-label">Lendo Agora</p>
+                        <p class="stat-value" id="livros-lendo">0</p>
                     </div>
                 </div>
-            </section>
 
-        </main>
+                <div class="stat-card">
+                    <div class="stat-icon">❤️</div>
+                    <div class="stat-content">
+                        <p class="stat-label">Desejo ler</p>
+                        <p class="stat-value" id="livros-desejo">0</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+
         
         <footer class="footer">
             <div class="footer-container">

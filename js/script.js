@@ -1,492 +1,234 @@
-    // 📚 TODOS OS LIVROS
-    const livros = {
-
-    // FILOSOFIA
-    confissoes: {
-        nome: "Confissões",
-        autor: "Santo Agostinho",
-        caminho: "/livros/Filosofia/livro1.pdf",
-        capa: "/livros/capas_livros/confiçõesdesantoaugustinho.png"
-    },
-    republica: {
-        nome: "A República",
-        autor: "Platão",
-        caminho: "livros/Filosofia/livro2.pdf",
-        capa: "/livros/capas_livros/arepublica.png"
-    },
-    pensamento_inquieto: {
-        nome: "Pensamento Inquieto",
-        autor: "Ricardo Evangelista Brandão",
-        caminho: "/livros/Filosofia/livro3.pdf",
-        capa: "/livros/capas_livros/pensamentoinquieto.png"
-    },
-    historia_filosofia_antiga: {
-        nome: "Introdução à História da Filosofia Antiga",
-        autor: "João Hobuss",
-        caminho: "/livros/Filosofia/livro4.pdf",
-        capa: "/livros/capas_livros/filosofiaantiga.png"
-    },
-    filosofia_medieval: {
-        nome: "Filosofia Medieval",
-        autor: "Manoel Vasconcelos",
-        caminho: "/livros/Filosofia/livro5.pdf",
-        capa: "/livros/capas_livros/filosofiamedieval.png"
-    },
-    filosofia_virtudes: {
-        nome: "Filosofia das Virtudes",
-        autor: "Bruno Aislã Gonçalves",
-        caminho: "/livros/Filosofia/livro6.pdf",
-        capa: "/livros/capas_livros/filosofiadasvirtudes.png"
-    },
-    filosofia_emocoes: {
-        nome: "Filosofia das Emoções",
-        autor: "Felipe Nogueira e Flávio Williges",
-        caminho: "/livros/Filosofia/livro7.pdf",
-        capa: "/livros/capas_livros/filosofiadasemoções.png"
-    },
-    filosofia_antiga: {
-        nome: "Filosofia Antiga",
-        autor: "Cesar Augusto Mathias",
-        caminho: "/livros/Filosofia/livro9.pdf",
-        capa: "/livros/capas_livros/filosofiaantiga.png"
-    },
-    direito_privado: {
-        nome: "Filosofia do Direito Privado",
-        autor: "Peter Benson",
-        caminho: "/livros/Filosofia/livro9.pdf",
-        capa: "/livros/capas_livros/filosofiadodireitoprivado.png"
-    },
-
-    // LITERATURA
-    alienista: {
-        nome: "O Alienista",
-        autor: "Machado de Assis",
-        caminho: "/livros/Literatura/livro1.pdf",
-        capa: "/livros/capas_livros/alienista.png"
-    },
-    cortico: {
-        nome: "O Cortiço",
-        autor: "Aluísio Azevedo",
-        caminho: "/livros/Literatura/livro2.pdf",
-        capa: "/livros/capas_livros/ocortiço.png"
-    },
-    memorias_postumas: {
-        nome: "Memórias Póstumas de Brás Cubas",
-        autor: "Machado de Assis",
-        caminho: "/livros/Literatura/livro3.pdf",
-        capa: "/livros/capas_livros/memoriaspostumas.png"
-    },
-    dom_casmurro: {
-        nome: "Dom Casmurro",
-        autor: "Machado de Assis",
-        caminho: "/livros/Literatura/livro4.pdf",
-        capa: "/livros/capas_livros/domcasmurro.png"
-    },
-    contos_lima: {
-        nome: "Contos de Lima Barreto",
-        autor: "Lima Barreto",
-        caminho: "/livros/Literatura/livro5.pdf",
-        capa: "/livros/capas_livros/contosdelima.png"
-    },
-    triste_fim: {
-        nome: "Triste Fim de Policarpo Quaresma",
-        autor: "Lima Barreto",
-        caminho: "/livros/Literatura/livro6.pdf",
-        capa: "/livros/capas_livros/tristefim.png"
-    },
-    guarani: {
-        nome: "O Guarani",
-        autor: "José de Alencar",
-        caminho: "/livros/Literatura/livro7.pdf",
-        capa: "/livros/capas_livros/oguarani.png"
-    },
-    ao_correr_da_pena: {
-        nome: "Ao Correr da Pena",
-        autor: "José de Alencar",
-        caminho: "/livros/Literatura/livro8.pdf",
-        capa: "/livros/capas_livros/ocorrerdapena.png"
-    },
-    helena: {
-        nome: "Helena",
-        autor: "Machado de Assis",
-        caminho: "livros/literatura/livro28.pdf",
-        capa: "/livros/capas_livros/helena.png"
-    },
-    revolucao_bichos: {
-        nome: "A Revolução dos Bichos",
-        autor: "George Orwell",
-        caminho: "/livros/Literatura/livro9.pdf",
-        capa: "/livros/capas_livros/arevoluçãodosbichos.png"
-    },
-
-    // RELIGIOSOS
-    noite_escura: {
-        nome: "Noite Escura da Alma",
-        autor: "São João da Cruz",
-        caminho: "/livros/Religiosos/livro1.pdf",
-        capa: "/livros/capas_livros/noiteescuradaalma.png"
-    },
-    gloria_maria: {
-        nome: "Glória de Maria",
-        autor: "Santo Afonso Ligório",
-        caminho: "/livros/Religiosos/livro2.pdf",
-        capa: "/livros/capas_livros/groriasdemaria.png"
-    },
-    castelo_interior: {
-        nome: "O Castelo Interior",
-        autor: "Santa Teresa de Jesus",
-        caminho: "/livros/Religiosos/livro3.pdf",
-        capa: "/livros/capas_livros/ocastelointerior.png"
-    },
-    amar_servir: {
-        nome: "Amar e Servir",
-        autor: "Inácio de Loyola",
-        caminho: "/livros/Religiosos/livro4.pdf",
-        capa: "/livros/capas_livros/amareservir.png"
-    },
-    imitacao_cristo: {
-        nome: "A Imitação de Cristo",
-        autor: "Tomás de Kempis",
-        caminho: "/livros/Religiosos/livro5.pdf",
-        capa: "/livros/capas_livros/imitaçãodecristo.png"
-    },
-    meditacoes_quaresma: {
-        nome: "Meditações para Quaresma",
-        autor: "Papa Francisco",
-        caminho: "/livros/Religiosos/livro6.pdf",
-        capa: "/livros/capas_livros/meditaçãoparaaquaresma.png"
-    },
-    biblia_catolica: {
-        nome: "Bíblia Sagrada Católica",
-        autor: "Diversos",
-        caminho: "/livros/Religiosos/livro7.pdf",
-        capa: "/livros/capas_livros/bibliasagrada.png"
-    },
-    divina_comedia: {
-        nome: "A Divina Comédia",
-        autor: "Dante Alighieri",
-        caminho: "/livros/Religiosos/livro8.pdf",
-        capa: "/livros/capas_livros/adivinacomedia.png"
-    },
-    tratado_oracao: {
-        nome: "Tratado de Oração",
-        autor: "Santo Agostinho",
-        caminho: "/livros/Religiosos/livro9.pdf",
-        capa: "/livros/capas_livros/tratadodeoração.png"
-    }
+    const comunidades = {
+        filosofia: { titulo: "Filosofia", descricao: "Discussões filosóficas." },
+        literatura: { titulo: "Literatura", descricao: "Livros e autores." },
+        religioso: { titulo: "Religioso", descricao: "Reflexões espirituais." }
     };
 
-    // ADICIONAR LIVRO
-    function adicionarLivro(id) {
-    const estante = JSON.parse(localStorage.getItem("estante") || "[]");
+    /* =========================
+    USER SAFE
+    ========================= */
+    function getUser() {
+        let user = localStorage.getItem("user");
 
-    // Evita duplicatas
-    if (estante.includes(id)) {
-        alert("Este livro já está na sua estante!");
-        return;
-    }
-
-    estante.push(id);
-    localStorage.setItem("estante", JSON.stringify(estante));
-    alert("Livro adicionado à sua estante! 📚");
-    }
-
-    // CARREGAR BIBLIOTECA
-    function carregarBiblioteca() {
-    const container = document.getElementById("lista-livros");
-    if (!container) return;
-
-    let biblioteca = JSON.parse(localStorage.getItem("biblioteca")) || [];
-
-    if (biblioteca.length === 0) {
-        container.innerHTML = "<p>Você ainda não adicionou nenhum livro.</p>";
-        return;
-    }
-
-    let html = "";
-
-    biblioteca.forEach(id => {
-        const livro = livros[id];
-        if (!livro) return;
-
-        // gera a capa automaticamente usando o ID
-        const capa = livro.capa;
-
-        html += `
-        <div class="card-livro">
-            <img src="${capa}" alt="Capa do livro ${livro.nome}">
-            <h3>${livro.nome}</h3>
-            <p>Autor: ${livro.autor}</p>
-
-            <a href="leitura.html?livro=${id}" class="btn">
-                Ler
-            </a>
-        </div>
-        `;
-    });
-
-    container.innerHTML = html;
-}
-
-let pdfDoc = null;
-let paginaAtual = 1;
-let totalPaginas = 0;
-let livroAtualId = null;
-
-function carregarLeitura() {
-    const titulo = document.getElementById("titulo");
-    if (!titulo) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("livro");
-
-    livroAtualId = id;
-
-    const livro = livros[id];
-
-    if (!livro) {
-        titulo.innerText = "Livro não encontrado";
-        return;
-    }
-
-    document.getElementById("titulo").innerText = livro.nome;
-    document.getElementById("autor").innerText =
-        "Autor: " + livro.autor;
-
-    // recupera última página salva
-    paginaAtual =
-        Number(localStorage.getItem(`pagina_${id}`)) || 1;
-
-    carregarPDF(livro.caminho);
-}
-
-    // 🚀 EXECUÇÃO
-    carregarBiblioteca();
-    carregarLeitura();
-
-    function carregarPDF(caminho) {
-    pdfjsLib.getDocument(caminho).promise.then(pdf => {
-        pdfDoc = pdf;
-        totalPaginas = pdf.numPages;
-
-        if (paginaAtual > totalPaginas) {
-            paginaAtual = 1;
+        if (!user) {
+            user = {
+                id: Date.now(),
+                name: "Usuário"
+            };
+            localStorage.setItem("user", JSON.stringify(user));
         }
 
-        renderizarPagina(paginaAtual);
+        return JSON.parse(user);
+    }
+
+    /* =========================
+    STORAGE
+    ========================= */
+    function getKey(tipo) {
+        return `posts_${tipo}`;
+    }
+
+    function loadPosts(tipo) {
+        return JSON.parse(localStorage.getItem(getKey(tipo))) || [];
+    }
+
+    function savePosts(tipo, posts) {
+        localStorage.setItem(getKey(tipo), JSON.stringify(posts));
+    }
+
+    /* =========================
+    INIT
+    ========================= */
+    document.addEventListener("DOMContentLoaded", () => {
+        carregarDetalheComunidade();
     });
-}
 
-function renderizarPagina(numero) {
-    pdfDoc.getPage(numero).then(page => {
-        const canvas = document.getElementById("pdf-canvas");
-        const ctx = canvas.getContext("2d");
+    /* =========================
+    COMUNIDADE INIT
+    ========================= */
+    function carregarDetalheComunidade() {
+        const tipo = new URLSearchParams(window.location.search).get("tipo");
+        const c = comunidades[tipo];
+        if (!c) return;
 
-        const viewport = page.getViewport({ scale: 1.5 });
+        document.getElementById("titulo-comunidade").innerText = c.titulo;
+        document.getElementById("descricao-comunidade").innerText = c.descricao;
 
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        page.render({
-            canvasContext: ctx,
-            viewport: viewport
-        });
-
-        paginaAtual = numero;
-
-        salvarProgresso();
-        atualizarBarra();
-        atualizarPaginaInfo();
-    });
-}
-
-function proximaPagina() {
-    if (paginaAtual < totalPaginas) {
-        renderizarPagina(paginaAtual + 1);
-    }
-}
-
-function paginaAnterior() {
-    if (paginaAtual > 1) {
-        renderizarPagina(paginaAtual - 1);
-    }
-}
-
-function atualizarBarra() {
-    const porcentagem =
-        (paginaAtual / totalPaginas) * 100;
-
-    document.getElementById("barra-progresso").style.width =
-        porcentagem + "%";
-}
-
-function atualizarPaginaInfo() {
-    document.getElementById("pagina-info").innerText =
-        `Página ${paginaAtual} de ${totalPaginas}`;
-}
-
-function salvarProgresso() {
-    localStorage.setItem(
-        `pagina_${livroAtualId}`,
-        paginaAtual
-    );
-}
-
-
-    function entrarComunidade(tipo) {
-    let comunidades = JSON.parse(localStorage.getItem("comunidades")) || [];
-
-    if (!comunidades.includes(tipo)) {
-        comunidades.push(tipo);
-        localStorage.setItem("comunidades", JSON.stringify(comunidades));
+        renderPosts(tipo);
     }
 
-    window.location.href = `acesso-comunidade.html`;
-}
-
-
-const comunidades = {
-    filosofia: {
-        titulo: "Filosofia",
-        descricao: "Discussões sobre ideias e pensamentos filosóficos.",
-        posts: [
-            {
-                titulo: "O que é felicidade?",
-                texto: "Na visão de Aristóteles, felicidade está ligada à virtude."
-            },
-            {
-                titulo: "Livro recomendado",
-                texto: "Meditações, de Marco Aurélio."
-            }
-        ]
-    },
-
-    literatura: {
-        titulo: "Literatura",
-        descricao: "Discussões sobre livros e autores.",
-        posts: [
-            {
-                titulo: "Dom Casmurro",
-                texto: "O que vocês acham do final?"
-            }
-        ]
-    },
-
-    religioso: {
-        titulo: "Religiosos",
-        descricao: "Reflexões espirituais.",
-        posts: [
-            {
-                titulo: "Versículo do dia",
-                texto: "Tudo posso naquele que me fortalece."
-            }
-        ]
-    }
-};
-
-// ENTRAR NA COMUNIDADE
-function entrarComunidade(tipo) {
-    let comunidadesSalvas =
-        JSON.parse(localStorage.getItem("comunidades")) || [];
-
-    if (!comunidadesSalvas.includes(tipo)) {
-        comunidadesSalvas.push(tipo);
-
-        localStorage.setItem(
-            "comunidades",
-            JSON.stringify(comunidadesSalvas)
-        );
-    }
-
-    window.location.href = "acesso-comunidade.html";
-}
-
-
-// MOSTRAR COMUNIDADES PARTICIPADAS
-function mostrarComunidadesSalvas() {
-    const container =
-        document.getElementById("lista-comunidades-salvas");
-
+    /* =========================
+    RENDER POSTS (SAFE)
+    ========================= */
+function renderPosts(tipo) {
+    const container = document.getElementById("lista-posts");
     if (!container) return;
 
-    let comunidadesSalvas =
-        JSON.parse(localStorage.getItem("comunidades")) || [];
+    const posts = loadPosts(tipo);
 
-    if (comunidadesSalvas.length === 0) {
-        container.innerHTML =
-            "<p>Você ainda não entrou em nenhuma comunidade.</p>";
-        return;
-    }
+    const searchEl = document.getElementById("search-posts");
+    const search = searchEl ? searchEl.value.toLowerCase() : "";
 
-    let html = "";
+    // 🔥 IMPORTANTE: guardar índice original junto com o post
+    const filtered = posts
+        .map((p, originalIndex) => ({ ...p, originalIndex }))
+        .filter(p => {
+            const titulo = (p.titulo || "").toLowerCase();
+            const texto = (p.texto || "").toLowerCase();
 
-    comunidadesSalvas.forEach(tipo => {
-        const comunidade = comunidades[tipo];
+            return titulo.includes(search) || texto.includes(search);
+        });
 
-        html += `
-            <div class="post">
-                <h4>${comunidade.titulo}</h4>
-                <p>${comunidade.descricao}</p>
+    container.innerHTML = filtered.map(p => {
 
-                <a href="conteudo-comunidade.html?tipo=${tipo}" class="btn">
-                    Acessar comunidade
-                </a>
+        return `
+        <div class="post">
+
+            <strong>${p.titulo || "Sem título"}</strong>
+
+            <p>${p.texto || "Sem conteúdo"}</p>
+
+            <small>por ${p.user?.name || "Anônimo"} • ${p.data || ""}</small>
+
+            <div class="post-actions">
+
+                <button onclick="likePost('${tipo}', ${p.originalIndex})">
+                    👍 ${p.likes || 0}
+                </button>
+
+                <button onclick="toggleComments(${p.originalIndex})">
+                    💬 ${(p.comments || []).length}
+                </button>
+
+                <button onclick="deletePost('${tipo}', ${p.originalIndex})">
+                    ×
+                </button>
+
             </div>
-        `;
-    });
 
-    container.innerHTML = html;
-}
+            <div id="comments-${p.originalIndex}" class="comments-box" style="display:none;">
+                ${renderComments(p.comments || [])}
 
-// EXECUÇÃO
-mostrarComunidadesSalvas();
-
-
-function carregarDetalheComunidade() {
-    const titulo = document.getElementById("titulo-comunidade");
-
-    if (!titulo) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const tipo = params.get("tipo");
-
-    const comunidade = comunidades[tipo];
-
-    if (!comunidade) return;
-
-    titulo.innerText = comunidade.titulo;
-
-    document.getElementById("descricao-comunidade").innerText =
-        comunidade.descricao;
-
-    let html = "";
-
-    comunidade.posts.forEach(post => {
-        html += `
-            <div class="post">
-                <h4>${post.titulo}</h4>
-                <p>${post.texto}</p>
+                <input id="comment-input-${p.originalIndex}" placeholder="Comentar...">
+                <button onclick="addComment('${tipo}', ${p.originalIndex})">Enviar</button>
             </div>
+
+        </div>
         `;
-    });
-
-    document.getElementById("lista-posts").innerHTML = html;
+    }).join("");
 }
-
+    /* =========================
+    CREATE POST (FIXED)
+    ========================= */
 function criarPost() {
-    const titulo = document.getElementById("titulo-post").value;
-    const texto = document.getElementById("texto-post").value;
+    const tipo = new URLSearchParams(window.location.search).get("tipo");
+
+    const tituloEl = document.getElementById("titulo-post");
+    const textoEl = document.getElementById("texto-post");
+
+    const titulo = (tituloEl?.value || "").trim();
+    const texto = (textoEl?.value || "").trim();
 
     if (!titulo || !texto) return;
 
-    const novoPost = `
-        <div class="post">
-            <h4>${titulo}</h4>
-            <p>${texto}</p>
-        </div>
-    `;
+    const posts = loadPosts(tipo);
 
-    document.getElementById("lista-posts").innerHTML += novoPost;
+    posts.unshift({
+        titulo,
+        texto,
+        user: getUser(),
+        likes: 0,
+        comments: [],
+        data: new Date().toLocaleString()
+    });
+
+    savePosts(tipo, posts);
+
+    tituloEl.value = "";
+    textoEl.value = "";
+
+    renderPosts(tipo);
 }
 
-carregarDetalheComunidade();
+    /* =========================
+    LIKE
+    ========================= */
+    function likePost(tipo, index) {
+        const posts = loadPosts(tipo);
+
+        if (!posts[index]) return;
+
+        posts[index].likes = (posts[index].likes || 0) + 1;
+
+        savePosts(tipo, posts);
+        renderPosts(tipo);
+    }
+
+    /* =========================
+    DELETE
+    ========================= */
+    function deletePost(tipo, index) {
+        const posts = loadPosts(tipo);
+
+        if (!posts[index]) return;
+
+        posts.splice(index, 1);
+
+        savePosts(tipo, posts);
+        renderPosts(tipo);
+    }
+
+    /* =========================
+    COMMENTS
+    ========================= */
+    function toggleComments(index) {
+        const el = document.getElementById(`comments-${index}`);
+        if (!el) return;
+
+        el.style.display = el.style.display === "none" ? "block" : "none";
+    }
+
+    function addComment(tipo, index) {
+        const input = document.getElementById(`comment-input-${index}`);
+        if (!input) return;
+
+        const text = input.value.trim();
+        if (!text) return;
+
+        const posts = loadPosts(tipo);
+        if (!posts[index]) return;
+
+        if (!posts[index].comments) posts[index].comments = [];
+
+        posts[index].comments.push({
+            text,
+            user: getUser(),
+            data: new Date().toLocaleString()
+        });
+
+        savePosts(tipo, posts);
+        renderPosts(tipo);
+    }
+
+    /* =========================
+    COMMENTS RENDER
+    ========================= */
+    function renderComments(comments) {
+        if (!comments || !comments.length) {
+            return `<small style="opacity:0.6;">Sem comentários ainda</small>`;
+        }
+
+        return comments.map(c => `
+            <div class="comment">
+                <strong>${c.user?.name || "Anon"}:</strong> ${c.text || ""}
+            </div>
+        `).join("");
+    }
+
+    /* =========================
+    SEARCH SAFE
+    ========================= */
+    function filtrarPosts() {
+        const tipo = new URLSearchParams(window.location.search).get("tipo");
+        renderPosts(tipo);
+    }

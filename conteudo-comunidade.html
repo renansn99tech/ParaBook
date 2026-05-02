@@ -1,105 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParaBook</title>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/conteudo-comunidade.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    </head>
+    <link rel="icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/conteudo-comunidade.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
 
-    <body>
+<body>
 
-        <header>
-            <nav class="container nav">
+<header>
+    <nav class="container nav">
 
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
-                </ul>
-            </nav>
-        </header>
+        <div class="logo-container">
+            <img src="img/logo-nova.png" alt="Logo ParaBook" class="logo-img">
+            <h1 class="logo">
+                <span class="para">Para</span><span class="book">Book</span>
+            </h1>
+        </div>
 
-        <main>
+        <ul class="menu">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
+            <li><a href="comunidade.html">Comunidades</a></li>
+            <li><a href="sobre.html">Sobre</a></li>
+            <li><a href="perfil.html">Perfil</a></li>
+        </ul>
 
-        <!-- banner, titulo e descrição da comunidade -->
-        <section class="banner-comunidade">
-            <h2 id="titulo-comunidade"></h2>
-            <p id="descricao-comunidade"></p>
-        </section>
+    </nav>
+</header>
 
-        <!-- posts da comunidade -->
-        <section class="posts-section">
-            <h3>Postagens</h3>
-            <div id="lista-posts"></div>
-        </section>
+<main>
 
-        <!-- criação de post da comunidade-->
-        <section class="post-form-container">
-            <h3> Adicionar postagem</h3>
-            
-            <div class="form-group">
-                <label for="titulo-post">Título da postagem</label>
-                <input type="text" id="titulo-post" placeholder="Sobre o que deseja falar?">
-            </div>
+<section class="banner-comunidade">
+    <h2 id="titulo-comunidade"></h2>
+    <p id="descricao-comunidade"></p>
+</section>
 
-            <div class="form-group">
-                <label for="texto-post">Seu comentário</label>
-                <textarea id="texto-post" placeholder="Deixe seu comentários..."></textarea>
-            </div>
+<section class="posts-section">
+    <h3>Postagens</h3>
+<div class="search-box">
+    <input 
+        type="text" 
+        id="search-posts" 
+        placeholder="Buscar posts..."
+        oninput="filtrarPosts()"
+    >
+</div>
+    <div id="lista-posts"></div>
+</section>
 
-            <button class="btn-publicar" onclick="criarPost()">Publicar</button>
-        </section>
+<section class="post-form-container">
+    <h3>Adicionar postagem</h3>
 
-        </main>
-        
-        <footer class="footer">
-            <div class="footer-container">
+    <div class="form-group">
+        <label for="titulo-post">Título</label>
+        <input id="titulo-post" type="text">
+    </div>
 
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
-                </div>
+    <div class="form-group">
+        <label for="texto-post">Mensagem</label>
+        <textarea id="texto-post"></textarea>
+    </div>
 
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="biblioteca.html">Biblioteca</a>
-                    <a href="comunidade.html">Comunidades</a>
-                </div>
+    <button class="btn-publicar" onclick="criarPost()">Publicar</button>
+</section>
 
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
-            </div>
-        </footer>
-        <hr class="footer-bottom-line">
+</main>
 
 <script src="js/script.js"></script>
 <script src="js/index.js"></script>
-    </body>
-    
+
+</body>
 </html>

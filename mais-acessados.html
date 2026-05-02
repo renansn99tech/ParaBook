@@ -37,13 +37,40 @@
             </nav>
         </header>
 
-        <main>
+<main>
 
-        </main>
+<main>
 
-        <!-- JavaScript Carrossel e Footer Padronizado -->
-        <script src="js/carrossel.js"></script>
-        <script src="js/index.js"></script>
+    <section class="featured">
+        <h2>Mais Procurados</h2>
+        <p>Conteúdos selecionados com base em relevância, utilidade prática e impacto real na carreira.</p>
+
+        <div class="grid">
+            <!-- JS vai injetar os cards aqui -->
+        </div>
+    </section>
+    <!-- MODAL -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeModal">×</span>
+
+        <span class="modal-badge" id="modalCategory"></span>
+        <h2 id="modalTitle"></h2>
+
+        <p id="modalDesc"></p>
+
+        <div class="modal-meta">
+            <span id="modalLevel"></span>
+            <span id="modalTime"></span>
+        </div>
+    </div>
+</div>
+
+
+
+</main>
+
+
         
         <footer class="footer">
             <div class="footer-container">
@@ -76,6 +103,7 @@
             </div>
         </footer>
         <hr class="footer-bottom-line">
-
+        <script src="js/index.js"></script>
+        <script src="js/featured.js"></script>
     </body>
 </html>

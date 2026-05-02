@@ -97,7 +97,7 @@ body {
 
 /*  =============================================
         Seção do NAV (NAVEGAÇÃO e suas Classes)
-    =============================================  */
+    =============================================  
 .nav {
     display: flex;
     justify-content: space-between;
@@ -105,7 +105,7 @@ body {
     padding: 20px 60px;
     background: rgba(2,6,23,0.7);
     backdrop-filter: blur(10px);
-}
+} */
 
 
 .menu{
@@ -151,106 +151,175 @@ main hr {
 }
 
 /* ===== MAIN ===== */
-
-main {
-    flex: 1;
-    padding: 2rem 1rem;
+/* =========================
+NAV UX MELHORADA
+========================= */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 40px;
+    background: rgba(2, 6, 23, 0.8);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    height: 60px;
+}
+
+.menu {
+    list-style: none;
+    display: flex;
+    gap: 10px;
+}
+
+/* =========================
+CONTAINER PRINCIPAL
+========================= */
 .leitura-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    background: white;
-    padding: 2rem;
-    border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    max-width: 900px;
+    margin: 30px auto;
+    background: var(--card);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
-/* ===== INFO LIVRO ===== */
-
+/* =========================
+INFO LIVRO
+========================= */
 .livro-info {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 20px;
 }
 
 .livro-info h2 {
-    font-size: 2rem;
-    color: #14213d;
-    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
 }
 
 .livro-info p {
-    color: #666;
-    font-size: 1rem;
+    color: var(--muted);
 }
 
-/* ===== PDF ===== */
+/* =========================
+LOADING UX
+========================= */
+.loading-state {
+    text-align: center;
+    padding: 10px;
+    color: var(--muted);
+}
 
+/* =========================
+PDF VIEWER UX MELHORADA
+========================= */
 .leitor-pdf {
     display: flex;
     justify-content: center;
-    margin-bottom: 1.5rem;
+    margin: 20px 0;
 }
 
 #pdf-canvas {
-    max-width: 100%;
     width: 100%;
-    border-radius: 10px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    border-radius: 12px;
     background: white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
 
-/* ===== BARRA DE PROGRESSO ===== */
-
+/* =========================
+PROGRESS BAR MELHORADA
+========================= */
 .progresso-container {
     width: 100%;
-    height: 12px;
-    background: #ddd;
-    border-radius: 8px;
+    height: 10px;
+    background: #111827;
+    border-radius: 999px;
     overflow: hidden;
-    margin: 1.5rem 0;
+    margin: 20px 0;
 }
 
 #barra-progresso {
-    width: 0%;
     height: 100%;
-    background: #14213d;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--success));
     transition: width 0.3s ease;
 }
 
-/* ===== CONTROLES ===== */
-
+/* =========================
+CONTROLES UX
+========================= */
 .controles-leitura {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem;
-    margin: 2rem 0;
+    gap: 14px;
     flex-wrap: wrap;
+    margin: 20px 0;
 }
 
 .btn {
-    background: #14213d;
+    background: var(--primary);
     color: white;
-    padding: 12px 18px;
-    border-radius: 8px;
-    text-decoration: none;
     border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
-    transition: 0.3s;
+    transition: 0.2s ease;
 }
 
 .btn:hover {
-    background: #203562;
     transform: translateY(-2px);
+    background: #1f2f55;
 }
 
-#pagina-info {
-    font-weight: 600;
-    color: #333;
+/* BOTÃO SECUNDÁRIO */
+.btn.secondary {
+    background: transparent;
+    border: 1px solid #2b3b5a;
 }
 
+/* =========================
+AÇÕES
+========================= */
+.acoes {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+
+/* =========================
+RESPONSIVO
+========================= */
+@media (max-width: 768px) {
+    .nav {
+        padding: 12px 20px;
+    }
+
+    .leitura-container {
+        margin: 10px;
+        padding: 16px;
+    }
+
+    .controles-leitura {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
 /* ===== AÇÕES ===== */
 
 .acoes {

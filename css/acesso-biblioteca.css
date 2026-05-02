@@ -704,6 +704,142 @@ main hr {
     }
 }
 
+box-shadow: 0 0 8px rgba(77, 74, 232, 0.2);
+
+/* =========================
+   FAVORITOS E AVALIAÇÃO (NOVO)
+========================= */
+
+.favorito-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* ícone dentro */
+.favorito-btn i {
+    font-size: 1.2rem;
+    color: #9CA3AF;
+    transition: 0.3s;
+}
+
+/* hover */
+.favorito-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+.favorito-btn:hover i {
+    color: #F87171;
+}
+
+/* ativo */
+.favorito-btn.ativo {
+    background: linear-gradient(135deg, #ef4444, #f43f5e);
+    border: none;
+    box-shadow: 0 0 20px rgba(239,68,68,0.6);
+}
+
+.favorito-btn.ativo i {
+    color: #fff;
+}
+
+/* animação ao clicar */
+.favorito-btn:active {
+    transform: scale(0.9);
+}
+
+.favorito-btn.ativo {
+    color: #FBBF24;
+}
+
+/* estrelas */
+.estrelas {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 8px;
+    cursor: pointer;
+}
+
+.estrela {
+    font-size: 1.1rem;
+    color: #6B7280;
+    transition: 0.2s;
+}
+
+.estrela.ativa {
+    color: #FBBF24;
+}
+
+/* =========================
+   GRID DE LIVROS
+========================= */
+
+.biblioteca-section {
+    margin: 2rem 0;
+}
+
+.biblioteca-title {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.biblioteca-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 2rem;
+}
+
+.card-livro {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 15px;
+
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    transition: 0.35s;
+    position: relative;
+}
+
+.card-livro:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+/* ações */
+.card-acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
 /* =========================
    LIGHT MODE
 ========================= */

@@ -363,3 +363,124 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.remove("light-mode");
     }
 });
+
+
+// =========================
+// FAVORITOS (NOVO)
+// =========================
+function getFavoritos() {
+    return JSON.parse(localStorage.getItem("favoritos")) || [];
+}
+
+function toggleFavorito(id) {
+    let favoritos = getFavoritos();
+
+    if (favoritos.includes(id)) {
+        favoritos = favoritos.filter(f => f !== id);
+    } else {
+        favoritos.push(id);
+    }
+
+    localStorage.setItem("favoritos", JSON.stringify(favoritos));
+    carregarBiblioteca();
+}
+
+// =========================
+// AVALIAÇÃO (NOVO - 1 A 5 ESTRELAS)
+// =========================
+function getAvaliacoes() {
+    return JSON.parse(localStorage.getItem("avaliacoes")) || {};
+}
+
+function avaliarLivro(id, nota) {
+    let avaliacoes = getAvaliacoes();
+    avaliacoes[id] = nota;
+
+    localStorage.setItem("avaliacoes", JSON.stringify(avaliacoes));
+    carregarBiblioteca();
+}
+
+// =========================
+// RENDER ESTRELAS
+// =========================
+function renderEstrelas(id, notaAtual = 0) {
+    let html = `<div class="estrelas">`;
+
+    for (let i = 1; i <= 5; i++) {
+        html += `
+        <span class="estrela ${i <= notaAtual ? "ativa" : ""}" 
+              onclick="avaliarLivro('${id}', ${i})">
+            ★
+        </span>`;
+    }
+
+    html += `</div>`;
+    return html;
+}
+
+// =========================
+// CARREGAR BIBLIOTECA
+// =========================
+function carregarBiblioteca() {
+    const container = document.getElementById("lista-livros");
+    const emptyState = document.getElementById("empty-state");
+
+    if (!container) return;
+
+    let biblioteca = JSON.parse(localStorage.getItem("biblioteca")) || [];
+    let favoritos = getFavoritos();
+    let avaliacoes = getAvaliacoes();
+
+    if (biblioteca.length === 0) {
+        container.innerHTML = "";
+        if (emptyState) emptyState.style.display = "block";
+        return;
+    }
+
+    let html = "";
+
+    biblioteca.forEach(id => {
+        const livro = livros[id];
+        if (!livro) return;
+
+        const isFavorito = favoritos.includes(id);
+        const nota = avaliacoes[id] || 0;
+
+        html += `
+        <div class="card-livro">
+
+            <!-- FAVORITO (NOVO) -->
+    <button class="favorito-btn ${isFavorito ? "ativo" : ""}"
+        onclick="toggleFavorito('${id}')">
+        <i class="fa-solid fa-heart"></i>
+    </button>
+
+            <img src="${livro.capa}" alt="${livro.nome}">
+            <h3>${livro.nome}</h3>
+            <p>${livro.autor}</p>
+
+            <!-- AVALIAÇÃO (NOVO) -->
+            ${renderEstrelas(id, nota)}
+
+            <div class="card-acoes">
+                <a href="leitura.html?livro=${id}" class="btn">Acessar</a>
+                <button onclick="removerLivro('${id}')" class="btn remover-btn">Remover</button>
+            </div>
+
+        </div>
+        `;
+    });
+
+    container.innerHTML = html;
+
+    if (emptyState) {
+        emptyState.style.display = html ? "none" : "block";
+    }
+}
+
+// =========================
+// INICIALIZAÇÃO
+// =========================
+document.addEventListener("DOMContentLoaded", () => {
+    carregarBiblioteca();
+});

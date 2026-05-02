@@ -1,6 +1,4 @@
-/* ===== PÁGINA CONTEÚDO DA COMUNIDADE ===== */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@400;500;600&display=swap');
 
 :root {
     --color-primary-dark: #14213d;
@@ -40,6 +38,7 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
+/* NAV */
 .nav {
     display: flex;
     justify-content: space-between;
@@ -49,10 +48,9 @@ body {
     backdrop-filter: blur(10px);
 }
 
-.menu{
+.menu {
     display: flex;
     align-items: center;
-    text-decoration: none;
     list-style: none;
     gap: 20px;
 }
@@ -78,26 +76,14 @@ body {
     cursor: pointer;
 }
 
-.login-btn:hover{
+.login-btn:hover {
     transform: scale(1.1);
     transition: 0.5s ease;
     background-color: #1d9f4c;
     color: white;
 }
-main hr {
-    border: none;
-    height: 1px;
-    background: #1F2937;
-    margin: 20px 0;
-}
-/* ===============================
-   LOGO
-================================= */
 
-.logo {
-    margin: 2vh 2vw;
-}
-
+/* LOGO */
 .logo-container {
     display: flex;
     align-items: center;
@@ -120,20 +106,14 @@ main hr {
     -webkit-text-fill-color: transparent;
 }
 
-/* ===== BANNER ===== */
-
+/* BANNER */
 .banner-comunidade {
     max-width: 1200px;
     margin: 3rem auto 2rem;
     padding: 2.5rem 2rem;
     border-radius: 16px;
-    background: linear-gradient(
-        135deg,
-        var(--color-primary-dark),
-        var(--color-accent-olive)
-    );
+    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-accent-olive));
     color: white;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
 .banner-comunidade h2 {
@@ -148,8 +128,7 @@ main hr {
     max-width: 800px;
 }
 
-/* ===== POSTS ===== */
-
+/* POSTS */
 .posts-section {
     max-width: 1200px;
     margin: 2rem auto;
@@ -159,7 +138,6 @@ main hr {
 .posts-section h3 {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
-    color: var(--color-neutral-tan);
     border-bottom: 2px solid var(--color-accent-olive);
     padding-bottom: 0.8rem;
 }
@@ -170,100 +148,35 @@ main hr {
     gap: 1.5rem;
 }
 
-/* CARD DO POST */
-.post-card {
+.post-card,
+.post {
     background: white;
     border-radius: 14px;
     padding: 1.5rem;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    border-left: 5px solid var(--color-primary-dark);
-    transition: all 0.3s ease;
+    color: #111827;
 }
 
-.post-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
-}
-
-.post-card h4 {
-    color: var(--color-primary-dark);
-    margin-bottom: 0.8rem;
-    font-size: 1.2rem;
-}
-
-.post-card p {
-    color: var(--color-ui-charcoal);
-    line-height: 1.6;
-}
-
-/* ===== FORMULÁRIO ===== */
-/* =========================================================
-   CONTAINER DO FORMULÁRIO (ESTILO MODERNO + GLASS)
-   ========================================================= */
-
+/* FORM */
 .post-form-container {
     max-width: 900px;
     margin: 3rem auto;
     padding: 2rem;
-
-    /* 🔥 substitui fundo branco por efeito glass */
-    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-
-    /* 🔥 efeito vidro */
+    background: rgba(255,255,255,0.05);
     backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-
-    /* 🔥 borda suave */
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 16px;
-
-    /* 🔥 sombra mais profunda */
-    box-shadow:
-        0 15px 40px rgba(0,0,0,0.5),
-        inset 0 1px 0 rgba(255,255,255,0.05);
-
-    /* 🔥 animação suave */
-    transition: all 0.3s ease;
-
-    position: relative;
-    overflow: hidden;
 }
 
-/* 🔥 efeito glow sutil */
 .post-form-container::before {
     content: '';
     position: absolute;
-
-    width: 250px;
-    height: 250px;
-
-    background: radial-gradient(circle, rgba(99,102,241,0.2), transparent);
-
-    top: -80px;
-    right: -80px;
-
-    filter: blur(70px);
 }
-
-/* =========================================================
-   TÍTULO
-   ========================================================= */
 
 .post-form-container h3 {
     margin-bottom: 1.5rem;
-
-    /* 🔥 cor clara padrão dark */
     color: #E5E7EB;
-
-    /* 🔥 fonte mais moderna */
-    font-family: 'Poppins', sans-serif;
-
-    font-size: 1.6rem;
+    font-family: var(--font-ui);
 }
-
-/* =========================================================
-   GRUPOS DE INPUT
-   ========================================================= */
 
 .form-group {
     display: flex;
@@ -271,212 +184,248 @@ main hr {
     margin-bottom: 1.5rem;
 }
 
-/* label */
 .form-group label {
     margin-bottom: 0.6rem;
-
-    font-weight: var(--fw-medium);
-
-    /* 🔥 cor adaptada ao tema dark */
     color: #9CA3AF;
 }
 
-/* inputs e textarea */
 .form-group input,
 .form-group textarea {
     width: 100%;
     padding: 14px;
-
-    /* 🔥 fundo escuro moderno */
     background: #020617;
-
     border: 1px solid #1F2937;
     border-radius: 12px;
-
-    font-size: 1rem;
     color: #E5E7EB;
-
     outline: none;
-
-    transition: all 0.3s ease;
-
-    box-sizing: border-box;
+    transition: 0.3s;
 }
 
-/* altura do textarea */
 .form-group textarea {
     min-height: 150px;
     resize: vertical;
 }
 
-/* foco */
 .form-group input:focus,
 .form-group textarea:focus {
     border-color: #6366F1;
-
-    /* 🔥 glow ao focar */
-    box-shadow: 0 0 10px rgba(99,102,241,0.4);
 }
 
-/* =========================================================
-   BOTÃO PUBLICAR (PADRÃO MODERNO DO SISTEMA)
-   ========================================================= */
-
+/* BUTTON */
 .btn-publicar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
     padding: 12px 22px;
-
-    /* 🔥 borda arredondada padrão moderno */
     border-radius: 999px;
     border: none;
-
-    /* 🔥 gradiente mais chamativo */
     background: linear-gradient(90deg, #6366F1, #8B5CF6);
-
     color: white;
-
-    font-weight: 600;
-    font-family: 'Poppins', sans-serif;
-
     cursor: pointer;
-
-    transition: all 0.3s ease;
-
-    /* 🔥 sombra glow */
-    box-shadow: 0 8px 20px rgba(99,102,241,0.3);
 }
 
-/* hover */
-.btn-publicar:hover {
-    transform: translateY(-2px) scale(1.03);
-
-    box-shadow:
-        0 10px 30px rgba(99,102,241,0.6),
-        0 0 15px rgba(139,92,246,0.6);
-}
-
-/* clique */
-.btn-publicar:active {
-    transform: scale(0.97);
-}
-
-/* ===== RODAPÉ ===== */
-
+/* FOOTER */
 .footer {
     background: #020617;
     border-top: 1px solid #1F2937;
-    padding: 40px 60px 20px 60px;
-    color: #9CA3AF;
+    padding: 40px 60px 20px;
 }
 
 .footer-container {
     display: flex;
     justify-content: space-between;
-    align-items:center;
     flex-wrap: wrap;
     gap: 40px;
-}
-
-.footer-brand {
-    position: relative;
-    top: -12px;
-    line-height: 2;
-}
-
-.footer h2, .footer {
-    color: #E5E7EB;
-    text-align: center;
-}
-
-.footer-links {
-    margin-right: 30px;
 }
 
 .footer-links a {
     display: block;
     color: #9CA3AF;
     text-decoration: none;
-    margin: 5px;
-    transition: 0.3s;
-}
-
-.footer-links a:hover {
-    color: #6366F1;
-}
-
-.footer-social .icons i {
-    font-size: 1.4rem;
-    margin: 12px 8px 5px 8px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.footer-social h4 {
-    position: relative;
-    top: -10px;
-}
-
-.footer-social .icons i:hover {
-    color: #6366F1;
+    margin: 5px 0;
 }
 
 .footer-bottom {
     text-align: center;
-    letter-spacing: .1rem;
     margin-top: 30px;
-    padding-top: 10px;
     font-size: 0.9rem;
 }
 
 .footer-bottom-line {
-    position: relative;
-    top: -60px;
     height: 1px;
     background: #1F2937;
     border: none;
 }
+/* Mantido o seu CSS base com pequenos ajustes funcionais */
 
-/* ===== RESPONSIVO ===== */
+.post {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem;
+    color: #E5E7EB !important;
+    opacity: 1 !important;
+}
 
+.post small {
+    display: block;
+    margin-top: 8px;
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+.post-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.post-actions button {
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    transition: 0.2s ease;
+    color: #E5E7EB;
+    background: rgba(255,255,255,0.06);
+}
+
+.post-actions button:hover {
+    transform: scale(1.05);
+}
+
+/* like */
+.post-actions button:nth-child(1) {
+    background: rgba(99,102,241,0.2);
+}
+
+/* comments */
+.post-actions button:nth-child(2) {
+    background: rgba(34,197,94,0.15);
+}
+
+/* delete */
+.post-actions button:nth-child(3) {
+    background: rgba(239,68,68,0.15);
+}
+
+.btn-like {
+    background: #e0e7ff;
+}
+
+.btn-delete {
+    background: #fee2e2;
+}
+
+.search-box {
+    max-width: 1200px;
+    margin: 0 auto 1.5rem auto;
+    padding: 0 2rem;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 16px;
+
+    border-radius: 12px;
+    border: 1px solid #1F2937;
+
+    background: rgba(2, 6, 23, 0.85);
+    color: #E5E7EB;
+
+    outline: none;
+
+    font-size: 1rem;
+
+    transition: 0.3s ease;
+}
+
+.search-box input::placeholder {
+    color: #6B7280;
+}
+
+.search-box input:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 10px rgba(99,102,241,0.35);
+}
+
+.comments-box {
+    margin-top: 12px;
+    padding: 12px;
+
+    border-radius: 12px;
+
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* comentário individual */
+.comment {
+    padding: 8px 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.05);
+
+    color: #E5E7EB;
+
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* input de comentário */
+.comments-box input {
+    width: 100%;
+    padding: 10px;
+
+    border-radius: 10px;
+    border: 1px solid #1F2937;
+
+    background: #020617;
+    color: #E5E7EB;
+
+    outline: none;
+}
+
+.comments-box input:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 8px rgba(99,102,241,0.3);
+}
+
+/* botão enviar comentário */
+.comments-box button {
+    align-self: flex-end;
+
+    padding: 8px 14px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.comments-box button:hover {
+    transform: scale(1.05);
+}
+/* RESPONSIVO */
 @media (max-width: 768px) {
-    .banner-comunidade,
-    .posts-section,
-    .post-form-container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
-    .banner-comunidade h2 {
-        font-size: 1.8rem;
-    }
-
-    .post-form-container {
-        margin: 2rem 1rem;
-    }
-    .footer {
-        padding: 40px 20px; /* Reduz o padding lateral que era muito grande */
+    .nav {
+        padding: 20px;
+        flex-direction: column;
+        gap: 15px;
     }
 
     .footer-container {
-        flex-direction: column; /* Empilha os itens verticalmente */
-        text-align: center;     /* Centraliza o texto de tudo */
-        gap: 30px;              /* Espaçamento entre as seções */
-    }
-
-    .footer-brand, .footer-links, .footer-social {
-        margin: 0;
-        top: 0;                 /* Remove os offsets negativos que desalinhariam no mobile */
-    }
-
-    .footer-links {
-        margin-right: 0;        /* Remove a margem lateral específica */
-    }
-
-    .footer-bottom-line {
-        top: 0;                 /* Ajusta a linha para não sobrepor o conteúdo */
-        margin-bottom: 20px;
+        flex-direction: column;
+        text-align: center;
     }
 }

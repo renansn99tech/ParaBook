@@ -387,8 +387,9 @@ main hr{
 #secao-FAQ {
     display: flex;
     justify-content: center;
-    gap: 400px;
-    padding: 45px 145px;
+    align-items: flex-start; /* evita desalinhamento vertical */
+    gap: 40px; /* espaço realista */
+    padding: 40px 80px; /* menos exagerado */
     flex-wrap: wrap;
 }
 

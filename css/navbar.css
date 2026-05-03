@@ -1,0 +1,115 @@
+/* ESCONDE NO DESKTOP */
+.mobile-nav {
+    display: none;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .mobile-nav {
+        display: block;
+    }
+
+    /* ESCONDE NAV NORMAL */
+    .nav {
+        display: none;
+    }
+
+    /* BOTÃO FLUTUANTE */
+    .mobile-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+
+        width: 55px;
+        height: 55px;
+
+        font-size: 22px;
+        background: linear-gradient(135deg, #6366F1, #8B5CF6);
+        color: white;
+
+        border: none;
+        border-radius: 50%;
+
+        z-index: 1100;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        transition: 0.3s;
+    }
+
+    .mobile-toggle:hover {
+        transform: scale(1.1);
+    }
+
+    /* MENU (BOTTOM SHEET) */
+    .mobile-menu {
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        width: 100%;
+        max-height: 80vh;
+
+        background: #020617;
+
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+
+        padding: 30px 20px;
+        padding-bottom: calc(30px + env(safe-area-inset-bottom));
+
+        transition: 0.4s ease;
+
+        z-index: 1050;
+
+        overflow-y: auto;
+    }
+
+    .mobile-menu.active {
+        bottom: 0;
+    }
+
+    /* LISTA */
+    .mobile-menu ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .mobile-menu a {
+        color: #E5E7EB;
+        text-decoration: none;
+        font-size: 1.2rem;
+
+        padding: 12px;
+        border-radius: 10px;
+        transition: 0.2s;
+    }
+
+    .mobile-menu a:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+    /* OVERLAY */
+    .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.3s;
+
+        z-index: 1000;
+    }
+
+    .overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+}

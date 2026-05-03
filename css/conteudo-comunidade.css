@@ -148,13 +148,13 @@ body {
     gap: 1.5rem;
 }
 
-.post-card,
+/*.post-card,
 .post {
     background: white;
     border-radius: 14px;
     padding: 1.5rem;
     color: #111827;
-}
+}*/
 
 /* FORM */
 .post-form-container {
@@ -260,8 +260,9 @@ body {
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 14px;
     padding: 1.2rem;
-    color: #E5E7EB !important;
-    opacity: 1 !important;
+    color: #E5E7EB;
+    /*color: #E5E7EB !important;
+    opacity: 1 !important;*/
 }
 
 .post small {
@@ -415,6 +416,179 @@ body {
 
 .comments-box button:hover {
     transform: scale(1.05);
+}
+
+/* =========================================================
+   LIGHT MODE - PÁGINA COMUNIDADE / POSTS
+   Adicione no FINAL do seu CSS
+   ========================================================= */
+
+body.light-mode {
+    background: #F8FAFC;
+    color: #1F2937;
+}
+
+/* ================= NAV ================= */
+
+body.light-mode .nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #E5E7EB;
+}
+
+body.light-mode .menu li a {
+    color: #4B5563;
+}
+
+body.light-mode .menu li a:hover {
+    color: #111827;
+}
+
+body.light-mode .login-btn {
+    background: #22C55E;
+    color: white;
+}
+
+body.light-mode .login-btn:hover {
+    background: #16A34A;
+}
+
+/* ================= BANNER ================= */
+
+body.light-mode .banner-comunidade {
+    background: linear-gradient(135deg, #E5E7EB, #F3F4F6);
+    color: #111827;
+}
+
+body.light-mode .banner-comunidade p {
+    color: #374151;
+}
+
+/* ================= POSTS ================= */
+
+body.light-mode .posts-section h3 {
+    border-bottom: 2px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .post,
+body.light-mode .post-card {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #111827 !important;
+}
+
+body.light-mode .post small {
+    color: #6B7280;
+}
+
+/* ================= FORM ================= */
+
+body.light-mode .post-form-container {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+}
+
+body.light-mode .post-form-container h3 {
+    color: #111827;
+}
+
+body.light-mode .form-group label {
+    color: #374151;
+}
+
+body.light-mode .form-group input,
+body.light-mode .form-group textarea {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .form-group input:focus,
+body.light-mode .form-group textarea:focus {
+    border-color: #6366F1;
+}
+
+/* ================= BOTÕES ================= */
+
+body.light-mode .post-actions button {
+    background: #F3F4F6;
+    color: #111827;
+}
+
+body.light-mode .post-actions button:nth-child(1) {
+    background: #E0E7FF;
+}
+
+body.light-mode .post-actions button:nth-child(2) {
+    background: #DCFCE7;
+}
+
+body.light-mode .post-actions button:nth-child(3) {
+    background: #FEE2E2;
+}
+
+/* ================= SEARCH ================= */
+
+body.light-mode .search-box input {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .search-box input::placeholder {
+    color: #9CA3AF;
+}
+
+/* ================= COMMENTS ================= */
+
+body.light-mode .comments-box {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+}
+
+body.light-mode .comment {
+    background: #FFFFFF;
+    color: #111827;
+}
+
+body.light-mode .comments-box input {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .comments-box input:focus {
+    border-color: #6366F1;
+}
+
+/* ================= FOOTER ================= */
+
+body.light-mode .footer {
+    background: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+}
+
+body.light-mode .footer-links a {
+    color: #4B5563;
+}
+
+body.light-mode .footer-links a:hover {
+    color: #4D4AE8;
+}
+
+body.light-mode .footer-bottom {
+    color: #6B7280;
+}
+
+body.light-mode .footer-bottom-line {
+    background: #E5E7EB;
+}
+
+#theme-toggle {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 /* RESPONSIVO */
 @media (max-width: 768px) {

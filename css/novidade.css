@@ -693,3 +693,155 @@ margin: 2rem auto 0;
         margin-bottom: 20px;
     }
 }
+
+/* =========================================================
+   LIGHT MODE - PÁGINA NOVIDADES
+   Adicione no FINAL do seu novidades.css
+   ========================================================= */
+
+body.light-mode {
+    background: #F8FAFC;
+    color: #1F2937;
+}
+
+/* ================= NAV ================= */
+
+body.light-mode .nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #E5E7EB;
+}
+
+body.light-mode .menu li a {
+    color: #4B5563;
+}
+
+body.light-mode .menu li a:hover {
+    color: #111827;
+}
+
+body.light-mode .login-btn {
+    background: #22C55E;
+    color: white;
+}
+
+body.light-mode .login-btn:hover {
+    background: #16A34A;
+}
+
+/* ================= TEXTOS GERAIS ================= */
+
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3 {
+    color: #111827;
+}
+
+body.light-mode p {
+    color: #374151;
+}
+
+/* ================= HR ================= */
+
+body.light-mode main hr {
+    background: #E5E7EB;
+}
+
+/* ================= CARDS DESTAQUE ================= */
+
+body.light-mode .card-link {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+body.light-mode .card-link:hover {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+body.light-mode .card-link p {
+    color: #374151;
+}
+
+body.light-mode .card-link i {
+    color: #6B7280;
+}
+
+/* ================= FAQ ================= */
+
+body.light-mode .bloco-duvidas {
+    background-image: linear-gradient(to bottom, #FFFFFF, #F3F4F6);
+    border: 1px solid #E5E7EB;
+}
+
+body.light-mode .detalhe-duvidas {
+    color: #111827;
+}
+
+/* ================= TIMELINE ================= */
+
+body.light-mode .timeline::after {
+    background: #D1D5DB;
+}
+
+body.light-mode .containe::after {
+    background-color: #FFFFFF;
+    border: 4px solid #6366F1;
+}
+
+body.light-mode .left::before {
+    border-color: transparent transparent transparent #FFFFFF;
+}
+
+body.light-mode .right::before {
+    border-color: transparent #FFFFFF transparent transparent;
+}
+
+body.light-mode .content {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+}
+
+body.light-mode .content img:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+body.light-mode .content a {
+    box-shadow: 0 6px 18px rgba(99,102,241,0.2);
+}
+
+/* ================= FOOTER ================= */
+
+body.light-mode .footer {
+    background: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+    color: #4B5563;
+}
+
+body.light-mode .footer h2 {
+    color: #111827;
+}
+
+body.light-mode .footer-links a {
+    color: #4B5563;
+}
+
+body.light-mode .footer-links a:hover {
+    color: #4D4AE8;
+}
+
+body.light-mode .footer-social .icons i {
+    color: #374151;
+}
+
+body.light-mode .footer-social .icons i:hover {
+    color: #4D4AE8;
+}
+
+body.light-mode .footer-bottom {
+    color: #6B7280;
+}
+
+body.light-mode .footer-bottom-line {
+    background: #E5E7EB;
+}

@@ -401,6 +401,131 @@ main hr {
 }
 
 /* =========================================================
+   LIGHT MODE - PÁGINA COMUNIDADES SALVAS
+   Adicione no FINAL do seu CSS
+   ========================================================= */
+
+body.light-mode {
+    background: #F8FAFC;
+    color: #1F2937;
+}
+
+/* ================= NAV ================= */
+
+body.light-mode .nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #E5E7EB;
+}
+
+body.light-mode .menu li a {
+    color: #4B5563;
+}
+
+body.light-mode .menu li a:hover {
+    color: #111827;
+}
+
+body.light-mode .login-btn {
+    background: #22C55E;
+    color: white;
+}
+
+body.light-mode .login-btn:hover {
+    background: #16A34A;
+}
+
+/* ================= TÍTULOS ================= */
+
+body.light-mode .comunidades-salvas h3 {
+    color: #111827;
+    border-bottom: 2px solid #D1D5DB;
+}
+
+/* ================= CARDS ================= */
+
+body.light-mode .comunidade-card {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+body.light-mode .comunidade-card:hover {
+    border-color: #6366F1;
+
+    box-shadow: 
+        0 15px 35px rgba(0,0,0,0.08),
+        0 0 15px rgba(99,102,241,0.15);
+}
+
+body.light-mode .comunidade-card h4 {
+    color: #111827;
+}
+
+body.light-mode .comunidade-card p {
+    color: #374151;
+}
+
+/* ================= BOTÃO ================= */
+
+body.light-mode .btn {
+    box-shadow: 0 6px 18px rgba(99,102,241,0.2);
+}
+
+/* ================= ESTADO VAZIO ================= */
+
+body.light-mode .empty-comunidade {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+}
+
+body.light-mode .empty-comunidade p {
+    color: #6B7280;
+}
+
+/* ================= HR ================= */
+
+body.light-mode main hr {
+    background: #E5E7EB;
+}
+
+/* ================= FOOTER ================= */
+
+body.light-mode .footer {
+    background: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+    color: #4B5563;
+}
+
+body.light-mode .footer h2 {
+    color: #111827;
+}
+
+body.light-mode .footer-links a {
+    color: #4B5563;
+}
+
+body.light-mode .footer-links a:hover {
+    color: #4D4AE8;
+}
+
+body.light-mode .footer-social .icons i {
+    color: #374151;
+}
+
+body.light-mode .footer-social .icons i:hover {
+    color: #4D4AE8;
+}
+
+body.light-mode .footer-bottom {
+    color: #6B7280;
+}
+
+body.light-mode .footer-bottom-line {
+    background: #E5E7EB;
+}
+/* =========================================================
    RESPONSIVO NAV
    ========================================================= */
 

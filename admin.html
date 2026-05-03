@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>ParaBook</title>
+<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div id="login">
+    <h2>Login Admin</h2>
+    <input type="text" id="user" placeholder="Usuário">
+    <input type="password" id="pass" placeholder="Senha">
+    <button id="btnLogin">Entrar</button>
+</div>
+
+<div id="app" style="display:none;">
+    
+    <aside>
+        <h2>ParaBook</h2>
+<button data-nav="dashboard">Dashboard</button>
+<button data-nav="livros">Livros</button>
+<button id="btnLogout">Sair</button>
+    </aside>
+
+    <main>
+        <!-- DASHBOARD -->
+<section id="dashboard" class="secao">
+    <h1>Dashboard</h1>
+
+    <div class="card">
+        <h3>Total de livros</h3>
+        <p id="totalLivros">0</p>
+    </div>
+
+    <div class="grid-graficos">
+        <div class="card">
+            <h3>Por Categoria</h3>
+            <canvas id="graficoBarra"></canvas>
+        </div>
+
+        <div class="card">
+            <h3>Distribuição (%)</h3>
+            <canvas id="graficoPizza"></canvas>
+        </div>
+
+        <div class="card">
+            <h3>Crescimento</h3>
+            <canvas id="graficoLinha"></canvas>
+        </div>
+    </div>
+</section>
+        
+
+        <!-- LIVROS -->
+        <section id="livros" class="secao" style="display:none;">
+            <h1>Gerenciar Livros</h1>
+
+            <input type="text" id="busca" placeholder="Buscar livro..." oninput="buscarLivro()">
+
+            <div class="form">
+                <input type="text" id="titulo" placeholder="Título">
+                <input type="text" id="categoria" placeholder="Categoria">
+                <button id="btnAdd">Adicionar</button>
+            </div>
+
+            <ul id="listaLivros"></ul>
+        </section>
+    </main>
+
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

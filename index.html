@@ -29,11 +29,13 @@
                     <li><a href="comunidade.html">Comunidades</a></li>
                     <li><a href="sobre.html">Sobre</a></li>
                     <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
+                    <li><a href="admin.html">Administrador</a></li>
                     <li><a href="tela-login.html"><button
                                 class="login-btn">Entrar</button></a></li>
                     <li>
                         <button id="theme-toggle" class="login-btn">🌙</button>
                     </li>
+                    
                 </ul>
             </nav>
         </header>
@@ -200,6 +202,11 @@
         </main>
 
         <!-- JavaScript Carrossel e Footer Padronizado -->
+        <script>
+        if (localStorage.getItem("adminLogado")) {
+            document.getElementById("adminLink").style.display = "block";
+        }
+        </script>
         <script src="js/carrossel.js"></script>
         <script src="js/index.js"></script>
         <script src="js/navbar.js"></script>

@@ -19,115 +19,106 @@
         </nav>
     </header>
 
-    <main class="form-container" id="container">
+<main class="form-container" id="container">
 
-        <section class="image-side">
-            <img src="img/login.jpg" alt="imagem-login"/>
-        </section>
+    <!-- IMAGEM -->
+    <section class="image-side">
+        <img src="img/login.jpg" alt="Imagem de login">
+    </section>
 
-        <!------------- CAMPO DE LOGIN ------------->
-        <section class="form-side login-form">
-            <form id="formLogin" novalidate>
-                <h2>Login</h2>
-                <!-- Campo de usuário -->
-                <article class="input-box">
-                    <input type="text" id="loginUser" required placeholder=" " />
-                    <span>Usuário</span>
-                </article>
-                <!-- Campo de email -->
-                <article class="input-box">
-                    <input type="email" id="loginEmail" required placeholder=" " />
-                    <span>E-mail</span>
-                </article>
-                <!-- Campo de senha -->
-                <article class="input-box password-box">
-                    <input type="password" id="loginPassword" required placeholder=" " />
-                    <span>Senha</span>
-                    <button type="button" class="toggle-password" data-target="loginPassword">👁</button>
-                </article>
-                
-                <article class="button-box">
-                    <button class="submit-btn" id="btnLogin">Entrar</button>
-                </article>
+    <!-- LOGIN -->
+    <section class="form-side login-form">
+        <form id="formLogin" novalidate>
+            <h2>Login</h2>
 
-                <article class="input-box">
-                    <p>Esqueceu <a href="#" id="showForgot">nome de usuário/senha?</a></p>
-                </article>
+            <div class="input-box">
+                <input type="text" id="loginUser" required placeholder=" ">
+                <span>Usuário</span>
+            </div>
 
-                <article class="account-box">
-                    <p>
-                        Não tem conta?
-                        <a href="#" id="showRegister">Crie sua Conta →</a>
-                    </p>
-                </article>
-            </form>
-        </section>
+            <div class="input-box">
+                <input type="email" id="loginEmail" required placeholder=" ">
+                <span>E-mail</span>
+            </div>
 
+            <div class="input-box password-box">
+                <input type="password" id="loginPassword" required placeholder=" ">
+                <span>Senha</span>
+                <button type="button" class="toggle-password" data-target="loginPassword">👁</button>
+            </div>
 
-        <!------------- CAMPO DE REGISTRO ------------->
-        <section class="form-side register-form">
-            <form id="formRegister" novalidate>
-                <h2>Criar Conta</h2>
-                
-                <article class="input-box">
-                    <input type="text" id="registerUser" required placeholder=" " />
-                    <span>Nome de Usuário</span>
-                </article>
+            <div class="button-box">
+                <button class="submit-btn" id="btnLogin">Entrar</button>
+            </div>
 
-                <article class="input-box">
-                    <input type="email" id="registerEmail" required placeholder=" " />
-                    <span>Email</span>
-                </article>
+            <div class="input-box">
+                <p>Esqueceu <a href="#" id="showForgot">nome de usuário/senha?</a></p>
+            </div>
 
-                <article class="input-box password-box">
-                    <input type="password" id="registerPassword" required placeholder=" " />
-                    <span>Senha</span>
-                    <button type="button" class="toggle-password" data-target="registerPassword">👁</button>
-                </article>
+            <div class="account-box">
+                <p>Não tem conta? <a href="#" id="showRegister">Crie sua Conta →</a></p>
+            </div>
+        </form>
+    </section>
 
-                <article class="input-box password-box">
-                    <input type="password" id="confirmPassword" required placeholder=" " />
-                    <span>Confirmar Senha</span>
-                    <button type="button" class="toggle-password" data-target="confirmPassword">👁</button>
-                </article>
+    <!-- REGISTRO -->
+    <section class="form-side register-form">
+        <form id="formRegister" novalidate>
+            <h2>Criar Conta</h2>
 
-                <article class="button-box">
-                    <button class="submit-btn" id="btnRegister">Cadastrar</button>
-                </article>
+            <div class="input-box">
+                <input type="text" id="registerUser" required placeholder=" ">
+                <span>Nome de Usuário</span>
+            </div>
 
-                <article class="account-box">
-                    <p>
-                        Já tem conta?
-                        <a href="#" id="showLogin">Entrar →</a>
-                    </p>
-                </article>
-            </form>
-        </section>
+            <div class="input-box">
+                <input type="email" id="registerEmail" required placeholder=" ">
+                <span>Email</span>
+            </div>
 
-        <!------------- CAMPO DE RECUPERAR SENHA ------------->
-        <section class="form-side forgot-form">
-            <form id="formRecover" novalidate>
-                <h2>Recuperar Senha</h2>
-                
-                <article class="input-box">
-                    <input type="email" required />
-                    <span>Digite seu e-mail</span>
-                </article>
+            <div class="input-box password-box">
+                <input type="password" id="registerPassword" required placeholder=" ">
+                <span>Senha</span>
+                <button type="button" class="toggle-password" data-target="registerPassword">👁</button>
+            </div>
 
-                <article class="button-box">
-                    <button class="submit-btn">Enviar link</button>
-                </article>
+            <div class="input-box password-box">
+                <input type="password" id="confirmPassword" required placeholder=" ">
+                <span>Confirmar Senha</span>
+                <button type="button" class="toggle-password" data-target="confirmPassword">👁</button>
+            </div>
 
-                <article class="account-box">
-                    <p>
-                        Lembrou a senha?
-                        <a href="#" id="backToLogin">Entrar →</a>
-                    </p>
-                </article>
-            </form>
-        </section>
+            <div class="button-box">
+                <button class="submit-btn" id="btnRegister">Cadastrar</button>
+            </div>
 
-    </main>
+            <div class="account-box">
+                <p>Já tem conta? <a href="#" id="showLogin">Entrar →</a></p>
+            </div>
+        </form>
+    </section>
+
+    <!-- RECUPERAR -->
+    <section class="form-side forgot-form">
+        <form id="formRecover" novalidate>
+            <h2>Recuperar Senha</h2>
+
+            <div class="input-box">
+                <input type="email" required placeholder=" ">
+                <span>Digite seu e-mail</span>
+            </div>
+
+            <div class="button-box">
+                <button class="submit-btn">Enviar link</button>
+            </div>
+
+            <div class="account-box">
+                <p>Lembrou a senha? <a href="#" id="backToLogin">Entrar →</a></p>
+            </div>
+        </form>
+    </section>
+
+</main>
 
     <script src="js/auth.js"></script>
 </body>

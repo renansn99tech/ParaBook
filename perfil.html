@@ -26,9 +26,13 @@
                     <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
                     <li><a href="comunidade.html">Comunidades</a></li>
                     <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html">Perfil</a></li>
+                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
                     <li><a href="tela-login.html"><button
                                 class="login-btn">Entrar</button></a></li>
+
+                                        <li>
+                        <button id="theme-toggle" class="login-btn">🌙</button>
+                    </li>            
                 </ul>
             </nav>
         </header>
@@ -49,7 +53,7 @@
                 <div class="perfil-content">
                     <div class="perfil-avatar-section">
                         <img src="img/user.png" alt="Avatar do Usuário" class="perfil-avatar">
-                        <button class="btn-editar-avatar">📷</button>
+                        <button class="btn-editar-avatar" id="btnTrocarFoto">📷</button>
                     </div>
 
                     <div class="perfil-user-info">
@@ -68,7 +72,7 @@
                             </div>
                         </div>
 
-                        <button class="btn-editar-perfil">Editar Perfil</button>
+                        <button class="btn-editar-perfil" id="btnEditarPerfil">Editar Perfil</button>
                     </div>
                 </div>
             </section>
@@ -148,7 +152,7 @@
                             <div class="info-card full-width">
                                 <h3>Sobre Você</h3>
                                 <p class="bio-text">Sou um leitor apaixonado que adora descobrir novos livros e compartilhar minhas experiências com outras pessoas. Acredito que a leitura é uma forma poderosa de aprendizado e conexão humana.</p>
-                                <button class="btn-editar-bio">Trocar Biografia</button>
+                                <button class="btn-editar-bio" id="btnEditarBio">Trocar Biografia</button>
                             </div>
                         </div>
                     </div>
@@ -293,8 +297,8 @@
 
                             <div class="config-section">
                                 <h3>Conta</h3>
-                                <button class="btn-config btn-danger"> Alterar Senha</button>
-                                <button class="btn-config btn-danger"> Excluir Conta</button>
+                                <button id="btnAlterarSenha" class="btn-config btn-danger">Alterar Senha</button>
+                                <button id="btnExcluirConta" class="btn-config btn-danger">Excluir Conta</button>
                             </div>
                         </div>
                     </div>
@@ -304,7 +308,7 @@
         </main>
 
 
-        <script src="js/footer.js"></script>
+        
         
         <footer class="footer">
             <div class="footer-container">
@@ -337,6 +341,7 @@
             </div>
         </footer>
         <hr class="footer-bottom-line">
-        <script src="/js/perfil.js"></script>
+        <script src="js/perfil.js"></script>
+        <script src="js/index.js"></script>
     </body>
 </html>

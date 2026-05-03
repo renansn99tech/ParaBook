@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     /* =========================================
-       APLICAR TEMA SALVO
+    APLICAR TEMA SALVO
     ========================================= */
 
     const temaSalvo = localStorage.getItem("theme");
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* =========================================
-       FUNCIONAMENTO DAS ABAS
+    FUNCIONAMENTO DAS ABAS
     ========================================= */
 
     const botoes = document.querySelectorAll(".tab-btn");
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* =========================================
-       DADOS DE EXEMPLO
+    DADOS DE EXEMPLO
     ========================================= */
 
     document.getElementById("nomePerfil").textContent = "João Silva";
@@ -43,4 +43,66 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("totalAvaliados").textContent = "10";
     document.getElementById("comunidades").textContent = "5";
 
+    /* =========================================
+AÇÕES DOS BOTÕES
+========================================= */
+
+// Alterar senha
+document.getElementById("btnAlterarSenha").addEventListener("click", () => {
+    const novaSenha = prompt("Digite sua nova senha:");
+
+    if (!novaSenha) return;
+
+    console.log("Senha alterada:", novaSenha);
+    alert("Senha alterada (simulação)");
+});
+
+// Excluir conta
+document.getElementById("btnExcluirConta").addEventListener("click", () => {
+    const confirmacao = confirm("Tem certeza que deseja excluir sua conta?");
+
+    if (confirmacao) {
+        console.log("Conta excluída");
+        alert("Conta excluída (simulação)");
+    }
+});
+
+// Trocar nome
+document.getElementById("btnEditarPerfil").addEventListener("click", () => {
+    const novoNome = prompt("Digite seu novo nome:");
+
+    if (!novoNome) return;
+
+    document.getElementById("nomePerfil").textContent = novoNome;
+});
+
+// Trocar bio
+document.getElementById("btnEditarBio").addEventListener("click", () => {
+    const novaBio = prompt("Digite sua nova bio:");
+
+    if (!novaBio) return;
+
+    document.querySelector(".bio-text").textContent = novaBio;
+});
+
+// Trocar foto (simples)
+document.getElementById("btnTrocarFoto").addEventListener("click", () => {
+    const novaFoto = prompt("Cole a URL da nova foto:");
+
+    if (!novaFoto) return;
+
+    document.querySelector(".perfil-avatar").src = novaFoto;
+});
+
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-remover-favorito")) {
+
+        const card = e.target.closest(".favorito-card");
+
+        if (card) {
+            card.remove();
+        }
+
+    }
+});
 });

@@ -26,7 +26,9 @@
 body{
     background: var(--color-bg-warm);
     color: var(--color-ui-charcoal);
+    overflow-x: hidden; /* impede scroll lateral */
 }
+
 
 /* NAV */
 
@@ -79,6 +81,7 @@ body{
 .form-container{
     position: relative;
     width: 1100px;
+    max-width: 95%; /* evita estourar a tela */
     height: 600px;
     background: rgba(255,255,255,0.03);
     border: 1px solid var(--color-neutral-tan);
@@ -86,9 +89,9 @@ body{
     overflow: hidden;
     backdrop-filter: blur(12px);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    margin-top: 5%;
-    margin-left: 22%;
+    margin: 5% auto; /* centraliza corretamente */
 }
+
 
 /* LADO DA IMAGEM */
 
@@ -102,7 +105,7 @@ body{
 }
 
 .image-side img{
-    width: 115%;
+    width: 100%; /* removido 115% que causava overflow */
     height: 100%;
     object-fit: cover;
     border-radius: 15px 0 0 15px;

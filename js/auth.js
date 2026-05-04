@@ -28,6 +28,34 @@ document.getElementById("backToLogin").onclick = e => {
     container.classList.remove("forgot-active");
 };
 
+
+//Notify
+function notifySuccess(msg) {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: msg,
+        showConfirmButton: false,
+        timer: 2500,
+        background: '#111827',
+        color: '#E5E7EB'
+    });
+}
+
+function notifyError(msg) {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: msg,
+        showConfirmButton: false,
+        timer: 3000,
+        background: '#111827',
+        color: '#E5E7EB'
+    });
+}
+
 // Banco fake
 let users = JSON.parse(localStorage.getItem("users")) || [];
 
@@ -40,19 +68,17 @@ document.getElementById("btnRegister").onclick = e => {
     const password = registerPassword.value;
     const confirm = confirmPassword.value;
 
-    if(password !== confirm){
-        alert("Senhas diferentes");
+    if (password !== confirm) {
+        notifyError("As senhas não coincidem");
         return;
     }
 
-    if(users.find(u => u.email === email || u.user === user)){
-        alert("Usuário já existe");
+    if (users.find(u => u.email === email || u.user === user)) {
+        notifyError("Usuário ou e-mail já cadastrado");
         return;
     }
 
-    users.push({user,email,password});
-    localStorage.setItem("users", JSON.stringify(users));
-    alert("Cadastro ok");
+    notifySuccess("Cadastro realizado com sucesso!");
 };
 
 // Login
@@ -64,10 +90,15 @@ document.getElementById("btnLogin").onclick = e => {
 
     const user = users.find(u => u.email === email && u.password === password);
 
-    if(!user){
-        alert("Erro login");
+    if (!user) {
+        notifyError("E-mail ou senha inválidos");
         return;
     }
+
+    notifySuccess("Login realizado!");
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 1000);
 
     localStorage.setItem("usuarioLogado", JSON.stringify(user));
     window.location.href = "index.html";

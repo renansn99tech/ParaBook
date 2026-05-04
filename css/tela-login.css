@@ -1,4 +1,4 @@
-:root{
+:root {
     --color-primary-dark: #14213d;
     --color-secondary: #6366F1;
     --color-accent-olive: #58504a;
@@ -15,7 +15,7 @@
 
 
 /* Reset */
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -23,26 +23,27 @@
 }
 
 /* Fundo geral */
-body{
+body {
     background: var(--color-bg-warm);
     color: var(--color-ui-charcoal);
-    overflow-x: hidden; /* impede scroll lateral */
+    overflow-x: hidden;
+    /* impede scroll lateral */
 }
 
 
 /* NAV */
 
-.nav{
+.nav {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    background: rgba(2,6,23,0.7);
+    background: rgba(2, 6, 23, 0.7);
     backdrop-filter: blur(10px);
     margin-top: 40px;
     margin-right: 30px;
 }
 
-.menu{
+.menu {
     list-style: none;
     display: flex;
     flex-direction: row;
@@ -50,14 +51,14 @@ body{
     gap: 20px;
 }
 
-.menu a{
+.menu a {
     color: var(--color-ui-charcoal);
     text-decoration: none;
 }
 
 /* BOTÃO VOLTAR */
 
-.voltar-btn{
+.voltar-btn {
     background-color: var(--color-green);
     color: #020617;
     padding: 10px 20px;
@@ -70,7 +71,7 @@ body{
     position: relative;
 }
 
-.voltar-btn:hover{
+.voltar-btn:hover {
     background-color: var(--color-green-hover);
     color: white;
     transform: scale(1.05);
@@ -78,24 +79,26 @@ body{
 
 /* CONTAINER PRINCIPAL */
 
-.form-container{
+.form-container {
     position: relative;
     width: 1100px;
-    max-width: 95%; /* evita estourar a tela */
+    max-width: 95%;
+    /* evita estourar a tela */
     height: 600px;
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--color-neutral-tan);
     border-radius: 15px;
     overflow: hidden;
     backdrop-filter: blur(12px);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    margin: 5% auto; /* centraliza corretamente */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    margin: 5% auto;
+    /* centraliza corretamente */
 }
 
 
 /* LADO DA IMAGEM */
 
-.image-side{
+.image-side {
     position: absolute;
     left: 0;
     top: 0;
@@ -104,8 +107,9 @@ body{
     transition: transform 0.6s ease;
 }
 
-.image-side img{
-    width: 100%; /* removido 115% que causava overflow */
+.image-side img {
+    width: 100%;
+    /* removido 115% que causava overflow */
     height: 100%;
     object-fit: cover;
     border-radius: 15px 0 0 15px;
@@ -113,7 +117,7 @@ body{
 
 /* ÁREA DOS FORMULÁRIOS */
 
-.form-side{
+.form-side {
     position: absolute;
     right: 0;
     top: 0;
@@ -128,7 +132,7 @@ body{
 
 .login-form,
 .register-form,
-.forgot-form{
+.forgot-form {
     position: absolute;
     width: calc(60% - 100px);
     transition: transform 0.6s ease;
@@ -136,48 +140,48 @@ body{
 
 /* ESTADOS INICIAIS */
 
-.login-form{
+.login-form {
     transform: translateX(0);
 }
 
-.register-form{
+.register-form {
     transform: translateX(100%);
 }
 
-.forgot-form{
+.forgot-form {
     transform: translateX(100%);
 }
 
 /* CADASTRO */
 
-.form-container.active .login-form{
+.form-container.active .login-form {
     transform: translateX(100%);
 }
 
-.form-container.active .register-form{
+.form-container.active .register-form {
     transform: translateX(0);
 }
 
 /* RECUPERAÇÃO */
 
-.form-container.forgot-active .login-form{
+.form-container.forgot-active .login-form {
     transform: translateX(100%);
 }
 
-.form-container.forgot-active .forgot-form{
+.form-container.forgot-active .forgot-form {
     transform: translateX(0);
 }
 
 /* ANIMAÇÃO IMAGEM */
 
 .form-container.active .image-side,
-.form-container.forgot-active .image-side{
+.form-container.forgot-active .image-side {
     transform: translateX(-40px) scale(1.02);
 }
 
 /* TÍTULO */
 
-h2{
+h2 {
     margin-bottom: 20px;
     color: var(--color-ui-charcoal);
     text-align: center;
@@ -185,14 +189,14 @@ h2{
 
 /* INPUT BOX */
 
-.input-box{
+.input-box {
     margin-top: 20px;
     position: relative;
 }
 
 /* INPUT */
 
-.input-box input{
+.input-box input {
     width: 100%;
     padding: 12px 15px;
     background: transparent;
@@ -206,14 +210,14 @@ h2{
 
 /* FOCUS */
 
-.input-box input:focus{
+.input-box input:focus {
     border-bottom-color: var(--color-secondary);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* LABEL */
 
-.input-box span{
+.input-box span {
     position: absolute;
     top: 50%;
     left: 15px;
@@ -226,8 +230,8 @@ h2{
 
 /* FLOAT LABEL */
 
-.input-box input:focus + span,
-.input-box input:not(:placeholder-shown) + span{
+.input-box input:focus+span,
+.input-box input:not(:placeholder-shown)+span {
     top: -5px;
     font-size: 12px;
     color: var(--color-secondary);
@@ -235,20 +239,20 @@ h2{
 
 /* LINKS */
 
-a{
+a {
     color: var(--color-secondary);
     text-decoration: none;
     font-weight: bold;
 }
 
-a:hover{
+a:hover {
     color: #8B5CF6;
     transition: 0.4s;
 }
 
 /* ACCOUNT BOX */
 
-.account-box{
+.account-box {
     text-align: center;
     margin-top: 30px;
     color: var(--color-text-secondary);
@@ -257,7 +261,7 @@ a:hover{
 
 /* BOTÃO */
 
-.submit-btn{
+.submit-btn {
     width: 100%;
     background: linear-gradient(90deg, #6366F1, #4F46E5);
     border: none;
@@ -270,8 +274,8 @@ a:hover{
     margin-top: 20px;
 }
 
-.submit-btn:hover{
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.submit-btn:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     transform: translateY(-2px);
 }
 
@@ -305,7 +309,7 @@ body.light-mode {
 /* NAV */
 
 body.light-mode .nav {
-    background: rgba(255,255,255,0.85);
+    background: rgba(255, 255, 255, 0.85);
     border-bottom: 1px solid #d1d5db;
 }
 
@@ -316,9 +320,9 @@ body.light-mode .menu a {
 /* CONTAINER */
 
 body.light-mode .form-container {
-    background: rgba(0,0,0,0.03);
+    background: rgba(0, 0, 0, 0.03);
     border: 1px solid #d1d5db;
-    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
 }
 
 /* TÍTULO */
@@ -342,8 +346,8 @@ body.light-mode .input-box span {
     color: #6b7280;
 }
 
-body.light-mode .input-box input:focus + span,
-body.light-mode .input-box input:not(:placeholder-shown) + span {
+body.light-mode .input-box input:focus+span,
+body.light-mode .input-box input:not(:placeholder-shown)+span {
     color: #4F46E5;
 }
 

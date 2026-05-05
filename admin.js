@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // =======================
 function bindEvents() {
     document.getElementById("btnLogin")?.addEventListener("click", login);
+    document.getElementById("btnVoltar")?.addEventListener("click", voltar);
     document.getElementById("btnLogout")?.addEventListener("click", logout);
     document.getElementById("btnAdd")?.addEventListener("click", adicionarLivro);
     document.getElementById("btnAddUser")?.addEventListener("click", adicionarUsuario);
@@ -73,6 +74,23 @@ function entrar() {
 
     render();
 }
+
+// VOLTAR
+
+function voltar() {
+    const user = document.getElementById("user").value;
+    const pass = document.getElementById("pass").value;
+
+    if (user === USER && pass === PASS) {
+        localStorage.setItem("adminLogado", "true");
+        entrar();
+    } else {
+        alert("Voltando para a tela inicial");
+        window.location.href = "index.html"; // Redireciona para index.html
+    }
+}
+
+
 
 // =======================
 // LOGOUT

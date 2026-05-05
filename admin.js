@@ -1,7 +1,10 @@
-let chartCategorias = null;
+// =======================
+// CHARTS
+// =======================
 let chartBarra = null;
 let chartPizza = null;
 let chartLinha = null;
+
 // =======================
 // CONFIG
 // =======================
@@ -9,10 +12,11 @@ const USER = "admin";
 const PASS = "123";
 
 // =======================
-// STATE CENTRAL
+// STATE
 // =======================
 const state = {
     livros: [],
+    usuarios: [],
     filtro: ""
 };
 
@@ -34,6 +38,8 @@ function bindEvents() {
     document.getElementById("btnLogin")?.addEventListener("click", login);
     document.getElementById("btnLogout")?.addEventListener("click", logout);
     document.getElementById("btnAdd")?.addEventListener("click", adicionarLivro);
+    document.getElementById("btnAddUser")?.addEventListener("click", adicionarUsuario);
+
     document.getElementById("busca")?.addEventListener("input", buscarLivro);
 
     document.querySelectorAll("[data-nav]").forEach(btn => {
@@ -62,7 +68,9 @@ function entrar() {
     document.getElementById("login").style.display = "none";
     document.getElementById("app").style.display = "flex";
 
-    state.livros = carregarStorage();
+    state.livros = carregar("livros");
+    state.usuarios = carregar("usuarios");
+
     render();
 }
 
@@ -87,14 +95,11 @@ function mostrarSecao(secao) {
 }
 
 // =======================
-// CRUD
+// LIVROS
 // =======================
 function adicionarLivro() {
-    const tituloInput = document.getElementById("titulo");
-    const categoriaInput = document.getElementById("categoria");
-
-    const titulo = tituloInput.value.trim();
-    const categoria = categoriaInput.value.trim();
+    const titulo = document.getElementById("titulo").value.trim();
+    const categoria = document.getElementById("categoria").value;
 
     if (!titulo || !categoria) {
         alert("Preencha todos os campos");
@@ -108,16 +113,16 @@ function adicionarLivro() {
         criadoEm: new Date().toISOString()
     };
 
-    state.livros = [novoLivro, ...state.livros];
+    state.livros.unshift(novoLivro);
+    salvar("livros", state.livros);
 
-    salvarStorage();
     limparFormulario();
     render();
 }
 
 function removerLivro(id) {
     state.livros = state.livros.filter(l => l.id !== id);
-    salvarStorage();
+    salvar("livros", state.livros);
     render();
 }
 
@@ -130,26 +135,51 @@ function buscarLivro(e) {
 }
 
 // =======================
-// RENDER PRINCIPAL
+// USUÁRIOS
+// =======================
+function adicionarUsuario() {
+    const nome = document.getElementById("novoUsuario").value.trim();
+    const role = document.getElementById("roleUsuario").value;
+
+    if (!nome) {
+        alert("Digite um nome");
+        return;
+    }
+
+    const novoUsuario = {
+        id: Date.now(),
+        nome,
+        role
+    };
+
+    state.usuarios.push(novoUsuario);
+    salvar("usuarios", state.usuarios);
+
+    document.getElementById("novoUsuario").value = "";
+
+    renderUsuarios();
+    renderPermissoes();
+}
+
+// =======================
+// RENDER GERAL
 // =======================
 function render() {
     atualizarDashboard();
     renderLista();
+    renderUsuarios();
+    renderPermissoes();
 }
 
 // =======================
-// DASHBOARD (AGORA FUNCIONA)
+// DASHBOARD
 // =======================
 function atualizarDashboard() {
     const totalEl = document.getElementById("totalLivros");
-
     if (!totalEl) return;
 
     totalEl.textContent = state.livros.length;
 
-    // =====================
-    // AGRUPAR CATEGORIAS
-    // =====================
     const categorias = {};
 
     state.livros.forEach(l => {
@@ -160,105 +190,125 @@ function atualizarDashboard() {
     const labels = Object.keys(categorias);
     const dados = Object.values(categorias);
 
-    // =====================
-    // GRÁFICO DE BARRA
-    // =====================
     if (chartBarra) chartBarra.destroy();
-
     chartBarra = new Chart(document.getElementById("graficoBarra"), {
         type: "bar",
         data: {
             labels,
             datasets: [{
-                label: "Livros",
                 data: dados,
                 backgroundColor: "#22c55e"
             }]
-        },
-        options: {
-            responsive: true
         }
     });
 
-    // =====================
-    // GRÁFICO DE PIZZA
-    // =====================
     if (chartPizza) chartPizza.destroy();
-
     chartPizza = new Chart(document.getElementById("graficoPizza"), {
         type: "pie",
         data: {
             labels,
             datasets: [{
-                data: dados,
-                backgroundColor: [
-                    "#22c55e",
-                    "#3b82f6",
-                    "#f59e0b",
-                    "#ef4444",
-                    "#a855f7"
-                ]
+                data: dados
             }]
         }
     });
 
-    // =====================
-    // GRÁFICO DE LINHA (CRESCIMENTO)
-    // =====================
     const datas = {};
 
     state.livros.forEach(l => {
-        const data = new Date(l.criadoEm).toLocaleDateString();
-        datas[data] = (datas[data] || 0) + 1;
+        const d = new Date(l.criadoEm).toLocaleDateString();
+        datas[d] = (datas[d] || 0) + 1;
     });
 
     const labelsLinha = Object.keys(datas);
     const dadosLinha = Object.values(datas);
 
     if (chartLinha) chartLinha.destroy();
-
     chartLinha = new Chart(document.getElementById("graficoLinha"), {
         type: "line",
         data: {
             labels: labelsLinha,
             datasets: [{
-                label: "Livros adicionados",
                 data: dadosLinha,
                 borderColor: "#22c55e",
-                fill: false,
-                tension: 0.3
+                fill: false
             }]
         }
     });
 }
 
 // =======================
-// LISTA (SEM BUG DE INDEX)
+// LISTA DE LIVROS
 // =======================
 function renderLista() {
     const ul = document.getElementById("listaLivros");
+    if (!ul) return;
+
     ul.innerHTML = "";
 
     const filtrados = state.livros.filter(l =>
         l.titulo.toLowerCase().includes(state.filtro)
     );
 
-    filtrados.forEach(livro => {
+    filtrados.forEach(l => {
         const li = document.createElement("li");
-
-        const dataFormatada = new Date(livro.criadoEm).toLocaleDateString();
 
         li.innerHTML = `
             <div>
-                <strong>${livro.titulo}</strong><br>
-                <small>${livro.categoria} • ${dataFormatada}</small>
+                <strong>${l.titulo}</strong><br>
+                <small>${l.categoria}</small>
             </div>
-            <button data-id="${livro.id}">❌</button>
+            <button>❌</button>
         `;
 
-        li.querySelector("button").addEventListener("click", () => {
-            removerLivro(livro.id);
-        });
+        li.querySelector("button").onclick = () => removerLivro(l.id);
+
+        ul.appendChild(li);
+    });
+}
+
+// =======================
+// USUÁRIOS
+// =======================
+function renderUsuarios() {
+    const ul = document.getElementById("listaUsuarios");
+    if (!ul) return;
+
+    ul.innerHTML = "";
+
+    state.usuarios.forEach(u => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <span>${u.nome} (${u.role})</span>
+        `;
+
+        ul.appendChild(li);
+    });
+}
+
+// =======================
+// PERMISSÕES
+// =======================
+function renderPermissoes() {
+    const ul = document.getElementById("listaPermissoes");
+    if (!ul) return;
+
+    ul.innerHTML = "";
+
+    state.usuarios.forEach(u => {
+        let permissao = "";
+
+        if (u.role === "ADMIN") permissao = "Acesso total";
+        else if (u.role === "AUTOR") permissao = "Criar conteúdo";
+        else permissao = "Somente leitura";
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <span>${u.nome}</span>
+            <span>${permissao}</span>
+        `;
 
         ul.appendChild(li);
     });
@@ -267,13 +317,13 @@ function renderLista() {
 // =======================
 // STORAGE
 // =======================
-function salvarStorage() {
-    localStorage.setItem("livros", JSON.stringify(state.livros));
+function salvar(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
 }
 
-function carregarStorage() {
+function carregar(key) {
     try {
-        return JSON.parse(localStorage.getItem("livros")) || [];
+        return JSON.parse(localStorage.getItem(key)) || [];
     } catch {
         return [];
     }

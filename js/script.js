@@ -43,6 +43,39 @@
         carregarDetalheComunidade();
     });
 
+    function showWelcomeOverlay(tipo) {
+    const overlay = document.getElementById("welcome-overlay");
+    const text = document.getElementById("welcome-text");
+
+    if (!overlay || !tipo) return;
+
+    const comunidade = comunidades[tipo];
+    if (!comunidade) return;
+
+    const key = `welcome_${tipo}`;
+
+    // se já mostrou antes, não mostra de novo
+    if (localStorage.getItem(key)) {
+        overlay.style.display = "none";
+        return;
+    }
+
+    // define o texto dinâmico
+    text.innerText = `Bem-vindo à comunidade de ${comunidade.titulo}`;
+
+    // espera carregar e depois some
+    setTimeout(() => {
+        overlay.style.opacity = "0";
+
+        setTimeout(() => {
+            overlay.style.display = "none";
+        }, 800);
+    }, 2000);
+
+    // marca como já exibido
+    localStorage.setItem(key, "true");
+}
+
     /* =========================
     COMUNIDADE INIT
     ========================= */
@@ -55,6 +88,8 @@
         document.getElementById("descricao-comunidade").innerText = c.descricao;
 
         renderPosts(tipo);
+        
+        showWelcomeOverlay(tipo);
     }
 
     /* =========================

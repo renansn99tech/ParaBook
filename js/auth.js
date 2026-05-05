@@ -79,6 +79,38 @@ document.getElementById("btnRegister").onclick = e => {
     }
 
     notifySuccess("Cadastro realizado com sucesso!");
+}
+
+// Cadastro
+document.getElementById("btnRegister").onclick = e => {
+    e.preventDefault();
+
+    const user = registerUser.value.trim();
+    const email = registerEmail.value.trim();
+    const password = registerPassword.value;
+    const confirm = confirmPassword.value;
+
+    if (password !== confirm) {
+        notifyError("As senhas não coincidem");
+        return;
+    }
+
+    if (users.find(u => u.email === email || u.user === user)) {
+        notifyError("Usuário ou e-mail já cadastrado");
+        return;
+    }
+
+    const newUser = {
+        user,
+        email,
+        password
+    };
+
+    users.push(newUser);
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    notifySuccess("Cadastro realizado com sucesso!");
 };
 
 // Login
@@ -95,13 +127,13 @@ document.getElementById("btnLogin").onclick = e => {
         return;
     }
 
-    notifySuccess("Login realizado!");
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 1000);
+notifySuccess("Login realizado!");
 
-    localStorage.setItem("usuarioLogado", JSON.stringify(user));
+localStorage.setItem("usuarioLogado", JSON.stringify(user));
+
+setTimeout(() => {
     window.location.href = "index.html";
+}, 1000);
 };
 
 // Mostrar senha

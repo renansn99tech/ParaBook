@@ -2,74 +2,112 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>ParaBook</title>
-<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<title>ParaBook Admin</title>
 <link rel="stylesheet" href="admin.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="login">
-    <h2>Login Admin</h2>
+    <h2>Painel Administrativo</h2>
     <input type="text" id="user" placeholder="Usuário">
     <input type="password" id="pass" placeholder="Senha">
     <button id="btnLogin">Entrar</button>
 </div>
 
+<!-- APP -->
 <div id="app" style="display:none;">
-    
+
     <aside>
         <h2>ParaBook</h2>
-<button data-nav="dashboard">Dashboard</button>
-<button data-nav="livros">Livros</button>
-<button id="btnLogout">Sair</button>
+
+        <button data-nav="dashboard">Dashboard</button>
+        <button data-nav="livros">Livros</button>
+        <button data-nav="usuarios">Usuários</button>
+        <button data-nav="permissoes">Permissões</button>
+
+        <button id="btnLogout">Sair</button>
     </aside>
 
     <main>
+
         <!-- DASHBOARD -->
-<section id="dashboard" class="secao">
-    <h1>Dashboard</h1>
+        <section id="dashboard" class="secao">
+            <h1>Dashboard</h1>
 
-    <div class="card">
-        <h3>Total de livros</h3>
-        <p id="totalLivros">0</p>
-    </div>
+            <div class="card">
+                <h3>Total de livros</h3>
+                <p id="totalLivros">0</p>
+            </div>
 
-    <div class="grid-graficos">
-        <div class="card">
-            <h3>Por Categoria</h3>
-            <canvas id="graficoBarra"></canvas>
-        </div>
+            <div class="grid-graficos">
+                <div class="card">
+                    <h3>Por Categoria</h3>
+                    <canvas id="graficoBarra"></canvas>
+                </div>
 
-        <div class="card">
-            <h3>Distribuição (%)</h3>
-            <canvas id="graficoPizza"></canvas>
-        </div>
+                <div class="card">
+                    <h3>Distribuição</h3>
+                    <canvas id="graficoPizza"></canvas>
+                </div>
 
-        <div class="card">
-            <h3>Crescimento</h3>
-            <canvas id="graficoLinha"></canvas>
-        </div>
-    </div>
-</section>
-        
+                <div class="card">
+                    <h3>Crescimento</h3>
+                    <canvas id="graficoLinha"></canvas>
+                </div>
+            </div>
+        </section>
 
         <!-- LIVROS -->
         <section id="livros" class="secao" style="display:none;">
             <h1>Gerenciar Livros</h1>
 
-            <input type="text" id="busca" placeholder="Buscar livro..." oninput="buscarLivro()">
+            <input type="text" id="busca" placeholder="Buscar livro...">
 
             <div class="form">
                 <input type="text" id="titulo" placeholder="Título">
-                <input type="text" id="categoria" placeholder="Categoria">
+                <select id="categoria">
+    <option value="">Selecione categoria</option>
+    <option>Literatura</option>
+    <option>Filosofia</option>
+    <option>Religião</option>
+    <option>Infantil</option>
+    <option>Ciências Exatas</option>
+</select>
                 <button id="btnAdd">Adicionar</button>
             </div>
 
             <ul id="listaLivros"></ul>
         </section>
-    </main>
 
+        <!-- USUÁRIOS -->
+        <section id="usuarios" class="secao" style="display:none;">
+            <h1>Gerenciar Usuários</h1>
+
+            <div class="form">
+                <input type="text" id="novoUsuario" placeholder="Nome do usuário">
+                <select id="roleUsuario">
+                    <option value="LEITOR">Leitor</option>
+                    <option value="AUTOR">Autor</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+                <button id="btnAddUser">Adicionar</button>
+            </div>
+
+            <ul id="listaUsuarios"></ul>
+        </section>
+
+        <!-- PERMISSÕES -->
+        <section id="permissoes" class="secao" style="display:none;">
+            <h1>Controle de Permissões</h1>
+
+            <p>Defina o nível de acesso de cada usuário:</p>
+
+            <ul id="listaPermissoes"></ul>
+        </section>
+
+    </main>
 </div>
 
 <script src="admin.js"></script>

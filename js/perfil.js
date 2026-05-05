@@ -104,5 +104,37 @@ document.addEventListener("click", (e) => {
         }
 
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+    // =============================
+    // SALVAR PRIVACIDADE
+    // =============================
+    const btnPrivacidade = document.getElementById("btnSalvarPrivacidade");
+
+    if (btnPrivacidade) {
+        btnPrivacidade.addEventListener("click", () => {
+            const status = document.getElementById("togglePrivacidade").checked;
+
+            console.log("Privacidade:", status);
+            alert("Configuração de privacidade salva!");
+        });
+    }
+
+    // =============================
+    // SALVAR NOTIFICAÇÕES
+    // =============================
+    const btnNotificacoes = document.getElementById("btnSalvarNotificacoes");
+
+    if (btnNotificacoes) {
+        btnNotificacoes.addEventListener("click", () => {
+            const status = document.getElementById("toggleNotificacoes").checked;
+
+            console.log("Notificações:", status);
+            alert("Configuração de notificações salva!");
+        });
+    }
+
+});
 });
 });

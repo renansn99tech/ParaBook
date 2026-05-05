@@ -26,7 +26,7 @@ const comunidades = {
     },
 
     religioso: {
-        titulo: "Religiosos",
+        titulo: "Religioso",
         descricao: "Reflexões espirituais.",
         posts: [
             {
@@ -34,22 +34,43 @@ const comunidades = {
                 texto: "Tudo posso naquele que me fortalece."
             }
         ]
+    },
+
+    infantil: {
+        titulo: "Infantil",
+        descricao: "Conteúdos voltados para livros e histórias infantis.",
+        posts: [
+            {
+                titulo: "Indicação",
+                texto: "O Pequeno Príncipe é uma ótima leitura para todas as idades."
+            }
+        ]
+    },
+
+    ciencias_exatas: {
+        titulo: "Ciências Exatas",
+        descricao: "Matemática, física e lógica aplicada.",
+        posts: [
+            {
+                titulo: "Dica de estudo",
+                texto: "Pratique exercícios diariamente para fixar melhor o conteúdo."
+            }
+        ]
     }
 };
 
 /* =====================================================
-   DARK MODE / LIGHT MODE
+   TEMA
 ===================================================== */
 
 function aplicarTema() {
     const temaSalvo = localStorage.getItem("tema");
-
-    if (temaSalvo === "light") {
-        document.body.classList.add("light-mode");
-    } else {
-        document.body.classList.remove("light-mode");
-    }
+    document.body.classList.toggle("light-mode", temaSalvo === "light");
 }
+
+/* =====================================================
+   INIT
+===================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
     aplicarTema();
@@ -62,7 +83,19 @@ document.addEventListener("DOMContentLoaded", () => {
 ===================================================== */
 
 function entrarComunidade(tipo) {
-    let salvas = JSON.parse(localStorage.getItem("comunidades")) || [];
+    // 🔒 validação
+    if (!comunidades[tipo]) {
+        console.error("Comunidade inválida:", tipo);
+        return;
+    }
+
+    let salvas;
+
+    try {
+        salvas = JSON.parse(localStorage.getItem("comunidades")) || [];
+    } catch {
+        salvas = [];
+    }
 
     if (!salvas.includes(tipo)) {
         salvas.push(tipo);
@@ -74,10 +107,15 @@ function entrarComunidade(tipo) {
 
 function mostrarComunidadesSalvas() {
     const container = document.getElementById("lista-comunidades-salvas");
-
     if (!container) return;
 
-    let salvas = JSON.parse(localStorage.getItem("comunidades")) || [];
+    let salvas;
+
+    try {
+        salvas = JSON.parse(localStorage.getItem("comunidades")) || [];
+    } catch {
+        salvas = [];
+    }
 
     if (salvas.length === 0) {
         container.innerHTML = "<p>Você ainda não entrou em nenhuma comunidade.</p>";
@@ -88,6 +126,9 @@ function mostrarComunidadesSalvas() {
 
     salvas.forEach(tipo => {
         const c = comunidades[tipo];
+
+        // 🔒 evita erro silencioso
+        if (!c) return;
 
         html += `
             <div class="comunidade-card">
@@ -105,13 +146,17 @@ function mostrarComunidadesSalvas() {
 
 function carregarDetalheComunidade() {
     const titulo = document.getElementById("titulo-comunidade");
-
     if (!titulo) return;
 
     const tipo = new URLSearchParams(window.location.search).get("tipo");
-    const c = comunidades[tipo];
 
-    if (!c) return;
+    // 🔒 validação
+    if (!tipo || !comunidades[tipo]) {
+        titulo.innerText = "Comunidade não encontrada";
+        return;
+    }
+
+    const c = comunidades[tipo];
 
     titulo.innerText = c.titulo;
 

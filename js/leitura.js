@@ -140,9 +140,20 @@ function atualizarPaginaInfo() {
 
 /* =========================
 SALVA PROGRESSO
-========================= */
+========================= 
+*/
+function atualizarBarraProgresso() {
+    const barra = document.getElementById('barra-progresso');
+    
+    if (totalPaginas > 0) {
+        const porcentagem = (paginaAtual / totalPaginas) * 100;
+        barra.style.width = porcentagem + "%";
+    }
+}
+
 function salvarProgresso() {
     localStorage.setItem(`pagina_${livroAtualId}`, paginaAtual);
+    atualizarBarraProgresso(); 
 }
 
 /* =========================

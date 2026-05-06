@@ -5,64 +5,64 @@
         nome: "Confissões",
         autor: "Santo Agostinho",
         genero: "filosofia",
-        caminho: "/livros/Filosofia/livro1.pdf",
-        capa: "/livros/capas_livros/confiçõesdesantoaugustinho.png"
+        caminho: "livros/Filosofia/livro1.pdf",
+        capa: "livros/capas_livros/confiçõesdesantoaugustinho.png"
     },
     republica: {
         nome: "A República",
         autor: "Platão",
         genero: "filosofia",
         caminho: "livros/Filosofia/livro2.pdf",
-        capa: "/livros/capas_livros/arepublica.png"
+        capa: "livros/capas_livros/arepublica.png"
     },
     pensamento_inquieto: {
         nome: "Pensamento Inquieto",
         autor: "Ricardo Evangelista Brandão",
         genero: "filosofia",
-        caminho: "/livros/Filosofia/livro3.pdf",
-        capa: "/livros/capas_livros/pensamentoinquieto.png"
+        caminho: "livros/Filosofia/livro3.pdf",
+        capa: "livros/capas_livros/pensamentoinquieto.png"
     },
     historia_filosofia_antiga: {
         nome: "Introdução à História da Filosofia Antiga",
         autor: "João Hobuss",
         genero: "filosofia",
-        caminho: "/livros/Filosofia/livro4.pdf",
-        capa: "/livros/capas_livros/filosofiaantiga.png"
+        caminho: "livros/Filosofia/livro4.pdf",
+        capa: "livros/capas_livros/filosofiaantiga.png"
     },
     filosofia_medieval: {
         nome: "Filosofia Medieval",
         autor: "Manoel Vasconcelos",
         genero: "filosofia",
-        caminho: "/livros/Filosofia/livro5.pdf",
-        capa: "/livros/capas_livros/filosofiamedieval.png"
+        caminho: "livros/Filosofia/livro5.pdf",
+        capa: "livros/capas_livros/filosofiamedieval.png"
     },
     filosofia_virtudes: {
         nome: "Filosofia das Virtudes",
         autor: "Bruno Aislã Gonçalves",
         genero: "filosofia",
-        caminho: "/livros/Filosofia/livro6.pdf",
-        capa: "/livros/capas_livros/filosofiadasvirtudes.png"
+        caminho: "livros/Filosofia/livro6.pdf",
+        capa: "livros/capas_livros/filosofiadasvirtudes.png"
     },
     filosofia_emocoes: {
         nome: "Filosofia das Emoções",
         autor: "Felipe Nogueira e Flávio Williges",
         genero: "filosofia",
-        caminho: "/livros/Filosofia/livro7.pdf",
-        capa: "/livros/capas_livros/filosofiadasemoções.png"
+        caminho: "livros/Filosofia/livro7.pdf",
+        capa: "livros/capas_livros/filosofiadasemoções.png"
     },
     filosofia_antiga: {
         nome: "Filosofia Antiga",
         autor: "Cesar Augusto Mathias",
         genero: "filosofia",
-        caminho: "/livros/Filosofia/livro9.pdf",
-        capa: "/livros/capas_livros/filosofiaantiga.png"
+        caminho: "livros/Filosofia/livro9.pdf",
+        capa: "livros/capas_livros/filosofiaantiga.png"
     },
     direito_privado: {
         nome: "Filosofia do Direito Privado",
         autor: "Peter Benson",
         genero: "filosofia",
-        caminho: "/livros/Filosofia/livro9.pdf",
-        capa: "/livros/capas_livros/filosofiadodireitoprivado.png"
+        caminho: "livros/Filosofia/livro9.pdf",
+        capa: "livros/capas_livros/filosofiadodireitoprivado.png"
     },
 
     // LITERATURA
@@ -70,71 +70,71 @@
         nome: "O Alienista",
         autor: "Machado de Assis",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro1.pdf",
-        capa: "/livros/capas_livros/alienista.png"
+        caminho: "livros/Literatura/livro1.pdf",
+        capa: "livros/capas_livros/alienista.png"
     },
     cortico: {
         nome: "O Cortiço",
         autor: "Aluísio Azevedo",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro2.pdf",
-        capa: "/livros/capas_livros/ocortiço.png"
+        caminho: "livros/Literatura/livro2.pdf",
+        capa: "livros/capas_livros/ocortiço.png"
     },
     memorias_postumas: {
         nome: "Memórias Póstumas de Brás Cubas",
         autor: "Machado de Assis",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro3.pdf",
-        capa: "/livros/capas_livros/memoriaspostumas.png"
+        caminho: "livros/Literatura/livro3.pdf",
+        capa: "livros/capas_livros/memoriaspostumas.png"
     },
     dom_casmurro: {
         nome: "Dom Casmurro",
         autor: "Machado de Assis",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro4.pdf",
-        capa: "/livros/capas_livros/domcasmurro.png"
+        caminho: "livros/Literatura/livro4.pdf",
+        capa: "livros/capas_livros/domcasmurro.png"
     },
     contos_lima: {
         nome: "Contos de Lima Barreto",
         autor: "Lima Barreto",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro5.pdf",
-        capa: "/livros/capas_livros/contosdelima.png"
+        caminho: "livros/Literatura/livro5.pdf",
+        capa: "livros/capas_livros/contosdelima.png"
     },
     triste_fim: {
         nome: "Triste Fim de Policarpo Quaresma",
         autor: "Lima Barreto",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro6.pdf",
-        capa: "/livros/capas_livros/tristefim.png"
+        caminho: "livros/Literatura/livro6.pdf",
+        capa: "livros/capas_livros/tristefim.png"
     },
     guarani: {
         nome: "O Guarani",
         autor: "José de Alencar",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro7.pdf",
-        capa: "/livros/capas_livros/oguarani.png"
+        caminho: "livros/Literatura/livro7.pdf",
+        capa: "livros/capas_livros/oguarani.png"
     },
     ao_correr_da_pena: {
         nome: "Ao Correr da Pena",
         autor: "José de Alencar",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro8.pdf",
-        capa: "/livros/capas_livros/ocorrerdapena.png"
+        caminho: "livros/Literatura/livro8.pdf",
+        capa: "livros/capas_livros/ocorrerdapena.png"
     },
     helena: {
         nome: "Helena",
         autor: "Machado de Assis",
         genero: "literatura",
         caminho: "livros/literatura/livro28.pdf",
-        capa: "/livros/capas_livros/helena.png"
+        capa: "livros/capas_livros/helena.png"
     },
     revolucao_bichos: {
         nome: "A Revolução dos Bichos",
         autor: "George Orwell",
         genero: "literatura",
-        caminho: "/livros/Literatura/livro9.pdf",
-        capa: "/livros/capas_livros/arevoluçãodosbichos.png"
+        caminho: "livros/Literatura/livro9.pdf",
+        capa: "livros/capas_livros/arevoluçãodosbichos.png"
     },
 
     // RELIGIOSOS
@@ -142,110 +142,110 @@
         nome: "Noite Escura da Alma",
         autor: "São João da Cruz",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro1.pdf",
-        capa: "/livros/capas_livros/noiteescuradaalma.png"
+        caminho: "livros/Religiosos/livro1.pdf",
+        capa: "livros/capas_livros/noiteescuradaalma.png"
     },
     gloria_maria: {
         nome: "Glória de Maria",
         autor: "Santo Afonso Ligório",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro2.pdf",
-        capa: "/livros/capas_livros/groriasdemaria.png"
+        caminho: "livros/Religiosos/livro2.pdf",
+        capa: "livros/capas_livros/groriasdemaria.png"
     },
     castelo_interior: {
         nome: "O Castelo Interior",
         autor: "Santa Teresa de Jesus",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro3.pdf",
-        capa: "/livros/capas_livros/ocastelointerior.png"
+        caminho: "livros/Religiosos/livro3.pdf",
+        capa: "livros/capas_livros/ocastelointerior.png"
     },
     amar_servir: {
         nome: "Amar e Servir",
         autor: "Inácio de Loyola",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro4.pdf",
-        capa: "/livros/capas_livros/amareservir.png"
+        caminho: "livros/Religiosos/livro4.pdf",
+        capa: "livros/capas_livros/amareservir.png"
     },
     imitacao_cristo: {
         nome: "A Imitação de Cristo",
         autor: "Tomás de Kempis",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro5.pdf",
-        capa: "/livros/capas_livros/imitaçãodecristo.png"
+        caminho: "livros/Religiosos/livro5.pdf",
+        capa: "livros/capas_livros/imitaçãodecristo.png"
     },
     meditacoes_quaresma: {
         nome: "Meditações para Quaresma",
         autor: "Papa Francisco",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro6.pdf",
-        capa: "/livros/capas_livros/meditaçãoparaaquaresma.png"
+        caminho: "livros/Religiosos/livro6.pdf",
+        capa: "livros/capas_livros/meditaçãoparaaquaresma.png"
     },
     biblia_catolica: {
         nome: "Bíblia Sagrada Católica",
         autor: "Diversos",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro7.pdf",
-        capa: "/livros/capas_livros/bibliasagrada.png"
+        caminho: "livros/Religiosos/livro7.pdf",
+        capa: "livros/capas_livros/bibliasagrada.png"
     },
     divina_comedia: {
         nome: "A Divina Comédia",
         autor: "Dante Alighieri",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro8.pdf",
-        capa: "/livros/capas_livros/adivinacomedia.png"
+        caminho: "livros/Religiosos/livro8.pdf",
+        capa: "livros/capas_livros/adivinacomedia.png"
     },
     tratado_oracao: {
         nome: "Tratado de Oração",
         autor: "Santo Agostinho",
         genero: "religioso",
-        caminho: "/livros/Religiosos/livro9.pdf",
-        capa: "/livros/capas_livros/tratadodeoração.png"
+        caminho: "livros/Religiosos/livro9.pdf",
+        capa: "livros/capas_livros/tratadodeoração.png"
     },
 
     // CIENCIAS_EXATAS
     introducao_economia: {
         nome: "Introdução Economia",
         autor: "Carlos Magno Mendes",
-        caminho: "/livros/cienecia_exata/livro1.pdf",
-        capa: "/livros/capas_livros/introduçãoeconomia.png"
+        caminho: "livros/cienecia_exata/livro1.pdf",
+        capa: "livros/capas_livros/introduçãoeconomia.png"
     },
     construcoes_geometricas: {
         nome: "Construções Geometricas",
         autor: "Jorge Luis Costa",
-        caminho: "/livros/cienecia_exata/livro2.pdf",
-        capa: "/livros/capas_livros/construçõesgeometricas.png"
+        caminho: "livros/cienecia_exata/livro2.pdf",
+        capa: "livros/capas_livros/construçõesgeometricas.png"
     },
     o_simbolo_e_arealidade: {
         nome: "O Simbolo e a Realidade",
         autor: "Ricardo Mendes",
-        caminho: "/livros/cienecia_exata/livro3.pdf",
-        capa: "/livros/capas_livros/osimboloearealidade.png"
+        caminho: "livros/cienecia_exata/livro3.pdf",
+        capa: "livros/capas_livros/osimboloearealidade.png"
     },
     astronomia: {
         nome: "Astronomia",
         autor: "Salvador Nogueira",
-        caminho: "/livros/cienecia_exata/livro4.pdf",
-        capa: "/livros/capas_livros/astronomia.png"
+        caminho: "livros/cienecia_exata/livro4.pdf",
+        capa: "livros/capas_livros/astronomia.png"
     },
 
     // INFANTIS
     fabulas_do_escopo: {
         nome: "Fabulas do Escopo",
         autor: "Carlos Pinheiro",
-        caminho: "/livros/livros_infantis/fabulasdoescopo.pdf",
-        capa: "/livros/capas_livros/fabulasdoescopo.png"
+        caminho: "livros/livros_infantis/fabulasdoescopo.pdf",
+        capa: "livros/capas_livros/fabulasdoescopo.png"
     },
     misterio_no_expresso: {
         nome: "Mistério no Expresso",
         autor: "Milson Almeida",
-        caminho: "/livros/livros_infantis/misterionoexpresso.pdf",
-        capa: "/livros/capas_livros/misterionoexpresso.png"
+        caminho: "livros/livros_infantis/misterionoexpresso.pdf",
+        capa: "livros/capas_livros/misterionoexpresso.png"
     },
     cem_historia: {
         nome: "100 historia",
         autor: "Alvaro Magalhães",
-        caminho: "/livros/livros_infantis/100historia.pdf",
-        capa: "/livros/capas_livros/100historia.png"
+        caminho: "livros/livros_infantis/100historia.pdf",
+        capa: "livros/capas_livros/100historia.png"
     },
     
     };

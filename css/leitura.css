@@ -246,14 +246,12 @@ PROGRESS BAR MELHORADA
     overflow: hidden;
     margin: 20px 0;
 }
-
 #barra-progresso {
+    width: 0%; 
     height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--accent), var(--success));
-    transition: width 0.3s ease;
+    background-color: #2ecc71; 
+    transition: width 0.3s ease; 
 }
-
 /* =========================
 CONTROLES UX
 ========================= */

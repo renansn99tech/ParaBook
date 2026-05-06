@@ -72,17 +72,19 @@ body {
     /* Classe LOGO (onde está escrito o nome ParaBook) */
 
 .logo {
-    margin: 2vh 2vw;
+    margin: 2vh 2vw 2vh 0;
 }
 
 .logo-container {
     display: flex;
     align-items: center;
+    gap: -15px;
 }
 
 .logo-img {
     height: 70px;
-    margin-right: -20px;
+    margin-right: -30px;
+    margin-bottom: -10px;
 }
 
 .para {
@@ -757,9 +759,9 @@ main hr {
     }
 }
 
-box-shadow: 0 0 8px rgba(77, 74, 232, 0.2);
+/*box-shadow: 0 0 8px rgba(77, 74, 232, 0.2);
 
-/* =========================
+ =========================
    FAVORITOS E AVALIAÇÃO (NOVO)
 ========================= */
 

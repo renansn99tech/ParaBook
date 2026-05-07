@@ -747,3 +747,253 @@ body.light-mode .btn-config {
 body.light-mode .btn-remover-favorito {
     box-shadow: 0 8px 20px rgba(239,68,68,0.12);
 }
+
+
+/* =========================================================
+   RESPONSIVIDADE — PERFIL.HTML
+   Adicione no FINAL do perfil.css
+   ========================================================= */
+
+/* =========================
+   TABLETS
+========================= */
+
+@media (max-width: 992px) {
+
+    .nav {
+        padding: 20px 30px;
+    }
+
+    .perfil-content {
+        margin-top: -70px;
+        gap: 1.5rem;
+    }
+
+    .perfil-user-info {
+        padding: 1.5rem;
+    }
+
+    .perfil-meta {
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .favoritos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* =========================
+   CELULARES
+========================= */
+
+@media (max-width: 768px) {
+
+    /* NAV */
+
+    .nav {
+        flex-direction: column;
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .menu {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+    }
+
+    .menu li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .menu li a {
+        display: block;
+        width: 100%;
+    }
+
+    /* PERFIL HEADER */
+
+    .perfil-cover {
+        height: 180px;
+    }
+
+    .perfil-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+
+        margin-top: -60px;
+        padding: 0 1rem;
+    }
+
+    .perfil-user-info {
+        width: 100%;
+        padding: 1.5rem;
+    }
+
+    .perfil-avatar {
+        width: 120px;
+        height: 120px;
+    }
+
+    .perfil-nome {
+        font-size: 1.6rem;
+    }
+
+    .perfil-bio {
+        font-size: 0.95rem;
+    }
+
+    /* META */
+
+    .perfil-meta {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* STATS */
+
+    .perfil-stats {
+        padding: 0 1rem;
+    }
+
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-box {
+        padding: 1.5rem;
+    }
+
+    /* TABS */
+
+    .perfil-tabs {
+        padding: 0 1rem;
+    }
+
+    .tabs-nav {
+        flex-direction: column;
+    }
+
+    .tab-btn {
+        width: 100%;
+    }
+
+    /* GRID INFO */
+
+    .perfil-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* FAVORITOS */
+
+    .favoritos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* CARDS */
+
+    .info-card,
+    .historico-item,
+    .favorito-card,
+    .config-section {
+        padding: 1.5rem;
+    }
+
+    /* FOOTER */
+
+    .footer {
+        padding: 40px 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-social {
+        margin: 0;
+        top: 0;
+    }
+
+    .footer-links {
+        margin-right: 0;
+    }
+
+    .footer-bottom-line {
+        top: 0;
+        margin-bottom: 20px;
+    }
+}
+
+/* =========================
+   CELULARES PEQUENOS
+========================= */
+
+@media (max-width: 480px) {
+
+    .logo-img {
+        height: 55px;
+        margin-right: -20px;
+    }
+
+    .logo {
+        font-size: 1.4rem;
+    }
+
+    .perfil-cover {
+        height: 150px;
+    }
+
+    .perfil-avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .perfil-user-info {
+        padding: 1rem;
+    }
+
+    .perfil-nome {
+        font-size: 1.4rem;
+    }
+
+    .perfil-username,
+    .perfil-bio,
+    .meta-label,
+    .meta-value {
+        font-size: 0.9rem;
+    }
+
+    .btn-editar-perfil,
+    .btn-editar-bio,
+    .btn-config,
+    .btn-remover-favorito {
+        width: 100%;
+    }
+
+    .tab-btn {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .stat-box {
+        padding: 1rem;
+    }
+
+    .info-card,
+    .historico-item,
+    .favorito-card,
+    .config-section {
+        padding: 1rem;
+    }
+}

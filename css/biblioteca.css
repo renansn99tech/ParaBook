@@ -473,3 +473,283 @@ body.light-mode .footer-bottom-line {
     background: #1F2937;
     border: none;
 }
+
+/* =========================================================
+   RESPONSIVIDADE COMPLETA — biblioteca.css
+   COLE NO FINAL DO ARQUIVO
+========================================================= */
+
+
+/* =========================================================
+   CONFIGURAÇÕES GLOBAIS
+========================================================= */
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   MOBILE PEQUENO — até 480px
+========================================================= */
+
+@media (max-width: 480px) {
+
+    /* ================= NAV ================= */
+
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        gap: 20px;
+    }
+
+    .logo-container {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .logo {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .logo-img {
+        height: 55px;
+        margin: 0;
+    }
+
+    .menu {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu li a {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .login-btn {
+        width: 100%;
+    }
+
+    /* ================= BANNER ================= */
+
+    .banner-content {
+        padding: 20px;
+    }
+
+    .banner-content h2 {
+        font-size: clamp(1.8rem, 8vw, 2.5rem);
+        line-height: 1.2;
+    }
+
+    .banner-content p {
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+
+    /* ================= GÊNEROS ================= */
+
+    .genero-titulo {
+        font-size: 1.5rem;
+        margin: 2rem 1rem 1rem;
+    }
+
+    /* ================= GRID LIVROS ================= */
+
+    .agrupar-livros {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 1rem;
+    }
+
+    /* ================= CARD ================= */
+
+    .card-livro {
+        border-radius: 18px;
+    }
+
+    .card-livro img {
+        height: 260px;
+        object-fit: cover;
+    }
+
+    .card-livro h3 {
+        font-size: 1rem;
+    }
+
+    .card-livro p {
+        font-size: 0.9rem;
+    }
+
+    .card-livro button {
+        width: calc(100% - 2rem);
+        font-size: 0.9rem;
+    }
+
+    /* ================= FOOTER ================= */
+
+    .footer {
+        padding: 40px 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-social {
+        margin: 0;
+    }
+
+    .footer-links {
+        margin-right: 0;
+    }
+
+    .footer-bottom-line {
+        top: 0;
+        margin-bottom: 20px;
+    }
+}
+
+
+/* =========================================================
+   TABLETS — até 768px
+========================================================= */
+
+@media (max-width: 768px) {
+
+    /* ================= NAV ================= */
+
+    .nav {
+        flex-direction: column;
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* ================= BANNER ================= */
+
+    .banner-content {
+        padding: 30px 20px;
+    }
+
+    .banner-content h2 {
+        font-size: clamp(2rem, 6vw, 3rem);
+    }
+
+    /* ================= TÍTULOS ================= */
+
+    .genero-titulo {
+        font-size: 1.8rem;
+        margin: 2rem 1rem 1rem;
+    }
+
+    /* ================= GRID ================= */
+
+    .agrupar-livros {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+
+    /* ================= CARDS ================= */
+
+    .card-livro img {
+        height: 280px;
+    }
+
+    .card-livro h3 {
+        min-height: 60px;
+    }
+
+    .card-livro button {
+        font-size: 0.95rem;
+    }
+
+    /* ================= FOOTER ================= */
+
+    .footer {
+        padding: 40px 30px;
+    }
+
+    .footer-container {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+
+/* =========================================================
+   NOTEBOOK PEQUENO — até 1024px
+========================================================= */
+
+@media (max-width: 1024px) {
+
+    .nav {
+        padding: 20px 30px;
+    }
+
+    .banner-content {
+        padding-inline: 30px;
+    }
+
+    .agrupar-livros {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .footer {
+        padding: 40px;
+    }
+}
+
+
+/* =========================================================
+   TELAS GRANDES — acima de 1440px
+========================================================= */
+
+@media (min-width: 1440px) {
+
+    .nav,
+    .banner-content,
+    .agrupar-livros,
+    .footer-container {
+        max-width: 1400px;
+        margin-inline: auto;
+    }
+
+    .agrupar-livros {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .banner-content h2 {
+        font-size: 4rem;
+    }
+
+    .banner-content p {
+        font-size: 1.2rem;
+    }
+}

@@ -1,7 +1,9 @@
     const comunidades = {
         filosofia: { titulo: "Filosofia", descricao: "Discussões filosóficas." },
         literatura: { titulo: "Literatura", descricao: "Livros e autores." },
-        religioso: { titulo: "Religioso", descricao: "Reflexões espirituais." }
+        religioso: { titulo: "Religioso", descricao: "Reflexões espirituais." },
+        ciencias_exatas: { titulo: "Ciências Exatas", descricao: "Matemática, física, lógica." },
+        infantil: { titulo: "Infantil", descricao: "Conteúdo infantil." }
     };
 
     /* =========================
@@ -82,7 +84,11 @@
     function carregarDetalheComunidade() {
         const tipo = new URLSearchParams(window.location.search).get("tipo");
         const c = comunidades[tipo];
-        if (!c) return;
+        if (!c) {
+    console.warn("Comunidade não encontrada:", tipo);
+    showWelcomeOverlay(tipo);
+    return;
+}
 
         document.getElementById("titulo-comunidade").innerText = c.titulo;
         document.getElementById("descricao-comunidade").innerText = c.descricao;

@@ -848,3 +848,159 @@ body.light-mode .footer-bottom {
 body.light-mode .footer-bottom-line {
     background: #E5E7EB;
 }
+
+
+/* =========================================================
+   RESPONSIVO — TIMELINE / NOVIDADES
+   ========================================================= */
+
+@media screen and (max-width: 768px) {
+
+    /* NAV */
+
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .menu {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu li a {
+        display: block;
+        width: 100%;
+    }
+
+    /* TÍTULO */
+
+    .titulo-timeline h2 {
+        font-size: 1.8rem;
+        padding: 0 1rem;
+        line-height: 1.3;
+    }
+
+    /* TIMELINE */
+
+    .timeline {
+        margin-top: 2rem;
+        padding: 0 0.5rem;
+    }
+
+    /* LINHA CENTRAL */
+
+    .timeline::after {
+        left: 30px;
+    }
+
+    /* CONTAINERS */
+
+    .containe {
+        width: 100%;
+        padding-left: 70px;
+        padding-right: 15px;
+        margin-bottom: 2rem;
+    }
+
+    /* TODOS OS CARDS FICAM À ESQUERDA */
+
+    .left,
+    .right {
+        left: 0;
+    }
+
+    /* BOLINHAS */
+
+    .left::after,
+    .right::after {
+        left: 15px;
+    }
+
+    /* SETAS */
+
+    .left::before,
+    .right::before {
+        left: 60px;
+        border: medium solid white;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent white transparent transparent;
+    }
+
+    /* CARD */
+
+    .content {
+        padding: 1rem;
+    }
+
+    .content h2 {
+        font-size: 1.1rem;
+    }
+
+    .content h4 {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    .content p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-top: 0.8rem;
+    }
+
+    /* IMAGEM */
+
+    .content img {
+        width: 100%;
+        max-width: 160px;
+        height: auto;
+        margin: 1rem auto;
+        display: block;
+    }
+
+    /* BOTÃO */
+
+    .content a {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1rem;
+        padding: 12px;
+        font-size: 0.95rem;
+    }
+
+    /* FOOTER */
+
+    .footer {
+        padding: 40px 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-social {
+        margin: 0;
+        top: 0;
+    }
+
+    .footer-links {
+        margin-right: 0;
+    }
+
+    .footer-bottom-line {
+        top: 0;
+        margin-bottom: 20px;
+    }
+}

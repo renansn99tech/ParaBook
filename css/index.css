@@ -85,17 +85,19 @@ main hr{
 ================================= */
 
 .logo {
-    margin: 2vh 2vw;
+    margin: 2vh 2vw 2vh 0; 
 }
 
 .logo-container {
     display: flex;
     align-items: center;
+    gap: -15px;
 }
 
 .logo-img {
     height: 70px;
-    margin-right: -20px;
+    margin-right: -30px;
+    margin-bottom: -10px;
 }
 
 .para {
@@ -826,4 +828,335 @@ body.light-mode .footer-bottom-line {
 /* LINHAS */
 body.light-mode main hr {
     background: #d1d5db;
+}
+
+
+/* =========================================================
+   MOBILE PEQUENO → até 480px
+========================================================= */
+
+@media (max-width: 480px) {
+
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    body {
+        font-size: 14px;
+    }
+
+    /* NAVBAR */
+
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        gap: 20px;
+    }
+
+    .logo-container {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .logo-img {
+        height: 55px;
+        margin: 0;
+    }
+
+    .logo {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .menu {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu li a {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .login-btn {
+        width: 100%;
+    }
+
+    /* HERO */
+
+    .titulo {
+        padding: 60px 20px;
+        min-height: auto;
+    }
+
+    .titulo h2 {
+        font-size: clamp(2rem, 10vw, 3rem);
+        line-height: 1.1;
+    }
+
+    .titulo p {
+        font-size: 1rem;
+        padding-inline: 10px;
+    }
+
+    .titulo-btn {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .hero-img {
+        display: none;
+    }
+
+    /* CARDS SUPERIORES */
+
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding-inline: 20px;
+        margin-bottom: 50px;
+    }
+
+    .card-novo {
+        padding: 1.5rem;
+    }
+
+    /* CARROSSEL */
+
+    .container {
+        padding: 20px 10px;
+    }
+
+    .card-carousel {
+        display: flex;
+        overflow-x: auto;
+        gap: 20px;
+        height: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 20px;
+    }
+
+    .card-carousel .card {
+        position: relative;
+        min-width: 230px;
+        width: 230px;
+        height: auto;
+        flex-shrink: 0;
+
+        transform: none !important;
+        opacity: 1;
+        filter: none;
+    }
+
+    .image-container {
+        width: 150px;
+        height: 220px;
+    }
+
+    .carousel-buttons {
+        display: none;
+    }
+
+    /* FAQ */
+
+    #secao-FAQ {
+        flex-direction: column;
+        padding: 30px 20px;
+        gap: 30px;
+    }
+
+    .duvidas-frequentes,
+    #faq-form {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* FORM */
+
+    .contact-input,
+    .contact-textarea {
+        font-size: 16px;
+    }
+
+    .contact-btn {
+        width: 100%;
+    }
+
+    /* FOOTER */
+
+    .footer {
+        padding: 40px 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-social {
+        margin: 0;
+    }
+
+    .footer-links {
+        margin-right: 0;
+    }
+
+    .footer-bottom-line {
+        top: 0;
+        margin-bottom: 20px;
+    }
+}
+
+
+/* =========================================================
+   TABLETS → até 768px
+========================================================= */
+
+@media (max-width: 768px) {
+
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    .nav {
+        flex-direction: column;
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .titulo {
+        padding: 80px 20px;
+    }
+
+    .titulo h2 {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        text-align: center;
+    }
+
+    .titulo p {
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .hero-img {
+        opacity: 0.08;
+        margin: 0;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* GRID */
+
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        padding-inline: 20px;
+    }
+
+    /* FAQ */
+
+    #secao-FAQ {
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+    }
+
+    .duvidas-frequentes,
+    #faq-form {
+        width: 100%;
+        max-width: 700px;
+    }
+
+    /* CARROSSEL */
+
+    .card-carousel {
+        overflow-x: auto;
+    }
+
+    .carousel-buttons {
+        display: none;
+    }
+
+    /* FOOTER */
+
+    .footer {
+        padding: 40px 30px;
+    }
+
+    .footer-container {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+
+/* =========================================================
+   NOTEBOOK PEQUENO → até 1024px
+========================================================= */
+
+@media (max-width: 1024px) {
+
+    .nav {
+        padding: 20px 30px;
+    }
+
+    .titulo h2 {
+        font-size: clamp(3rem, 6vw, 4.5rem);
+    }
+
+    .grid-container {
+        width: 100%;
+        padding-inline: 30px;
+    }
+
+    #secao-FAQ {
+        padding: 40px;
+    }
+
+    .footer {
+        padding: 40px;
+    }
+}
+
+
+/* =========================================================
+   TELAS MUITO GRANDES → acima de 1440px
+========================================================= */
+
+@media (min-width: 1440px) {
+
+    .nav,
+    .grid-container,
+    #secao-FAQ,
+    .footer-container {
+        max-width: 1400px;
+        margin-inline: auto;
+    }
+
+    .titulo h2 {
+        font-size: 5rem;
+    }
+
+    .titulo p {
+        font-size: 1.3rem;
+    }
 }

@@ -83,17 +83,19 @@ main hr{
     /* Classe LOGO (onde está escrito o nome ParaBook) */
 
 .logo {
-    margin: 2vh 2vw;
+    margin: 2vh 2vw 2vh 0; 
 }
 
 .logo-container {
     display: flex;
     align-items: center;
+    gap: -15px;
 }
 
 .logo-img {
     height: 70px;
-    margin-right: -20px;
+    margin-right: -30px;
+    margin-bottom: -10px;
 }
 
 .para {
@@ -477,3 +479,216 @@ body.light-mode .footer-bottom-line {
     border: none;
 }
 
+/* =========================================================
+   RESPONSIVO - MAIS ACESSADOS
+   COLE NO FINAL DO CSS
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    /* BODY */
+    body {
+        overflow-x: hidden;
+    }
+
+    /* NAVBAR */
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    /* MENU */
+    .menu {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu li a {
+        display: block;
+        width: 100%;
+    }
+
+    /* LOGO */
+    .logo-container {
+        justify-content: center;
+    }
+
+    .logo-img {
+        height: 55px;
+        margin-right: -20px;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    /* FEATURED */
+    .featured {
+        padding: 50px 15px;
+    }
+
+    .featured h2 {
+        font-size: 1.8rem;
+    }
+
+    .featured p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    /* GRID */
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    /* CARD */
+    .card {
+        width: 100%;
+        padding: 18px;
+    }
+
+    .card h3 {
+        font-size: 1.2rem;
+    }
+
+    .card p {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    /* META */
+    .meta {
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
+    }
+
+    /* BOTÃO */
+    button.action {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(99,102,241,0.12);
+    }
+
+    /* MODAL */
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+
+    #modalTitle {
+        font-size: 1.4rem;
+        margin-top: 10px;
+    }
+
+    #modalDesc {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-top: 12px;
+    }
+
+    .modal-meta {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .close-btn {
+        top: 10px;
+        right: 15px;
+        font-size: 1.5rem;
+    }
+
+    /* FOOTER */
+    .footer {
+        padding: 40px 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-social {
+        margin: 0;
+        top: 0;
+    }
+
+    .footer-links {
+        margin-right: 0;
+    }
+
+    .footer-bottom-line {
+        top: 0;
+        margin-bottom: 20px;
+    }
+}
+
+/* =========================================================
+   MOBILE PEQUENO
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .featured {
+        padding: 40px 12px;
+    }
+
+    .featured h2 {
+        font-size: 1.5rem;
+    }
+
+    .featured p {
+        font-size: 0.88rem;
+    }
+
+    .card {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .card h3 {
+        font-size: 1.05rem;
+    }
+
+    .card p {
+        font-size: 0.85rem;
+    }
+
+    .badge {
+        font-size: 11px;
+    }
+
+    .modal-content {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    #modalTitle {
+        font-size: 1.2rem;
+    }
+
+    #modalDesc {
+        font-size: 0.9rem;
+    }
+
+    .footer-bottom {
+        font-size: 0.8rem;
+        letter-spacing: 0.05rem;
+    }
+}

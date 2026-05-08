@@ -797,6 +797,10 @@ button {
     top: -10px;
 }
 
+.footer-social .icons i {
+    color: #9CA3AF;
+}
+
 .footer-social .icons i:hover {
     color: #6366F1;
 }
@@ -945,10 +949,10 @@ body.light-mode .footer-bottom-line {
 }
 
 /* Botão login */
-body.light-mode .login-btn {
+/* body.light-mode .login-btn {
     background: #22C55E;
     color: white;
-}
+} */
 
 body.light-mode .login-btn:hover {
     background: #16A34A;

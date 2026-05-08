@@ -409,6 +409,7 @@ body.light-mode .footer-bottom-line {
 .footer {
     background: #020617;
     border-top: 1px solid #1F2937;
+    padding: 40px 60px 20px 60px;
     color: #9CA3AF;
 }
 
@@ -427,7 +428,7 @@ body.light-mode .footer-bottom-line {
 }
 
 .footer h2, .footer {
-    color: #E5E7EB;
+    color: #111827;
     text-align: center;
 }
 
@@ -473,7 +474,7 @@ body.light-mode .footer-bottom-line {
 
 .footer-bottom-line {
     position: relative;
-    top: -60px;
+    top: -75px;
     height: 1px;
     background: #1F2937;
     border: none;
@@ -611,34 +612,6 @@ body.light-mode .footer-bottom-line {
         font-size: 1.5rem;
     }
 
-    /* FOOTER */
-    .footer {
-        padding: 40px 20px;
-    }
-
-    .footer-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 30px;
-    }
-
-    .footer-brand,
-    .footer-links,
-    .footer-social {
-        margin: 0;
-        top: 0;
-    }
-
-    .footer-links {
-        margin-right: 0;
-    }
-
-    .footer-bottom-line {
-        top: 0;
-        margin-bottom: 20px;
-    }
-}
-
 /* =========================================================
    MOBILE PEQUENO
    ========================================================= */
@@ -691,4 +664,5 @@ body.light-mode .footer-bottom-line {
         font-size: 0.8rem;
         letter-spacing: 0.05rem;
     }
+}
 }

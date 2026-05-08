@@ -572,7 +572,7 @@ body.light-mode .menu li a:hover {
 
 body.light-mode .login-btn {
     background: #22C55E;
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 body.light-mode .login-btn:hover {

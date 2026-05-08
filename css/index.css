@@ -714,8 +714,12 @@ body.light-mode .menu li a:hover {
 /* BOTÃO LOGIN */
 body.light-mode .login-btn {
     background: #22C55E;
-    
     color: #020617;
+}
+
+body.light-mode .login-btn:hover {
+    background: #16A34A;
+    color: white;
 }
 
 /* TÍTULO */
@@ -800,7 +804,7 @@ body.light-mode .contact-textarea::placeholder {
 
 /* FOOTER */
 body.light-mode .footer {
-    background: #e5e7eb;
+    background: #F5FFFA;
     border-top: 1px solid #d1d5db;
     color: #374151;
 }
@@ -1022,7 +1026,7 @@ body.light-mode main hr {
 
 
 /* =========================================================
-   TABLETS → até 768px
+    TABLETS → até 768px
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -1143,12 +1147,11 @@ body.light-mode main hr {
 ========================================================= */
 
 @media (min-width: 1440px) {
-
-    .nav,
+ 
     .grid-container,
     #secao-FAQ,
     .footer-container {
-        max-width: 1400px;
+        max-width: 75%;
         margin-inline: auto;
     }
 

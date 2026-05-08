@@ -136,8 +136,8 @@ main hr {
     font-size: 2rem;
     font-family: var(--font-playfair);
     /*color: var(--color-primary-dark);*/
-    margin: 2.5rem 2rem 1.5rem;
-    padding-left: 0.5rem;
+    margin: 2.5rem 2rem 1.5rem 3.5rem;
+    padding-left: .7rem;
     border-left: 5px solid var(--color-accent-olive);
 }
 
@@ -733,11 +733,10 @@ body {
 
 @media (min-width: 1440px) {
 
-    .nav,
     .banner-content,
     .agrupar-livros,
     .footer-container {
-        max-width: 1400px;
+        max-width: 80%;
         margin-inline: auto;
     }
 

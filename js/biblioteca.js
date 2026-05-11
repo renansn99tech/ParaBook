@@ -291,71 +291,7 @@
     carregarBiblioteca();
 }
     // CARREGAR BIBLIOTECA
-function carregarBiblioteca() {
-    const container = document.getElementById("lista-livros");
-    const emptyState = document.getElementById("empty-state");
 
-    if (!container) return;
-
-    let biblioteca = JSON.parse(localStorage.getItem("biblioteca")) || [];
-
-    const generoSelecionado = document.getElementById("filtro-genero")?.value;
-    const statusSelecionado = document.getElementById("filtro-status")?.value;
-
-    if (biblioteca.length === 0) {
-        container.innerHTML = "";
-        if (emptyState) emptyState.style.display = "block";
-        return;
-    }
-
-    let html = "";
-
-    biblioteca.forEach(id => {
-        const livro = livros[id];
-        if (!livro) return;
-
-        // 🔹 FILTRO DE GÊNERO
-        if (generoSelecionado && livro.genero !== generoSelecionado) {
-            return;
-        }
-
-        // 🔹 FILTRO DE STATUS
-        const paginaSalva = Number(localStorage.getItem(`pagina_${id}`)) || 0;
-        const totalPaginas = Number(localStorage.getItem(`total_${id}`)) || 0;
-
-        let status = "desejo";
-
-        if (paginaSalva > 0 && paginaSalva < totalPaginas) {
-            status = "lendo";
-        } else if (paginaSalva > 0 && paginaSalva === totalPaginas) {
-            status = "concluido";
-        }
-
-        if (statusSelecionado && status !== statusSelecionado) {
-            return;
-        }
-
-        // 🔹 HTML
-        html += `
-        <div class="card-livro">
-            <img src="${livro.capa}" alt="${livro.nome}">
-            <h3>${livro.nome}</h3>
-            <p>Autor: ${livro.autor}</p>
-
-            <div class="card-acoes">
-                <a href="leitura.html?livro=${id}" class="btn ler-btn">Acessar</a>
-                <button onclick="removerLivro('${id}')" class="btn remover-btn">Remover</button>
-            </div>
-        </div>
-        `;
-    });
-
-    container.innerHTML = html;
-
-    if (emptyState) {
-        emptyState.style.display = html ? "none" : "block";
-    }
-}
     // EXECUÇÃO SEGURA
 document.addEventListener("DOMContentLoaded", () => {
     carregarBiblioteca();
@@ -435,9 +371,6 @@ function renderEstrelas(id, notaAtual = 0) {
     return html;
 }
 
-// =========================
-// CARREGAR BIBLIOTECA
-// =========================
 function carregarBiblioteca() {
     const container = document.getElementById("lista-livros");
     const emptyState = document.getElementById("empty-state");
@@ -447,6 +380,10 @@ function carregarBiblioteca() {
     let biblioteca = JSON.parse(localStorage.getItem("biblioteca")) || [];
     let favoritos = getFavoritos();
     let avaliacoes = getAvaliacoes();
+
+    // Pega os filtros do HTML
+    const generoSelecionado = document.getElementById("filtro-genero")?.value;
+    const statusSelecionado = document.getElementById("filtro-status")?.value;
 
     if (biblioteca.length === 0) {
         container.innerHTML = "";
@@ -460,40 +397,51 @@ function carregarBiblioteca() {
         const livro = livros[id];
         if (!livro) return;
 
+        // FILTRO DE GÊNERO
+        if (generoSelecionado && livro.genero !== generoSelecionado) return;
+
+        // FILTRO DE STATUS
+        const paginaSalva = Number(localStorage.getItem(`pagina_${id}`)) || 0;
+        const totalPaginas = Number(localStorage.getItem(`total_${id}`)) || 0;
+        let status = "desejo";
+
+        if (paginaSalva > 0 && paginaSalva < totalPaginas) status = "lendo";
+        else if (paginaSalva > 0 && paginaSalva === totalPaginas) status = "concluido";
+
+        if (statusSelecionado && status !== statusSelecionado) return;
+
+        // MONTAGEM DO HTML
         const isFavorito = favoritos.includes(id);
         const nota = avaliacoes[id] || 0;
 
         html += `
         <div class="card-livro">
-
-            <!-- FAVORITO (NOVO) -->
-    <button class="favorito-btn ${isFavorito ? "ativo" : ""}"
-        onclick="toggleFavorito('${id}')">
-        <i class="fa-solid fa-heart"></i>
-    </button>
-
+            <button class="favorito-btn ${isFavorito ? "ativo" : ""}" onclick="toggleFavorito('${id}')">
+                <i class="fa-solid fa-heart"></i>
+            </button>
             <img src="${livro.capa}" alt="${livro.nome}">
             <h3>${livro.nome}</h3>
             <p>${livro.autor}</p>
-
-            <!-- AVALIAÇÃO (NOVO) -->
             ${renderEstrelas(id, nota)}
-
             <div class="card-acoes">
                 <a href="leitura.html?livro=${id}" class="btn">Acessar</a>
                 <button onclick="removerLivro('${id}')" class="btn remover-btn">Remover</button>
             </div>
-
         </div>
         `;
     });
 
     container.innerHTML = html;
-
-    if (emptyState) {
-        emptyState.style.display = html ? "none" : "block";
-    }
+    if (emptyState) emptyState.style.display = html ? "none" : "block";
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    carregarBiblioteca();
+
+    // Isso faz a lista atualizar assim que você mudar o filtro no select
+    document.getElementById("filtro-genero")?.addEventListener("change", carregarBiblioteca);
+    document.getElementById("filtro-status")?.addEventListener("change", carregarBiblioteca);
+});
 
 // =========================
 // INICIALIZAÇÃO

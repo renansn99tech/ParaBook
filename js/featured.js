@@ -1,37 +1,37 @@
 const articles = [
     {
-        category: "Carreira",
-        title: "Guia de Carreira em Tecnologia",
-        desc: "Estratégia prática para entrar em TI e conseguir oportunidades reais.",
-        time: "10 min",
+        category: "Literatura",
+        title: "Confissões",
+        desc: "Confissões é o título de um livro autobiográfico escrito por Agostinho de Hipona, no qual relata a sua vida antes de se tornar cristão e sua conversão ao catolicismo.",
+        time: "60 min",
         level: "Alta relevância"
     },
     {
-        category: "Projetos",
-        title: "Projetos com JavaScript para Portfólio",
-        desc: "Ideias práticas para construir projetos que chamam atenção de recrutadores.",
-        time: "15 min",
+        category: "Filosofia",
+        title: "Filosofia Antiga",
+        desc: "Livro sobre Filosofia Antiga, um panorama das principais correntes que moldaram o pensamento ocidental.",
+        time: "35 min",
         level: "Essencial"
     },
     {
-        category: "Estudos",
-        title: "Como Estudar de Forma Eficiente",
-        desc: "Métodos simples para aprender mais rápido e manter consistência.",
-        time: "8 min",
+        category: "Religioso",
+        title: "A Divina Comédia",
+        desc: "é um poema épico que narra a jornada do próprio Dante.",
+        time: "40 min",
         level: "Alta retenção"
     },
     {
-        category: "IA",
-        title: "IA no Desenvolvimento de Software",
-        desc: "Como usar IA para acelerar criação de sistemas reais.",
-        time: "12 min",
+        category: "Infantil",
+        title: "Pequeno Príncipe",
+        desc: "é uma fábula filosófica sobre um piloto perdido no deserto do Saara que conhece um jovem príncipe vindo de um asteroide (B612).",
+        time: "30 min",
         level: "Tendência"
     },
     {
-        category: "Portfólio",
-        title: "Construindo um Portfólio Profissional",
-        desc: "Estrutura moderna para destacar projetos e aumentar chances de contratação.",
-        time: "9 min",
+        category: "Literatura",
+        title: "O Alienista",
+        desc: "O médico Simão Bacamarte funda um local em Itaguaí para estudar a loucura.",
+        time: "50 min",
         level: "Muito importante"
     }
 ];

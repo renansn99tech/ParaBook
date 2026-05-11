@@ -253,14 +253,31 @@
     // ADICIONAR LIVRO
     function adicionarLivro(id) {
     let biblioteca = JSON.parse(localStorage.getItem("biblioteca") || "[]");
+
     if (biblioteca.includes(id)) {
-        alert("Este livro já está na sua estante!");
+        Toastify({
+            text: "Este livro já está na sua estante!",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#ff9800"
+        }).showToast();
+
         return;
     }
+
     biblioteca.push(id);
+
     localStorage.setItem("biblioteca", JSON.stringify(biblioteca));
-    alert("Livro adicionado à sua estante! 📚");
-    }
+
+    Toastify({
+        text: "Livro adicionado à sua estante! 📚",
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#4caf50"
+    }).showToast();
+}
 
     function removerLivro(id) {
     let biblioteca = JSON.parse(localStorage.getItem("biblioteca")) || [];

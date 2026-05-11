@@ -391,6 +391,10 @@ main hr {
    ========================================================= */
 
 .empty-state {
+    /* display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; */
     text-align: center;
     padding: 3rem 2rem;
     color: #9CA3AF;
@@ -403,12 +407,17 @@ main hr {
     color: #6366F1;
 }
 
+.empty-state a {
+    width: 20%;
+}
+
 /* Botão do estado vazio */
 .btn-empty-state {
+    position: relative;
+    left: 40%;
     display: flex;
     align-items: center;
     justify-content: center;
-
     margin-top: 1rem;
     padding: 10px 22px;
 
@@ -1462,4 +1471,25 @@ body.light-mode .footer-bottom-line {
         font-size: 0.9rem;
     }
 
+}
+
+/* =========================================================
+    TELAS MUITO GRANDES → acima de 1440px
+========================================================= */
+
+@media (min-width: 1440px) {
+
+    .container-biblioteca,
+    .footer-container {
+        max-width: 80%;
+        margin: 0 10%;
+    }
+
+    .titulo h2 {
+        font-size: 5rem;
+    }
+
+    .titulo p {
+        font-size: 1.3rem;
+    }
 }

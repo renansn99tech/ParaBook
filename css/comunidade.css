@@ -146,7 +146,7 @@ main hr {
 
 
 .pagina-comunidade {
-    padding: 3rem 2rem;
+    padding: 2rem 1rem;
     text-align: center;
 }
 
@@ -835,6 +835,27 @@ button {
 
     .card img {
         height: 220px;
+    }
+}
+
+/* =========================================================
+    TELAS MUITO GRANDES → acima de 1440px
+========================================================= */
+
+@media (min-width: 1440px) {
+
+    main,
+    .footer-container {
+        max-width: 80%;
+        margin: 0 10%;
+    }
+
+    .titulo h2 {
+        font-size: 5rem;
+    }
+
+    .titulo p {
+        font-size: 1.3rem;
     }
 }
 

@@ -309,7 +309,7 @@ body.light-mode {
 /* NAV */
 
 body.light-mode .nav {
-    background: rgba(255, 255, 255, 0.85);
+    background: #F5FFFA;
     border-bottom: 1px solid #d1d5db;
 }
 

@@ -902,3 +902,24 @@ body.light-mode .footer-bottom-line {
     }
 
 }
+
+/* =========================================================
+    TELAS MUITO GRANDES → acima de 1440px
+========================================================= */
+
+@media (min-width: 1440px) {
+
+    .container-biblioteca,
+    .footer-container {
+        max-width: 80%;
+        margin: 0 10%;
+    }
+
+    .titulo h2 {
+        font-size: 5rem;
+    }
+
+    .titulo p {
+        font-size: 1.3rem;
+    }
+}

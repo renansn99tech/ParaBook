@@ -1114,7 +1114,7 @@ body.light-mode main hr {
 
 
 /* =========================================================
-   NOTEBOOK PEQUENO → até 1024px
+    NOTEBOOK PEQUENO → até 1024px
 ========================================================= */
 
 @media (max-width: 1024px) {
@@ -1143,7 +1143,7 @@ body.light-mode main hr {
 
 
 /* =========================================================
-   TELAS MUITO GRANDES → acima de 1440px
+    TELAS MUITO GRANDES → acima de 1440px
 ========================================================= */
 
 @media (min-width: 1440px) {
@@ -1151,12 +1151,12 @@ body.light-mode main hr {
     .grid-container,
     #secao-FAQ,
     .footer-container {
-        max-width: 75%;
+        max-width: 80%;
         margin-inline: auto;
     }
 
     .titulo h2 {
-        font-size: 5rem;
+        font-size: 4rem;
     }
 
     .titulo p {

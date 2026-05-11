@@ -1004,3 +1004,26 @@ body.light-mode .footer-bottom-line {
         margin-bottom: 20px;
     }
 }
+
+/* =========================================================
+    TELAS MUITO GRANDES → acima de 1440px
+
+    ADICIONADO EM 11/05/26 - PADRONIZAÇÃO DE MARGENS
+========================================================= */
+
+@media (min-width: 1440px) {
+
+    main,
+    .footer-container {
+        max-width: 80%;
+        margin: 0 10%;
+    }
+
+    .titulo h2 {
+        font-size: 5rem;
+    }
+
+    .titulo p {
+        font-size: 1.3rem;
+    }
+}

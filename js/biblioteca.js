@@ -206,24 +206,28 @@
     introducao_economia: {
         nome: "Introdução Economia",
         autor: "Carlos Magno Mendes",
+        genero: "exatas",
         caminho: "livros/cienecia_exata/livro1.pdf",
         capa: "livros/capas_livros/introduçãoeconomia.png"
     },
     construcoes_geometricas: {
         nome: "Construções Geometricas",
         autor: "Jorge Luis Costa",
+        genero: "exatas",
         caminho: "livros/cienecia_exata/livro2.pdf",
         capa: "livros/capas_livros/construçõesgeometricas.png"
     },
     o_simbolo_e_arealidade: {
         nome: "O Simbolo e a Realidade",
         autor: "Ricardo Mendes",
+        genero: "exatas",
         caminho: "livros/cienecia_exata/livro3.pdf",
         capa: "livros/capas_livros/osimboloearealidade.png"
     },
     astronomia: {
         nome: "Astronomia",
         autor: "Salvador Nogueira",
+        genero: "exatas",
         caminho: "livros/cienecia_exata/livro4.pdf",
         capa: "livros/capas_livros/astronomia.png"
     },
@@ -232,18 +236,21 @@
     fabulas_do_escopo: {
         nome: "Fabulas do Escopo",
         autor: "Carlos Pinheiro",
+        genero: "infantis",
         caminho: "livros/livros_infantis/fabulasdoescopo.pdf",
         capa: "livros/capas_livros/fabulasdoescopo.png"
     },
     misterio_no_expresso: {
         nome: "Mistério no Expresso",
         autor: "Milson Almeida",
+        genero: "infantis",
         caminho: "livros/livros_infantis/misterionoexpresso.pdf",
         capa: "livros/capas_livros/misterionoexpresso.png"
     },
     cem_historia: {
         nome: "100 historia",
         autor: "Alvaro Magalhães",
+        genero: "infantis",
         caminho: "livros/livros_infantis/100historia.pdf",
         capa: "livros/capas_livros/100historia.png"
     },

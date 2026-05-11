@@ -98,6 +98,13 @@ function paginaAnterior() {
     }
 }
 
+function irPagina() {
+    if (paginaAtual = 0) {
+        renderizarPagina(paginaAtual - 1);
+    }
+}
+
+
 /* =========================
 ATUALIZAÇÃO CENTRAL
 ========================= */
@@ -107,7 +114,7 @@ function atualizarUI() {
 }
 
 /* =========================
-BARRA DE PROGRESSO (CORRIGIDA)
+BARRA DE PROGRESSO
 ========================= */
 function atualizarBarra() {
 

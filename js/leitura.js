@@ -98,11 +98,7 @@ function paginaAnterior() {
     }
 }
 
-function irPagina() {
-    if (paginaAtual = 0) {
-        renderizarPagina(paginaAtual - 1);
-    }
-}
+
 
 
 /* =========================

@@ -390,6 +390,9 @@ body.light-mode .footer {
     color: #6B7280;
 }
 
+body.light-mode .footer-brand h2{
+    color: #111827;
+}
 body.light-mode .footer-links a {
     color: #4B5563;
 }

@@ -58,13 +58,13 @@ body {
 }
 
 .login-btn {
-    background: #22C55E;
-    color: #020617;
+    background: rgba(23, 31, 46, 0.8);
+    color: #9CA3AF;
     border-radius: 45px;
     padding: 8px 18px;
     font-weight: bold;
     font-size: var(--fs-small);
-    border: none;
+    border: 1px solid #1F2937;
     cursor: pointer;
 }
 
@@ -713,7 +713,8 @@ body.light-mode .menu li a:hover {
 
 /* BOTÃO LOGIN */
 body.light-mode .login-btn {
-    background: #22C55E;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid #d1d5db;
     color: #020617;
 }
 

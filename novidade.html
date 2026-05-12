@@ -37,18 +37,133 @@
             </nav>
         </header>
                         <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
+        <div id="mobile-navbar-container"></div>
 
-        <main>
 
-            <!-- linha do tempo de novidades da semana-->
+        <main class="news-page-main">
+            <!-- Section 1: Hero & Typography Scroll -->
+            <section class="news-hero-section">
+                <div class="scroll-ticker-container">
+                    <span class="ticker-item">NOVIDADES • UPDATES • NEWS • NOVIDADES • UPDATES • NEWS •</span>
+                </div>
+                <div class="news-intro-content">
+                    <h1 class="gradient-text">Linha do Tempo</h1>
+                    <p>O rastro da evolução do ParaBook, de um projeto acadêmico a uma plataforma completa.</p>
+                </div>
+            </section>
+
+            <!-- Section 2: Timeline de Articles -->
+            <section class="timeline-container">
+                <div class="timeline-vertical-bar"></div>
+
+                <!-- MARÇO - O início da jornada -->
+
+                <article class="timeline-entry inverse">
+                    <div class="timeline-pointer"></div>
+                    <div class="glass-card-news">
+                        <div class="card-header">
+                            <span class="date-tag">12 Mar 2026</span>
+                            <span class="status-badge">Equipe</span>
+                        </div>
+                        <h3>Formação do Time</h3>
+                        <p>Primeira reunião de brainstorming para definir o nicho do projeto integrador e as tecnologias Full Stack que seriam exploradas.</p>
+                    </div>
+                </article>
+
+                <article class="timeline-entry">
+                    <div class="timeline-pointer"></div>
+                    <div class="glass-card-news">
+                        <div class="card-header">
+                            <span class="date-tag">20 Mar 2026</span>
+                            <span class="status-badge">SENAC</span>
+                        </div>
+                        <h3>Kick-off do ParaBook</h3>
+                        <p>Aprovação da ideia original: uma biblioteca digital voltada para desenvolvimento pessoal e comunidade de leitura, pensada para uma experiência moderna e eficaz.</p>
+                    </div>
+                </article>
+
+                <article class="timeline-entry inverse">
+                    <div class="timeline-pointer"></div>
+                    <div class="glass-card-news">
+                        <div class="card-header">
+                            <span class="date-tag">28 Mar 2026</span>
+                            <span class="status-badge">GitHub</span>
+                        </div>
+                        <h3>Repositório Integrador</h3>
+                        <p>Primeiro 'push' oficial do projeto. Estruturação das pastas 'css', 'js' e 'img', e configuração do GitHub.</p>
+                    </div>
+                </article>
+
+                <!-- Novidade: Design e Identidade (Maio/Abril) -->
+                <article class="timeline-entry">
+                    <div class="timeline-pointer"></div>
+                    <div class="glass-card-news">
+                        <div class="card-header">
+                            <span class="date-tag">05 Abr 2026</span>
+                            <span class="status-badge">Design</span>
+                        </div>
+                        <h3>Identidade Visual & Cores</h3>
+                        <p>Definição da paleta futurista (Deep Blue, Purple e Rose-Orange) e aplicação do conceito de biblioteca digital voltado ao usuário.</p>
+                    </div>
+                </article>
+
+                <article class="timeline-entry inverse">
+                    <div class="timeline-pointer"></div>
+                    <div class="glass-card-news">
+                        <div class="card-header">
+                            <span class="date-tag">20 Abr 2026</span>
+                            <span class="status-badge">Dev</span>
+                        </div>
+                        <h3>Estrutura de Dados</h3>
+                        <p>Finalização da modelagem de dados e integração com as primeiras bibliotecas digitais.</p>
+                    </div>
+                </article>
+
+                <article class="timeline-entry">
+                    <div class="timeline-pointer"></div>
+                    <div class="glass-card-news">
+                        <div class="card-header">
+                            <span class="date-tag">5 Mai 2026</span>
+                            <span class="status-badge">Deploy</span>
+                        </div>
+                        <h3>Publicação no Git Pages</h3>
+                        <p>Primeiro Deployment oficial do Projeto, através da plataforma Git Pages.</p>
+                    </div>
+                </article>
+
+                <article class="timeline-entry inverse">
+                    <div class="timeline-pointer"></div>
+                    <div class="glass-card-news">
+                        <div class="card-header">
+                            <span class="date-tag">12 Mai 2026</span>
+                            <span class="status-badge">Live</span>
+                        </div>
+                        <h3>Modernização Visual</h3>
+                        <p>Implementação do sistema de design inovador com foco em portfólio e experiência do usuário.</p>
+                    </div>
+                </article>
+            </section>
+
+            <a href = "#topo">
+            <button class="button-top" id="voltar-topo" >
+                <svg class="svgIcon" viewBox="0 0 384 512">
+                    <path
+                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
+                    ></path>
+                </svg>
+            </button>
+            </a>
+        </main>
+
+        <!-- <main>
+            
             <div class="titulo-timeline">
                 <h2>Novidades da Semana do Parabook</h2>
             </div>
 
             <div class="timeline">
 
-                <div class="containe left"> <!-- Container para o lado esquerdo -->
+                <div class="containe left">
 
                     <div class="content">
                         <h2>20/03/2026</h2>
@@ -60,7 +175,7 @@
 
                 </div>
 
-                <div class="containe right"> <!-- Container para o lado direito -->
+                <div class="containe right">
                     
                     <div class="content">
                         <h2>21/03/2026</h2>
@@ -118,15 +233,17 @@
                 </div>
             </div>
 
-        <a href = "#topo"><button class="button-top" id="voltar-topo" >
-    <svg class="svgIcon" viewBox="0 0 384 512">
-        <path
-        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-        ></path>
-    </svg>
-    </button></a>
+        <a href = "#topo">
+            <button class="button-top" id="voltar-topo" >
+                <svg class="svgIcon" viewBox="0 0 384 512">
+                    <path
+                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
+                    ></path>
+                </svg>
+            </button>
+        </a>
     
-        </main>
+        </main> -->
     
         <footer class="footer">
             <div class="footer-container">

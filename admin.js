@@ -85,8 +85,12 @@ function voltar() {
         localStorage.setItem("adminLogado", "true");
         entrar();
     } else {
-        alert("Voltando para a tela inicial");
-        window.location.href = "index.html"; // Redireciona para index.html
+
+        notify("Voltando para a tela inicial");
+
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 1200);
     }
 }
 
@@ -353,4 +357,29 @@ function carregar(key) {
 function limparFormulario() {
     document.getElementById("titulo").value = "";
     document.getElementById("categoria").value = "";
+}
+
+// =======================
+// NOTIFY
+// =======================
+function notify(msg) {
+    const div = document.createElement("div");
+
+    div.className = "notify";
+    div.textContent = msg;
+
+    document.body.appendChild(div);
+
+    setTimeout(() => {
+        div.classList.add("show");
+    }, 10);
+
+    setTimeout(() => {
+        div.classList.remove("show");
+
+        setTimeout(() => {
+            div.remove();
+        }, 300);
+
+    }, 2500);
 }

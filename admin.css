@@ -194,6 +194,34 @@ LOGIN CENTRALIZADO
     width: 300px;
 }
 
+.notify {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+
+    background: #22c55e;
+    color: white;
+
+    padding: 14px 18px;
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+
+    opacity: 0;
+    transform: translateY(-10px);
+
+    transition: all .3s ease;
+
+    z-index: 9999;
+}
+
+.notify.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* =========================================================
 TABLET
 ========================================================= */

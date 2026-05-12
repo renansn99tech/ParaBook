@@ -363,15 +363,20 @@ function avaliarLivro(id, nota) {
 // =========================
 // RENDER ESTRELAS
 // =========================
-function renderEstrelas(id, notaAtual = 0) {
-    let html = `<div class="estrelas">`;
+function renderEstrelas(idOriginal, notaAtual = 0) {
+    // Cria um ID sem espaços para o CSS não se perder
+    const safeId = String(idOriginal).replace(/[^a-z0-9]/gi, '-');
+    
+    let html = `<div class="rating">`;
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 5; i >= 1; i--) {
+        const isChecked = Math.round(notaAtual) === i ? "checked" : "";
+        
+        // O input DEVE vir antes do label para o seletor "~" do CSS funcionar
         html += `
-        <span class="estrela ${i <= notaAtual ? "ativa" : ""}" 
-              onclick="avaliarLivro('${id}', ${i})">
-            ★
-        </span>`;
+            <input value="${i}" name="rating-${safeId}" id="star${i}-${safeId}" type="radio" ${isChecked}>
+            <label for="star${i}-${safeId}" onclick="avaliarLivro('${idOriginal}', ${i})"></label>
+        `;
     }
 
     html += `</div>`;

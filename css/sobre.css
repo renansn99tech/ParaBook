@@ -2,13 +2,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
 :root {
-    /* Paleta de Cores Terrosa (Atemporal) */
-    --color-primary-dark: #14213d; /*#5C3B2E;*/ /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
-    --color-secondary: #4D4AE8;  /* #422b21;*/
-    --color-accent-olive: #58504a;  /* #4C4A2A; */ /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
-    --color-neutral-tan: #e9ecef; /* #C1B59F; */ /* Bege claro */
-    --color-bg-warm: #F5FFFA; /*#E6E2DB;*/ /* Off-white para Fundo principal */
-    --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
+    
+    --color-primary-dark: #14213d; 
+    --color-secondary: #4D4AE8;  
+    --color-accent-olive: #58504a;  
+    --color-neutral-tan: #e9ecef; 
+    --color-bg-warm: #F5FFFA; 
+    --color-ui-charcoal: #303136; 
+
+    /* Cores para os articles Sobre o projeto e Porque o Parabook */
+    --deep-blue: #0A1128;
+    --purple: #5B21B6;
+    --rose-orange: linear-gradient(90deg, #F43F5E, #FB923C);
+    --main-gradient: linear-gradient(135deg, #0A1128 0%, #5B21B6 50%, #F43F5E 100%);
 
     /* Definindo as Fontes nas variáveis de ambiente */
     --font-playfair: 'Playfair Display', serif; /* Fonte para títulos */
@@ -45,17 +51,140 @@
 
 /* Aplicando as Variáveis padrão no corpo da página */
 
-body {
+/* body {
     background: radial-gradient(circle at top, #111827, #020617);
     color: #E5E7EB;
     font-family: 'Inter', sans-serif;
+} */
+
+body {
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--deep-blue); /* Substituir por --color-primary-dark */
+    overflow-x: hidden;
 }
 
-/*  ==============================================
-        Definições da Página Inicial (index.html)
-    ============================================== */
+/* --- Typography Scroll Effect --- */
+.scroll-section {
+    position: relative;
+    padding: 0 0 20px 0;
+    margin-top: -15px;
+    overflow: hidden;
+}
 
+.scroll-ticker {
+    white-space: nowrap;
+    display: flex;
+    opacity: 0.1; /* Fica sutil ao fundo */
+    user-select: none;
+    pointer-events: none;
+    margin-bottom: -10px;
+}
 
+.ticker-item {
+    font-size: 5rem;
+    line-height: 2;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-neutral-tan);
+    animation: marquee 14s linear infinite;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(5%); }
+    100% { transform: translateX(-40%); }
+}
+
+/* --- Cards Estilo Portfólio --- */
+.content-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 0 5%;
+    position: relative;
+    z-index: 2;
+}
+
+.glass-feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 2rem;
+    border-radius: 30px;
+    flex: 1;
+    max-width: 400px;
+    transition: 0.4s ease;
+}
+
+.glass-feature-card h3 {
+    font-family: var(--font-playfair);
+    font-size: var(--fs-h3);
+    text-align: center;
+}
+
+.glass-feature-card:hover {
+    border-color: #6366F1;
+}
+
+.card-icon {
+    text-align: center;
+}
+
+/* --- Sobre o Projeto & Gradientes --- */
+.gradient-text {
+    background-color: var(--rose-orange); /* Substituir por --color-primary-dark */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.about-split-section {
+    padding: 10px 5% 30px 5%;
+    color: white;
+}
+
+.about-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 2rem;
+    border-radius: 30px;
+}
+
+.about-container:hover {
+    border-color: #6366F1;
+}
+
+.tech-tags span {
+    display: inline-block;
+    padding: 8px 15px;
+    background: rgba(91, 33, 182, 0.3);
+    border: 1px solid var(--purple);
+    border-radius: 50px;
+    margin-right: 20px;
+    font-size: .75rem;
+}
+
+.floating-circle {
+    width: 270px;
+    height: 270px;
+    background: var(--main-gradient);
+    border-radius: 50%;
+    filter: blur(50px);
+    opacity: 0.6;
+    animation: float 6s ease-in-out infinite;
+    margin: 0 auto;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
 
     /* Classe LOGO (onde está escrito o nome ParaBook) */
 

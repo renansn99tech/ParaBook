@@ -375,6 +375,59 @@ main hr{
     text-align: center;
     display: inline-block;
 }
+/* ===============================
+    CTA AUTORES
+================================= */
+
+.cta-autor {
+    padding: 80px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cta-box {
+    max-width: 800px;
+    text-align: center;
+    padding: 40px;
+
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #1F2937;
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+
+    animation: pulse 4s infinite;
+}
+
+.cta-box h2 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+}
+
+.cta-box p {
+    color: #9CA3AF;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+/* ===============================
+    AUTORES
+================================= */
+.cta-btn {
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    border: none;
+    padding: 14px 28px;
+    border-radius: 999px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.cta-btn:hover {
+    transform: scale(1.08);
+    background: linear-gradient(90deg, #4F46E5, #7C3AED);
+}
 
 /* ===============================
    FAQ

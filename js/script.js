@@ -41,31 +41,32 @@
     /* =========================
     INIT
     ========================= */
-    document.addEventListener("DOMContentLoaded", () => {
-        carregarDetalheComunidade();
-    });
+ document.addEventListener("DOMContentLoaded", () => {
+    carregarDetalheComunidade();
 
-    function showWelcomeOverlay(tipo) {
+    const params = new URLSearchParams(window.location.search);
+    const tipo = params.get("tipo");
+
+    showWelcomeOverlay(tipo);
+});
+
+function showWelcomeOverlay(tipo) {
     const overlay = document.getElementById("welcome-overlay");
     const text = document.getElementById("welcome-text");
 
-    if (!overlay || !tipo) return;
+    if (!overlay || !text) return;
 
-    const comunidade = comunidades[tipo];
-    if (!comunidade) return;
+    // força aparecer
+    overlay.style.display = "flex";
 
-    const key = `welcome_${tipo}`;
-
-    // se já mostrou antes, não mostra de novo
-    if (localStorage.getItem(key)) {
-        overlay.style.display = "none";
-        return;
+    // texto
+    if (tipo && typeof comunidades !== "undefined" && comunidades[tipo]) {
+        text.innerText = `Bem-vindo à comunidade de ${comunidades[tipo].titulo}`;
+    } else {
+        text.innerText = "Bem-vindo à comunidade!";
     }
 
-    // define o texto dinâmico
-    text.innerText = `Bem-vindo à comunidade de ${comunidade.titulo}`;
-
-    // espera carregar e depois some
+    // animação (IMPORTANTE: delay pequeno antes de mexer no opacity)
     setTimeout(() => {
         overlay.style.opacity = "0";
 
@@ -73,9 +74,6 @@
             overlay.style.display = "none";
         }, 800);
     }, 2000);
-
-    // marca como já exibido
-    localStorage.setItem(key, "true");
 }
 
     /* =========================

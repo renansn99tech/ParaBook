@@ -148,6 +148,24 @@ main hr {
     padding: 2rem;
 }
 
+/* ===== PÁGINA BIBLIOTECA ===== */
+
+.genero-titulo {
+    font-size: 2rem;
+    font-family: var(--font-playfair);
+    /*color: var(--color-primary-dark);*/
+    margin: 2.5rem 2rem 1.5rem 3.5rem;
+    padding-left: .7rem;
+    border-left: 5px solid var(--color-accent-olive);
+}
+
+.agrupar-livros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
 /* ===== CARD LIVRO ===== */
 
 .card-livro {

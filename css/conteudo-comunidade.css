@@ -645,11 +645,13 @@ body.light-mode .footer-bottom-line {
     background-image: url(/img/bem-vindo-comunidade.jpg);
     background-size: cover;
     background-position: center;
-    display: flex;
+
+    display: none; /* começa escondido */
     justify-content: center;
     align-items: center;
 
     z-index: 9999;
+
     opacity: 1;
     transition: opacity 0.8s ease;
 }
@@ -667,6 +669,7 @@ body.light-mode .footer-bottom-line {
 .welcome-content h1 {
     font-size: 2rem;
 }
+
 /* RESPONSIVO */
 @media (max-width: 768px) {
     .nav {

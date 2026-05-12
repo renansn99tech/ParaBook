@@ -2,13 +2,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
 :root {
-    /* Paleta de Cores Terrosa (Atemporal) */
-    --color-primary-dark: #14213d; /*#5C3B2E;*/ /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
-    --color-secondary: #4D4AE8;  /* #422b21;*/
-    --color-accent-olive: #58504a;  /* #4C4A2A; */ /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
-    --color-neutral-tan: #e9ecef; /* #C1B59F; */ /* Bege claro */
-    --color-bg-warm: #F5FFFA; /*#E6E2DB;*/ /* Off-white para Fundo principal */
-    --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
+    /* Paleta de Cores Moderna (Nova Identidade Visual) */
+    --color-primary-dark: #14213d;
+    --color-secondary: #4D4AE8;  
+    --color-accent-olive: #58504a;  
+    --color-neutral-tan: #e9ecef; 
+    --color-bg-warm: #F5FFFA; 
+    --color-ui-charcoal: #303136; 
+
+    /* Cores utilizadas na modernização da página */
+    --deep-blue: #0A1128;
+    --purple: #5B21B6;
+    --rose-orange: linear-gradient(90deg, #F43F5E, #FB923C);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
 
     /* Definindo as Fontes nas variáveis de ambiente */
     --font-playfair: 'Playfair Display', serif; /* Fonte para títulos */
@@ -52,6 +59,143 @@ body {
 }
 
 
+/* Configuração da Main */
+.news-page-main {
+    /* background-color: #111827; */
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* --- SECTION 1: TYPOGRAPHY SCROLL --- */
+.news-hero-section {
+    position: relative;
+    height: 30vh; /* Altura menor para o topo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.scroll-ticker-container {
+    position: absolute;
+    white-space: nowrap;
+    display: flex;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.ticker-item {
+    display: inline-block;
+    font-size: 8rem;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 2px white;
+    text-transform: uppercase;
+    animation: marquee-news 25s linear infinite;
+}
+
+@keyframes marquee-news {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.news-intro-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+}
+
+/* --- SECTION 2: TIMELINE ARTICLES --- */
+.timeline-container {
+    position: relative;
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.timeline-vertical-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: calc(100% - 160px);
+    background: linear-gradient(to bottom, var(--purple), #F43F5E);
+    opacity: 0.4;
+}
+
+.timeline-entry {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 80px;
+    position: relative;
+}
+
+.timeline-entry.inverse {
+    justify-content: flex-end;
+}
+
+.timeline-pointer {
+    position: absolute;
+    left: 50%;
+    top: 30px;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 18px;
+    background: var(--rose-orange);
+    border-radius: 50%;
+    box-shadow: 0 0 20px #F43F5E;
+    z-index: 3;
+}
+
+.glass-card-news {
+    width: 44%;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 35px;
+    border-radius: 28px;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.glass-card-news:hover {
+    transform: translateY(-12px);
+    border-color: #FB923C;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.date-tag {
+    color: #FB923C;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.status-badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    background: var(--purple);
+    border-radius: 6px;
+    color: white;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+    .timeline-vertical-bar { left: 20px; transform: none; }
+    .timeline-pointer { left: 20px; transform: none; }
+    .timeline-entry, .timeline-entry.inverse { justify-content: flex-start; }
+    .glass-card-news { width: 85%; margin-left: 45px; }
+    .ticker-item { font-size: 5rem; }
+}
 
 
 /*  ==============================================================================================================
@@ -347,290 +491,6 @@ main hr {
 box-sizing: border-box;
 }
 
-/* Centralizar o título */
-.titulo-timeline h2 {
-text-align: center;
-margin-top: 2rem;
-font-size: 2.5rem;
-}
-
-/* The actual timeline (the vertical ruler) */
-.timeline {
-position: relative;
-max-width: 1200px;
-margin: 2rem auto 0;
-}
-
-/* The actual timeline (the vertical ruler) */
-.timeline::after {
-    content: '';
-    position: absolute;
-    width: 6px;
-    background: white;
-    z-index: -1;
-    top: 0;
-    left: 49.8%;
-    height: 0;
-
-    animation: linhaSubindo 3.5s ease forwards;
-}
-
-    /* Container around content */
-    .containe {
-    padding: 10px 40px;
-    position: relative;
-    background-color: inherit;
-    width: 50%;
-    
-    }
-
-    /* The circles on the timeline */
-    .containe::after {
-    content: '';
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    right: -17px;
-    background-color: white;
-    border: 4px solid #FF9F55;
-    top: 15px;
-    border-radius: 50%;
-    z-index: 1;
-    }
-
-    /* Place the container to the left */
-    .left {
-    left: 0;
-    animation: deslizetexto1 2s ease-in-out;
-    }
-    
-
-    /* Place the container to the right */
-    .right {
-    left: 50%;
-    animation: delizetexto2 3s ease-in-out;
-    }
-
-    /* Add arrows to the left container (pointing right) */
-    .left::before {
-    content: " ";
-    height: 0;
-    position: absolute;
-    top: 22px;
-    width: 0;
-    z-index: 1;
-    right: 30px;
-    border: medium solid white;
-    border-width: 10px 0 10px 10px;
-    border-color: transparent transparent transparent white;
-    }
-
-    /* Add arrows to the right container (pointing left) */
-    .right::before {
-    content: " ";
-    height: 0;
-    position: absolute;
-    top: 22px;
-    width: 0;
-    z-index: 1;
-    left: 30px;
-    border: medium solid white;
-    border-width: 10px 10px 10px 0;
-    border-color: transparent white transparent transparent;
-    }
-
-    /* Fix the circle for containers on the right side */
-    .right::after {
-    left: -16px;
-    }
-
-    /* The actual content */
-    .content {
-    /*padding: 20px 30px;
-    background-color: #111827;
-    position: relative;
-    border-radius: 6px;
-    border: 1px solid #1F2937;*/
-    padding: 20px 30px;
-    background-color: #111827;
-    position: relative;
-    border-radius: 6px;
-    border: 1px solid #1F2937;
-    overflow: hidden; /* impede qualquer vazamento */
-    }
-
-    .content img {
-    /*width: 100%;
-    height: auto;
-    border-radius: 6px;
-    display: block;*/
-    /*max-width: 100%;       /* Responsivo */
-    /*    height: auto;          /* Mantém proporção */
-    /*    border-radius: 12px;   /* Cantos arredondados */
-    /*    border: 3px solid #ccc;/* Borda */
-    /*    box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* Sombra */
-    /*    transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;*/
-    /*width: 180px;
-    height: 260px;
-    object-fit: cover;
-    border-radius: 8px;*/
-    width: 100%;        /* ocupa o espaço disponível */
-    max-width: 180px;   /* limite máximo */
-    height: auto;       /* mantém proporção */
-    object-fit: cover;
-    border-radius: 8px;
-    display: block;
-    margin: 0 auto;     /* centraliza */
-    }
-
-    /* Efeito ao passar o mouse */
-    .content img:hover {
-        transform: scale(1.02); /* Zoom suave */
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    }
-    
-    .content a {
-    display: inline-block;
-    text-decoration: none;
-    padding: 10px 22px;
-    border-radius: 999px;
-    border: none;
-    cursor: pointer;
-
-    background: linear-gradient(90deg, #6366F1, #8B5CF6);
-    color: #FFFFFF;
-
-    font-weight: 500;
-    font-family: 'Poppins', sans-serif;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    transition: all 0.3s ease;
-
-    box-shadow: 0 8px 20px rgba(99,102,241,0.3);
-}
-
-.content a:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 0 20px rgba(99,102,241,0.6);
-}
-
-.content a:active {
-    transform: scale(0.97);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-}
-
-    .containe left {
-    animation: deslizetexto1 1s ease-in-out;
-    }
-
-    @keyframes deslizetexto1 { /*deslize do lado esquerdo para o direito */
-    0% { transform: translateX(-100px); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
-    }
-
-    .element {
-    animation-name: deslizetexto1;
-    animation-duration: 1s;
-    animation-timing-function: ease;
-    animation-iteration-count: 2;
-    animation-direction: normal;
-    animation-fill-mode: forwards;
-    }
-
-    @keyframes delizetexto2 { /*deslize do lado direito para o esquerdo */
-    0% { transform: translateX(100px); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
-    }
-
-
-    /* Media queries - Responsive timeline on screens less than 600px wide */
-    @media screen and (max-width: 600px) {
-    /* Place the timelime to the left */
-    .timeline::after {
-    left: 31px;
-    }
-    
-    /* Full-width containers */
-    .container {
-    width: 100%;
-    padding-left: 70px;
-    padding-right: 25px;
-    }
-    
-    /* Make sure that all arrows are pointing leftwards */
-    .containe::before {
-    left: 60px;
-    border: medium solid white;
-    border-width: 10px 10px 10px 0;
-    border-color: transparent white transparent transparent;
-    }
-
-    /* Make sure all circles are at the same spot */
-    .left::after, .right::after {
-    left: 15px;
-    }
-    
-    /* Make all right containers behave like the left ones */
-    .right {
-    left: 0%;
-    }
-    }
-
-
-    .containe {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-    animation: aparecerCard 0.8s ease forwards;
-}
-
-/* Cada card entra com um pequeno atraso */
-.containe:nth-child(1) {
-    animation-delay: 0.2s;
-}
-
-.containe:nth-child(2) {
-    animation-delay: 0.6s;
-}
-
-.containe:nth-child(3) {
-    animation-delay: 1s;
-}
-
-.containe:nth-child(4) {
-    animation-delay: 1.4s;
-}
-
-.containe:nth-child(5) {
-    animation-delay: 1.8s;
-}
-
-.containe:nth-child(6) {
-    animation-delay: 2.2s;
-}
-
-/* Animação */
-@keyframes aparecerCard {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes linhaSubindo {
-    from {
-        height: 0;
-    }
-    to {
-        height: 100%;
-    }
-}
-
-
 
 /* ===== INDEX RESPONSIVO ===== */
 @media (max-width: 768px) {
@@ -713,6 +573,7 @@ margin: 2rem auto 0;
     overflow: hidden;
     position: relative;
     left: 90%;
+    top: -50px;
     }
 
     .svgIcon {

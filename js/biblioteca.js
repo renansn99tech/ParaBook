@@ -455,6 +455,39 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filtro-status")?.addEventListener("change", carregarBiblioteca);
 });
 
+function carregarLivrosIndependentes() {
+    const container = document.getElementById("secao-independentes");
+
+    if (!container) return;
+
+    let livrosIndependentes = JSON.parse(localStorage.getItem("livrosIndependentes")) || [];
+
+    if (livrosIndependentes.length === 0) {
+        container.innerHTML = "<p style='padding:20px'>Nenhum livro independente publicado ainda.</p>";
+        return;
+    }
+
+    let html = "";
+
+    livrosIndependentes.forEach(livro => {
+        const id = livro.id;
+
+        html += `
+        <article class="card-livro">
+            <img src="${livro.capa}" alt="${livro.nome}">
+            <h3>${livro.nome}</h3>
+            <p>Autor: ${livro.autor}</p>
+            <p>GÃªnero: ${livro.genero}</p>
+
+            <button onclick="adicionarLivro('${id}')">
+                Adicionar Ã  minha biblioteca
+            </button>
+        </article>
+        `;
+    });
+
+    container.innerHTML = html;
+}
 // =========================
 // INICIALIZAÇÃO
 // =========================

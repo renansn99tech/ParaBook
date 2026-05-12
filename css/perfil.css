@@ -353,6 +353,14 @@ main hr {
     color: white;
 }
 
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
 /* GRID */
 
 .perfil-info-grid {

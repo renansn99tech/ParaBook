@@ -1,0 +1,135 @@
+/* ===============================
+   FORMULÁRIO AUTORES
+================================= */
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px;
+}
+
+.form-box {
+    width: 100%;
+    max-width: 600px;
+    padding: 40px;
+
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #1F2937;
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    animation: pulse 4s infinite;
+}
+
+.form-box h1 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.form-box p {
+    text-align: center;
+    color: #9CA3AF;
+    margin-bottom: 30px;
+}
+
+/* =============================== */
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+}
+
+/* INPUTS */
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #1F2937;
+    background: #020617;
+    color: white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #6366F1;
+}
+
+/* CHECKBOX */
+
+.checkbox {
+    font-size: 0.9rem;
+}
+
+/* FILE NAME */
+
+.file-name {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #9CA3AF;
+}
+
+/* BOTÃO */
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    transform: scale(1.05);
+}
+
+/* ===============================
+   LIGHT MODE
+================================= */
+
+body.light-mode .form-box {
+    background: rgba(0,0,0,0.03);
+    border: 1px solid #d1d5db;
+}
+
+body.light-mode input,
+body.light-mode textarea,
+body.light-mode select {
+    background: white;
+    color: #020617;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 480px) {
+
+    .form-box {
+        padding: 25px;
+    }
+
+    .submit-btn {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: column;
+    }
+
+    .menu {
+        flex-direction: column;
+    }
+}

@@ -10,7 +10,7 @@
     document.getElementById("formObra").addEventListener("submit", function(e) {
         e.preventDefault();
 
-        alert("✅ Obra enviada com sucesso! (simulação frontend)");
+        alert("Livro enviado!");
 
         this.reset();
         fileName.textContent = "";

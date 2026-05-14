@@ -36,3 +36,15 @@ Começamos a remodelar as cores e a estrutura do código como um todo, de modo q
 foram adicionados telas de perfil, login, cadastro e carrosseis e também um footer padronizado com informações de contato!
 
 Próximo passo: Preparar a apresentação da semana que vem dia 23/04 e finalizar estilização de todo o projeto até o início de Maio.
+
+## Status do Projeto (14/05/2026)
+
+Todo o site manteve identidade visual, mas foram alinhados e modernizados para acomodar estilização mais agradável (Glassmorphism e Typography).
+Até então o Front-end está completamente pronto, mas ainda não começamos a trabalhar com back-end, espera-se que semana que vem (19/05) comecemos!
+
+O Banco de Dados foi conceitualmente, logicamente e fisicamente modelado e estruturado para nossas atuais necessidades.
+Publicamos também nosso primeiro Deploy no dia 05, e hoje estamos no Pull Request 103.
+
+### Próximo passo 
+
+Aprender Python e trabalhar com APIs, inicializar o projeto com Django e em breve implementar as funcionalidades diferenciais e os insights adicionais.

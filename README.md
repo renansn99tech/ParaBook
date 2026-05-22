@@ -27,12 +27,12 @@ Foi criado um acervo de livros da biblioteca com os seguintes temas: **filosofia
 
 ## Status do ProjetoIntegrador (Última modificação em 27/03)
 
-Primeira página quase finalizada. 
+Primeira página quase finalizada.
 Próximo passo: integrar as telas de login e detalhar o restante dos cards nas seções da Página inicial.
 
 ## Status do Projeto (16/04/2026)
 
-Começamos a remodelar as cores e a estrutura do código como um todo, de modo que esteja mais limpo e organizado o código, já 
+Começamos a remodelar as cores e a estrutura do código como um todo, de modo que esteja mais limpo e organizado o código, já
 foram adicionados telas de perfil, login, cadastro e carrosseis e também um footer padronizado com informações de contato!
 
 Próximo passo: Preparar a apresentação da semana que vem dia 23/04 e finalizar estilização de todo o projeto até o início de Maio.
@@ -45,6 +45,6 @@ Até então o Front-end está completamente pronto, mas ainda não começamos a 
 O Banco de Dados foi conceitualmente, logicamente e fisicamente modelado e estruturado para nossas atuais necessidades.
 Publicamos também nosso primeiro Deploy no dia 05, e hoje estamos no Pull Request 103.
 
-### Próximo passo 
+### Próximo passo
 
 Aprender Python e trabalhar com APIs, inicializar o projeto com Django e em breve implementar as funcionalidades diferenciais e os insights adicionais.

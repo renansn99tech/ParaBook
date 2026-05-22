@@ -799,6 +799,22 @@ body.light-mode .fade-section:hover {
     box-shadow: 0 20px 40px rgba(99, 102, 241, 0.12);
 }
 
+body.light-mode .ticker-item {
+    font-size: 5rem;
+    line-height: 2;
+    font-weight: 900;
+    color: black;
+    -webkit-text-stroke: 1.5px var(--color-primary-dark);
+    animation: marquee 14s linear infinite;
+}
+
+body.light-mode .tech-tags span {
+    background: rgba(91, 33, 182, 0.1);
+    border: 1px solid var(--purple);
+    color: var(--deep-blue);
+    font-weight: 600
+}
+
 /* ================= TIMELINE ================= */
 
 body.light-mode .timeline-container::before {

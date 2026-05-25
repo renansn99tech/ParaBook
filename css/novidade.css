@@ -92,6 +92,8 @@ body {
     -webkit-text-stroke: 2px white;
     text-transform: uppercase;
     animation: marquee-news 25s linear infinite;
+    position: relative;
+    top: -3rem;
 }
 
 @keyframes marquee-news {
@@ -101,6 +103,7 @@ body {
 
 .news-intro-content {
     position: relative;
+    top: 5rem;
     z-index: 2;
     text-align: center;
     color: white;
@@ -661,6 +664,20 @@ body.light-mode h3 {
 
 body.light-mode p {
     color: #374151;
+}
+
+/* ================= SCROLL INFINITO ================= */
+
+body.light-mode .ticker-item {
+    display: inline-block;
+    font-size: 8rem;
+    font-weight: 900;
+    color: black;
+    -webkit-text-stroke: 2px var(--color-primary-dark);
+    text-transform: uppercase;
+    animation: marquee-news 25s linear infinite;
+    position: relative;
+    top: -3rem;
 }
 
 /* ================= HR ================= */

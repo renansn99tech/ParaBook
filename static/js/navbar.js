@@ -1,11 +1,11 @@
 // carregar componente
-fetch("components/mobile-navbar.html")
-    .then(res => res.text())
-    .then(data => {
-        document.getElementById("mobile-navbar-container").innerHTML = data;
+// fetch("mobile-navbar.html")
+//     .then(res => res.text())
+//     .then(data => {
+//         document.getElementById("mobile-navbar-container").innerHTML = data;
 
-        initMobileNavbar();
-    });
+//         initMobileNavbar();
+//     });
 
 function initMobileNavbar() {
     const openMenu = document.getElementById("openMenu");

@@ -1,49 +1,128 @@
-# ProjetoIntegrador
-
-Repositório do Projeto de Integração do curso Programador Full Stack.
-
-Esse repositório foi criado na Aula do dia 23/03 do curso do Senac para fins de acompanhamento e versionamento da aplicação desenvolvida.
-
-Para todos os Colaboradores:
-
-    Ao criarem suas branches para inserirem modificações nos arquivos, favor apagar as branches
-    após subirem as alterações para a nuvem (origin/main)!
-
-    Essa prática permite uma boa higiene e maior controle de versionamento.
-
-## Iniciar o projeto
-
-Para executar o projeto é necessário clonar o repositório: `https://github.com/rsnproj2/ProjetoIntegrador.git`.
-
-## Página inicial da nossa homepage
-
-Quando o usuário entrar na primeira página do site aparecerá um pop up depois de três segundos com as boas vindas do site. Ao fechar essa mensagem ele poderá verificar o conteúdo da tela de inicio do site que contém da barra de navegação.
-
-Teremos vários cards interativos com o conteúdo inicial de apresentação do sistema. Contendo o "FAQ", com as principais dúvidas dos leitores e um botão, caso seja necessário para escrever uma dúvida que não esteja listada.
+# Projeto Integrador - Parabook
+ 
+Repositório do Projeto Integrador do curso **Programador Full Stack (Senac)**.
+ 
+O projeto consiste no desenvolvimento de uma aplicação web voltada para gerenciamento e visualização de um acervo de livros, com interface interativa e integração com banco de dados.
+ 
+---
+ 
+## Sobre o Projeto
+ 
+O sistema Parabook foi desenvolvido com o objetivo de criar uma plataforma onde usuários possam visualizar conteúdos literários organizados por categorias, além de interagir com funcionalidades como FAQ, cadastro e login.
+ 
+---
+ 
+## Como executar o projeto
+ 
+1. Clone o repositório:
+```bash
+git clone https://github.com/rsnproj2/ProjetoIntegrador.git
+```
+---
+##  Acesse a pasta do projeto
+```bash
+cd ProjetoIntegrador
+```
+## Execute o servidor Django:
+```bash
+python manage.py runserver
+```
+## Tecnologias Utilizadas
+ 
+### Front-end
+ 
+HTML
+CSS
+JavaScript
+ 
+### Back-end
+ 
+Python
+Django
+ 
+### Banco de Dados
+ 
+MySQL
+ 
+### Funcionalidades
+### Página Inicial
+ 
+Pop-up de boas-vindas após 3 segundos
+Barra de navegação principal
+Cards interativos com conteúdos do sistema
+ 
+### FAQ
+ 
+Lista de dúvidas frequentes
+Opção para envio de novas perguntas
+ 
+### Biblioteca
+ 
+Acervo de livros dividido por categorias:
+ 
+Filosofia
+Literatura
+Religiosos
+ 
+###  Sistema de Usuário
+ 
+Cadastro
+Login
+Tela de perfil
+ 
+##  Status do Projeto
+27/03
+ 
+Primeira página quase finalizada
+Próximo passo: integração de login e ajustes nos cards
+ 
+ 
+16/04/2026
+ 
+Remodelação de cores e estrutura do código
+Implementação de:
+ 
+Tela de perfil
+Login e cadastro
+Carrosséis
+Footer padronizado
+ 
+ 
+ 
+ 
+14/05/2026
+ 
+Identidade visual modernizada (Glassmorphism e Typography)
+Front-end finalizado
+Banco de dados modelado (conceitual, lógico e físico)
+Projeto avançado até o Pull Request #103
+ 
+ 
+26/05/2026 (Atual)
+ 
+Integração do back-end com o front-end em andamento
+Backend em Django já conectado ao banco de dados MySQL
+ 
+ 
+## Próximos Passos
+ 
+Finalizar integração completa entre front-end e back-end
+Implementar consumo de APIs
+Ajustar funcionalidades finais do sistema
+Preparar versão estável para deploy
+ 
+ 
+## Equipe
+ 
+Bruno
+Rodrigo
+Arthur
+Renan
 
 ### Inclusão dos livros da biblioteca
 
 Foi criado um acervo de livros da biblioteca com os seguintes temas: **filosofia, literatura, religiosos**.
 
-## Status do ProjetoIntegrador (Última modificação em 27/03)
-
-Primeira página quase finalizada.
-Próximo passo: integrar as telas de login e detalhar o restante dos cards nas seções da Página inicial.
-
-## Status do Projeto (16/04/2026)
-
-Começamos a remodelar as cores e a estrutura do código como um todo, de modo que esteja mais limpo e organizado o código, já
-foram adicionados telas de perfil, login, cadastro e carrosseis e também um footer padronizado com informações de contato!
-
-Próximo passo: Preparar a apresentação da semana que vem dia 23/04 e finalizar estilização de todo o projeto até o início de Maio.
-
-## Status do Projeto (14/05/2026)
-
-Todo o site manteve identidade visual, mas foram alinhados e modernizados para acomodar estilização mais agradável (Glassmorphism e Typography).
-Até então o Front-end está completamente pronto, mas ainda não começamos a trabalhar com back-end, espera-se que semana que vem (19/05) comecemos!
-
-O Banco de Dados foi conceitualmente, logicamente e fisicamente modelado e estruturado para nossas atuais necessidades.
-Publicamos também nosso primeiro Deploy no dia 05, e hoje estamos no Pull Request 103.
 
 ### Próximo passo
 

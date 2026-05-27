@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'comentarios',
     'mensagens',
     'perfis',
+    'comunidades',
+    'biblioteca',
 ]
 
 MIDDLEWARE = [

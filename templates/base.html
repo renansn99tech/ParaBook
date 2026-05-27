@@ -1,0 +1,95 @@
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+    <meta charset="UTF-8">
+    
+        <title>
+            {% block title %}
+                Parabook
+            {% endblock %}
+    </title>
+    
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+        <!-- CSS -->
+    <link rel="stylesheet" href="">
+    </head>
+    
+    <body>
+    
+        <!-- NAVBAR -->
+    <header>
+    <nav>
+    
+                <a href="/">Home</a>
+    
+                <a href="/feed/">Feed</a>
+    
+                <a href="/usuarios/login/">Login</a>
+    
+                <a href="/usuarios/cadastro/">Cadastro</a>
+    
+                <a href="/perfis/">Perfil</a>
+    
+                <a href="/comunidades/">Comunidades</a>
+    
+                <a href="/biblioteca/">Biblioteca</a>
+    
+            </nav>
+    </header>
+    
+    
+        <!-- CONTEÚDO DAS PÁGINAS -->
+    <main>
+    
+            {% block content %}
+            {% endblock %}
+    
+        </main>
+    
+    
+        <!-- FOOTER -->
+    <footer>
+    
+            <p>Parabook © 2026</p>
+    
+        </footer>
+    
+    
+        <!-- JS -->
+    <script src=""></script>
+    
+    </body>
+    </html> posts/index.html: {% extends 'base.html' %}
+    
+    {% block title %}
+    Home
+    {% endblock %}
+    
+    {% block content %}
+    
+    <h1>Página Inicial</h1>
+    
+    <p>Bem-vindo ao Parabook</p>
+    
+    {% endblock %} usuarios/login.html: {% extends 'base.html' %}
+    
+    {% block title %}
+    Login
+    {% endblock %}
+    
+    {% block content %}
+    
+    <h1>Login</h1>
+    
+    <form>
+    <input type="text" placeholder="Usuário">
+    
+        <input type="password" placeholder="Senha">
+    
+        <button type="submit">
+            Entrar
+    </button>
+    </form>
+    
+    {% endblock %}  <!--URLs dinâmicas -> Em vez disso: <a href="/feed/"> usar: <a href="{% url 'feed' %}"> -->

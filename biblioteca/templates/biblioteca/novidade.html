@@ -1,282 +1,301 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends 'base.html' %}
+{% load static %}
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/novidade.css">
-        <link rel="stylesheet" href="css/navbar.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    </head>
+{% block title %}
+Novidades | ParaBook
+{% endblock %}
 
-    <body id="topo">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/novidade.css' %}">
+{% endblock %}
 
-        <header>
-            <nav class="container nav">
+{% block content %}
 
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>            
-                </ul>
-            </nav>
-        </header>
-                        <!-- NAVBAR MOBILE (INJETADA) -->
-        <div id="mobile-navbar-container"></div>
+<main class="news-page-main" id="topo">
 
+    <!-- HERO -->
+    <section class="news-hero-section">
 
-        <main class="news-page-main">
-            <!-- Section 1: Hero & Typography Scroll -->
-            <section class="news-hero-section">
-                <div class="scroll-ticker-container">
-                    <span class="ticker-item">NOVIDADES • UPDATES • NEWS • NOVIDADES • UPDATES • NEWS •</span>
-                </div>
-                <div class="news-intro-content">
-                    <h1 class="gradient-text">Linha do Tempo</h1>
-                    <p>O rastro da evolução do ParaBook, de um projeto acadêmico a uma plataforma completa.</p>
-                </div>
-            </section>
+        <div class="scroll-ticker-container">
+            <span class="ticker-item">
+                NOVIDADES • UPDATES • NEWS •
+                NOVIDADES • UPDATES • NEWS •
+            </span>
+        </div>
 
-            <!-- Section 2: Timeline de Articles -->
-            <section class="timeline-container">
-                <div class="timeline-vertical-bar"></div>
+        <div class="news-intro-content">
 
-                <!-- MARÇO - O início da jornada -->
+            <h1 class="gradient-text">
+                Linha do Tempo
+            </h1>
 
-                <article class="timeline-entry inverse">
-                    <div class="timeline-pointer"></div>
-                    <div class="glass-card-news">
-                        <div class="card-header">
-                            <span class="date-tag">12 Mar 2026</span>
-                            <span class="status-badge">Equipe</span>
-                        </div>
-                        <h3>Formação do Time</h3>
-                        <p>Primeira reunião de brainstorming para definir o nicho do projeto integrador e as tecnologias Full Stack que seriam exploradas.</p>
-                    </div>
-                </article>
+            <p>
+                O rastro da evolução do ParaBook,
+                de um projeto acadêmico a uma
+                plataforma completa.
+            </p>
 
-                <article class="timeline-entry">
-                    <div class="timeline-pointer"></div>
-                    <div class="glass-card-news">
-                        <div class="card-header">
-                            <span class="date-tag">20 Mar 2026</span>
-                            <span class="status-badge">SENAC</span>
-                        </div>
-                        <h3>Kick-off do ParaBook</h3>
-                        <p>Aprovação da ideia original: uma biblioteca digital voltada para desenvolvimento pessoal e comunidade de leitura, pensada para uma experiência moderna e eficaz.</p>
-                    </div>
-                </article>
+        </div>
 
-                <article class="timeline-entry inverse">
-                    <div class="timeline-pointer"></div>
-                    <div class="glass-card-news">
-                        <div class="card-header">
-                            <span class="date-tag">28 Mar 2026</span>
-                            <span class="status-badge">GitHub</span>
-                        </div>
-                        <h3>Repositório Integrador</h3>
-                        <p>Primeiro 'push' oficial do projeto. Estruturação das pastas 'css', 'js' e 'img', e configuração do GitHub.</p>
-                    </div>
-                </article>
+    </section>
 
-                <!-- Novidade: Design e Identidade (Maio/Abril) -->
-                <article class="timeline-entry">
-                    <div class="timeline-pointer"></div>
-                    <div class="glass-card-news">
-                        <div class="card-header">
-                            <span class="date-tag">05 Abr 2026</span>
-                            <span class="status-badge">Design</span>
-                        </div>
-                        <h3>Identidade Visual & Cores</h3>
-                        <p>Definição da paleta futurista (Deep Blue, Purple e Rose-Orange) e aplicação do conceito de biblioteca digital voltado ao usuário.</p>
-                    </div>
-                </article>
+    <!-- TIMELINE -->
+    <section class="timeline-container">
 
-                <article class="timeline-entry inverse">
-                    <div class="timeline-pointer"></div>
-                    <div class="glass-card-news">
-                        <div class="card-header">
-                            <span class="date-tag">20 Abr 2026</span>
-                            <span class="status-badge">Dev</span>
-                        </div>
-                        <h3>Estrutura de Dados</h3>
-                        <p>Finalização da modelagem de dados e integração com as primeiras bibliotecas digitais.</p>
-                    </div>
-                </article>
+        <div class="timeline-vertical-bar"></div>
 
-                <article class="timeline-entry">
-                    <div class="timeline-pointer"></div>
-                    <div class="glass-card-news">
-                        <div class="card-header">
-                            <span class="date-tag">5 Mai 2026</span>
-                            <span class="status-badge">Deploy</span>
-                        </div>
-                        <h3>Publicação no Git Pages</h3>
-                        <p>Primeiro Deployment oficial do Projeto, através da plataforma Git Pages.</p>
-                    </div>
-                </article>
+        <!-- ITEM 1 -->
+        <article class="timeline-entry inverse">
 
-                <article class="timeline-entry inverse">
-                    <div class="timeline-pointer"></div>
-                    <div class="glass-card-news">
-                        <div class="card-header">
-                            <span class="date-tag">12 Mai 2026</span>
-                            <span class="status-badge">Live</span>
-                        </div>
-                        <h3>Modernização Visual</h3>
-                        <p>Implementação do sistema de design inovador com foco em portfólio e experiência do usuário.</p>
-                    </div>
-                </article>
-            </section>
+            <div class="timeline-pointer"></div>
 
-            <a href = "#topo">
-            <button class="button-top" id="voltar-topo" >
-                <svg class="svgIcon" viewBox="0 0 384 512">
-                    <path
-                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-                    ></path>
-                </svg>
-            </button>
-            </a>
-        </main>
+            <div class="glass-card-news">
 
-        <!-- <main>
-            
-            <div class="titulo-timeline">
-                <h2>Novidades da Semana do Parabook</h2>
-            </div>
+                <div class="card-header">
 
-            <div class="timeline">
+                    <span class="date-tag">
+                        12 Mar 2026
+                    </span>
 
-                <div class="containe left">
-
-                    <div class="content">
-                        <h2>20/03/2026</h2>
-                        <h4>O Guarani</h4>
-                        <img src="livros/capas_livros/oguarani.png">
-                        <p>Também chamado de Guarané, o Guarani foi um dos mais importantes escritores brasileiros .</p>
-                        <a href="biblioteca.html">Leia mais</a>
-                    </div>
+                    <span class="status-badge">
+                        Equipe
+                    </span>
 
                 </div>
 
-                <div class="containe right">
-                    
-                    <div class="content">
-                        <h2>21/03/2026</h2>
-                        <h4>A República</h4>
-                        <img src="livros/capas_livros/arepublica.png">
-                        <p> Uma obra sobre a filosofia política daquele período .</p>
-                        <a href="biblioteca.html">Leia mais</a>
-                    </div>
+                <h3>Formação do Time</h3>
 
-                </div>
-            
-                <div class="containe left"> 
-                    <div class="content">
-                        <h2>22/03/2026</h2>
-                        <h4> O Alienista</h4>
-                        <img src="livros/capas_livros/alienista.png">
-                        <p>Um livro sobre a vida de um alienista.</p>
-                        <a href="biblioteca.html">Leia mais</a>
-                    </div>
-                </div>
-
-                <div class="containe right">
-
-                    <div class="content">
-                        <h2>23/03/2026</h2>
-                        <h4>Amar e Servir</h4>
-                        <img src="livros/capas_livros/amareservir.png">
-                        <p>Uma obra sobre o amor e servir sob o olhar de Santo Inácio.</p>
-                        <a href="biblioteca.html">Leia mais</a>
-                    </div>
-
-                </div>
-
-                <div class="containe left">
-
-                    <div class="content">
-                        <h2>24/03/2026</h2>
-                        <h4>Meditações para Quesma</h4>
-                        <img src="livros/capas_livros/meditaçõesparaquaresma.png">
-                        <p>Meditações para Quesma.</p>
-                        <a href="biblioteca.html">Leia mais</a>
-                    </div>
-
-                </div>
-
-                <div class="containe right">
-
-                    <div class="content">
-                        <h2>25/03/2026</h2>
-                        <h4> Dom Casmurro</h4>
-                        <img src="livros/capas_livros/domcasmurro.png">
-                        <p>Um livro sobre Dom Casmurro de Machado de Assis.</p>
-                        <a href="biblioteca.html">Leia mais</a>
-                    </div>
-                </div>
-            </div>
-
-        <a href = "#topo">
-            <button class="button-top" id="voltar-topo" >
-                <svg class="svgIcon" viewBox="0 0 384 512">
-                    <path
-                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-                    ></path>
-                </svg>
-            </button>
-        </a>
-    
-        </main> -->
-    
-        <footer class="footer">
-            <div class="footer-container">
-
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="biblioteca.html">Biblioteca</a>
-                    <a href="comunidade.html">Comunidades</a>
-                </div>
-
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
-                    </div>
-                </div>
+                <p>
+                    Primeira reunião de brainstorming
+                    para definir o nicho do projeto
+                    integrador e as tecnologias
+                    Full Stack utilizadas.
+                </p>
 
             </div>
 
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
+        </article>
+
+        <!-- ITEM 2 -->
+        <article class="timeline-entry">
+
+            <div class="timeline-pointer"></div>
+
+            <div class="glass-card-news">
+
+                <div class="card-header">
+
+                    <span class="date-tag">
+                        20 Mar 2026
+                    </span>
+
+                    <span class="status-badge">
+                        SENAC
+                    </span>
+
+                </div>
+
+                <h3>Kick-off do ParaBook</h3>
+
+                <p>
+                    Aprovação da ideia original:
+                    uma biblioteca digital voltada
+                    para desenvolvimento pessoal
+                    e comunidade de leitura.
+                </p>
+
             </div>
-        </footer>
-        <hr class="footer-bottom-line">
-        <script src="js/index.js"></script>
-        <script src="js/navbar.js"></script>
-    </body>
-</html>
+
+        </article>
+
+        <!-- ITEM 3 -->
+        <article class="timeline-entry inverse">
+
+            <div class="timeline-pointer"></div>
+
+            <div class="glass-card-news">
+
+                <div class="card-header">
+
+                    <span class="date-tag">
+                        28 Mar 2026
+                    </span>
+
+                    <span class="status-badge">
+                        GitHub
+                    </span>
+
+                </div>
+
+                <h3>Repositório Integrador</h3>
+
+                <p>
+                    Primeiro push oficial do projeto.
+                    Estruturação inicial das pastas
+                    CSS, JS e imagens.
+                </p>
+
+            </div>
+
+        </article>
+
+        <!-- ITEM 4 -->
+        <article class="timeline-entry">
+
+            <div class="timeline-pointer"></div>
+
+            <div class="glass-card-news">
+
+                <div class="card-header">
+
+                    <span class="date-tag">
+                        05 Abr 2026
+                    </span>
+
+                    <span class="status-badge">
+                        Design
+                    </span>
+
+                </div>
+
+                <h3>Identidade Visual</h3>
+
+                <p>
+                    Definição da paleta de cores
+                    futurista e do conceito visual
+                    principal do ParaBook.
+                </p>
+
+            </div>
+
+        </article>
+
+        <!-- ITEM 5 -->
+        <article class="timeline-entry inverse">
+
+            <div class="timeline-pointer"></div>
+
+            <div class="glass-card-news">
+
+                <div class="card-header">
+
+                    <span class="date-tag">
+                        20 Abr 2026
+                    </span>
+
+                    <span class="status-badge">
+                        Dev
+                    </span>
+
+                </div>
+
+                <h3>Estrutura de Dados</h3>
+
+                <p>
+                    Finalização da modelagem inicial
+                    e integração das primeiras
+                    bibliotecas digitais.
+                </p>
+
+            </div>
+
+        </article>
+
+        <!-- ITEM 6 -->
+        <article class="timeline-entry">
+
+            <div class="timeline-pointer"></div>
+
+            <div class="glass-card-news">
+
+                <div class="card-header">
+
+                    <span class="date-tag">
+                        05 Mai 2026
+                    </span>
+
+                    <span class="status-badge">
+                        Deploy
+                    </span>
+
+                </div>
+
+                <h3>Publicação no GitHub Pages</h3>
+
+                <p>
+                    Primeiro deploy público
+                    do projeto para testes
+                    e demonstração.
+                </p>
+
+            </div>
+
+        </article>
+
+        <!-- ITEM 7 -->
+        <article class="timeline-entry inverse">
+
+            <div class="timeline-pointer"></div>
+
+            <div class="glass-card-news">
+
+                <div class="card-header">
+
+                    <span class="date-tag">
+                        12 Mai 2026
+                    </span>
+
+                    <span class="status-badge">
+                        Live
+                    </span>
+
+                </div>
+
+                <h3>Modernização Visual</h3>
+
+                <p>
+                    Implementação do novo sistema
+                    visual focado em UX,
+                    responsividade e performance.
+                </p>
+
+            </div>
+
+        </article>
+
+    </section>
+
+    <!-- BOTÃO TOPO -->
+    <a href="#topo">
+
+        <button class="button-top" id="voltar-topo">
+
+            <svg class="svgIcon" viewBox="0 0 384 512">
+
+                <path
+                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5
+                    12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448
+                    c0 17.7 14.3 32 32 32s32-14.3
+                    32-32V141.2L329.4 246.6
+                    c12.5 12.5 32.8 12.5
+                    45.3 0s12.5-32.8
+                    0-45.3l-160-160z">
+                </path>
+
+            </svg>
+
+        </button>
+
+    </a>
+
+</main>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/index.js' %}"></script>
+
+<script src="{% static 'js/navbar.js' %}"></script>
+
+{% endblock %}

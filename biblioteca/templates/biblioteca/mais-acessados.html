@@ -1,105 +1,71 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends 'base.html' %}
+{% load static %}
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/mais-acessados.css">
-        <link rel="stylesheet" href="css/navbar.css">
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    </head>
+{% block title %}
+Mais Acessados | ParaBook
+{% endblock %}
 
-    <body>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/mais-acessados.css' %}">
+{% endblock %}
 
-        <header>
-            <nav class="container nav">
+{% block content %}
 
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>
-                </ul>
-            </nav>
-        </header>
-                        <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
+<main>
 
-    <main>
-        <section class="featured">
-            <h2>Mais Acessados</h2>
-            <p>Conteúdos selecionados com base em relevância, utilidade prática e impacto real na carreira.</p>
+    <section class="featured">
 
-            <div class="grid">
-                <!-- JS vai injetar os cards aqui -->
-            </div>
-        </section>
-        <!-- MODAL -->
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn" id="closeModal">×</span>
+        <h2>Mais Acessados</h2>
 
-                <span class="modal-badge" id="modalCategory"></span>
-                <h2 id="modalTitle"></h2>
+        <p>
+            Conteúdos selecionados com base em relevância,
+            utilidade prática e impacto real na carreira.
+        </p>
 
-                <p id="modalDesc"></p>
-
-                <div class="modal-meta">
-                    <span id="modalLevel"></span>
-                    <span id="modalTime"></span>
-                </div>
-            </div>
-        </div>
-    </main>
-        
-    <footer class="footer">
-        <div class="footer-container">
-
-            <div class="footer-brand">
-                <h2>ParaBook</h2>
-                <p>O melhor site de livros.</p>
-            </div>
-
-            <div class="footer-links">
-                <h4>Links</h4>
-                <a href="index.html">Início</a>
-                <a href="biblioteca.html">Biblioteca</a>
-                <a href="comunidade.html">Comunidades</a>
-            </div>
-
-            <div class="footer-social">
-                <h4>Redes </h4>
-                <div class="icons">
-                    <i class="fa-brands fa-instagram"></i>
-                    <i class="fa-brands fa-facebook"></i>
-                    <i class="fa-brands fa-github"></i>
-                </div>
-            </div>
+        <div class="grid">
+            <!-- JS vai injetar os cards aqui -->
         </div>
 
-        <div class="footer-bottom">
-            <p>© 2026. Todos os direitos reservados.</p>
+    </section>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal">
+
+        <div class="modal-content">
+
+            <span class="close-btn" id="closeModal">
+                ×
+            </span>
+
+            <span class="modal-badge" id="modalCategory"></span>
+
+            <h2 id="modalTitle"></h2>
+
+            <p id="modalDesc"></p>
+
+            <div class="modal-meta">
+
+                <span id="modalLevel"></span>
+
+                <span id="modalTime"></span>
+
+            </div>
+
         </div>
-    </footer>
-        
-        <hr class="footer-bottom-line">
-        <script src="js/index.js"></script>
-        <script src="js/featured.js"></script>
-        <script src="js/navbar.js"></script>
-    </body>
-</html>
+
+    </div>
+
+</main>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/index.js' %}"></script>
+
+<script src="{% static 'js/featured.js' %}"></script>
+
+<script src="{% static 'js/navbar.js' %}"></script>
+
+{% endblock %}
+

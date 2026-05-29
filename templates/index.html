@@ -2,40 +2,266 @@
 {% load static %}
 
 {% block title %}
-Home
+    Home
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet"
-    href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<section class="titulo">
+<!-- ================= HERO ================= -->
+<section class="hero-section">
 
-    <h2>Bem-Vindo ao ParaBook</h2>
+    <div class="titulo">
+        <h2>Bem-Vindo ao ParaBook</h2>
 
-    <p>
-        Explore e leia milhares de livros
-        no conforto da sua casa.
-    </p>
+        <p>
+            Explore e leia milhares de livros
+            no conforto da sua casa.
+        </p>
 
-    <a href="{% url 'biblioteca' %}">
-        <button class="titulo-btn">
+        <a href="{% url 'biblioteca' %}" class="titulo-btn">
             Explorar Livros ➔
-        </button>
-    </a>
-
-    <img src="{% static 'img/hero-bg.jpg' %}">
+        </a>
+        
+    </div>
 
 </section>
 
-<!-- RESTANTE DO SEU HTML -->
+
+<!-- ================= CARDS PRINCIPAIS ================= -->
+<section class="carrosseis">
+
+    <div class="grid-container">
+
+        <!-- CARD 1 -->
+        <div class="card-novo">
+            <a href="{% url 'mais_acessados' %}" class="card-link">
+
+                <div class="card-titulo">
+                    Mais Acessados
+                </div>
+
+                <div class="icon">
+                    <i class="fa-solid fa-book"></i>
+                </div>
+
+                <div class="content">
+                    <p>Descubra os títulos mais acessados.</p>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card-novo">
+            <a href="{% url 'comunidades' %}" class="card-link">
+
+                <div class="card-titulo">
+                    Comunidades
+                </div>
+
+                <div class="icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="content">
+                    <p>Encontre pessoas com os mesmos interesses.</p>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="card-novo">
+            <a href="{% url 'novidade' %}" class="card-link">
+
+                <div class="card-titulo">
+                    Novidades
+                </div>
+
+                <div class="icon">
+                    <i class="fa-regular fa-newspaper"></i>
+                </div>
+
+                <div class="content">
+                    <p>Confira novos livros e comunidades.</p>
+                </div>
+
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- ================= CARROSSEL ================= -->
+<div class="container">
+
+    <div class="card-carousel">
+
+        <div class="card card-1">
+            <div class="image-container"></div>
+            <p><strong>Inácio de Loyola</strong> — O amar e servir...</p>
+        </div>
+
+        <div class="card card-2">
+            <div class="image-container"></div>
+            <p><strong>Platão</strong> — A República</p>
+        </div>
+
+        <div class="card card-3">
+            <div class="image-container"></div>
+            <p><strong>George Orwell</strong> — A Revolução dos Bichos</p>
+        </div>
+
+        <div class="card card-4">
+            <div class="image-container"></div>
+            <p><strong>Machado de Assis</strong> — O Alienista</p>
+        </div>
+
+    </div>
+
+    <div class="carousel-buttons">
+        <button class="carousel-btn left">←</button>
+        <button class="carousel-btn right">→</button>
+    </div>
+
+</div>
+
+
+        <!-- BOTÕES -->
+        <div class="carousel-buttons">
+
+            <button class="carousel-btn left">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <button class="carousel-btn right">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CTA AUTOR ================= -->
+<section class="cta-autor">
+
+    <div class="cta-box">
+
+        <h2>Você é autor?</h2>
+
+        <p>
+            Publique sua obra e alcance novos leitores no ParaBook.
+        </p>
+
+        <a href="{% url 'obras_autores' %}" class="card-link">
+            <button class="cta-btn">
+                Enviar minha obra
+            </button>
+        </a>
+
+    </div>
+
+</section>
+
+
+<hr>
+
+
+<!-- ================= FAQ ================= -->
+<section id="secao-FAQ">
+
+    <!-- DÚVIDAS -->
+    <div class="duvidas-frequentes">
+
+    <h3>Dúvidas Frequentes</h3>
+
+    <details class="bloco-duvidas">
+        <summary class="detalhe-duvidas">
+            Quais gêneros de livros?
+        </summary>
+
+        <div class="conteudo-duvidas">
+            <p>Religião, literatura, filosofia e mais.</p>
+        </div>
+    </details>
+
+    <details class="bloco-duvidas">
+        <summary class="detalhe-duvidas">
+            Posso participar de comunidades?
+        </summary>
+
+        <div class="conteudo-duvidas">
+            <p>Sim! Existem várias comunidades disponíveis.</p>
+        </div>
+    </details>
+
+    <details class="bloco-duvidas">
+        <summary class="detalhe-duvidas">
+            Como criar conta?
+        </summary>
+
+        <div class="conteudo-duvidas">
+            <p>Clique em "Entrar" no topo do site.</p>
+        </div>
+    </details>
+
+</div>
+
+
+    <!-- FORMULÁRIO -->
+    <div id="faq-form">
+
+        <h3>Fale Conosco</h3>
+
+        <form method="POST" class="contact-form">
+
+            {% csrf_token %}
+
+            <input
+                type="text"
+                placeholder="Seu nome"
+                class="contact-input"
+                required
+            >
+
+            <input
+                type="email"
+                placeholder="Seu email"
+                class="contact-input"
+                required
+            >
+
+            <textarea
+                placeholder="Sua mensagem"
+                class="contact-textarea"
+            ></textarea>
+
+            <button type="submit" class="contact-btn">
+                Enviar
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- ================= BOTÃO TOPO ================= -->
+<a href="#topo" class="button-top" id="voltar-topo">
+    ↑
+</a>
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/carrossel.js' %}"></script>
-<script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/carrossel.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}

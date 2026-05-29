@@ -1,182 +1,257 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends 'base.html' %}
+{% load static %}
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/acesso-biblioteca.css">
-        <link rel="stylesheet" href="css/navbar.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    </head>
+{% block title %}
+Minha Biblioteca
+{% endblock %}
 
-    <body id="topo">
+{% block extra_css %}
+<link rel="stylesheet"
+    href="{% static 'css/acesso-biblioteca.css' %}">
+{% endblock %}
 
-        <header>
-            <nav class="container nav">
-
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>               
-                </ul>
-            </nav>
-        </header>
-    <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
+{% block content %}
 
 <main class="container-biblioteca">
 
+    <!-- BANNER -->
     <section class="banner-biblioteca">
+
         <article class="container banner-content">
-            <h2 class="titulo-biblioteca">Minha Biblioteca</h2>
-            <p>Aqui estão todos os livros que você adicionou. Organize sua coleção e acompanhe suas leituras!</p>
+
+            <h2 class="titulo-biblioteca">
+                Minha Biblioteca
+            </h2>
+
+            <p>
+                Aqui estão todos os livros que você adicionou.
+                Organize sua coleção e acompanhe suas leituras!
+            </p>
+
         </article>
+
     </section>
 
-        <section class="biblioteca-stats">
+    <!-- ESTATÍSTICAS -->
+    <section class="biblioteca-stats">
+
         <div class="container">
+
             <div class="stats-grid">
 
                 <div class="stat-card">
+
                     <div class="stat-icon">📚</div>
+
                     <div class="stat-content">
-                        <p class="stat-label">Total de Livros</p>
-                        <p class="stat-value" id="total-livros">0</p>
+                        <p class="stat-label">
+                            Total de Livros
+                        </p>
+
+                        <p class="stat-value" id="total-livros">
+                            0
+                        </p>
                     </div>
+
                 </div>
 
                 <div class="stat-card">
+
                     <div class="stat-icon">✅</div>
+
                     <div class="stat-content">
-                        <p class="stat-label">Concluídos</p>
-                        <p class="stat-value" id="livros-concluidos">0</p>
+                        <p class="stat-label">
+                            Concluídos
+                        </p>
+
+                        <p class="stat-value" id="livros-concluidos">
+                            0
+                        </p>
                     </div>
+
                 </div>
 
                 <div class="stat-card">
+
                     <div class="stat-icon">📖</div>
+
                     <div class="stat-content">
-                        <p class="stat-label">Lendo Agora</p>
-                        <p class="stat-value" id="livros-lendo">0</p>
+                        <p class="stat-label">
+                            Lendo Agora
+                        </p>
+
+                        <p class="stat-value" id="livros-lendo">
+                            0
+                        </p>
                     </div>
+
                 </div>
 
                 <div class="stat-card">
+
                     <div class="stat-icon">❤️</div>
+
                     <div class="stat-content">
-                        <p class="stat-label">Desejo ler</p>
-                        <p class="stat-value" id="livros-desejo">0</p>
+                        <p class="stat-label">
+                            Desejo Ler
+                        </p>
+
+                        <p class="stat-value" id="livros-desejo">
+                            0
+                        </p>
                     </div>
+
                 </div>
 
             </div>
+
         </div>
+
     </section>
 
+    <!-- FILTROS -->
     <section class="biblioteca-filters">
+
         <div class="container">
+
             <div class="filter-group">
 
-                <input type="text" id="buscar-livros" class="filter-input"
-                    placeholder="🔍 Buscar livro por título ou autor...">
+                <input
+                    type="text"
+                    id="buscar-livros"
+                    class="filter-input"
+                    placeholder="🔍 Buscar livro por título ou autor..."
+                >
 
-                <select id="filtro-genero" class="filter-select">
-                    <option value="">Todos os gêneros</option>
-                    <option value="filosofia">Filosofia</option>
-                    <option value="literatura">Literatura</option>
-                    <option value="religioso">Religioso</option>
-                    <option value="exatas">Ciências Exatas</option>
-                    <option value="infantis">Infantis</option>
+                <select
+                    id="filtro-genero"
+                    class="filter-select"
+                >
+
+                    <option value="">
+                        Todos os gêneros
+                    </option>
+
+                    <option value="filosofia">
+                        Filosofia
+                    </option>
+
+                    <option value="literatura">
+                        Literatura
+                    </option>
+
+                    <option value="religioso">
+                        Religioso
+                    </option>
+
+                    <option value="exatas">
+                        Ciências Exatas
+                    </option>
+
+                    <option value="infantis">
+                        Infantis
+                    </option>
+
                 </select>
 
-                <select id="filtro-status" class="filter-select">
-                    <option value="">Todos os status</option>
-                    <option value="lendo">Lendo</option>
-                    <option value="concluido">Concluído</option>
-                    <option value="desejo">Desejo ler</option>
+                <select
+                    id="filtro-status"
+                    class="filter-select"
+                >
+
+                    <option value="">
+                        Todos os status
+                    </option>
+
+                    <option value="lendo">
+                        Lendo
+                    </option>
+
+                    <option value="concluido">
+                        Concluído
+                    </option>
+
+                    <option value="desejo">
+                        Desejo ler
+                    </option>
+
                 </select>
 
             </div>
+
         </div>
+
     </section>
 
+    <!-- GRID DOS LIVROS -->
     <section class="biblioteca-section">
+
         <div class="container">
-            <h3 class="biblioteca-title">Seus Livros</h3>
 
-            <div id="lista-livros" class="biblioteca-grid"></div>
+            <h3 class="biblioteca-title">
+                Seus Livros
+            </h3>
 
-            <div id="empty-state" class="empty-state" style="display: none;">
+            <div
+                id="lista-livros"
+                class="biblioteca-grid"
+            ></div>
+
+            <!-- EMPTY STATE -->
+            <div
+                id="empty-state"
+                class="empty-state"
+                style="display: none;"
+            >
+
                 <i class="fa-solid fa-book-open"></i>
-                <p>Você ainda não adicionou nenhum livro à sua biblioteca.</p>
-                <a href="biblioteca.html" class="btn-empty-state">Explorar Livros</a>
+
+                <p>
+                    Você ainda não adicionou nenhum livro
+                    à sua biblioteca.
+                </p>
+
+                <a
+                    href="{% url 'biblioteca' %}"
+                    class="btn-empty-state"
+                >
+                    Explorar Livros
+                </a>
+
             </div>
 
         </div>
+
     </section>
 
+    <!-- BOTÃO TOPO -->
+    <a href="#topo">
 
+        <button
+            class="button-top"
+            id="voltar-topo"
+        >
 
-        <a href = "#topo"><button class="button-top" id="voltar-topo" >
-    <svg class="svgIcon" viewBox="0 0 384 512">
-        <path
-        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-        ></path>
-    </svg>
-    </button></a>
+            <svg
+                class="svgIcon"
+                viewBox="0 0 384 512"
+            >
+
+                <path
+                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
+                ></path>
+
+            </svg>
+
+        </button>
+
+    </a>
+
 </main>
 
-        
-        <footer class="footer">
-            <div class="footer-container">
+{% endblock %}
 
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="biblioteca.html">Biblioteca</a>
-                    <a href="comunidade.html">Comunidades</a>
-                </div>
-
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
-            </div>
-        </footer>
-        <hr class="footer-bottom-line">
-        <script src="js/index.js"></script>
-        <script src="js/biblioteca.js"></script>
-        <script src="js/navbar.js"></script>
-
-    </body>
-
-</html>
+{% block extra_js %}
+<script src="{% static 'js/index.js' %}"></script>
+<script src="{% static 'js/biblioteca.js' %}"></script>
+{% endblock %}

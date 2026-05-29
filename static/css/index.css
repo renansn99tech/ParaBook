@@ -115,12 +115,25 @@ main hr{
 /* ===============================
    TITULO
 ================================= */
+.titulo {
+    position: relative;
+    min-height: 100vh;
 
-.titulo{
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
+
+    text-align: center;
+    color: #fff;
+
+    background: url('../img/hero-bg.jpg') no-repeat center center/cover;
 }
+
+.hero-section {
+    background: url('../img/hero-bg.jpg') no-repeat center center/cover;
+}
+
 
 .titulo h2{
     text-align: center;
@@ -195,6 +208,12 @@ main hr{
     margin-bottom: 100px;
 }
 
+.card-titulo {
+    font-size: 1.2rem;
+    text-align: center;
+    font-weight: 600;
+}
+
 .card-novo {
     padding: 2rem;
     background: rgba(255,255,255,0.03);
@@ -258,7 +277,7 @@ main hr{
 }
 
 .card-carousel .card {
-    position: absolute; /* OBRIGATÓRIO */
+    position: absolute;
 
     width: 280px;
     height: 400px;
@@ -276,7 +295,6 @@ main hr{
 
     transition: all 0.4s ease;
 
-    /* efeito visual */
     filter: blur(1px);
     opacity: 0.5;
 }
@@ -288,31 +306,26 @@ main hr{
     z-index: 10;
 }
 
-.card:nth-of-type(1) .image-container {
+/* ===== IMAGENS FIXAS (CORRETO) ===== */
+
+.card-1 .image-container {
     background-image: url("../livros/CAPAS-NOVAS/amareservir.-fotor-enhance-2026042993542.jpg");
 }
 
-.card:nth-of-type(2) .image-container {
+.card-2 .image-container {
     background-image: url("../livros/CAPAS-NOVAS/arepublica.-fotor-enhance-2026042991821.jpg");
 }
 
-.card:nth-of-type(3) .image-container {
+.card-3 .image-container {
     background-image: url("../livros/CAPAS-NOVAS/arevoluçãodosbichos.-fotor-enhance-2026042993101.jpg");
 }
 
-.card:nth-of-type(4) .image-container {
+.card-4 .image-container {
     background-image: url("../livros/CAPAS-NOVAS/alienista.-fotor-enhance-2026042992344.jpg");
 }
 
-.card:nth-of-type(5) .image-container {
-    background-image: url("../livros/CAPAS-NOVAS/introduçãoahistoriadafilosofiaantiga.-fotor-enhance-2026042992008.jpg");
-}
-.card-carousel.smooth-return .card {
-    transition: all 0.5s ease;
-}
-
 .card-carousel .card:hover {
-    transform: scale(1.05);
+    z-index: 20;
 }
 
 .carousel-buttons {
@@ -341,8 +354,6 @@ main hr{
     justify-content: center;
 
     cursor: pointer;
-    backdrop-filter: blur(10px);
-    transition: 0.3s;
 }
 
 .carousel-btn:hover {

@@ -1,87 +1,23 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends 'base.html' %}
+{% load static %}
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/acesso-comunidade.css">
-        <link rel="stylesheet" href="css/navbar.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    </head>
+{% block title %} ParaBook{% endblock %}
 
-    <body>
+{% block content %}
 
-        <header>
-            <nav class="container nav">
+<section class="comunidades-salvas">
+    <h3>Comunidades que você participa</h3>
 
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>               
-                </ul>
-            </nav>
-        </header>
-    <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
-
-        <main>
-
-            <!-- COMUNIDADES SALVAS -->
-            <section class="comunidades-salvas">
-                <h3>Comunidades que você participa</h3>
-                <div id="lista-comunidades-salvas"></div>
-            </section>
-
-        </main>
-        
-        <footer class="footer">
-            <div class="footer-container">
-
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="biblioteca.html">Biblioteca</a>
-                    <a href="comunidade.html">Comunidades</a>
-                </div>
-
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
-                    </div>
-                </div>
-
+    <div id="lista-comunidades-salvas">
+        {% for comunidade in comunidades %}
+            <div class="card">
+                <h4>{{ comunidade.nome }}</h4>
+                <p>{{ comunidade.descricao }}</p>
             </div>
+        {% empty %}
+            <p>Você ainda não participa de nenhuma comunidade.</p>
+        {% endfor %}
+    </div>
+</section>
 
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
-            </div>
-        </footer>
-        <hr class="footer-bottom-line">
-    <script src="js/comunidade.js"></script>
-    <script src="js/index.js"></script>
-    <script src="js/navbar.js"></script> 
-    </body>
-</html>
+{% endblock %}

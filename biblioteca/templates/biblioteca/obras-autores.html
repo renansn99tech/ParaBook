@@ -2,22 +2,59 @@
 {% load static %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 <link rel="stylesheet" href="{% static 'css/obras-autores.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<section class="form-container">
+<main>
 
+<section class="form-container">
     <div class="form-box">
 
         <h1>Envie sua obra</h1>
+        <p>Compartilhe seu livro com a comunidade ParaBook</p>
 
         <form method="POST" enctype="multipart/form-data">
-
             {% csrf_token %}
 
-            {{ form.as_p }}
+            <div class="form-group">
+                {{ form.nome.label_tag }}
+                {{ form.nome }}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+            </div>
+
+            <div class="form-group">
+                {{ form.titulo.label_tag }}
+                {{ form.titulo }}
+            </div>
+
+            <div class="form-group">
+                {{ form.categoria.label_tag }}
+                {{ form.categoria }}
+            </div>
+
+            <div class="form-group">
+                {{ form.descricao.label_tag }}
+                {{ form.descricao }}
+            </div>
+
+            <div class="form-group">
+                {{ form.arquivo.label_tag }}
+                {{ form.arquivo }}
+                <div id="fileName" class="file-name"></div>
+            </div>
+
+            <div class="form-group checkbox">
+                {{ form.autor }}
+                {{ form.autor.label_tag }}
+            </div>
 
             <button type="submit" class="submit-btn">
                 Enviar obra
@@ -26,8 +63,15 @@
         </form>
 
     </div>
-
 </section>
+
+</main>
 
 {% endblock %}
 
+
+{% block extra_js %}
+<script src="{% static 'js/obras-autores.js' %}"></script>
+<script src="{% static 'js/index.js' %}"></script>
+<script src="{% static 'js/navbar.js' %}"></script>
+{% endblock %}

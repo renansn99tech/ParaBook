@@ -1,122 +1,156 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ParaBook</title>
+{% extends 'base.html' %}
+{% load static %}
 
-    <link rel="icon" href="img/favicon.ico">
-    <link rel="stylesheet" href="css/conteudo-comunidade.css">
-    <link rel="stylesheet" href="css/navbar.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-</head>
+{% block title %}
+{{ comunidade.nome }}
+{% endblock %}
 
-<body id="topo">
+{% block extra_css %}
 
+<link rel="stylesheet"
+    href="{% static 'css/conteudo-comunidade.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+<main id="topo">
+
+    <!-- OVERLAY -->
     <div id="welcome-overlay">
-    <div class="welcome-content">
-        <!--<img src="img/bem-vindo-comunidade.jpg" alt="Bem-vindo">-->
-        <h1 id="welcome-text"></h1>
-    </div>
-</div>
 
-<header>
-    <nav class="container nav">
+        <div class="welcome-content">
 
-        <div class="logo-container">
-            <img src="img/logo-nova.png" alt="Logo ParaBook" class="logo-img">
-            <h1 class="logo">
-                <span class="para">Para</span><span class="book">Book</span>
+            <h1 id="welcome-text">
+
+                Bem-vindo à comunidade
+                {{ comunidade.nome }}
+
             </h1>
+
         </div>
 
-        <ul class="menu">
-            <li><a href="index.html">Início</a></li>
-            <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-            <li><a href="comunidade.html">Comunidades</a></li>
-            <li><a href="sobre.html">Sobre</a></li>
-            <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>   
-        </ul>
-
-    </nav>
-</header>
-                        <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
-
-<main>
-
-<section class="banner-comunidade">
-    <h2 id="titulo-comunidade"></h2>
-    <p id="descricao-comunidade"></p>
-</section>
-
-<section class="posts-section">
-    <h3>Postagens</h3>
-<div class="search-box">
-    <input 
-        type="text" 
-        id="search-posts" 
-        placeholder="Buscar posts..."
-        oninput="filtrarPosts()"
-    >
-</div>
-    <div id="lista-posts"></div>
-</section>
-
-<section class="post-form-container">
-    <h3>Adicionar postagem</h3>
-
-    <div class="form-group">
-        <label for="titulo-post">Título</label>
-        <input id="titulo-post" type="text">
     </div>
 
-    <div class="form-group">
-        <label for="texto-post">Mensagem</label>
-        <textarea id="texto-post"></textarea>
-    </div>
+    <!-- BANNER -->
+    <section class="banner-comunidade">
 
-    <button class="btn-publicar" onclick="criarPost()">Publicar</button>
-</section>
+        <h2>
+            {{ comunidade.nome }}
+        </h2>
+
+        <p>
+            {{ comunidade.descricao }}
+        </p>
+
+    </section>
+
+    <!-- POSTS -->
+    <section class="posts-section">
+
+        <h3>
+            Postagens
+        </h3>
+
+        <!-- BUSCA -->
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="search-posts"
+                placeholder="Buscar posts..."
+                oninput="filtrarPosts()"
+            >
+
+        </div>
+
+        <!-- LISTA POSTS -->
+        <div id="lista-posts">
+
+            {% for post in posts %}
+
+                {% include 'partials/card_post.html' %}
+
+            {% empty %}
+
+                <p>
+                    Nenhuma postagem encontrada.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    <!-- FORM POST -->
+    {% if user.is_authenticated %}
+
+    <section class="post-form-container">
+
+        <h3>
+            Adicionar postagem
+        </h3>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label for="titulo-post">
+                    Título
+                </label>
+
+                <input
+                    id="titulo-post"
+                    type="text"
+                    name="titulo"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="texto-post">
+                    Mensagem
+                </label>
+
+                <textarea
+                    id="texto-post"
+                    name="conteudo"
+                ></textarea>
+
+            </div>
+
+            <button
+                class="btn-publicar"
+                type="submit"
+            >
+                Publicar
+            </button>
+
+        </form>
+
+    </section>
+
+    {% else %}
+
+    <p>
+        Faça login para publicar.
+    </p>
+
+    {% endif %}
 
 </main>
 
-        <footer class="footer">
-            <div class="footer-container">
+{% endblock %}
 
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
-                </div>
+{% block extra_js %}
 
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="biblioteca.html">Biblioteca</a>
-                    <a href="comunidade.html">Comunidades</a>
-                </div>
+<script src="{% static 'js/comunidade.js' %}"></script>
 
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
-                    </div>
-                </div>
+<script src="{% static 'js/index.js' %}"></script>
 
-            </div>
+{% endblock %}
 
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
-            </div>
-        </footer>
-<script src="js/script.js"></script>
-<script src="js/index.js"></script>
-<script src="js/navbar.js"></script>
-
-</body>
-</html>

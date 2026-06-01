@@ -1,235 +1,456 @@
+
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ParaBook</title>
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-    <link rel="stylesheet" href="css/sobre.css">
-    <link rel="stylesheet" href="css/navbar.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    <title>Sobre | ParaBook</title>
+
+    <link rel="icon"
+        type="image/x-icon"
+        href="{% static 'img/favicon.ico' %}">
+
+    <link rel="stylesheet"
+        href="{% static 'css/sobre.css' %}">
+
+    <link rel="stylesheet"
+        href="{% static 'css/navbar.css' %}">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
 
 <body id="topo">
 
-        <header>
-            <nav class="container nav">
+    <!-- HEADER -->
+    <header>
 
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
+        <nav class="container nav">
 
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>            
-                </ul>
-            </nav>
-        </header>
-                <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
+            <div class="logo-container">
 
-    <!-- espaço para falar em tópicos sobre o projeto -->
-    <main class="container">
-        <section class="sobre-conteudo">
+                <img src="{% static 'img/logo-nova.png' %}"
+                    alt="Logo Parabook"
+                    class="logo-img">
 
-            <!-- <div class="fade-section">
-            <h2>Quem somos</h2>
-            <p>
-                Somos estudantes do curso Full Stack do Senac de Belém-Pará,
-                Pensando em criar uma plataforma de leitura digital intuitiva, desenvolvemos o ParaBook.
-                Nosso primeiro projeto grande foi pensado para ser um ambiente de leitura e troca de experiências,
-                oferecendo uma facilidade na navegação e no acesso aos livros e comunidades.
-            </p>
-            </div> -->
+                <h1 class="logo">
+                    <span class="para">Para</span>
+                    <span class="book">Book</span>
+                </h1>
 
-            <article class="fade-section">
-                <h2>Nossa missão</h2>
-                <div class="card-image-wrapper">
-                    <img src="img/biblioteca-antiga.jpg" alt="Imagem Biblioteca Antiga" class="card-img">
-                </div>
-                <p>
-                    Incentivar o hábito da leitura de obras de dominio público,
-                    criar uma comunidade que interaja entre si e permita que cada usuário sua própria biblioteca personalizada com seu gosto.
-                    Possibilitando maior diversidade de leitura.
-                </p>
-            </article>
-
-            <article class="fade-section">
-                <h2>O que você encontra aqui</h2>
-                <ul>
-                    <li><i class="fa-solid fa-book"></i> Acervo de Obras Clássicas</li>
-                    <li><i class="fa-solid fa-feather-pointed"></i> Grandes Obras Literárias</li>
-                    <li><i class="fa-solid fa-bookmark"></i> Biblioteca Particular Com Possibilidade de Leitura</li>
-                </ul>
-            </article>
-
-            <!-- <div class="fade-section">
-                <h2>Por que o ParaBook?</h2>
-                <p>
-                    Acreditamos que por meio da leitura, e troca de experiências de obras clássicas, é possível
-                    Crescer culturalmente e intelectualmente. Por conta disso, criamos essa plataforma digital que
-                    Permite mais simplicidade e facilidade de uso.
-                </p>
             </div>
 
-            <div class="fade-section">
-                <h2>Sobre o projeto</h2>
-                <p>
-                    O ParaBook representa nosso projeto web, realizado em equipe,  
-                    Servindo como prática do nosso aprendizado de boas práticas em HTML,
-                    CSS, JavaScript e armazenamento de dados em uma aplicação real e escalável.
-                </p>
-            </div> -->
+            <ul class="menu">
 
-            <!-- Seção: Por que o ParaBook -->
-            <article class="scroll-section">
-                <!-- Texto que corre ao fundo -->
-                <div class="scroll-ticker">
-                    <span class="ticker-item">POR QUE O PARABOOK?</span>
+                <li>
+                    <a href="{% url 'home' %}">
+                        Início
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{% url 'biblioteca' %}">
+                        Meus Livros
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{% url 'comunidades' %}">
+                        Comunidades
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{% url 'sobre' %}">
+                        Sobre
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+
+                    <li>
+                        <a href="{% url 'perfil' %}">
+                            Perfil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'logout' %}">
+                            <button class="login-btn">
+                                Sair
+                            </button>
+                        </a>
+                    </li>
+
+                {% else %}
+
+                    <li>
+                        <a href="{% url 'login' %}">
+                            <button class="login-btn">
+                                Entrar
+                            </button>
+                        </a>
+                    </li>
+
+                {% endif %}
+
+                <li>
+                    <button id="theme-toggle"
+                        class="login-btn">
+                        🌙
+                    </button>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </header>
+
+    <!-- NAVBAR MOBILE -->
+    <div id="mobile-navbar-container"></div>
+
+    <!-- MAIN -->
+    <main class="container">
+
+        <section class="sobre-conteudo">
+
+            <!-- MISSÃO -->
+            <article class="fade-section">
+
+                <h2>Nossa missão</h2>
+
+                <div class="card-image-wrapper">
+
+                    <img src="{% static 'img/biblioteca-antiga.jpg' %}"
+                        alt="Imagem Biblioteca Antiga"
+                        class="card-img">
+
                 </div>
-                
-                <div class="content-wrapper">
-                    <div class="glass-feature-card">
-                        <div class="card-icon">🚀</div>
-                        <h3>Inovação em Leitura</h3>
-                        <p>Transformamos a forma como você consome conhecimento digital com uma interface pensada na sua produtividade.</p>
-                    </div>
-                    <div class="glass-feature-card">
-                        <div class="card-icon">🧠</div>
-                        <h3>Foco e Simplicidade</h3>
-                        <p>Implementamos conceitos de leitura dinâmica para otimizar sua retenção de conteúdo e finalizar leituras mais eficientemente.</p>
-                    </div>
-                </div>
+
+                <p>
+                    Incentivar o hábito da leitura de obras de domínio público,
+                    criar uma comunidade interativa e permitir que cada usuário
+                    construa sua própria biblioteca personalizada.
+                </p>
+
             </article>
 
-            <!-- Seção: Sobre o Projeto -->
+            <!-- RECURSOS -->
+            <article class="fade-section">
+
+                <h2>O que você encontra aqui</h2>
+
+                <ul>
+
+                    <li>
+                        <i class="fa-solid fa-book"></i>
+                        Acervo de Obras Clássicas
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-feather-pointed"></i>
+                        Grandes Obras Literárias
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-bookmark"></i>
+                        Biblioteca Particular com Sistema de Leitura
+                    </li>
+
+                </ul>
+
+            </article>
+
+            <!-- DIFERENCIAIS -->
+            <article class="scroll-section">
+
+                <div class="scroll-ticker">
+
+                    <span class="ticker-item">
+                        POR QUE O PARABOOK?
+                    </span>
+
+                </div>
+
+                <div class="content-wrapper">
+
+                    <div class="glass-feature-card">
+
+                        <div class="card-icon">
+                            🚀
+                        </div>
+
+                        <h3>Inovação em Leitura</h3>
+
+                        <p>
+                            Interface moderna e intuitiva voltada
+                            para produtividade e foco na leitura.
+                        </p>
+
+                    </div>
+
+                    <div class="glass-feature-card">
+
+                        <div class="card-icon">
+                            🧠
+                        </div>
+
+                        <h3>Foco e Simplicidade</h3>
+
+                        <p>
+                            Experiência pensada para facilitar o acesso
+                            ao conhecimento sem distrações.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+            <!-- SOBRE O PROJETO -->
             <article class="about-split-section">
+
                 <div class="about-container">
+
                     <div class="about-text">
-                        <h2 class="gradient-text">Sobre o Projeto</h2>
-                        <p>O ParaBook é o resultado de uma jornada intensa no SENAC, unindo arquitetura web robusta e design imersivo.</p>
+
+                        <h2 class="gradient-text">
+                            Sobre o Projeto
+                        </h2>
+
+                        <p>
+                            O ParaBook é um projeto desenvolvido no SENAC
+                            com foco em leitura digital, comunidades
+                            literárias e experiência moderna de usuário.
+                        </p>
+
                         <div class="tech-tags">
+
                             <span>HTML5</span>
                             <span>CSS3</span>
+                            <span>JavaScript</span>
+                            <span>Django</span>
                             <span>Full Stack</span>
+
                         </div>
+
                     </div>
+
                     <div class="about-visual">
                         <div class="floating-circle"></div>
                     </div>
+
                 </div>
+
             </article>
 
+            <!-- ROADMAP -->
             <article class="fade-section">
-                <h2 class="timeline-title">Roadmap ParaBook 2026</h2>
+
+                <h2 class="timeline-title">
+                    Roadmap ParaBook 2026
+                </h2>
+
                 <div class="timeline-container">
+
+                    <!-- ITEM -->
                     <div class="timeline-item done">
+
                         <div class="timeline-dot"></div>
+
                         <div class="timeline-content">
-                            <span class="date">MARÇO 2026</span>
-                            <h3>Estrutura Base & Design</h3>
-                            <p>Desenvolvimento da interface responsiva e identidade visual minimalista.</p>
+
+                            <span class="date">
+                                MARÇO 2026
+                            </span>
+
+                            <h3>
+                                Estrutura Base & Design
+                            </h3>
+
+                            <p>
+                                Desenvolvimento da interface responsiva
+                                e identidade visual do projeto.
+                            </p>
+
                         </div>
+
                     </div>
 
+                    <!-- ITEM -->
                     <div class="timeline-item active">
+
                         <div class="timeline-dot"></div>
+
                         <div class="timeline-content">
-                            <span class="date">JUNHO 2026</span>
-                            <h3>Lançamento Alpha (Projeto Final)</h3>
-                            <p>Apresentação da plataforma com integração de banco de dados e autenticação.</p>
+
+                            <span class="date">
+                                JUNHO 2026
+                            </span>
+
+                            <h3>
+                                Lançamento Alpha
+                            </h3>
+
+                            <p>
+                                Integração com banco de dados,
+                                autenticação e sistema de comunidades.
+                            </p>
+
                         </div>
+
                     </div>
 
+                    <!-- ITEM -->
                     <div class="timeline-item future">
+
                         <div class="timeline-dot"></div>
+
                         <div class="timeline-content">
-                            <span class="date">JULHO 2026+</span>
-                            <h3>Expansão de Comunidades</h3>
-                            <p>Implementação de fóruns em tempo real e clubes de leitura por gênero.</p>
+
+                            <span class="date">
+                                JULHO 2026+
+                            </span>
+
+                            <h3>
+                                Expansão das Comunidades
+                            </h3>
+
+                            <p>
+                                Fóruns em tempo real, clubes de leitura
+                                e recursos sociais avançados.
+                            </p>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </article>
 
         </section>
 
-        <a href = "#topo"><button class="button-top" id="voltar-topo" >
-    <svg class="svgIcon" viewBox="0 0 384 512">
-        <path
-        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-        ></path>
-    </svg>
-    </button></a>
-    
+        <!-- BOTÃO TOPO -->
+        <a href="#topo">
+
+            <button class="button-top"
+                id="voltar-topo">
+
+                <svg class="svgIcon"
+                    viewBox="0 0 384 512">
+
+                    <path
+                        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z">
+                    </path>
+
+                </svg>
+
+            </button>
+
+        </a>
+
     </main>
 
-        <script src="js/footer.js"></script>
-        <script src="js/navbar.js"></script>
-        
-        <footer class="footer">
-            <div class="footer-container">
+    <!-- FOOTER -->
+    <footer class="footer">
 
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
-                </div>
+        <div class="footer-container">
 
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="biblioteca.html">Biblioteca</a>
-                    <a href="comunidade.html">Comunidades</a>
-                </div>
+            <div class="footer-brand">
 
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
-                    </div>
+                <h2>ParaBook</h2>
+
+                <p>
+                    O melhor site de livros.
+                </p>
+
+            </div>
+
+            <div class="footer-links">
+
+                <h4>Links</h4>
+
+                <a href="{% url 'home' %}">
+                    Início
+                </a>
+
+                <a href="{% url 'biblioteca' %}">
+                    Biblioteca
+                </a>
+
+                <a href="{% url 'comunidades' %}">
+                    Comunidades
+                </a>
+
+            </div>
+
+            <div class="footer-social">
+
+                <h4>Redes</h4>
+
+                <div class="icons">
+
+                    <i class="fa-brands fa-instagram"></i>
+                    <i class="fa-brands fa-facebook"></i>
+                    <i class="fa-brands fa-github"></i>
+
                 </div>
 
             </div>
 
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
-            </div>
-        </footer>
-        <hr class="footer-bottom-line">
+        </div>
 
-    <!-- script que faz o efeito de scroll da página-->
+        <div class="footer-bottom">
+
+            <p>
+                © 2026. Todos os direitos reservados.
+            </p>
+
+        </div>
+
+    </footer>
+
+    <hr class="footer-bottom-line">
+
+    <!-- SCRIPTS -->
+    <script src="{% static 'js/footer.js' %}"></script>
+
+    <script src="{% static 'js/navbar.js' %}"></script>
+
+    <script src="{% static 'js/index.js' %}"></script>
+
+    <!-- EFEITO SCROLL -->
     <script>
+
         const sections = document.querySelectorAll(".fade-section");
 
-            function mostrarAoRolar() {
-                sections.forEach(section => {
-                    const topoTela = window.innerHeight;
-                    const topoElemento = section.getBoundingClientRect().top;
+        function mostrarAoRolar() {
 
-                    if (topoElemento < topoTela - 100) {
-                        section.classList.add("show");
-                    }
-                });
-            }
+            sections.forEach(section => {
 
-            window.addEventListener("scroll", mostrarAoRolar);
-            window.addEventListener("load", mostrarAoRolar);
+                const topoTela = window.innerHeight;
+                const topoElemento = section.getBoundingClientRect().top;
+
+                if (topoElemento < topoTela - 100) {
+                    section.classList.add("show");
+                }
+
+            });
+
+        }
+
+        window.addEventListener("scroll", mostrarAoRolar);
+        window.addEventListener("load", mostrarAoRolar);
+
     </script>
-    <script src="js/index.js"></script>
+
 </body>
 
 </html>

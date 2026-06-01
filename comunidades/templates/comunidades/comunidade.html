@@ -1,157 +1,83 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends 'base.html' %}
+{% load static %}
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/comunidade.css">
-        <link rel="stylesheet" href="css/navbar.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    </head>
+{% block title %}
+Comunidades
+{% endblock %}
 
-    <body id="topo">
+{% block extra_css %}
+<link rel="stylesheet"
+    href="{% static 'css/comunidade.css' %}">
+{% endblock %}
 
-        <header>
-            <nav class="container nav">
+{% block content %}
 
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>            
-                </ul>
-            </nav>
-        </header>
-                                <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
+<main id="topo">
 
-        <main>
+    <!-- CONTAINER DE COMUNIDADES -->
+    <section class="pagina-comunidade">
 
-            <!-- Container de Comunidades-->
-            <section class="pagina-comunidade">
-                <h1 class="pagina-comunidade">Comunidades</h1>
+        <h1 class="pagina-comunidade">
+            Comunidades
+        </h1>
 
-                <h3>Sinta-se livre para escolher uma comunidade para participar!</h3>
+        <h3>
+            Sinta-se livre para escolher
+            uma comunidade para participar.
+        </h3>
 
-                <p>Aqui você poderá fazer amigos e se informar sobre discussões relevantes ao seu interesse.</p>
+        <p>
+            Aqui você poderá fazer amigos
+            e participar de discussões relevantes
+            ao seu interesse.
+        </p>
 
-                <div class="grid">
+        <div class="grid">
 
-                    <!-- Card 1 -->
-                    <div class="card">
-                        <img src="livros/capas_comunidades/imagemfilosofia.png" alt="Comunidade de Filosofia">
-                        <div class="card-content">
-                            <h3>Filosofia</h3>
-                            <p>Discussões sobre ideias e pensamentos filosóficos.</p>
-                            <!-- Botão redireciona o usuário para a página interna da comunidade -->
-                            <button onclick="entrarComunidade('filosofia')" class="btn">Entrar</button>
-                        </div>
-                    </div>
+            {% for comunidade in comunidades %}
 
-                    <!-- Card 2 -->
-                    <div class="card">
-                        <img src="livros/capas_comunidades/imagemliteratura.png" alt="Comunidade de Literatura">
-                        <div class="card-content">
-                            <h3>Literatura</h3>
-                            <p>Compartilhe opiniões sobre livros e autores famosos.</p>
-                            <!-- Botão redireciona o usuário para a página interna da comunidade -->
-                            <button onclick="entrarComunidade('literatura')" class="btn">Entrar</button>
-                        </div>
-                    </div>
+                {% include 'partials/card_comunidade.html' %}
 
-                    <!-- Card 3 -->
-                    <div class="card">
-                        <img src="livros/capas_comunidades/imagemreligiosa.png" alt="Comunidade Religiosa">
-                        <div class="card-content">
-                            <h3>Religiosos</h3>
-                            <p>Espaço para conteúdos e reflexões espirituais.</p>
-                            <!-- Botão redireciona o usuário para a página interna da comunidade -->
-                            <button onclick="entrarComunidade('religioso')" class="btn">Entrar</button>
-                        </div>
-                    </div>
-                        
-                    <div class="card">
-                            <img src="livros/capas_comunidades/imagemexatas.png" alt="Comunidade Exatas">
-                            <div class="card-content">
-                            <h3>Ciencias Exatas</h3>
-                            <p>Espaço para conteúdos de Ciencias Exatas.</p>
-                        
-                            <button onclick="entrarComunidade('ciencias_exatas')" class="btn">Entrar</button>
-                        </div>
-                    </div>
+            {% empty %}
 
-                    <div class="card">
-                        <img src="livros/capas_comunidades/imageminfantis.png" alt="Comunidade Infantis">
-                        <div class="card-content">
-                            <h3>Livros infantis</h3>
-                            <p>Espaço  para conversar sobre os livros infantis .</p>
+                <p>
+                    Nenhuma comunidade encontrada.
+                </p>
 
-                            <button onclick="entrarComunidade('infantil')" class="btn">Entrar</button>
-                        </div>
-                    </div>
+            {% endfor %}
 
+        </div>
 
-                </div>
-            </section>
+    </section>
 
-                    <a href = "#topo"><button class="button-top" id="voltar-topo" >
-    <svg class="svgIcon" viewBox="0 0 384 512">
-        <path
-        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-        ></path>
-    </svg>
-    </button></a>
-    
-        </main>
+    <!-- BOTÃO TOPO -->
+    <a href="#topo">
 
-        <script src="js/comunidade.js"></script>
-            
-        <footer class="footer">
-            <div class="footer-container">
+        <button
+            class="button-top"
+            id="voltar-topo"
+        >
 
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
-                </div>
+            <svg
+                class="svgIcon"
+                viewBox="0 0 384 512"
+            >
+                <path d="M214.6 41.4..."></path>
+            </svg>
 
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="biblioteca.html">Biblioteca</a>
-                    <a href="#">Comunidades</a>
-                </div>
+        </button>
 
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
-                    </div>
-                </div>
+    </a>
 
-            </div>
+</main>
 
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
-            </div>
-        </footer>
-        <hr class="footer-bottom-line">
-        <script src="js/index.js"></script> 
-        <script src="js/navbar.js"></script> 
-    </body>
-</html>
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/comunidade.js' %}"></script>
+
+<script src="{% static 'js/index.js' %}"></script>
+
+{% endblock %}
+

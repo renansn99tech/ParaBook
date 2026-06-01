@@ -1,13 +1,19 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-    <link rel="stylesheet" href="css/tela-login.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <title>Login | ParaBook</title>
+
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+
+    <link rel="stylesheet" href="{% static 'css/tela-login.css' %}">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
 
 <body>
@@ -15,7 +21,13 @@
     <header>
         <nav class="container nav">
             <ul class="menu">
-                <li><a href="index.html"><button class="voltar-btn">Voltar ao Menu</button></a></li>
+                <li>
+                    <a href="{% url 'home' %}">
+                        <button class="voltar-btn">
+                            Voltar ao Menu
+                        </button>
+                    </a>
+                </li>
             </ul>
         </nav>
     </header>
@@ -24,105 +36,212 @@
 
         <!-- IMAGEM -->
         <section class="image-side">
-            <img src="img/login.jpg" alt="Imagem de login">
+            <img src="{% static 'img/login.jpg' %}" alt="Imagem de login">
         </section>
 
         <!-- LOGIN -->
         <section class="form-side login-form">
-            <form id="formLogin" novalidate>
+
+            <form method="POST" action="{% url 'login' %}" novalidate>
+
+                {% csrf_token %}
+
                 <h2>Login</h2>
 
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert-message">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 <div class="input-box">
-                    <input type="text" id="loginUser" required placeholder=" ">
+                    <input 
+                        type="text"
+                        name="username"
+                        required
+                        placeholder=" "
+                    >
                     <span>Usuário</span>
                 </div>
 
-                <div class="input-box">
-                    <input type="email" id="loginEmail" required placeholder=" ">
-                    <span>E-mail</span>
-                </div>
-
                 <div class="input-box password-box">
-                    <input type="password" id="loginPassword" required placeholder=" ">
+                    <input
+                        type="password"
+                        name="password"
+                        id="loginPassword"
+                        required
+                        placeholder=" "
+                    >
                     <span>Senha</span>
-                    <button type="button" class="toggle-password" data-target="loginPassword">👁</button>
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="loginPassword"
+                    >
+                        👁
+                    </button>
                 </div>
 
                 <div class="button-box">
-                    <button class="submit-btn" id="btnLogin">Entrar</button>
+                    <button type="submit" class="submit-btn">
+                        Entrar
+                    </button>
                 </div>
 
                 <div class="input-box">
-                    <p>Esqueceu <a href="#" id="showForgot">nome de usuário/senha?</a></p>
+                    <p>
+                        Esqueceu a senha?
+                        <a href="{% url 'password_reset' %}">
+                            Recuperar acesso
+                        </a>
+                    </p>
                 </div>
 
                 <div class="account-box">
-                    <p>Não tem conta? <a href="#" id="showRegister">Crie sua Conta →</a></p>
+                    <p>
+                        Não tem conta?
+                        <a href="#" id="showRegister">
+                            Crie sua Conta →
+                        </a>
+                    </p>
                 </div>
+
             </form>
         </section>
 
         <!-- REGISTRO -->
         <section class="form-side register-form">
-            <form id="formRegister" novalidate>
+
+            <form method="POST" action="{% url 'register' %}" novalidate>
+
+                {% csrf_token %}
+
                 <h2>Criar Conta</h2>
 
                 <div class="input-box">
-                    <input type="text" id="registerUser" required placeholder=" ">
+                    <input
+                        type="text"
+                        name="username"
+                        required
+                        placeholder=" "
+                    >
                     <span>Nome de Usuário</span>
                 </div>
 
                 <div class="input-box">
-                    <input type="email" id="registerEmail" required placeholder=" ">
+                    <input
+                        type="email"
+                        name="email"
+                        required
+                        placeholder=" "
+                    >
                     <span>Email</span>
                 </div>
 
                 <div class="input-box password-box">
-                    <input type="password" id="registerPassword" required placeholder=" ">
+                    <input
+                        type="password"
+                        name="password1"
+                        id="registerPassword"
+                        required
+                        placeholder=" "
+                    >
+
                     <span>Senha</span>
-                    <button type="button" class="toggle-password" data-target="registerPassword">👁</button>
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="registerPassword"
+                    >
+                        👁
+                    </button>
                 </div>
 
                 <div class="input-box password-box">
-                    <input type="password" id="confirmPassword" required placeholder=" ">
+                    <input
+                        type="password"
+                        name="password2"
+                        id="confirmPassword"
+                        required
+                        placeholder=" "
+                    >
+
                     <span>Confirmar Senha</span>
-                    <button type="button" class="toggle-password" data-target="confirmPassword">👁</button>
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="confirmPassword"
+                    >
+                        👁
+                    </button>
                 </div>
 
                 <div class="button-box">
-                    <button class="submit-btn" id="btnRegister">Cadastrar</button>
+                    <button type="submit" class="submit-btn">
+                        Cadastrar
+                    </button>
                 </div>
 
                 <div class="account-box">
-                    <p>Já tem conta? <a href="#" id="showLogin">Entrar →</a></p>
+                    <p>
+                        Já tem conta?
+                        <a href="#" id="showLogin">
+                            Entrar →
+                        </a>
+                    </p>
                 </div>
+
             </form>
         </section>
 
-        <!-- RECUPERAR -->
+        <!-- RECUPERAR SENHA -->
         <section class="form-side forgot-form">
-            <form id="formRecover" novalidate>
+
+            <form method="POST" action="{% url 'alterar_senha' %}" novalidate>
+
+                {% csrf_token %}
+
                 <h2>Recuperar Senha</h2>
 
                 <div class="input-box">
-                    <input type="email" required placeholder=" ">
+                    <input
+                        type="email"
+                        name="email"
+                        required
+                        placeholder=" "
+                    >
+
                     <span>Digite seu e-mail</span>
                 </div>
 
                 <div class="button-box">
-                    <button class="submit-btn">Enviar link</button>
+                    <button type="submit" class="submit-btn">
+                        Enviar link
+                    </button>
                 </div>
 
                 <div class="account-box">
-                    <p>Lembrou a senha? <a href="#" id="backToLogin">Entrar →</a></p>
+                    <p>
+                        Lembrou a senha?
+                        <a href="#" id="backToLogin">
+                            Entrar →
+                        </a>
+                    </p>
                 </div>
+
             </form>
         </section>
 
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="js/auth.js"></script>
+
+    <script src="{% static 'js/auth.js' %}"></script>
 
 </body>
 

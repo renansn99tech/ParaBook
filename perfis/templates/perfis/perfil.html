@@ -1,365 +1,535 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/perfil.css">
-        <link rel="stylesheet" href="css/navbar.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil | ParaBook</title>
 
-    <body id="topo">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
 
+    <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+
+<body id="topo">
+
+    <!-- HEADER -->
     <header>
-            <nav class="container nav">
+        <nav class="container nav">
 
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
+            <div class="logo-container">
+                <img src="{% static 'img/logo-nova.png' %}"
+                    alt="Logo Parabook"
+                    class="logo-img">
 
-                                        <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>            
-                </ul>
-            </nav>
-        </header>
-                <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
-        <main>
+                <h1 class="logo">
+                    <span class="para">Para</span><span class="book">Book</span>
+                </h1>
+            </div>
 
-            <!--<section class="banner">
-                <article class="container banner-content">
-                    <h2> Minha Conta</h2>
-                    <p>Aqui você tem todas informações sobre a sua conta.</p>
-                </article>
-            </section>-->
+            <ul class="menu">
 
-            <!-- ===== SEÇÃO DE PERFIL HEADER ===== -->
-            <section class="perfil-header">
-                <div class="perfil-cover"></div>
-                
-                <div class="perfil-content">
-                    <div class="perfil-avatar-section">
-                        <img src="img/user.png" alt="Avatar do Usuário" class="perfil-avatar">
-                        <button class="btn-editar-avatar" id="btnTrocarFoto">📷</button>
-                    </div>
+                <li>
+                    <a href="{% url 'home' %}">Início</a>
+                </li>
 
-                    <div class="perfil-user-info">
-                        <h1 id="nomePerfil" class="perfil-nome">João Silva</h1>
-                        <p id="userPerfil" class="perfil-username">@joaosilva</p>
-                        <p class="perfil-bio">Fasciado por leitura</p>
-                        
-                        <div class="perfil-meta">
-                            <div class="meta-item">
-                                <span class="meta-label">Membro desde</span>
-                                <span class="meta-value">Abril 2026</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Localização</span>
-                                <span class="meta-value">Belém, Pará</span>
-                            </div>
-                        </div>
+                <li>
+                    <a href="{% url 'biblioteca' %}">Meus Livros</a>
+                </li>
 
-                        <button class="btn-editar-perfil" id="btnEditarPerfil">Editar Perfil</button>
-                    </div>
-                </div>
-            </section>
+                <li>
+                    <a href="{% url 'comunidades' %}">Comunidades</a>
+                </li>
 
-            <!-- ===== SEÇÃO DE ESTATÍSTICAS ===== -->
-            <section class="perfil-stats">
-                <div class="container">
-                    <div class="stats-container">
-                        <div class="stat-box">
-                            <div class="stat-icon">📚</div>
-                            <div class="stat-info">
-                                <p class="stat-number" id="totalLidos">0</p>
-                                <p class="stat-label">Livros Lidos</p>
-                            </div>
-                        </div>
+                <li>
+                    <a href="{% url 'sobre' %}">Sobre</a>
+                </li>
 
-                        <div class="stat-box">
-                            <div class="stat-icon">📖</div>
-                            <div class="stat-info">
-                                <p class="stat-number" id="emLeitura">0</p>
-                                <p class="stat-label">Lendo Agora</p>
-                            </div>
-                        </div>
+                {% if user.is_authenticated %}
 
-                        <div class="stat-box">
-                            <div class="stat-icon">⭐</div>
-                            <div class="stat-info">
-                                <p class="stat-number" id="totalAvaliados">0</p>
-                                <p class="stat-label">Avaliados</p>
-                            </div>
-                        </div>
+                    <li>
+                        <a href="{% url 'perfil' %}">
+                            Perfil
+                        </a>
+                    </li>
 
-                        <div class="stat-box">
-                            <div class="stat-icon">👥</div>
-                            <div class="stat-info">
-                                <p class="stat-number" id="comunidades">0</p>
-                                <p class="stat-label">Comunidades</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                    <li>
+                        <a href="{% url 'logout' %}">
+                            <button class="login-btn">
+                                Sair
+                            </button>
+                        </a>
+                    </li>
 
-            <!-- ===== SEÇÃO ABAS ===== -->
-            <section class="perfil-tabs">
-                <div class="container">
-                    <div class="tabs-nav">
-                        <button class="tab-btn active" data-tab="info">ℹ️ Informações</button>
-                        <button class="tab-btn" data-tab="historico">📜 Histórico</button>
-                        <button class="tab-btn" data-tab="favoritos">❤️ Favoritos</button>
-                        <button class="tab-btn" data-tab="configuracoes">⚙️ Configurações</button>
-                        <button class="tab-btn" data-tab="autor">📚 Área do Autor</button>
-                    </div>
+                {% else %}
 
-                    <!-- TAB: INFORMAÇÕES -->
-                    <div id="info" class="tab-content active">
-                        <div class="perfil-info-grid">
-                            <div class="info-card">
-                                <h3>Gêneros Favoritos</h3>
-                                <div class="genres-list">
-                                    <span class="genre-tag">Filosofia</span>
-                                    <span class="genre-tag">Literatura</span>
-                                    <span class="genre-tag">Religioso</span>
-                                    <span class="genre-tag">Ficção</span>
-                                </div>
-                            </div>
+                    <li>
+                        <a href="{% url 'login' %}">
+                            <button class="login-btn">
+                                Entrar
+                            </button>
+                        </a>
+                    </li>
 
-                            <div class="info-card">
-                                <h3>Autores Favoritos</h3>
-                                <ul class="authors-list">
-                                    <li>Machado de Assis</li>
-                                    <li>Platão</li>
-                                    <li>Santo Agostinho</li>
-                                    <li>George Orwell</li>
-                                </ul>
-                            </div>
+                {% endif %}
 
-                            <div class="info-card full-width">
-                                <h3>Sobre Você</h3>
-                                <p class="bio-text">Sou um leitor apaixonado que adora descobrir novos livros e compartilhar minhas experiências com outras pessoas. Acredito que a leitura é uma forma poderosa de aprendizado e conexão humana.</p>
-                                <button class="btn-editar-bio" id="btnEditarBio">Trocar Biografia</button>
-                            </div>
-                        </div>
-                    </div>
+                <li>
+                    <button id="theme-toggle" class="login-btn">
+                        🌙
+                    </button>
+                </li>
 
-                    <!-- TAB: HISTÓRICO -->
-                    <div id="historico" class="tab-content">
-                        <div class="historico-list">
-                            <div class="historico-item">
-                                <div class="historico-icon">✅</div>
-                                <div class="historico-info">
-                                    <h4>Concluiu "Confissões"</h4>
-                                    <p class="historico-date">Santo Agostinho • 5 de março de 2026</p>
-                                    <div class="historico-rating">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
+            </ul>
+        </nav>
+    </header>
 
-                            <div class="historico-item">
-                                <div class="historico-icon">📖</div>
-                                <div class="historico-info">
-                                    <h4>Iniciou "A República"</h4>
-                                    <p class="historico-date">Platão • 2 de março de 2026</p>
-                                </div>
-                            </div>
+    <!-- NAVBAR MOBILE -->
+    <div id="mobile-navbar-container"></div>
 
-                            <div class="historico-item">
-                                <div class="historico-icon">💬</div>
-                                <div class="historico-info">
-                                    <h4>Deixou uma crítica em "O Alienista"</h4>
-                                    <p class="historico-date">Machado de Assis • 28 de fevereiro de 2026</p>
-                                </div>
-                            </div>
+    <main>
 
-                            <div class="historico-item">
-                                <div class="historico-icon">👥</div>
-                                <div class="historico-info">
-                                    <h4>Entrou na comunidade "Leitores de Machado"</h4>
-                                    <p class="historico-date">26 de março de 2026</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- PERFIL HEADER -->
+        <section class="perfil-header">
 
-                    <!-- TAB: FAVORITOS -->
-                    <div id="favoritos" class="tab-content">
-                        <div class="favoritos-grid">
-                            <div class="favorito-card">
-                                <div class="favorito-capa">
-                                    <i class="fa-solid fa-book"></i>
-                                </div>
-                                <div class="favorito-info">
-                                    <h4>Confissões</h4>
-                                    <p>Santo Agostinho</p>
-                                    <div class="favorito-rating">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                    </div>
-                                    <button class="btn-remover-favorito">❌ Remover</button>
-                                </div>
-                            </div>
+            <div class="perfil-cover"></div>
 
-                            <div class="favorito-card">
-                                <div class="favorito-capa">
-                                    <i class="fa-solid fa-book"></i>
-                                </div>
-                                <div class="favorito-info">
-                                    <h4>A República</h4>
-                                    <p>Platão</p>
-                                    <div class="favorito-rating">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                    </div>
-                                    <button class="btn-remover-favorito">❌ Remover</button>
-                                </div>
-                            </div>
+            <div class="perfil-content">
 
-                            <div class="favorito-card">
-                                <div class="favorito-capa">
-                                    <i class="fa-solid fa-book"></i>
-                                </div>
-                                <div class="favorito-info">
-                                    <h4>O Alienista</h4>
-                                    <p>Machado de Assis</p>
-                                    <div class="favorito-rating">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                    </div>
-                                    <button class="btn-remover-favorito">❌ Remover</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="perfil-avatar-section">
 
-                    <!-- TAB: CONFIGURAÇÕES -->
-                    <div id="configuracoes" class="tab-content">
-                        <div class="config-container">
-                            <div class="config-section">
-                                <h3>Privacidade</h3>
-                                <div class="config-item">
-                                    <label>
-                                        <input type="checkbox" checked>
-                                        <span>Perfil público</span>
-                                    </label>
-                                </div>
-                                <div class="config-item">
-                                    <label>
-                                        <input type="checkbox" checked>
-                                        <span>Permitir que outros visualizem meus livros</span>
-                                    </label><br>
-                                <button id="btnSalvarNotificacoes" class="btn-config">Salvar</button>
-                                </div>
-                            </div>
+                    {% if perfil.foto %}
+                        <img src="{{ perfil.foto.url }}"
+                            alt="Avatar do Usuário"
+                            class="perfil-avatar">
+                    {% else %}
+                        <img src="{% static 'img/user.png' %}"
+                            alt="Avatar do Usuário"
+                            class="perfil-avatar">
+                    {% endif %}
 
-                            <div class="config-section">
-                                <h3>Notificações</h3>
-                    <div class="config-item">
-                            <label>
-                                <input type="checkbox" checked>
-                                <span>Notificações de novas comunidades</span>
-                            </label>
-                        </div>
+                    <button class="btn-editar-avatar"
+                        id="btnTrocarFoto">
+                        📷
+                    </button>
 
-                        <div class="config-item">
-                            <label>
-                                <input type="checkbox" checked>
-                                <span>Notificações de comentários</span>
-                            </label>
-                        </div>
-
-                        <button id="btnSalvarNotificacoes" class="btn-config">
-                            Salvar
-                        </button>
-                    </div>
-
-                            <div class="config-section">
-                                <h3>Conta</h3>
-                                <button id="btnAlterarSenha" class="btn-config btn-light">Alterar Senha</button>
-                                <button id="btnLogout" class="btn-config btn-danger">Sair da conta</button>
-
-                                <button id="btnExcluirConta" class="btn-config btn-light">Excluir Conta</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <a href = "#topo"><button class="button-top" id="voltar-topo" >
-    <svg class="svgIcon" viewBox="0 0 384 512">
-        <path
-        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-        ></path>
-    </svg>
-    </button></a>
-
-        </main>
-        
-        <footer class="footer">
-            <div class="footer-container">
-
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
                 </div>
 
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="biblioteca.html">Biblioteca</a>
-                    <a href="comunidade.html">Comunidades</a>
-                </div>
+                <div class="perfil-user-info">
 
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
+                    <h1 class="perfil-nome">
+                        {{ user.first_name }} {{ user.last_name }}
+                    </h1>
+
+                    <p class="perfil-username">
+                        @{{ user.username }}
+                    </p>
+
+                    <p class="perfil-bio">
+                        {{ perfil.bio|default:"Apaixonado por leitura." }}
+                    </p>
+
+                    <div class="perfil-meta">
+
+                        <div class="meta-item">
+                            <span class="meta-label">
+                                Membro desde
+                            </span>
+
+                            <span class="meta-value">
+                                {{ user.date_joined|date:"F Y" }}
+                            </span>
+                        </div>
+
+                        <div class="meta-item">
+                            <span class="meta-label">
+                                Localização
+                            </span>
+
+                            <span class="meta-value">
+                                {{ perfil.localizacao|default:"Não informado" }}
+                            </span>
+                        </div>
+
                     </div>
+
+                    <button class="btn-editar-perfil"
+                        id="btnEditarPerfil">
+                        Editar Perfil
+                    </button>
+
                 </div>
 
             </div>
 
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
+        </section>
+
+        <!-- ESTATÍSTICAS -->
+        <section class="perfil-stats">
+
+            <div class="container">
+
+                <div class="stats-container">
+
+                    <div class="stat-box">
+                        <div class="stat-icon">📚</div>
+
+                        <div class="stat-info">
+                            <p class="stat-number">
+                                {{ total_lidos }}
+                            </p>
+
+                            <p class="stat-label">
+                                Livros Lidos
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-icon">📖</div>
+
+                        <div class="stat-info">
+                            <p class="stat-number">
+                                {{ lendo_agora }}
+                            </p>
+
+                            <p class="stat-label">
+                                Lendo Agora
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-icon">⭐</div>
+
+                        <div class="stat-info">
+                            <p class="stat-number">
+                                {{ total_avaliados }}
+                            </p>
+
+                            <p class="stat-label">
+                                Avaliados
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-icon">👥</div>
+
+                        <div class="stat-info">
+                            <p class="stat-number">
+                                {{ total_comunidades }}
+                            </p>
+
+                            <p class="stat-label">
+                                Comunidades
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
-        </footer>
-        <hr class="footer-bottom-line">
-        <script src="js/perfil.js"></script>
-        <script src="js/index.js"></script>
-        <script src="js/navbar.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    </body>
+
+        </section>
+
+        <!-- ABAS -->
+        <section class="perfil-tabs">
+
+            <div class="container">
+
+                <div class="tabs-nav">
+
+                    <button class="tab-btn active"
+                        data-tab="info">
+                        ℹ️ Informações
+                    </button>
+
+                    <button class="tab-btn"
+                        data-tab="historico">
+                        📜 Histórico
+                    </button>
+
+                    <button class="tab-btn"
+                        data-tab="favoritos">
+                        ❤️ Favoritos
+                    </button>
+
+                    <button class="tab-btn"
+                        data-tab="configuracoes">
+                        ⚙️ Configurações
+                    </button>
+
+                </div>
+
+                <!-- TAB INFO -->
+                <div id="info"
+                    class="tab-content active">
+
+                    <div class="perfil-info-grid">
+
+                        <div class="info-card">
+
+                            <h3>Gêneros Favoritos</h3>
+
+                            <div class="genres-list">
+
+                                {% for genero in generos_favoritos %}
+                                    <span class="genre-tag">
+                                        {{ genero.nome }}
+                                    </span>
+                                {% empty %}
+                                    <span class="genre-tag">
+                                        Nenhum gênero
+                                    </span>
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                        <div class="info-card">
+
+                            <h3>Autores Favoritos</h3>
+
+                            <ul class="authors-list">
+
+                                {% for autor in autores_favoritos %}
+                                    <li>{{ autor.nome }}</li>
+                                {% empty %}
+                                    <li>Nenhum autor favoritado.</li>
+                                {% endfor %}
+
+                            </ul>
+
+                        </div>
+
+                        <div class="info-card full-width">
+
+                            <h3>Sobre Você</h3>
+
+                            <p class="bio-text">
+                                {{ perfil.bio|default:"Nenhuma biografia cadastrada." }}
+                            </p>
+
+                            <button class="btn-editar-bio"
+                                id="btnEditarBio">
+                                Trocar Biografia
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- TAB HISTÓRICO -->
+                <div id="historico"
+                    class="tab-content">
+
+                    <div class="historico-list">
+
+                        {% for item in historico %}
+
+                            <div class="historico-item">
+
+                                <div class="historico-icon">
+                                    📖
+                                </div>
+
+                                <div class="historico-info">
+
+                                    <h4>
+                                        {{ item.titulo }}
+                                    </h4>
+
+                                    <p class="historico-date">
+                                        {{ item.data }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        {% empty %}
+
+                            <p>
+                                Nenhum histórico encontrado.
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <!-- TAB FAVORITOS -->
+                <div id="favoritos"
+                    class="tab-content">
+
+                    <div class="favoritos-grid">
+
+                        {% for livro in favoritos %}
+
+                            <div class="favorito-card">
+
+                                <div class="favorito-capa">
+
+                                    {% if livro.capa %}
+                                        <img src="{{ livro.capa.url }}"
+                                            alt="{{ livro.titulo }}">
+                                    {% else %}
+                                        <i class="fa-solid fa-book"></i>
+                                    {% endif %}
+
+                                </div>
+
+                                <div class="favorito-info">
+
+                                    <h4>
+                                        {{ livro.titulo }}
+                                    </h4>
+
+                                    <p>
+                                        {{ livro.autor }}
+                                    </p>
+
+                                    <button class="btn-remover-favorito">
+                                        ❌ Remover
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        {% empty %}
+
+                            <p>
+                                Nenhum livro favorito.
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <!-- TAB CONFIGURAÇÕES -->
+                <div id="configuracoes"
+                    class="tab-content">
+
+                    <div class="config-container">
+
+                        <div class="config-section">
+
+                            <h3>Conta</h3>
+
+                            <a href="{% url 'alterar_senha' %}">
+                                <button class="btn-config btn-light">
+                                    Alterar Senha
+                                </button>
+                            </a> 
+
+                            <a href="{% url 'logout' %}">
+                                <button class="btn-config btn-danger">
+                                    Sair da conta
+                                </button>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- BOTÃO TOPO -->
+        <a href="#topo">
+
+            <button class="button-top"
+                id="voltar-topo">
+
+                <svg class="svgIcon"
+                    viewBox="0 0 384 512">
+
+                    <path
+                        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z">
+                    </path>
+
+                </svg>
+
+            </button>
+
+        </a>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+        <div class="footer-container">
+
+            <div class="footer-brand">
+                <h2>ParaBook</h2>
+                <p>O melhor site de livros.</p>
+            </div>
+
+            <div class="footer-links">
+
+                <h4>Links</h4>
+
+                <a href="{% url 'home' %}">
+                    Início
+                </a>
+
+                <a href="{% url 'biblioteca' %}">
+                    Biblioteca
+                </a>
+
+                <a href="{% url 'comunidades' %}">
+                    Comunidades
+                </a>
+
+            </div>
+
+            <div class="footer-social">
+
+                <h4>Redes</h4>
+
+                <div class="icons">
+                    <i class="fa-brands fa-instagram"></i>
+                    <i class="fa-brands fa-facebook"></i>
+                    <i class="fa-brands fa-github"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026. Todos os direitos reservados.</p>
+        </div>
+
+    </footer>
+
+    <hr class="footer-bottom-line">
+
+    <!-- SCRIPTS -->
+    <script src="{% static 'js/perfil.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+
 </html>
+

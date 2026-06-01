@@ -1,515 +1,216 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ParaBook</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-        <link rel="stylesheet" href="css/biblioteca.css">
-        <link rel="stylesheet" href="css/navbar.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    </head>
-
-    <body id="topo">
-
-        <header>
-            <nav class="container nav">
-
-                <div class="logo-container">
-                    <img src="img/logo-nova.png" alt="Logo Parabook"
-                        class="logo-img">
-                    <h1 class="logo"><span class="para">Para</span><span
-                            class="book">Book</span></h1>
-                </div>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
-                    <li><a href="comunidade.html">Comunidades</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="perfil.html" id="linkPerfil" style="display: none;">Perfil</a></li>
-                    <li><a href="tela-login.html"><button
-                                class="login-btn">Entrar</button></a></li>
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>   
-                </ul>
-            </nav>
-        </header>
-                                <!-- NAVBAR MOBILE (INJETADA) -->
-<div id="mobile-navbar-container"></div>
-
-        <main>
-
-            <section class="banner">
-                <article class="container banner-content">
-                    <h2>Todos os Títulos</h2>
-                    <p>Aqui você encontrará uma ampla seleção de livros desde os clássicos aos atuais!</p>
-                    <p>Explore nosso acervo e descubra novos títulos em diferentes <em><strong>categorias</strong></em>.</p>
-                </article>
-            </section>
-
-            <!---------------- LIVROS DE FILOSOFIA ---------------->
-            <hr>
-            <h2 class="genero-titulo">Filosofia</h2>
-
-            <section class="agrupar-livros">
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/confiçõesdesantoaugustinho.png" alt="Capa do Santo Agostinho">
-                    <h3>Confissões</h3>
-                    <p>Autor: Santo Agostinho</p>
-                    <p>Gênero: Filosofia</p>
-                    <button onclick="adicionarLivro('confissoes')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/arepublica.png" alt="Capa da a republica">
-                    <h3> A republica de Platão</h3>
-                    <p>Autor: Platão</p>
-                    <p>Gênero: filosofia</p>
-                    <button onclick="adicionarLivro('republica')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/pensamentoinquieto.png" alt="Capa de pensamento inquieto">
-                    <h3> Pensamento Inquieto</h3>
-                    <p>Autor: Ricardo Evangelista Brandão</p>
-                    <p>Gênero: Filosofia</p>
-                    <button onclick="adicionarLivro('pensamento_inquieto')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/introduçãoahistoriadafilosofiaantiga.png" alt="Capa da introdução à história da filosofia antiga">
-                    <h3> Introdução a Historia da Filosofia Antiga</h3>
-                    <p>Autor: João Hobuss</p>
-                    <p>Gênero: Filosofia</p>
-                    <button onclick="adicionarLivro('historia_filosofia_antiga')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/filosofiamedieval.png" alt="Capa da filosofia medieval">
-                    <h3> Filosofia Medieval uma breve introdução</h3>
-                    <p>Autor: Manoel Vasconcelos</p>
-                    <p>Gênero: Filosofia</p>
-                    <button onclick="adicionarLivro('filosofia_medieval')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/filosofiadasvirtudes.png" alt="Capa da filosofia das virtudes">
-                    <h3> Filosofia das virtudes</h3>
-                    <p>Autor: Bruno Aislã Gonçalves dos Santos</p>
-                    <p>Gênero: Filosofia</p>
-                    <button onclick="adicionarLivro('filosofia_virtudes')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/filosofiadasemoções.png" alt="Capa da filosofia das emoções">
-                    <h3> FILOSOFIA DAS EMOÇÕES</h3>
-                    <p>Autores: Felipe Nogueira de Carvalho e Flávio Williges</p>
-                    <p>Gênero: Filosofia</p>
-                    <button onclick="adicionarLivro('filosofia_emocoes')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/filosofiaantiga.png" alt="Capa da filosofia antiga">
-                    <h3> Filosofia Antiga</h3>
-                    <p>Autores: Cesar Augusto Mathias de Alencar</p>
-                    <p>Gênero: Filosofia</p>
-                    <button onclick="adicionarLivro('filosofia_antiga')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/filosofiadodireitoprivado.png" alt="Capa da filosofia do direito privado">
-                    <h3> Filosofia do Direito Privado</h3>
-                    <p>Autor: Peter Benson</p>
-                    <p>Gênero: Filosofia</p>
-                    <button onclick="adicionarLivro('direito_privado')">Adicionar à minha biblioteca</button>
-                </article>
-
-            </section>
-
-            <!---------------- LIVROS DE LITERATURA ---------------->
-            <hr>
-            <h2 class="genero-titulo">Literatura</h2>
-
-            <section class="agrupar-livros">      
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/alienista.png" alt="Capa do alienista">
-                    <h3> O Alienista</h3>
-                    <p>Autor: Machado de Assis</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('alienista')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/ocortiço.png" alt="Capa da filosofia das virtudes">
-                    <h3> O Cortiço</h3>
-                    <p>Autor: Aluisio Azevedo</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('cortico')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/memoriaspostumas.png" alt="Capa da filosofia das virtudes">
-                    <h3> Memórias Póstumas de Brás Cubas</h3>
-                    <p>Autor: Machado de Assis</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('memorias_postumas')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/domcasmurro.png" alt="Capa de Dom Casmurro">
-                    <h3> Dom Casmurro</h3>
-                    <p>Autor: Machado de Assis</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('dom_casmurro')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/contosdelima.png" alt="Capa de contos de lima barreto">
-                    <h3> Contos de Lima Barreto</h3>
-                    <p>Autor: Lima Barreto</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('contos_lima')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/tristefim.png" alt="Capa de Triste Fim ">
-                    <h3> Triste Fim de Policarpo Quaresma</h3>
-                    <p>Autor: Lima Barreto</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('triste_fim')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/oguarani.png" alt="Capa de O Guarani">
-                    <h3> O GUARANI José de Alencar</h3>
-                    <p>Autor: José de Alencar</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('guarani')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/ocorrerdapena.png" alt="Capa de Ao correr da pena">
-                    <h3> Ao correr da pena</h3>
-                    <p>Autor: José de Alencar</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('ao_correr_da_pena')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/helena.png" alt="Capa de Helena">
-                    <h3> Helena</h3>
-                    <p>Autor: Machado de Assis</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('helena')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/arevoluçãodosbichos.png" alt="Capa de A Revolução dos Bichos">
-                    <h3> A Revolução dos Bichos</h3>
-                    <p>Autor: George Orwell</p>
-                    <p>Gênero: Literatura</p>
-                    <button onclick="adicionarLivro('revolucao_bichos')">Adicionar à minha biblioteca</button>
-                </article>
-
-            </section>
-
-            <!---------------- LIVROS RELIGIOSOS ---------------->
-            <hr>
-            <h2 class="genero-titulo">Religiosos</h2>
-
-            <section class="agrupar-livros">
-                <article class="card-livro">
-                    <img src="livros/capas_livros/noiteescuradaalma.png" alt="Capa de Noite Escura da Alma">
-                    <h3> Noite Escura da Alma</h3>
-                    <p>Autor: São João da Cruz</p>
-                    <p>Gênero: Religioso</p>
-                    <button onclick="adicionarLivro('noite_escura')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/groriasdemaria.png" alt="Capa de Gloria de Maria">
-                    <h3> Gloria de Maria</h3>
-                    <p>Autor: Santo Afonso Ligório</p>
-                    <p>Gênero: Religioso</p>
-                    <button onclick="adicionarLivro('gloria_maria')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/ocastelointerior.png" alt="Capa de castelo interior">
-                    <h3> O Castelo Interior</h3>
-                    <p>Autor: Santa Teresa de Jesus</p>
-                    <p>Gênero: Religioso</p>
-                    <button onclick="adicionarLivro('castelo_interior')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/amareservir.png" alt="Capa de amar e servir">
-                    <h3> O amar e servir sob o olhar de Santo Inácio de Loyola</h3>
-                    <p>Autor: Inácio de Loyola</p>
-                    <p>Gênero: Religioso</p>
-                    <button onclick="adicionarLivro('amar_servir')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/imitaçãodecristo.png" alt="Capa de contos de lima barreto">
-                    <h3> A Imitação de Cristo</h3>
-                    <p>Autor: Tomás de Kempis</p>
-                    <p>Gênero: Religioso</p>
-
-                    <button onclick="adicionarLivro('imitacao_cristo')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/meditaçãoparaaquaresma.png" alt="Capa de meditações para quaresma">
-                    <h3> Meditações para quaresma</h3>
-                    <p>Autor: Papa Francisco</p>
-                    <p>Gênero: Religioso</p>
-                    <button onclick="adicionarLivro('meditacoes_quaresma')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/bibliasagrada.png" alt="Capa de biblia sagrada catolica">
-                    <h3> Biblia Sagrada Catolica</h3>
-                    <p>Autor: Muitos Autores</p>
-                    <p>Gênero: Religioso</p>
-                    <button onclick="adicionarLivro('biblia_catolica')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/adivinacomedia.png" alt="Capa de a divina comédia">
-                    <h3> A Divina Comédia</h3>
-                    <p>Autor: Dante Alighieri</p>
-                    <p>Gênero: Religioso</p>
-                    <button onclick="adicionarLivro('divina_comedia')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/tratadodeoração.png" alt="Capa de tratado de oração">
-                    <h3> Tratado de Oração</h3>
-                    <p>Autor: Santo Agostinho</p>
-                    <p>Gênero: Religioso</p>
-                    <button onclick="adicionarLivro('tratado_oracao')">Adicionar à minha biblioteca</button>
-                </article>
-
-            </section>
-                <!---------------- LIVROS DE CIENCIA EXATAS ---------------->
-            <hr>
-            <h2 class="genero-titulo">Ciências Exatas</h2>
-
-            <section class="agrupar-livros">      
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/introduçãoeconomia.png" alt="Capa do introducao a economia e matematica">
-                    <h3>Introdução à Economia</h3>
-                    <p>Autor: Carlos Magno Mendes</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('introducao_economia')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/construçõesgeometricas.png" alt="Capa de construções geometricas">
-                    <h3> Construções Geometricas</h3>
-                    <p>Autor: Jorge Luis Costa</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('construcoes_geometricas')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/osimboloearealidade.png" alt="Capa de o simbolo e a realidade">
-                    <h3> O Simbolo e a Realidade</h3>
-                    <p>Autor: Ricardo Mendes</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('o_simbolo_e_arealidade')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/astronomia.png" alt="Capa de Astronomia">
-                    <h3> Astronomia</h3>
-                    <p>Autor: Salvador Nogueira</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('astronomia')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/brincandoeapredendendo.png" alt="Capa de brincando e apredendendo">
-                    <h3> Brincando E Apredendendo</h3>
-                    <p>Autor: Maria Fini</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('contos_lima')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/introducaoeconomiamatematica.png" alt="Capa de introducao e conomiamatematica">
-                    <h3> introdução a Econômia Matemática</h3>
-                    <p>Autor: Aloísio Araújo</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('triste_fim')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/roboticaeprocessos.png" alt="Capa de Robótica e Processos Formativos">
-                    <h3> Robótica e Processos Formativos</h3>
-                    <p>Autor: Deise Peralta</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('guarani')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/engenhariahidraulica.png" alt="Capa de Engenharia Hidráulica e Sanitária">
-                    <h3> Engenharia Hidráulica e Sanitária</h3>
-                    <p>Autor: José de Alencar</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('ao_correr_da_pena')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/principiosdequimica.png" alt="Capa de Princípios de Química">
-                    <h3> Princípios de Química</h3>
-                    <p>Autor: Carmen Lúcia</p>
-                    <p>Gênero: Ciências Exatas</p>
-                    <button onclick="adicionarLivro('helena')">Adicionar à minha biblioteca</button>
-                </article>
-            </section>
-
-                <!---------------- LIVROS INFANTIS ---------------->
-            <hr>
-            <h2 class="genero-titulo">Infantis</h2>
-
-            <section class="agrupar-livros">      
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/fabulasdoescopo.png" alt="Capa do fabulas do escopo">
-                    <h3> Fabulas do Escopo</h3>
-                    <p>Autor: Carlos Pinheiro</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('fabulas_do_escopo')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/misterionoexpresso.png" alt="Capa do misterio no expresso">
-                    <h3> Mistério no Expresso</h3>
-                    <p>Autor: Milson Almeida</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('misterio_no_expresso')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/pequenoprincipe.png" alt="Capa do pequeno principe">
-                    <h3> Pequeno Príncipe</h3>
-                    <p>Autor: Antoine de Saint-Exupéry</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('memorias_postumas')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/100historia.png" alt="Capa de 100 historia">
-                    <h3> 100 histórias Infantis</h3>
-                    <p>Autor: Alvaro Magalhães</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('cem_historia')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/achavedotamanho.jpg" alt="Capa de achave do tamanho">
-                    <h3> A Chave Do Tamanho</h3>
-                    <p>Autor: Monteiro Lobato</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('contos_lima')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/aritimeticadaemilia.png" alt="Capa de Aritmética da Emília">
-                    <h3> Aritmética da Emília</h3>
-                    <p>Autor: Monteiro Lobato</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('triste_fim')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/asaventurasdopinocchio.png" alt="Capa de As Aventuras do Pinóquio">
-                    <h3> As Aventuras do Pinóquio</h3>
-                    <p>Autor: Carlo Collodi</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('guarani')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/ascronicasdeghorn.png" alt="Capa de As Crônicas de Ghorn">
-                    <h3> As Crônicas de Ghorn</h3>
-                    <p>Autor: Mário Fernandes</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('ao_correr_da_pena')">Adicionar à minha biblioteca</button>
-                </article>
-
-                <article class="card-livro">
-                    <img src="livros/capas_livros/emilianopais.png" alt="Capa de Emília no País da Gramática">
-                    <h3> Emília no País da Gramática</h3>
-                    <p>Autor: Monteiro Lobato</p>
-                    <p>Gênero: Infantil</p>
-                    <button onclick="adicionarLivro('helena')">Adicionar à minha biblioteca</button>
-                </article>
-
-
-
-            </section>  
-        <hr>
-<h2 class="genero-titulo">Autores Independentes</h2>
-
-<section class="agrupar-livros" id="secao-independentes">
-    <!-- Livros serão carregados via JS -->
-</section>
-                <a href = "#topo"><button class="button-top" id="voltar-topo" >
-    <svg class="svgIcon" viewBox="0 0 384 512">
-        <path
-        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-        ></path>
-    </svg>
-    </button></a>
-
-
-        </main>
-
-        <footer class="footer">
-            <div class="footer-container">
-
-                <div class="footer-brand">
-                    <h2>ParaBook</h2>
-                    <p>O melhor site de livros.</p>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Links</h4>
-                    <a href="index.html">Início</a>
-                    <a href="#">Biblioteca</a>
-                    <a href="comunidade.html">Comunidades</a>
-                </div>
-
-                <div class="footer-social">
-                    <h4>Redes</h4>
-                    <div class="icons">
-                        <i class="fa-brands fa-instagram"></i>
-                        <i class="fa-brands fa-facebook"></i>
-                        <i class="fa-brands fa-github"></i>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="footer-bottom">
-                <p>© 2026. Todos os direitos reservados.</p>
-            </div>
-        </footer>
-        <hr class="footer-bottom-line">
-        
-    <script src="js/biblioteca.js"></script>
-    <script src="js/index.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    </body>
-
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Biblioteca
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+    href="{% static 'css/biblioteca.css' %}">
+
+<link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+{% endblock %}
+
+{% block content %}
+
+<main id="topo">
+
+    <!-- BANNER -->
+    <section class="banner">
+
+        <article class="container banner-content">
+
+            <h2>
+                Todos os Títulos
+            </h2>
+
+            <p>
+                Aqui você encontrará uma ampla seleção
+                de livros desde os clássicos aos atuais.
+            </p>
+
+            <p>
+                Explore nosso acervo e descubra novos títulos
+                em diferentes
+                <strong><em>categorias</em></strong>.
+            </p>
+
+        </article>
+
+    </section>
+
+    <!-- FILOSOFIA -->
+    <hr>
+
+    <h2 class="genero-titulo">
+        Filosofia
+    </h2>
+
+    <section class="agrupar-livros">
+
+        {% for livro in livros_filosofia %}
+
+            {% include 'partials/card_livro.html' %}
+
+        {% empty %}
+
+            <p>
+                Nenhum livro encontrado.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+    <!-- LITERATURA -->
+    <hr>
+
+    <h2 class="genero-titulo">
+        Literatura
+    </h2>
+
+    <section class="agrupar-livros">
+
+        {% for livro in livros_literatura %}
+
+            {% include 'partials/card_livro.html' %}
+
+        {% empty %}
+
+            <p>
+                Nenhum livro encontrado.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+    <!-- RELIGIOSOS -->
+    <hr>
+
+    <h2 class="genero-titulo">
+        Religiosos
+    </h2>
+
+    <section class="agrupar-livros">
+
+        {% for livro in livros_religiosos %}
+
+            {% include 'partials/card_livro.html' %}
+
+        {% empty %}
+
+            <p>
+                Nenhum livro encontrado.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+    <!-- EXATAS -->
+    <hr>
+
+    <h2 class="genero-titulo">
+        Ciências Exatas
+    </h2>
+
+    <section class="agrupar-livros">
+
+        {% for livro in livros_exatas %}
+
+            {% include 'partials/card_livro.html' %}
+
+        {% empty %}
+
+            <p>
+                Nenhum livro encontrado.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+    <!-- INFANTIL -->
+    <hr>
+
+    <h2 class="genero-titulo">
+        Infantis
+    </h2>
+
+    <section class="agrupar-livros">
+
+        {% for livro in livros_infantis %}
+
+            {% include 'partials/card_livro.html' %}
+
+        {% empty %}
+
+            <p>
+                Nenhum livro encontrado.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+    <!-- AUTORES -->
+    <hr>
+
+    <h2 class="genero-titulo">
+        Autores Independentes
+    </h2>
+
+    <section
+        class="agrupar-livros"
+        id="secao-independentes"
+    >
+
+        {% for livro in livros_independentes %}
+
+            {% include 'partials/card_livro.html' %}
+
+        {% empty %}
+
+            <p>
+                Nenhum livro encontrado.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+    <!-- BOTÃO TOPO -->
+    <a href="#topo">
+
+        <button
+            class="button-top"
+            id="voltar-topo"
+        >
+
+            <svg
+                class="svgIcon"
+                viewBox="0 0 384 512"
+            >
+                <path d="M214.6 41.4..."></path>
+            </svg>
+
+        </button>
+
+    </a>
+
+</main>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/biblioteca.js' %}"></script>
+
+<script src="{% static 'js/index.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+{% endblock %}

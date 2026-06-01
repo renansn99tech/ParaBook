@@ -1,144 +1,33 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ParaBook</title>
+{% extends 'base.html' %}
+{% load static %}
 
-<link rel="icon" href="img/favicon.ico">
-<link rel="stylesheet" href="css/index.css">
-<link rel="stylesheet" href="css/navbar.css">
-<link rel="stylesheet" href="css/obras-autores.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/obras-autores.css' %}">
+{% endblock %}
 
-</head>
-
-<body>
-
-<header>
-    <nav class="container nav">
-
-        <div class="logo-container">
-            <img src="img/logo-nova.png" class="logo-img">
-            <h1 class="logo">
-                <span class="para">Para</span><span class="book">Book</span>
-            </h1>
-        </div>
-
-        <ul class="menu">
-            <li><a href="index.html">Iní­cio</a></li>
-            <li><a href="biblioteca.html">Biblioteca</a></li>
-            <li><a href="comunidade.html">Comunidades</a></li>
-            <li><a href="sobre.html">Sobre</a></li>
-                    <li>
-                        <button id="theme-toggle" class="login-btn">🌙</button>
-                    </li>
-            <li><a href="index.html"><button class="login-btn">Voltar</button></a></li>
-        </ul>
-
-    </nav>
-</header>
-
-<!-- NAVBAR MOBILE -->
-<div id="mobile-navbar-container"></div>
-
-<main>
+{% block content %}
 
 <section class="form-container">
+
     <div class="form-box">
 
         <h1>Envie sua obra</h1>
-        <p>Compartilhe seu livro com a comunidade ParaBook</p>
 
-        <form id="formObra">
+        <form method="POST" enctype="multipart/form-data">
 
-            <div class="form-group">
-                <label>Seu nome</label>
-                <input type="text" required>
-            </div>
+            {% csrf_token %}
 
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" required>
-            </div>
+            {{ form.as_p }}
 
-            <div class="form-group">
-                <label>Título da obra</label>
-                <input type="text" required>
-            </div>
-
-            <div class="form-group">
-                <label>Categoria</label>
-                <select required>
-                    <option value="">Selecione</option>
-                    <option>Literatura</option>
-                    <option>Filosofia</option>
-                    <option>Religião</option>
-                    <option>Infantil</option>
-                    <option>Outro</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Descrição</label>
-                <textarea rows="4"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Upload do livro (PDF)</label>
-                <input type="file" id="fileInput" accept=".pdf" required>
-                <div id="fileName" class="file-name"></div>
-            </div>
-
-            <div class="form-group checkbox">
-                <label>
-                    <input type="checkbox" required>
-                    Declaro que sou o autor desta obra
-                </label>
-            </div>
-
-            <button type="submit" class="submit-btn">Enviar obra</button>
+            <button type="submit" class="submit-btn">
+                Enviar obra
+            </button>
 
         </form>
+
     </div>
+
 </section>
 
-</main>
+{% endblock %}
 
-<footer class="footer">
-    <div class="footer-container">
-
-        <div class="footer-brand">
-            <h2>ParaBook</h2>
-            <p>O melhor site de livros.</p>
-        </div>
-
-        <div class="footer-links">
-            <h4>Links</h4>
-            <a href="index.html">Início</a>
-            <a href="biblioteca.html">Biblioteca</a>
-            <a href="comunidade.html">Comunidades</a>
-        </div>
-
-        <div class="footer-social">
-            <h4>Redes</h4>
-            <div class="icons">
-                <i class="fa-brands fa-instagram"></i>
-                <i class="fa-brands fa-facebook"></i>
-                <i class="fa-brands fa-github"></i>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="footer-bottom">
-        <p>© 2026. Todos os direitos reservados.</p>
-    </div>
-</footer>
-
-<script src="js/obras-autores.js"></script>
-<script src="js/index.js"></script>
-<script src="js/navbar.js"></script>
-
-</body>
-</html>

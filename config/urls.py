@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include   # <-- aqui está o include
 from usuarios.views import index, sobre, leitura, tela_login, register    # importa sua view
-from biblioteca.views import biblioteca, mais_acessados, novidade, obras_autores
 from perfis.views import perfil
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.views import PasswordChangeView
@@ -25,15 +24,11 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     # Página inicial
     path('', index, name='home'),   
     path('sobre/', sobre, name='sobre'),  
     path('comunidades/', include('comunidades.urls')),
-    path('biblioteca/', biblioteca, name='biblioteca'),
-    path('mais-acessados/', mais_acessados, name='mais_acessados'),
-    path('novidades/', novidade, name='novidade'),
-    path('obras-autores/', obras_autores, name='obras_autores'),
+    path('biblioteca/', include('biblioteca.urls')),
     path('perfis/', perfil, name='perfis'),
     path('leitura/', leitura, name='leitura'),
     path('login/', tela_login, name='login'),

@@ -1,8 +1,5 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
-
+from django.contrib.auth.models import User
 
 class Categoria(models.Model):
     id_categoria = models.AutoField(db_column='Id_Categorias', primary_key=True)
@@ -29,10 +26,87 @@ class Livro(models.Model):
         on_delete=models.DO_NOTHING,
         db_column='Categorias_Id_Categorias'
     )
+    
+class ObraAutor(models.Model):
+    nome = models.CharField(max_length=100)
+    email = models.EmailField()
+    titulo = models.CharField(max_length=150)
+    descricao = models.TextField(blank=True)
+    arquivo = models.FileField(upload_to='obras/', null=True, blank=True)
+    autor = models.BooleanField(default=False)
+
+    categoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.CASCADE,
+        db_column='categoria_id'
+    )
+    
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pendente', 'Pendente'),
+            ('aprovado', 'Aprovado'),
+            ('rejeitado', 'Rejeitado')
+        ],
+        default='pendente'
+    )
+
+
+    data_envio = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'livros'
+        db_table = 'obras_autores'
+        managed = False
+
+    def __str__(self):
+        return self.titulo
+    
+        
+class Perfil(models.Model):
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='perfil'
+    )
+
+    foto = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+    bio = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    localizacao = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+    class Meta:
+        db_table = 'perfil'
         managed = False  # MUITO IMPORTANTE
+        
+    class Meta:
+        db_table = 'perfil'  # 🔥 IMPORTANTE: usa sua tabela existente
+        managed = False
+    
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pendente', 'Pendente'),
+            ('aprovado', 'Aprovado'),
+            ('rejeitado', 'Rejeitado')
+        ],
+        default='pendente'
+    )
+
 
     def __str__(self):
         return self.nome
+
+    def __str__(self):
+        return self.user.username

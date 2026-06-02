@@ -38,12 +38,19 @@
     <div class="form-group">
         <label>Categoria</label>
         <select name="categoria">
-            <option value="filosofia">Filosofia</option>
-            <option value="literatura">Literatura</option>
-            <option value="religiosos">Religiosos</option>
-            <option value="exatas">Exatas</option>
-            <option value="infantis">Infantis</option>
-            <option value="independente">Independente</option>
+            {% for categoria in categorias %}
+                <option value="{{ categoria.id_categoria }}">
+                    {{ categoria.nome }}
+                </option>
+            {% endfor %}     
+        {% if messages %}
+            {% for message in messages %}
+                <div>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         </select>
     </div>
 

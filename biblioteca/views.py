@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Categoria, Livro, ObraAutor
+from .models import Categoria, Livro, ObraAutor, Biblioteca
 
 # Create your views here.
 def biblioteca(request):
@@ -40,6 +40,17 @@ def biblioteca(request):
         'livros_independentes': livros_independentes,
     })
 
+
+def adicionar_a_biblioteca(request, livro_id):
+    livro = get_object_or_404(Livro, id=livro_id)
+
+    # evita duplicação
+    biblioteca.created = Biblioteca.objects.get_or_create(
+        user=request.user,
+        livro=livro
+    )
+
+    return redirect('detalhe_livro', livro_id=livro.id)
 
 def obras_autores(request):
     categorias = Categoria.objects.all()

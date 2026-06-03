@@ -17,5 +17,6 @@ urlpatterns = [
 
     # DELETE
     path('livro/deletar/<int:id>/', views.deletar_livro, name='deletar_livro'),
+    path('adicionar/<int:livro_id>/', views.adicionar_a_biblioteca, name='adicionar_biblioteca'),
 ]
 

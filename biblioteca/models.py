@@ -64,8 +64,27 @@ class ObraAutor(models.Model):
 
     def __str__(self):
         return self.titulo
-    
         
+class Biblioteca(models.Model):
+    STATUS_CHOICES = [
+        ('lendo', 'Lendo'),
+        ('lido', 'Lido'),
+        ('quero_ler', 'Quero ler'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    livro = models.ForeignKey(Livro, on_delete=models.CASCADE)
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='quero_ler')
+    nota = models.IntegerField(null=True, blank=True)
+    data_adicao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'livro')  # evita duplicação
+
+    def __str__(self):
+        return f"{self.user.username} - {self.livro.titulo}"
+    
 class Perfil(models.Model):
 
     user = models.OneToOneField(

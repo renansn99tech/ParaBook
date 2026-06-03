@@ -84,11 +84,16 @@ Biblioteca
         </p>
 
         <!-- BOTÃO -->
-        <button onclick="adicionarLivro(
-            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
-        )">
-            Adicionar à minha biblioteca
-        </button>
+
+
+
+<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn btn-primary">
+    Adicionar à minha biblioteca
+</a>
+
+
+
+
 
         <!-- LINK PARA LER -->
         {% if livro.arquivo %}
@@ -157,11 +162,13 @@ Biblioteca
         </p>
 
         <!-- BOTÃO -->
-        <button onclick="adicionarLivro(
-            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
-        )">
-            Adicionar à minha biblioteca
-        </button>
+
+
+<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn btn-primary">
+    Adicionar à minha biblioteca
+</a>
+
+
 
         <!-- LINK PARA LER -->
         {% if livro.arquivo %}
@@ -229,11 +236,13 @@ Biblioteca
         </p>
 
         <!-- BOTÃO -->
-        <button onclick="adicionarLivro(
-            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
-        )">
-            Adicionar à minha biblioteca
-        </button>
+
+
+<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn btn-primary">
+    Adicionar à minha biblioteca
+</a>
+
+
 
         <!-- LINK PARA LER -->
         {% if livro.arquivo %}
@@ -304,11 +313,14 @@ Biblioteca
         </p>
 
         <!-- BOTÃO -->
-        <button onclick="adicionarLivro(
-            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
-        )">
-            Adicionar à minha biblioteca
-        </button>
+
+
+<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn btn-primary">
+    Adicionar à minha biblioteca
+</a>
+
+
+
 
         <!-- LINK PARA LER -->
         {% if livro.arquivo %}
@@ -377,11 +389,13 @@ Biblioteca
         </p>
 
         <!-- BOTÃO -->
-        <button onclick="adicionarLivro(
-            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
-        )">
-            Adicionar à minha biblioteca
-        </button>
+
+
+<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn btn-primary">
+    Adicionar à minha biblioteca
+</a>
+
+
 
         <!-- LINK PARA LER -->
         {% if livro.arquivo %}
@@ -454,11 +468,14 @@ Biblioteca
         </p>
 
         <!-- BOTÃO -->
-        <button onclick="adicionarLivro(
-            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
-        )">
-            Adicionar à minha biblioteca
-        </button>
+
+
+<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn btn-primary">
+    Adicionar à minha biblioteca
+</a>
+
+
+
 
         <!-- LINK PARA LER -->
         {% if livro.arquivo %}

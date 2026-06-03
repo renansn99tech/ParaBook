@@ -83,7 +83,7 @@ class Biblioteca(models.Model):
         unique_together = ('user', 'livro')  # evita duplicação
 
     def __str__(self):
-        return f"{self.user.username} - {self.livro.titulo}"
+        return f"{self.user.username} - {self.livro.nome}"
     
 class Perfil(models.Model):
 

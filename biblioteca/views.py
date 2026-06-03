@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Categoria, Livro, ObraAutor, Biblioteca
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def biblioteca(request):
@@ -41,16 +42,16 @@ def biblioteca(request):
     })
 
 
+@login_required
 def adicionar_a_biblioteca(request, livro_id):
-    livro = get_object_or_404(Livro, id=livro_id)
+    livro = get_object_or_404(Livro, id_livro=livro_id)
 
-    # evita duplicação
-    biblioteca.created = Biblioteca.objects.get_or_create(
+    Biblioteca.objects.get_or_create(
         user=request.user,
         livro=livro
     )
 
-    return redirect('detalhe_livro', livro_id=livro.id)
+    return redirect('acesso-biblioteca')
 
 def obras_autores(request):
     categorias = Categoria.objects.all()

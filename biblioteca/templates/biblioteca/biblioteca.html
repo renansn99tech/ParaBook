@@ -52,7 +52,57 @@ Biblioteca
 
         {% for livro in livros_filosofia %}
 
-            {% include 'partials/card_livro.html' %}
+{% for livro in livros_filosofia %}
+    <div class="card-livro">
+
+        <!-- CAPA -->
+        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+
+        <!-- TÍTULO -->
+        <h3>
+            {% if livro.nome %}
+                {{ livro.nome }}
+            {% else %}
+                {{ livro.titulo }}
+            {% endif %}
+        </h3>
+
+        <!-- AUTOR -->
+        <p>
+            <strong>Autor:</strong>
+            {% if livro.autor %}
+                {{ livro.autor }}
+            {% else %}
+                {{ livro.nome }}
+            {% endif %}
+        </p>
+
+        <!-- GÊNERO -->
+        <p>
+            <strong>Gênero:</strong>
+            {{ livro.categoria.nome }}
+        </p>
+
+        <!-- BOTÃO -->
+        <button onclick="adicionarLivro(
+            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
+        )">
+            Adicionar à minha biblioteca
+        </button>
+
+        <!-- LINK PARA LER -->
+        {% if livro.arquivo %}
+            <a href="{{ livro.arquivo.url }}" target="_blank">
+                📖 Ler
+            </a>
+        {% endif %}
+
+    </div>
+{% empty %}
+    <p>Nenhum livro encontrado.</p>
+{% endfor %}
+
+
 
         {% empty %}
 
@@ -75,7 +125,56 @@ Biblioteca
 
         {% for livro in livros_literatura %}
 
-            {% include 'partials/card_livro.html' %}
+{% for livro in livros_filosofia %}
+    <div class="card-livro">
+
+        <!-- CAPA -->
+        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+
+        <!-- TÍTULO -->
+        <h3>
+            {% if livro.nome %}
+                {{ livro.nome }}
+            {% else %}
+                {{ livro.titulo }}
+            {% endif %}
+        </h3>
+
+        <!-- AUTOR -->
+        <p>
+            <strong>Autor:</strong>
+            {% if livro.autor %}
+                {{ livro.autor }}
+            {% else %}
+                {{ livro.nome }}
+            {% endif %}
+        </p>
+
+        <!-- GÊNERO -->
+        <p>
+            <strong>Gênero:</strong>
+            {{ livro.categoria.nome }}
+        </p>
+
+        <!-- BOTÃO -->
+        <button onclick="adicionarLivro(
+            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
+        )">
+            Adicionar à minha biblioteca
+        </button>
+
+        <!-- LINK PARA LER -->
+        {% if livro.arquivo %}
+            <a href="{{ livro.arquivo.url }}" target="_blank">
+                📖 Ler
+            </a>
+        {% endif %}
+
+    </div>
+{% empty %}
+    <p>Nenhum livro encontrado.</p>
+{% endfor %}
+
 
         {% empty %}
 
@@ -98,7 +197,59 @@ Biblioteca
 
         {% for livro in livros_religiosos %}
 
-            {% include 'partials/card_livro.html' %}
+{% for livro in livros_filosofia %}
+    <div class="card-livro">
+
+        <!-- CAPA -->
+        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+
+        <!-- TÍTULO -->
+        <h3>
+            {% if livro.nome %}
+                {{ livro.nome }}
+            {% else %}
+                {{ livro.titulo }}
+            {% endif %}
+        </h3>
+
+        <!-- AUTOR -->
+        <p>
+            <strong>Autor:</strong>
+            {% if livro.autor %}
+                {{ livro.autor }}
+            {% else %}
+                {{ livro.nome }}
+            {% endif %}
+        </p>
+
+        <!-- GÊNERO -->
+        <p>
+            <strong>Gênero:</strong>
+            {{ livro.categoria.nome }}
+        </p>
+
+        <!-- BOTÃO -->
+        <button onclick="adicionarLivro(
+            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
+        )">
+            Adicionar à minha biblioteca
+        </button>
+
+        <!-- LINK PARA LER -->
+        {% if livro.arquivo %}
+            <a href="{{ livro.arquivo.url }}" target="_blank">
+                📖 Ler
+            </a>
+        {% endif %}
+
+    </div>
+{% empty %}
+    <p>Nenhum livro encontrado.</p>
+{% endfor %}
+
+
+
+
 
         {% empty %}
 
@@ -121,7 +272,57 @@ Biblioteca
 
         {% for livro in livros_exatas %}
 
-            {% include 'partials/card_livro.html' %}
+{% for livro in livros_filosofia %}
+    <div class="card-livro">
+
+        <!-- CAPA -->
+        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+
+        <!-- TÍTULO -->
+        <h3>
+            {% if livro.nome %}
+                {{ livro.nome }}
+            {% else %}
+                {{ livro.titulo }}
+            {% endif %}
+        </h3>
+
+        <!-- AUTOR -->
+        <p>
+            <strong>Autor:</strong>
+            {% if livro.autor %}
+                {{ livro.autor }}
+            {% else %}
+                {{ livro.nome }}
+            {% endif %}
+        </p>
+
+        <!-- GÊNERO -->
+        <p>
+            <strong>Gênero:</strong>
+            {{ livro.categoria.nome }}
+        </p>
+
+        <!-- BOTÃO -->
+        <button onclick="adicionarLivro(
+            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
+        )">
+            Adicionar à minha biblioteca
+        </button>
+
+        <!-- LINK PARA LER -->
+        {% if livro.arquivo %}
+            <a href="{{ livro.arquivo.url }}" target="_blank">
+                📖 Ler
+            </a>
+        {% endif %}
+
+    </div>
+{% empty %}
+    <p>Nenhum livro encontrado.</p>
+{% endfor %}
+
+
 
         {% empty %}
 
@@ -144,7 +345,57 @@ Biblioteca
 
         {% for livro in livros_infantis %}
 
-            {% include 'partials/card_livro.html' %}
+{% for livro in livros_filosofia %}
+    <div class="card-livro">
+
+        <!-- CAPA -->
+        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+
+        <!-- TÍTULO -->
+        <h3>
+            {% if livro.nome %}
+                {{ livro.nome }}
+            {% else %}
+                {{ livro.titulo }}
+            {% endif %}
+        </h3>
+
+        <!-- AUTOR -->
+        <p>
+            <strong>Autor:</strong>
+            {% if livro.autor %}
+                {{ livro.autor }}
+            {% else %}
+                {{ livro.nome }}
+            {% endif %}
+        </p>
+
+        <!-- GÊNERO -->
+        <p>
+            <strong>Gênero:</strong>
+            {{ livro.categoria.nome }}
+        </p>
+
+        <!-- BOTÃO -->
+        <button onclick="adicionarLivro(
+            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
+        )">
+            Adicionar à minha biblioteca
+        </button>
+
+        <!-- LINK PARA LER -->
+        {% if livro.arquivo %}
+            <a href="{{ livro.arquivo.url }}" target="_blank">
+                📖 Ler
+            </a>
+        {% endif %}
+
+    </div>
+{% empty %}
+    <p>Nenhum livro encontrado.</p>
+{% endfor %}
+
+
 
         {% empty %}
 
@@ -170,7 +421,59 @@ Biblioteca
 
         {% for livro in livros_independentes %}
 
-            {% include 'partials/card_livro.html' %}
+{% for livro in livros_filosofia %}
+    <div class="card-livro">
+
+        <!-- CAPA -->
+        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+
+
+        <!-- TÍTULO -->
+        <h3>
+            {% if livro.nome %}
+                {{ livro.nome }}
+            {% else %}
+                {{ livro.titulo }}
+            {% endif %}
+        </h3>
+
+        <!-- AUTOR -->
+        <p>
+            <strong>Autor:</strong>
+            {% if livro.autor %}
+                {{ livro.autor }}
+            {% else %}
+                {{ livro.nome }}
+            {% endif %}
+        </p>
+
+        <!-- GÊNERO -->
+        <p>
+            <strong>Gênero:</strong>
+            {{ livro.categoria.nome }}
+        </p>
+
+        <!-- BOTÃO -->
+        <button onclick="adicionarLivro(
+            '{% if livro.id_livro %}{{ livro.id_livro }}{% else %}{{ livro.id }}{% endif %}'
+        )">
+            Adicionar à minha biblioteca
+        </button>
+
+        <!-- LINK PARA LER -->
+        {% if livro.arquivo %}
+            <a href="{{ livro.arquivo.url }}" target="_blank">
+                📖 Ler
+            </a>
+        {% endif %}
+
+    </div>
+{% empty %}
+    <p>Nenhum livro encontrado.</p>
+{% endfor %}
+
+
+
 
         {% empty %}
 

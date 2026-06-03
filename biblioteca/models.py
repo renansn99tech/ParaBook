@@ -20,12 +20,16 @@ class Livro(models.Model):
     genero = models.CharField(max_length=45, db_column='Genero')
     avaliacao = models.CharField(max_length=45, db_column='Avaliacao')
     isbn = models.CharField(max_length=45, db_column='ISBN')
-
+    capa = models.CharField(max_length=255, null=True, blank=True)
+    
     categoria = models.ForeignKey(
         Categoria,
         on_delete=models.DO_NOTHING,
         db_column='Categorias_Id_Categorias'
     )
+    class Meta:
+        db_table = 'livros'
+        managed = False
     
 class ObraAutor(models.Model):
     nome = models.CharField(max_length=100)
@@ -88,10 +92,6 @@ class Perfil(models.Model):
     )
     class Meta:
         db_table = 'perfil'
-        managed = False  # MUITO IMPORTANTE
-        
-    class Meta:
-        db_table = 'perfil'  # 🔥 IMPORTANTE: usa sua tabela existente
         managed = False
     
     status = models.CharField(

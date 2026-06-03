@@ -241,17 +241,30 @@ main hr {
 .perfil-nome {
     font-size: 2rem;
     font-weight: 700;
+    color: var(--text-main)
 }
 
 .perfil-username {
     color: var(--text-muted);
 }
 
-.perfil-bio {
+.perfil-bio, .perfil-historico {
     margin: 15px 0;
     color: #D1D5DB;
+    padding: 1.5rem; 
+    background: var(--bg-card); 
+    border-radius: var(--radius);
 }
 
+#input-bio {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: inherit;
+}
 /* META */
 
 .perfil-meta {

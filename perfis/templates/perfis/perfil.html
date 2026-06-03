@@ -54,7 +54,7 @@
                 {% if user.is_authenticated %}
 
                     <li>
-                        <a href="{% url 'perfil' %}">
+                        <a href="{% url 'perfis:perfil_pessoal' %}">
                             Perfil
                         </a>
                     </li>
@@ -102,11 +102,10 @@
             <div class="perfil-content">
 
                 <div class="perfil-avatar-section">
+                    
 
                     {% if perfil.foto %}
-                        <img src="{{ perfil.foto.url }}"
-                            alt="Avatar do Usuário"
-                            class="perfil-avatar">
+                        <img src="{{ perfil.foto|default:'https://via.placeholder.com/150' }}" alt="Foto de Perfil" class="perfil-avatar">
                     {% else %}
                         <img src="{% static 'img/user.png' %}"
                             alt="Avatar do Usuário"
@@ -122,21 +121,25 @@
 
                 <div class="perfil-user-info">
 
-                    <h1 class="perfil-nome">
-                        {{ user.first_name }} {{ user.last_name }}
+                    <h1 class="perfil-nome"> 
+                        {{ usuario_custom.nome }}  {% comment %} Somente o NOME usará a classe Usuário {% endcomment %}
                     </h1>
 
                     <p class="perfil-username">
-                        @{{ user.username }}
+                        @{{perfil.username }}
                     </p>
 
                     <p class="perfil-bio">
-                        {{ perfil.bio|default:"Apaixonado por leitura." }}
+                        {{ perfil.descricao_perfil }}
+                    </p>
+
+                    <p class="perfil-historico">
+                        {{ perfil.historico }}
                     </p>
 
                     <div class="perfil-meta">
 
-                        <div class="meta-item">
+                        {% comment %} <div class="meta-item">
                             <span class="meta-label">
                                 Membro desde
                             </span>
@@ -144,7 +147,7 @@
                             <span class="meta-value">
                                 {{ user.date_joined|date:"F Y" }}
                             </span>
-                        </div>
+                        </div> {% endcomment %}
 
                         <div class="meta-item">
                             <span class="meta-label">
@@ -420,14 +423,49 @@
                 </div>
 
                 <!-- TAB CONFIGURAÇÕES -->
-                <div id="configuracoes"
-                    class="tab-content">
+                <section id="configuracoes" class="tab-content">
 
                     <div class="config-container">
+                        <h2> Configurações da Conta </h2>
 
                         <div class="config-section">
 
                             <h3>Conta</h3>
+                            {% comment %} FORM inserido para operação Update do CRUD {% endcomment %}
+                            <form action="{% url 'perfis:perfil_pessoal' %}" method="POST">
+                                {% csrf_token %} 
+                                <div class="config-section">
+                                    <h3>Editar Perfil</h3>
+                                    
+                                    <div class="form-group">
+                                        <label for="input-nome">Nome de Exibição</label>
+                                        <input type="text" id="input-nome" name="nome" value="{{ usuario_custom.nome }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="input-descricao">Frase de Status (Curta)</label>
+                                        <input type="text" id="input-descricao" name="descricao_perfil" value="{{ perfil.descricao_perfil }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="input-localizacao">Localização / Cidade</label>
+                                        <input type="text" id="input-localizacao" name="localizacao" value="{{ perfil.localizacao|default:'' }}" placeholder="Ex: Belém - PA">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="input-bio">Biografia Detalhada</label>
+                                        <textarea id="input-bio" name="bio" rows="4" placeholder="Conte um pouco sobre você...">
+                                            {{ perfil.bio|default:'' }}
+                                        </textarea>
+                                    </div>
+
+                                    <input type="hidden" name="foto" value="{{ perfil.foto|default:'' }}">
+                                </div>
+
+                                <div class="config-actions">
+                                    <button type="submit" class="btn primary">Salvar Alterações</button>
+                                </div>
+                            </form>
 
                             <a href="{% url 'alterar_senha' %}">
                                 <button class="btn-config btn-light">
@@ -445,7 +483,7 @@
 
                     </div>
 
-                </div>
+                </section>
 
             </div>
 

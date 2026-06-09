@@ -7,11 +7,6 @@
         }
     });
 
-    document.getElementById("formObra").addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        alert("Livro enviado!");
-
-        this.reset();
-        fileName.textContent = "";
-    });
+document.getElementById("formObra")?.addEventListener("submit", function() {
+    alert("Livro enviado com sucesso!");
+});

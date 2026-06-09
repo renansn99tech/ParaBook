@@ -203,7 +203,20 @@ main hr {
     font-size: 0.95rem;
     line-height: 1.5;
 }
-
+.card-livro .btn-adicionar {
+    margin: 1rem;
+    margin-top: auto;
+    padding: 0.9rem 1rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: #FFFFFF;
+    font-weight: var(--fw-medium);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
 .card-livro button {
     margin: 1rem;
     margin-top: auto;

@@ -17,50 +17,64 @@
         <h1>Envie sua obra</h1>
         <p>Compartilhe seu livro com a comunidade ParaBook</p>
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
 
-            <div class="form-group">
-                {{ form.nome.label_tag }}
-                {{ form.nome }}
-            </div>
+    <div class="form-group">
+        <label>Nome</label>
+        <input type="text" name="nome" value="{{ livro.nome|default:'' }}">
+    </div>
 
-            <div class="form-group">
-                {{ form.email.label_tag }}
-                {{ form.email }}
-            </div>
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ livro.email|default:'' }}">
+    </div>
 
-            <div class="form-group">
-                {{ form.titulo.label_tag }}
-                {{ form.titulo }}
-            </div>
+    <div class="form-group">
+        <label>Título</label>
+        <input type="text" name="titulo" value="{{ livro.titulo|default:'' }}">
+    </div>
 
-            <div class="form-group">
-                {{ form.categoria.label_tag }}
-                {{ form.categoria }}
-            </div>
+    <div class="form-group">
+        <label>Categoria</label>
+        <select name="categoria">
+            {% for categoria in categorias %}
+                <option value="{{ categoria.id_categoria }}">
+                    {{ categoria.nome }}
+                </option>
+            {% endfor %}     
+        {% if messages %}
+            {% for message in messages %}
+                <div>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-            <div class="form-group">
-                {{ form.descricao.label_tag }}
-                {{ form.descricao }}
-            </div>
+        </select>
+    </div>
 
-            <div class="form-group">
-                {{ form.arquivo.label_tag }}
-                {{ form.arquivo }}
-                <div id="fileName" class="file-name"></div>
-            </div>
+    <div class="form-group">
+        <label>Descrição</label>
+        <textarea name="descricao">{{ livro.descricao|default:'' }}</textarea>
+    </div>
 
-            <div class="form-group checkbox">
-                {{ form.autor }}
-                {{ form.autor.label_tag }}
-            </div>
+    <div class="form-group">
+        <label>Arquivo</label>
+        <input type="file" name="arquivo">
+    </div>
 
-            <button type="submit" class="submit-btn">
-                Enviar obra
-            </button>
+    <div class="form-group checkbox">
+        <input type="checkbox" name="autor">
+        <label>Sou o autor</label>
+    </div>
 
-        </form>
+    <button type="submit" class="submit-btn">
+        Enviar obra
+    </button>
+
+</form>
+
 
     </div>
 </section>

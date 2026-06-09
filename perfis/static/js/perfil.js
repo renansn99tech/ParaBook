@@ -180,10 +180,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // =============================
     // LOGOUT
     // =============================
-    document.getElementById("btnLogout")?.addEventListener("click", () => {
+    // document.getElementById("btnLogout")?.addEventListener("click", () => {
 
-        localStorage.removeItem("usuarioLogado");
-        window.location.href = "index.html";
-    });
+    //     localStorage.removeItem("usuarioLogado");
+    //     window.location.href = "index.html";
+    // });
 
 });

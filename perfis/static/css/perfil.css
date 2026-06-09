@@ -104,12 +104,23 @@ body {
     cursor: pointer;
 }
 
+.logout-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
 .login-btn:hover{
     transform: scale(1.1);
     transition: 0.5s ease;
     background-color: #1d9f4c;
     color: white;
 }
+
 main hr {
     border: none;
     height: 1px;

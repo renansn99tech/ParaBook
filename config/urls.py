@@ -23,16 +23,12 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     # Página inicial
     path('', index, name='home'), # Página inicial 
     path('usuarios/', include('usuarios.urls')), # Linha inserida com os URLs do app Usuarios
     path('sobre/', sobre, name='sobre'),
     path('comunidades/', include('comunidades.urls')),
-    path('biblioteca/', biblioteca, name='biblioteca'),
-    path('mais-acessados/', mais_acessados, name='mais_acessados'),
-    path('novidades/', novidade, name='novidade'),
-    path('obras-autores/', obras_autores, name='obras_autores'),
+    path('biblioteca/', include('biblioteca.urls')),
     path('conta/', include('perfis.urls', namespace='perfis')), # Adicionando url do app Perfis
     path('leitura/', leitura, name='leitura'),
     path('login/', tela_login, name='login'),

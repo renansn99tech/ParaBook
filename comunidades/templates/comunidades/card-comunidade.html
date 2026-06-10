@@ -1,0 +1,29 @@
+<div class="card-comunidade">
+
+    <div class="card-header">
+        <h2>{{ comunidade.nome }}</h2>
+    </div>
+
+    <div class="card-body">
+        <p>{{ comunidade.descricao }}</p>
+    </div>
+
+    <div class="card-footer">
+
+        <a href="{% url 'acesso_comunidade' %}">
+            Entrar
+        </a>
+
+        {% if user.is_staff %}
+            <a href="{% url 'editar_comunidade' comunidade.id %}">
+                Editar
+            </a>
+
+            <a href="{% url 'excluir_comunidade' comunidade.id %}">
+                Excluir
+            </a>
+        {% endif %}
+
+    </div>
+
+</div>

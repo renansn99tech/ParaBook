@@ -1,0 +1,27 @@
+<h1>Criar Comunidade</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input
+        type="text"
+        name="nome"
+        placeholder="Nome da comunidade"
+        required
+    >
+
+    <br><br>
+
+    <textarea
+        name="descricao"
+        placeholder="Descrição"
+        required
+    ></textarea>
+
+    <br><br>
+
+    <button type="submit">
+        Salvar
+    </button>
+
+</form>

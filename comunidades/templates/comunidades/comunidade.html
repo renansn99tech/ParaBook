@@ -32,11 +32,15 @@ Comunidades
             ao seu interesse.
         </p>
 
+        <a href="{% url 'criar_comunidade' %}">
+           Criar Comunidade
+        </a>
+
         <div class="grid">
 
             {% for comunidade in comunidades %}
 
-                {% include 'partials/card_comunidade.html' %}
+                {% include 'comunidades/card_comunidade.html' %}
 
             {% empty %}
 

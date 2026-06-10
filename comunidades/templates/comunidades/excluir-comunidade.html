@@ -1,0 +1,15 @@
+<h1>Excluir Comunidade</h1>
+
+<p>
+    Deseja realmente excluir
+    "{{ comunidade.nome }}"?
+</p>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <button type="submit">
+        Sim, excluir
+    </button>
+
+</form>

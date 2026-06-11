@@ -79,33 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =============================
-    // EDITAR PERFIL
-    // =============================
-    document.getElementById("btnEditarPerfil")?.addEventListener("click", async () => {
-
-        const { value: nome } = await Swal.fire({
-            title: "Editar nome",
-            input: "text",
-            inputLabel: "Novo nome",
-            inputPlaceholder: "Digite seu nome",
-            showCancelButton: true,
-            confirmButtonText: "Salvar",
-            cancelButtonText: "Cancelar"
-        });
-
-        if (nome) {
-            document.getElementById("nomePerfil").textContent = nome;
-
-            Swal.fire({
-                icon: "success",
-                title: "Nome atualizado!",
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-    });
-
-    // =============================
     // EDITAR BIO
     // =============================
     document.getElementById("btnEditarBio")?.addEventListener("click", async () => {
@@ -176,14 +149,5 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
-
-    // =============================
-    // LOGOUT
-    // =============================
-    // document.getElementById("btnLogout")?.addEventListener("click", () => {
-
-    //     localStorage.removeItem("usuarioLogado");
-    //     window.location.href = "index.html";
-    // });
 
 });

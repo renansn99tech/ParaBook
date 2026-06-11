@@ -126,15 +126,15 @@
                     </h1>
 
                     <p class="perfil-username">
-                        @{{perfil.username }}
+                        @{{ perfil.username|default:"usuario" }}
                     </p>
 
                     <p class="perfil-bio">
-                        {{ perfil.descricao_perfil }}
+                        - {{ perfil.descricao_perfil }}
                     </p>
 
                     <p class="perfil-historico">
-                        {{ perfil.historico }}
+                        - {{ perfil.historico|default:"Nenhum livro lido."}}
                     </p>
 
                     <div class="perfil-meta">
@@ -158,16 +158,8 @@
                                 {{ perfil.localizacao|default:"Não informado" }}
                             </span>
                         </div>
-
                     </div>
-
-                    <button class="btn-editar-perfil"
-                        id="btnEditarPerfil">
-                        Editar Perfil
-                    </button>
-
                 </div>
-
             </div>
 
         </section>
@@ -434,12 +426,17 @@
                             {% comment %} FORM inserido para operação Update do CRUD {% endcomment %}
                             <form action="{% url 'perfis:perfil_pessoal' %}" method="POST">
                                 {% csrf_token %} 
-                                <div class="config-section">
+                                <div class="config-section2">
                                     <h3>Editar Perfil</h3>
                                     
                                     <div class="form-group">
                                         <label for="input-nome">Nome de Exibição</label>
                                         <input type="text" id="input-nome" name="nome" value="{{ usuario_custom.nome }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="input-username">Nome de Usuário (Username)</label>
+                                        <input type="text" id="input-username" name="username" value="{{ perfil.username|default:'' }}" placeholder="Ex: renan_santos">
                                     </div>
 
                                     <div class="form-group">
@@ -566,6 +563,22 @@
     <script src="{% static 'js/navbar.js' %}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% if messages %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for message in messages %}
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: "{{ message }}",
+                    icon: "{{ message.tags|default:'info' }}", // Ajusta o ícone baseado na tag do Django (success, error, info)
+                    confirmButtonText: 'Continuar',
+                    confirmButtonColor: '#5C3B2E' // Combinando com a paleta elegante do seu projeto
+                });
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
 
 </body>
 

@@ -259,7 +259,7 @@ main hr {
     color: var(--text-muted);
 }
 
-.perfil-bio, .perfil-historico {
+.perfil-historico, .perfil-descricao {
     margin: 15px 0;
     color: #D1D5DB;
     padding: 1.5rem; 
@@ -722,8 +722,8 @@ body.light-mode .historico-date {
     color: #6B7280;
 }
 
-body.light-mode .perfil-bio,
-body.light-mode .bio-text,
+body.light-mode .sobre-texto,
+body.light-mode .perfil-descricao,
 body.light-mode .authors-list li,
 body.light-mode .favorito-info p,
 body.light-mode .config-item span {
@@ -936,7 +936,7 @@ body.light-mode .btn-remover-favorito {
         font-size: 1.6rem;
     }
 
-    .perfil-bio {
+    .perfil-descricao {
         font-size: 0.95rem;
     }
 
@@ -1057,8 +1057,8 @@ body.light-mode .btn-remover-favorito {
         font-size: 1.4rem;
     }
 
+    .perfil-descricao,
     .perfil-username,
-    .perfil-bio,
     .meta-label,
     .meta-value {
         font-size: 0.9rem;

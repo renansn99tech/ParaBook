@@ -105,7 +105,7 @@
                     
 
                     {% if perfil.foto %}
-                        <img src="{{ perfil.foto|default:'https://via.placeholder.com/150' }}" alt="Foto de Perfil" class="perfil-avatar">
+                        <img src="{{ perfil.foto }}" alt="Foto de Perfil" class="perfil-avatar">
                     {% else %}
                         <img src="{% static 'img/user.png' %}"
                             alt="Avatar do Usuário"
@@ -129,7 +129,7 @@
                         @{{ perfil.username|default:"usuario" }}
                     </p>
 
-                    <p class="perfil-bio">
+                    <p class="perfil-descricao">
                         - {{ perfil.descricao_perfil }}
                     </p>
 
@@ -308,7 +308,7 @@
 
                             <h3>Sobre Você</h3>
 
-                            <p class="bio-text">
+                            <p class="sobre-texto">
                                 {{ perfil.bio|default:"Nenhuma biografia cadastrada." }}
                             </p>
 
@@ -449,13 +449,6 @@
                                         <input type="text" id="input-localizacao" name="localizacao" value="{{ perfil.localizacao|default:'' }}" placeholder="Ex: Belém - PA">
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="input-bio">Biografia Detalhada</label>
-                                        <textarea id="input-bio" name="bio" rows="4" placeholder="Conte um pouco sobre você...">
-                                            {{ perfil.bio|default:'' }}
-                                        </textarea>
-                                    </div>
-
                                     <input type="hidden" name="foto" value="{{ perfil.foto|default:'' }}">
                                 </div>
 
@@ -472,7 +465,7 @@
 
                             <a href="{% url 'logout' %}">
                                 <button class="btn-config btn-danger">
-                                    Sair da conta
+                                    Excluir conta
                                 </button>
                             </a>
 
@@ -558,7 +551,7 @@
     <hr class="footer-bottom-line">
 
     <!-- SCRIPTS -->
-    <script src="{% static 'js/perfil.js' %}"></script>
+    <script src="{% static 'js/perfil.js' %}?v=1.3"></script>
     <script src="{% static 'js/index.js' %}"></script>
     <script src="{% static 'js/navbar.js' %}"></script>
 

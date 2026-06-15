@@ -252,15 +252,22 @@ main hr{
 }
 
 /* ===============================
-   CARROSSEL
+   CARROSSEL (REFATORADO)
 ================================= */
 
-.container {
+/* Container geral */
+.carousel-container {
+    position: relative; /* ESSENCIAL → fixa as setas dentro */
     overflow: hidden;
     padding: 20px;
-    position: relative;
+    height: 450px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Mantém seu estilo de nav */
 .nav {
     display: flex;
     justify-content: space-between;
@@ -270,14 +277,20 @@ main hr{
     backdrop-filter: blur(10px);
 }
 
+/* Área dos cards */
 .card-carousel {
-    position: relative;
-    height: 500px;
-    margin-top: 40px;
+    position: relative; /* IMPORTANTE pro JS */
+    width: 100%;
+    height: 100%;
 }
 
+/* CARD */
 .card-carousel .card {
-    position: absolute;
+    position: absolute; /* ESSENCIAL */
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
 
     width: 280px;
     height: 400px;
@@ -294,19 +307,22 @@ main hr{
     justify-content: center;
 
     transition: all 0.4s ease;
-
-    filter: blur(1px);
-    opacity: 0.5;
 }
 
+/* CARD DESTACADO */
 .card.highlight {
-    transform: scale(1.25) !important;
-    filter: blur(0);
-    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
     z-index: 10;
 }
 
-/* ===== IMAGENS FIXAS (CORRETO) ===== */
+/* HOVER */
+.card-carousel .card:hover {
+    z-index: 20;
+}
+
+/* ===============================
+   IMAGENS
+================================= */
 
 .card-1 .image-container {
     background-image: url("../livros/CAPAS-NOVAS/amareservir.-fotor-enhance-2026042993542.jpg");
@@ -324,23 +340,47 @@ main hr{
     background-image: url("../livros/CAPAS-NOVAS/alienista.-fotor-enhance-2026042992344.jpg");
 }
 
-.card-carousel .card:hover {
-    z-index: 20;
+/* IMAGEM */
+.image-container {
+    width: 180px;
+    height: 260px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
+
+/* TEXTO */
+.card p {
+    color: #9CA3AF;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 20px;
+}
+
+/* ===============================
+   BOTÕES (SETAS)
+================================= */
 
 .carousel-buttons {
     position: absolute;
     top: 50%;
+    left: 0;
     width: 100%;
+
     transform: translateY(-50%);
+
     display: flex;
     justify-content: space-between;
-    padding: 0 5%;
-    pointer-events: none;
+
+    padding: 0 20px;
+
+    pointer-events: none; /* permite clicar só nos botões */
 }
 
 .carousel-btn {
     pointer-events: all;
+
     background: rgba(17, 24, 39, 0.8);
     border: 1px solid #1F2937;
     color: #E5E7EB;
@@ -356,27 +396,13 @@ main hr{
     cursor: pointer;
 }
 
+/* HOVER LIMPO (corrigido) */
 .carousel-btn:hover {
-    transform: translateY(-50%) scale(1.1);
+    transform: scale(1.1);
     background: rgba(99,102,241,0.3);
 }
 
-.image-container {
-    width: 180px;
-    height: 260px;
-    border-radius: 10px;
-    background-size: cover;
-    background-position: center;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-}
-
-.card p {
-    color: #9CA3AF;
-    text-align: center;
-    font-size: 0.9rem;
-    margin-top: 20px;
-}
-
+/* BOTÃO GENÉRICO (mantido) */
 .btn-main {
     background: #22C55E;
     padding: 10px 20px;
@@ -386,6 +412,7 @@ main hr{
     text-align: center;
     display: inline-block;
 }
+
 /* ===============================
     CTA AUTORES
 ================================= */
@@ -1065,35 +1092,38 @@ body.light-mode main hr {
         padding: 20px 10px;
     }
 
-    .card-carousel {
-        display: flex;
-        overflow-x: auto;
-        gap: 20px;
-        height: auto;
-        scroll-snap-type: x mandatory;
-        padding-bottom: 20px;
-    }
 
-    .card-carousel .card {
-        position: relative;
-        min-width: 230px;
-        width: 230px;
-        height: auto;
-        flex-shrink: 0;
+.card-carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 0;
+}
 
-        transform: none !important;
-        opacity: 1;
-        filter: none;
-    }
+
+.card-carousel .card {
+    min-width: 280px;
+    flex-shrink: 0;
+
+    background: #111827;
+    border: 1px solid #1F2937;
+    border-radius: 16px;
+
+    padding: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 
     .image-container {
         width: 150px;
         height: 220px;
     }
 
-    .carousel-buttons {
-        display: none;
-    }
+
 
     /* FAQ */
 
@@ -1220,9 +1250,7 @@ body.light-mode main hr {
         overflow-x: auto;
     }
 
-    .carousel-buttons {
-        display: none;
-    }
+
 
     /* FOOTER */
 

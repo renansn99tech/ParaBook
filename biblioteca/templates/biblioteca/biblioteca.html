@@ -8,8 +8,6 @@ Biblioteca
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/biblioteca.css' %}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<link rel="stylesheet" href="{% static 'css/biblioteca.css' %}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 {% endblock %}
 
 {% block content %}
@@ -18,16 +16,6 @@ Biblioteca
     <section class="banner">
         <article class="container banner-content">
             <h2>Todos os Títulos</h2>
-
-            <p>
-                Aqui você encontrará uma ampla seleção de livros desde os clássicos aos atuais.
-            </p>
-
-            <p>
-                Explore nosso acervo e descubra novos títulos em diferentes
-                <strong><em>categorias</em></strong>.
-            </p>
-            <h2>Todos os Títulos</h2>
             <p>Aqui você encontrará uma ampla seleção de livros desde os clássicos aos atuais.</p>
             <p>Explore nosso acervo e descubra novos títulos em diferentes <strong><em>categorias</em></strong>.</p>
         </article>
@@ -35,38 +23,7 @@ Biblioteca
 
     <hr>
     <h2 class="genero-titulo">Filosofia</h2>
-
-    <h2 class="genero-titulo">Filosofia</h2>
     <section class="agrupar-livros">
-        {% for livro in livros_filosofia %}
-
-            <div class="card-livro">
-
-                <!-- CAPA -->
-                <img 
-                    src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" 
-                    alt="{{ livro.nome }}"
-                    class="card-img-top"
-                >
-
-                <h3>{{ livro.nome }}</h3>
-
-                <p><strong>Autor:</strong> {{ livro.autor }}</p>
-
-                <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
-
-                <a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
-                    Adicionar à minha biblioteca
-                </a>
-
-                {% if livro.arquivo %}
-                    <a href="{{ livro.arquivo.url }}" target="_blank">
-                        📖 Ler
-                    </a>
-                {% endif %}
-
-            </div>
-
         {% for livro in livros_filosofia %}
             <div class="card-livro">
                 <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
@@ -78,16 +35,11 @@ Biblioteca
                 </a>
             </div>
         {% empty %}
-            <p>Nenhum livro encontrado.</p>
             <p>Nenhum livro de filosofia encontrado.</p>
         {% endfor %}
     </section>
 
-
-    <!-- ================= LITERATURA ================= -->
     <hr>
-    <h2 class="genero-titulo">Literatura</h2>
-
     <h2 class="genero-titulo">Literatura</h2>
     <section class="agrupar-livros">
         {% for livro in livros_literatura %}
@@ -101,16 +53,11 @@ Biblioteca
                 </a>
             </div>
         {% empty %}
-            <p>Nenhum livro encontrado.</p>
             <p>Nenhum livro de literatura encontrado.</p>
         {% endfor %}
     </section>
 
-
-    <!-- ================= RELIGIOSOS ================= -->
     <hr>
-    <h2 class="genero-titulo">Religiosos</h2>
-
     <h2 class="genero-titulo">Religiosos</h2>
     <section class="agrupar-livros">
         {% for livro in livros_religiosos %}
@@ -124,16 +71,11 @@ Biblioteca
                 </a>
             </div>
         {% empty %}
-            <p>Nenhum livro encontrado.</p>
             <p>Nenhum livro religioso encontrado.</p>
         {% endfor %}
     </section>
 
-
-    <!-- ================= EXATAS ================= -->
     <hr>
-    <h2 class="genero-titulo">Ciências Exatas</h2>
-
     <h2 class="genero-titulo">Ciências Exatas</h2>
     <section class="agrupar-livros">
         {% for livro in livros_exatas %}
@@ -147,16 +89,11 @@ Biblioteca
                 </a>
             </div>
         {% empty %}
-            <p>Nenhum livro encontrado.</p>
             <p>Nenhum livro de exatas encontrado.</p>
         {% endfor %}
     </section>
 
-
-    <!-- ================= INFANTIL ================= -->
     <hr>
-    <h2 class="genero-titulo">Infantis</h2>
-
     <h2 class="genero-titulo">Infantis</h2>
     <section class="agrupar-livros">
         {% for livro in livros_infantis %}
@@ -195,11 +132,10 @@ Biblioteca
         {% endfor %}
     </section>
 
-
     <a href="#topo">
         <button class="button-top" id="voltar-topo">
             <svg class="svgIcon" viewBox="0 0 384 512">
-                <path d="M214.6 41.4..."></path>
+                <path d="M214.6 41.4 365.4 192.2c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 141.2 224 448c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-306.7L63.9 237.5c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L169.4 41.4c12.5-12.5 32.8-12.5 45.3 0z"></path>
             </svg>
         </button>
     </a>

@@ -4,33 +4,41 @@ from .models import Categoria, Livro, ObraAutor, Biblioteca
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-def biblioteca(request):
-    return render(request, 'biblioteca/biblioteca.html')
-
-def acesso_biblioteca(request):
-    return render(request, 'biblioteca/acesso-biblioteca.html')
-
-def mais_acessados(request):
-    return render(request, 'biblioteca/mais-acessados.html')
-
-def obras_autores(request):
-    return render(request, 'biblioteca/obras-autores.html')
-
 def novidade(request):
     return render(request, 'biblioteca/novidade.html')
 
 
-def biblioteca(request):
-    livros_filosofia = Livro.objects.filter(categoria__nome='filosofia')
-    livros_literatura = Livro.objects.filter(categoria__nome='literatura')
-    livros_religiosos = Livro.objects.filter(categoria__nome='religiosos')
-    livros_exatas = Livro.objects.filter(categoria__nome='exatas')
-    livros_infantis = Livro.objects.filter(categoria__nome='infantis')
-    livros_independentes = Livro.objects.filter(categoria__nome='independente')
+# def biblioteca(request):
+#     livros_filosofia = Livro.objects.filter(categoria__nome='filosofia')
+#     livros_literatura = Livro.objects.filter(categoria__nome='literatura')
+#     livros_religiosos = Livro.objects.filter(categoria__nome='religiosos')
+#     livros_exatas = Livro.objects.filter(categoria__nome='exatas')
+#     livros_infantis = Livro.objects.filter(categoria__nome='infantis')
+#     livros_independentes = Livro.objects.filter(categoria__nome='independente')
     
-    livros_independentes = ObraAutor.objects.filter(status='aprovado',categoria__nome__iexact='independente')
+#     livros_independentes = ObraAutor.objects.filter(status='aprovado',categoria__nome__iexact='independente')
 
 
+
+#     return render(request, 'biblioteca/biblioteca.html', {
+#         'livros_filosofia': livros_filosofia,
+#         'livros_literatura': livros_literatura,
+#         'livros_religiosos': livros_religiosos,
+#         'livros_exatas': livros_exatas,
+#         'livros_infantis': livros_infantis,
+#         'livros_independentes': livros_independentes,
+#     })
+
+def biblioteca(request):
+    # Filtrando os livros do modelo Livro por categoria
+    livros_filosofia = Livro.objects.filter(categoria__nome__iexact='filosofia')
+    livros_literatura = Livro.objects.filter(categoria__nome__iexact='literatura')
+    livros_religiosos = Livro.objects.filter(categoria__nome__iexact='religiosos')
+    livros_exatas = Livro.objects.filter(categoria__nome__iexact='exatas')
+    livros_infantis = Livro.objects.filter(categoria__nome__iexact='infantis')
+    
+    # IMPORTANTE: Corrigido o conflito. Obras dos autores independentes vêm de ObraAutor
+    livros_independentes = ObraAutor.objects.filter(status='aprovado', categoria__nome__iexact='independente')
 
     return render(request, 'biblioteca/biblioteca.html', {
         'livros_filosofia': livros_filosofia,
@@ -40,7 +48,6 @@ def biblioteca(request):
         'livros_infantis': livros_infantis,
         'livros_independentes': livros_independentes,
     })
-
 
 @login_required
 def adicionar_a_biblioteca(request, livro_id):
@@ -109,14 +116,9 @@ def deletar_livro(request, id):
     return redirect('biblioteca')  # sem tela de confirmação
 
 
-
 def acesso_biblioteca(request):
     return render(request, 'biblioteca/acesso-biblioteca.html')
 
 
 def mais_acessados(request):
     return render(request, 'biblioteca/mais-acessados.html')
-
-
-def novidade(request):
-    return render(request, 'biblioteca/novidade.html')

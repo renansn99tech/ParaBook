@@ -6,11 +6,8 @@ Biblioteca
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet"
-    href="{% static 'css/biblioteca.css' %}">
-
-<link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<link rel="stylesheet" href="{% static 'css/biblioteca.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 {% endblock %}
 
 {% block content %}
@@ -19,506 +16,184 @@ Biblioteca
 
     <!-- BANNER -->
     <section class="banner">
-
         <article class="container banner-content">
-
-            <h2>
-                Todos os Títulos
-            </h2>
+            <h2>Todos os Títulos</h2>
 
             <p>
-                Aqui você encontrará uma ampla seleção
-                de livros desde os clássicos aos atuais.
+                Aqui você encontrará uma ampla seleção de livros desde os clássicos aos atuais.
             </p>
 
             <p>
-                Explore nosso acervo e descubra novos títulos
-                em diferentes
+                Explore nosso acervo e descubra novos títulos em diferentes
                 <strong><em>categorias</em></strong>.
             </p>
-
         </article>
-
     </section>
 
-    <!-- FILOSOFIA -->
-    <hr>
+    <!-- FUNÇÃO REUTILIZÁVEL DE CARD -->
+    {% comment %} Use sempre esse padrão {% endcomment %}
 
-    <h2 class="genero-titulo">
-        Filosofia
-    </h2>
+    <!-- ================= FILOSOFIA ================= -->
+    <hr>
+    <h2 class="genero-titulo">Filosofia</h2>
 
     <section class="agrupar-livros">
-
         {% for livro in livros_filosofia %}
 
-{% for livro in livros_filosofia %}
-    <div class="card-livro">
+            <div class="card-livro">
 
-        <!-- CAPA -->
-        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+                <!-- CAPA -->
+                <img 
+                    src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" 
+                    alt="{{ livro.nome }}"
+                    class="card-img-top"
+                >
 
-        <!-- TÍTULO -->
-        <h3>
-            {% if livro.nome %}
-                {{ livro.nome }}
-            {% else %}
-                {{ livro.titulo }}
-            {% endif %}
-        </h3>
+                <h3>{{ livro.nome }}</h3>
 
-        <!-- AUTOR -->
-        <p>
-            <strong>Autor:</strong>
-            {% if livro.autor %}
-                {{ livro.autor }}
-            {% else %}
-                {{ livro.nome }}
-            {% endif %}
-        </p>
+                <p><strong>Autor:</strong> {{ livro.autor }}</p>
 
-        <!-- GÊNERO -->
-        <p>
-            <strong>Gênero:</strong>
-            {{ livro.categoria.nome }}
-        </p>
+                <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
 
-        <!-- BOTÃO -->
+                <a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
+                    Adicionar à minha biblioteca
+                </a>
 
+                {% if livro.arquivo %}
+                    <a href="{{ livro.arquivo.url }}" target="_blank">
+                        📖 Ler
+                    </a>
+                {% endif %}
 
-
-<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
-    Adicionar à minha biblioteca
-</a>
-
-
-
-
-
-        <!-- LINK PARA LER -->
-        {% if livro.arquivo %}
-            <a href="{{ livro.arquivo.url }}" target="_blank">
-                📖 Ler
-            </a>
-        {% endif %}
-
-    </div>
-{% empty %}
-    <p>Nenhum livro encontrado.</p>
-{% endfor %}
-
-
+            </div>
 
         {% empty %}
-
-            <p>
-                Nenhum livro encontrado.
-            </p>
-
+            <p>Nenhum livro encontrado.</p>
         {% endfor %}
-
     </section>
 
-    <!-- LITERATURA -->
-    <hr>
 
-    <h2 class="genero-titulo">
-        Literatura
-    </h2>
+    <!-- ================= LITERATURA ================= -->
+    <hr>
+    <h2 class="genero-titulo">Literatura</h2>
 
     <section class="agrupar-livros">
-
         {% for livro in livros_literatura %}
+            <div class="card-livro">
 
-{% for livro in livros_filosofia %}
-    <div class="card-livro">
+                <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}" class="card-img-top">
 
-        <!-- CAPA -->
-        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+                <h3>{{ livro.nome }}</h3>
+                <p><strong>Autor:</strong> {{ livro.autor }}</p>
+                <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
 
-        <!-- TÍTULO -->
-        <h3>
-            {% if livro.nome %}
-                {{ livro.nome }}
-            {% else %}
-                {{ livro.titulo }}
-            {% endif %}
-        </h3>
+                <a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
+                    Adicionar à minha biblioteca
+                </a>
 
-        <!-- AUTOR -->
-        <p>
-            <strong>Autor:</strong>
-            {% if livro.autor %}
-                {{ livro.autor }}
-            {% else %}
-                {{ livro.nome }}
-            {% endif %}
-        </p>
-
-        <!-- GÊNERO -->
-        <p>
-            <strong>Gênero:</strong>
-            {{ livro.categoria.nome }}
-        </p>
-
-        <!-- BOTÃO -->
-
-
-<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
-    Adicionar à minha biblioteca
-</a>
-
-
-
-        <!-- LINK PARA LER -->
-        {% if livro.arquivo %}
-            <a href="{{ livro.arquivo.url }}" target="_blank">
-                📖 Ler
-            </a>
-        {% endif %}
-
-    </div>
-{% empty %}
-    <p>Nenhum livro encontrado.</p>
-{% endfor %}
-
+                {% if livro.arquivo %}
+                    <a href="{{ livro.arquivo.url }}" target="_blank">📖 Ler</a>
+                {% endif %}
+            </div>
 
         {% empty %}
-
-            <p>
-                Nenhum livro encontrado.
-            </p>
-
+            <p>Nenhum livro encontrado.</p>
         {% endfor %}
-
     </section>
 
-    <!-- RELIGIOSOS -->
-    <hr>
 
-    <h2 class="genero-titulo">
-        Religiosos
-    </h2>
+    <!-- ================= RELIGIOSOS ================= -->
+    <hr>
+    <h2 class="genero-titulo">Religiosos</h2>
 
     <section class="agrupar-livros">
-
         {% for livro in livros_religiosos %}
+            <div class="card-livro">
 
-{% for livro in livros_filosofia %}
-    <div class="card-livro">
+                <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}" class="card-img-top">
 
-        <!-- CAPA -->
-        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+                <h3>{{ livro.nome }}</h3>
+                <p><strong>Autor:</strong> {{ livro.autor }}</p>
+                <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
 
-        <!-- TÍTULO -->
-        <h3>
-            {% if livro.nome %}
-                {{ livro.nome }}
-            {% else %}
-                {{ livro.titulo }}
-            {% endif %}
-        </h3>
+                <a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
+                    Adicionar à minha biblioteca
+                </a>
 
-        <!-- AUTOR -->
-        <p>
-            <strong>Autor:</strong>
-            {% if livro.autor %}
-                {{ livro.autor }}
-            {% else %}
-                {{ livro.nome }}
-            {% endif %}
-        </p>
-
-        <!-- GÊNERO -->
-        <p>
-            <strong>Gênero:</strong>
-            {{ livro.categoria.nome }}
-        </p>
-
-        <!-- BOTÃO -->
-
-
-<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
-    Adicionar à minha biblioteca
-</a>
-
-
-
-        <!-- LINK PARA LER -->
-        {% if livro.arquivo %}
-            <a href="{{ livro.arquivo.url }}" target="_blank">
-                📖 Ler
-            </a>
-        {% endif %}
-
-    </div>
-{% empty %}
-    <p>Nenhum livro encontrado.</p>
-{% endfor %}
-
-
-
-
+                {% if livro.arquivo %}
+                    <a href="{{ livro.arquivo.url }}" target="_blank">📖 Ler</a>
+                {% endif %}
+            </div>
 
         {% empty %}
-
-            <p>
-                Nenhum livro encontrado.
-            </p>
-
+            <p>Nenhum livro encontrado.</p>
         {% endfor %}
-
     </section>
 
-    <!-- EXATAS -->
-    <hr>
 
-    <h2 class="genero-titulo">
-        Ciências Exatas
-    </h2>
+    <!-- ================= EXATAS ================= -->
+    <hr>
+    <h2 class="genero-titulo">Ciências Exatas</h2>
 
     <section class="agrupar-livros">
-
         {% for livro in livros_exatas %}
+            <div class="card-livro">
 
-{% for livro in livros_filosofia %}
-    <div class="card-livro">
+                <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}" class="card-img-top">
 
-        <!-- CAPA -->
-        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+                <h3>{{ livro.nome }}</h3>
+                <p><strong>Autor:</strong> {{ livro.autor }}</p>
+                <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
 
-        <!-- TÍTULO -->
-        <h3>
-            {% if livro.nome %}
-                {{ livro.nome }}
-            {% else %}
-                {{ livro.titulo }}
-            {% endif %}
-        </h3>
+                <a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
+                    Adicionar à minha biblioteca
+                </a>
 
-        <!-- AUTOR -->
-        <p>
-            <strong>Autor:</strong>
-            {% if livro.autor %}
-                {{ livro.autor }}
-            {% else %}
-                {{ livro.nome }}
-            {% endif %}
-        </p>
-
-        <!-- GÊNERO -->
-        <p>
-            <strong>Gênero:</strong>
-            {{ livro.categoria.nome }}
-        </p>
-
-        <!-- BOTÃO -->
-
-
-<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
-    Adicionar à minha biblioteca
-</a>
-
-
-
-
-        <!-- LINK PARA LER -->
-        {% if livro.arquivo %}
-            <a href="{{ livro.arquivo.url }}" target="_blank">
-                📖 Ler
-            </a>
-        {% endif %}
-
-    </div>
-{% empty %}
-    <p>Nenhum livro encontrado.</p>
-{% endfor %}
-
-
+                {% if livro.arquivo %}
+                    <a href="{{ livro.arquivo.url }}" target="_blank">📖 Ler</a>
+                {% endif %}
+            </div>
 
         {% empty %}
-
-            <p>
-                Nenhum livro encontrado.
-            </p>
-
+            <p>Nenhum livro encontrado.</p>
         {% endfor %}
-
     </section>
 
-    <!-- INFANTIL -->
-    <hr>
 
-    <h2 class="genero-titulo">
-        Infantis
-    </h2>
+    <!-- ================= INFANTIL ================= -->
+    <hr>
+    <h2 class="genero-titulo">Infantis</h2>
 
     <section class="agrupar-livros">
-
         {% for livro in livros_infantis %}
+            <div class="card-livro">
 
-{% for livro in livros_filosofia %}
-    <div class="card-livro">
+                <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}" class="card-img-top">
 
-        <!-- CAPA -->
-        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
+                <h3>{{ livro.nome }}</h3>
+                <p><strong>Autor:</strong> {{ livro.autor }}</p>
+                <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
 
-        <!-- TÍTULO -->
-        <h3>
-            {% if livro.nome %}
-                {{ livro.nome }}
-            {% else %}
-                {{ livro.titulo }}
-            {% endif %}
-        </h3>
+                <a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
+                    Adicionar à minha biblioteca
+                </a>
 
-        <!-- AUTOR -->
-        <p>
-            <strong>Autor:</strong>
-            {% if livro.autor %}
-                {{ livro.autor }}
-            {% else %}
-                {{ livro.nome }}
-            {% endif %}
-        </p>
-
-        <!-- GÊNERO -->
-        <p>
-            <strong>Gênero:</strong>
-            {{ livro.categoria.nome }}
-        </p>
-
-        <!-- BOTÃO -->
-
-
-<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
-    Adicionar à minha biblioteca
-</a>
-
-
-
-        <!-- LINK PARA LER -->
-        {% if livro.arquivo %}
-            <a href="{{ livro.arquivo.url }}" target="_blank">
-                📖 Ler
-            </a>
-        {% endif %}
-
-    </div>
-{% empty %}
-    <p>Nenhum livro encontrado.</p>
-{% endfor %}
-
-
+                {% if livro.arquivo %}
+                    <a href="{{ livro.arquivo.url }}" target="_blank">📖 Ler</a>
+                {% endif %}
+            </div>
 
         {% empty %}
-
-            <p>
-                Nenhum livro encontrado.
-            </p>
-
+            <p>Nenhum livro encontrado.</p>
         {% endfor %}
-
     </section>
 
-    <!-- AUTORES -->
-    <hr>
-
-    <h2 class="genero-titulo">
-        Autores Independentes
-    </h2>
-
-    <section
-        class="agrupar-livros"
-        id="secao-independentes"
-    >
-
-        {% for livro in livros_independentes %}
-
-{% for livro in livros_filosofia %}
-    <div class="card-livro">
-
-        <!-- CAPA -->
-        <img src="{% if livro.capa %}{% static livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ livro.nome }}">
-
-
-        <!-- TÍTULO -->
-        <h3>
-            {% if livro.nome %}
-                {{ livro.nome }}
-            {% else %}
-                {{ livro.titulo }}
-            {% endif %}
-        </h3>
-
-        <!-- AUTOR -->
-        <p>
-            <strong>Autor:</strong>
-            {% if livro.autor %}
-                {{ livro.autor }}
-            {% else %}
-                {{ livro.nome }}
-            {% endif %}
-        </p>
-
-        <!-- GÊNERO -->
-        <p>
-            <strong>Gênero:</strong>
-            {{ livro.categoria.nome }}
-        </p>
-
-        <!-- BOTÃO -->
-
-
-<a href="{% url 'adicionar_biblioteca' livro.pk %}" class="btn-adicionar">
-    Adicionar à minha biblioteca
-</a>
-
-
-
-
-        <!-- LINK PARA LER -->
-        {% if livro.arquivo %}
-            <a href="{{ livro.arquivo.url }}" target="_blank">
-                📖 Ler
-            </a>
-        {% endif %}
-
-    </div>
-{% empty %}
-    <p>Nenhum livro encontrado.</p>
-{% endfor %}
-
-
-
-
-        {% empty %}
-
-            <p>
-                Nenhum livro encontrado.
-            </p>
-
-        {% endfor %}
-
-    </section>
 
     <!-- BOTÃO TOPO -->
     <a href="#topo">
-
-        <button
-            class="button-top"
-            id="voltar-topo"
-        >
-
-            <svg
-                class="svgIcon"
-                viewBox="0 0 384 512"
-            >
-                <path d="M214.6 41.4..."></path>
-            </svg>
-
+        <button class="button-top" id="voltar-topo">
+            🔼
         </button>
-
     </a>
 
 </main>
@@ -526,11 +201,7 @@ Biblioteca
 {% endblock %}
 
 {% block extra_js %}
-
 <script src="{% static 'js/biblioteca.js' %}"></script>
-
 <script src="{% static 'js/index.js' %}"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
 {% endblock %}

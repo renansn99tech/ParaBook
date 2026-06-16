@@ -17,19 +17,28 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include   # <-- aqui está o include
 from usuarios.views import index, sobre, leitura, tela_login, register, logout_view    # importa sua view
-from biblioteca.views import biblioteca, mais_acessados, novidade, obras_autores
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Página inicial
-    path('', index, name='home'), # Página inicial 
+    # Templates globais
+    path('', index, name='home'), # Página inicial
+    path('sobre/', sobre, name='sobre'), # Página 'Sobre' do projeto
+
+    # App usuarios
     path('usuarios/', include('usuarios.urls')), # Linha inserida com os URLs do app Usuarios
-    path('sobre/', sobre, name='sobre'),
+    
+    # App comunidades
     path('comunidades/', include('comunidades.urls')),
+
+    # App biblioteca
     path('biblioteca/', include('biblioteca.urls')),
+
+    # App perfis
     path('conta/', include('perfis.urls', namespace='perfis')), # Adicionando url do app Perfis
+
+    # Urls auxiliares
     path('leitura/', leitura, name='leitura'),
     path('login/', tela_login, name='login'),
     path('logout/', logout_view, name='logout'), # Adicionada uma view "logout_view" para a função logout do app Perfis

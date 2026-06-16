@@ -3,6 +3,28 @@
     display: none;
 }
 
+/* Botões login/logout da navbar */
+
+.btn-sair {
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1px solid #5C3B2E; /* Tom marrom elegante da sua paleta */
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-sair:hover {
+    background-color: #5C3B2E;
+    color: #FFF;
+    transform: translateY(-2px);
+}
+
 /* MOBILE */
 @media (max-width: 768px) {
 

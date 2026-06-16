@@ -32,8 +32,55 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-    /* Classe LOGO (onde está escrito o nome ParaBook) */
+/* ======================================================= NOVA ADIÇÃO LIGHT-MODE ======================================================= */
 
+/* Altera o fundo do body para tons claros da sua paleta */
+body.light-mode {
+    background: radial-gradient(circle at top, #F5F5F7, #E6E2DB) !important; /* Paleta minimalista e clara */
+    color: #303136 !important; /* Texto escuro para contraste */
+}
+
+/* Garante que o container principal se adapte */
+body.light-mode .perfil-container {
+    background-color: rgba(255, 255, 255, 0.65);
+    border-color: #C1B59F;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* Ajusta os textos do perfil, abas e estatísticas */
+body.light-mode .perfil-nome,
+body.light-mode .stat-num,
+body.light-mode .config-title {
+    color: #303136;
+}
+
+body.light-mode .perfil-username,
+body.light-mode .stat-label,
+body.light-mode .tab-btn {
+    color: #5C3B2E; /* Tom terroso escuro para legibilidade */
+}
+
+body.light-mode .tab-btn.active {
+    color: #FFF;
+    background-color: #5C3B2E;
+}
+
+/* Ajusta as caixas de texto/inputs dentro das configurações */
+body.light-mode .config-input {
+    background-color: #FFF;
+    color: #303136;
+    border: 1px solid #C1B59F;
+}
+
+body.light-mode .config-input:focus {
+    border-color: #5C3B2E;
+    background-color: #FFF;
+}
+
+/* ======================================================= NOVA ADIÇÃO LIGHT-MODE ======================================================= */
+
+
+/* Classe LOGO (onde está escrito o nome ParaBook) */
 .logo {
     margin: 2vh 2vw 2vh 0;
 }

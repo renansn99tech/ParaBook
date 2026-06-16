@@ -51,18 +51,39 @@
 
 /* Aplicando as Variáveis padrão no corpo da página */
 
-/* body {
-    background: radial-gradient(circle at top, #111827, #020617);
-    color: #E5E7EB;
-    font-family: 'Inter', sans-serif;
-} */
-
 body {
     color: #E5E7EB;
     font-family: 'Inter', sans-serif;
     background-color: var(--deep-blue); /* Substituir por --color-primary-dark */
     overflow-x: hidden;
 }
+
+/* ======================================================= NOVA ADIÇÃO LIGHT-MODE ======================================================= */
+
+body.light-mode {
+    background: radial-gradient(circle at top, #F5F5F7, #E6E2DB) !important;
+    color: #303136 !important;
+}
+
+/* Garante que os blocos de texto e seções fade fiquem legíveis */
+body.light-mode .sobre-conteudo,
+body.light-mode .fade-section {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    color: #303136 !important;
+    border-color: #C1B59F !important;
+}
+
+/* Ajusta títulos da página sobre */
+body.light-mode .sobre-conteudo h2,
+body.light-mode .fade-section h3 {
+    color: #5C3B2E !important; /* Cor elegante de destaque */
+}
+
+body.light-mode .fade-section p {
+    color: #4A4A4A !important;
+}
+
+/* ======================================================= NOVA ADIÇÃO LIGHT-MODE ======================================================= */
 
 /* --- Typography Scroll Effect --- */
 .scroll-section {

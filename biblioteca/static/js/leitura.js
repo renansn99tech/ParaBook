@@ -1,69 +1,101 @@
-
 let pdfDoc = null;
 let paginaAtual = 1;
 let totalPaginas = 0;
 let livroAtualId = null;
 
 /* =========================
+INIT
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Leitura iniciada");
+    carregarLeitura();
+});
+
+/* =========================
 CARREGA DADOS DO LIVRO
 ========================= */
 function carregarLeitura() {
-
     const params = new URLSearchParams(window.location.search);
     const id = params.get("livro");
 
-    livroAtualId = id;
-
-    const livro = livros?.[id];
-
-    if (!livro) {
-        document.getElementById("titulo").innerText = "Livro não encontrado";
+    if (!id) {
+        exibirErro("Livro não especificado na URL.");
         return;
     }
 
+    livroAtualId = id;
+
+    carregarDadosLivro(id);
+}
+
+/* =========================
+BUSCA DADOS DO BACKEND
+========================= */
+function carregarDadosLivro(id) {
+    fetch(`/biblioteca/api/livro/${id}/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erro ao buscar livro");
+            }
+            return response.json();
+        })
+        .then(livro => {
+            atualizarInfoLivro(livro);
+
+            paginaAtual = Number(localStorage.getItem(`pagina_${id}`)) || 1;
+
+            carregarPDF(livro.caminho);
+        })
+        .catch(error => {
+            console.error(error);
+            exibirErro("Erro ao carregar livro.");
+        });
+}
+
+/* =========================
+ATUALIZA INFO
+========================= */
+function atualizarInfoLivro(livro) {
     document.getElementById("titulo").innerText = livro.nome;
     document.getElementById("autor").innerText = `Autor: ${livro.autor}`;
-
-    paginaAtual = Number(localStorage.getItem(`pagina_${id}`)) || 1;
-
-    carregarPDF(livro.caminho);
 }
 
 /* =========================
 CARREGAMENTO PDF
 ========================= */
 function carregarPDF(caminho) {
+    if (!window.pdfjsLib) {
+        exibirErro("Biblioteca PDF não carregada.");
+        return;
+    }
 
-    if (!window.pdfjsLib) return;
+    pdfjsLib.getDocument(caminho).promise
+        .then(pdf => {
+            pdfDoc = pdf;
+            totalPaginas = pdf.numPages || 1;
 
-    pdfjsLib.getDocument(caminho).promise.then(pdf => {
+            localStorage.setItem(`total_${livroAtualId}`, totalPaginas);
 
-        pdfDoc = pdf;
-        totalPaginas = pdf.numPages;
+            if (paginaAtual > totalPaginas) {
+                paginaAtual = 1;
+            }
 
-        // GARANTE QUE A BARRA NÃO DIVIDA POR ZERO
-        if (totalPaginas === 0) totalPaginas = 1;
-
-        localStorage.setItem(`total_${livroAtualId}`, totalPaginas);
-
-        if (paginaAtual > totalPaginas) paginaAtual = 1;
-
-        // ATUALIZA UI IMEDIATAMENTE
-        atualizarUI();
-
-        renderizarPagina(paginaAtual);
-    });
+            atualizarUI();
+            renderizarPagina(paginaAtual);
+        })
+        .catch(error => {
+            console.error(error);
+            exibirErro("Erro ao carregar PDF.");
+        });
 }
 
 /* =========================
 RENDERIZA PÁGINA
 ========================= */
 function renderizarPagina(numero) {
-
     if (!pdfDoc) return;
 
     pdfDoc.getPage(numero).then(page => {
-
         const canvas = document.getElementById("pdf-canvas");
         const ctx = canvas.getContext("2d");
 
@@ -77,8 +109,6 @@ function renderizarPagina(numero) {
         paginaAtual = numero;
 
         salvarProgresso();
-
-        // ATUALIZA UI APÓS DEFINIR PÁGINA
         atualizarUI();
     });
 }
@@ -98,11 +128,8 @@ function paginaAnterior() {
     }
 }
 
-
-
-
 /* =========================
-ATUALIZAÇÃO CENTRAL
+UI CENTRAL
 ========================= */
 function atualizarUI() {
     atualizarBarra();
@@ -113,22 +140,19 @@ function atualizarUI() {
 BARRA DE PROGRESSO
 ========================= */
 function atualizarBarra() {
-
     const barra = document.getElementById("barra-progresso");
+    
     if (!barra) return;
 
-    // EVITA BUG QUANDO TOTAL = 0
     if (totalPaginas <= 0) {
         barra.style.width = "0%";
         return;
     }
 
-    const progresso = (paginaAtual / totalPaginas) * 100;
+    const porcentagem = (paginaAtual / totalPaginas) * 100;
+    const seguro = Math.min(Math.max(porcentagem, 0), 100);
 
-    // GARANTE VALORES ENTRE 0 E 100
-    const progressoSeguro = Math.min(Math.max(progresso, 0), 100);
-
-    barra.style.width = progressoSeguro + "%";
+    barra.style.width = `${seguro}%`;
 }
 
 /* =========================
@@ -136,30 +160,22 @@ INFO DE PÁGINA
 ========================= */
 function atualizarPaginaInfo() {
     const info = document.getElementById("pagina-info");
+    
     if (!info) return;
 
     info.innerText = `Página ${paginaAtual} de ${totalPaginas}`;
 }
 
 /* =========================
-SALVA PROGRESSO
-========================= 
-*/
-function atualizarBarraProgresso() {
-    const barra = document.getElementById('barra-progresso');
-    
-    if (totalPaginas > 0) {
-        const porcentagem = (paginaAtual / totalPaginas) * 100;
-        barra.style.width = porcentagem + "%";
-    }
-}
-
+SALVAR PROGRESSO
+========================= */
 function salvarProgresso() {
     localStorage.setItem(`pagina_${livroAtualId}`, paginaAtual);
-    atualizarBarraProgresso(); 
 }
 
 /* =========================
-INIT
+ERRO
 ========================= */
-document.addEventListener("DOMContentLoaded", carregarLeitura);
+function exibirErro(msg) {
+    document.body.innerHTML = `<p style="color:red;text-align:center;">${msg}</p>`;
+}

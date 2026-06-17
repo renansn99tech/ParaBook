@@ -60,6 +60,26 @@ def adicionar_a_biblioteca(request, livro_id):
 
     return redirect('acesso-biblioteca')
 
+
+@login_required
+def leitura(request):
+    return render(request, 'biblioteca/leitura.html')
+
+# biblioteca/views.py
+from django.http import JsonResponse
+from .models import Livro
+
+def livro_api(request, id):
+    livro = Livro.objects.get(id=id)
+
+    data = {
+        "nome": livro.nome,
+        "autor": livro.autor,
+        "caminho": livro.arquivo.url
+    }
+
+    return JsonResponse(data)
+
 def obras_autores(request):
     categorias = Categoria.objects.all()
 

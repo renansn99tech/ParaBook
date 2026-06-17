@@ -15,8 +15,6 @@ def mobile_navbar(request):
 def sobre(request):
     return render(request, 'sobre.html')
 
-def leitura(request):
-    return render(request, 'usuarios/leitura.html')
 
 def tela_login(request):
     if request.method == 'POST':

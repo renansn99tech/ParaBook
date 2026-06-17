@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include   # <-- aqui está o include
-from usuarios.views import index, sobre, leitura, tela_login, register, logout_view    # importa sua view
+from usuarios.views import index, sobre, tela_login, register, logout_view    # importa sua view
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import views as auth_views
 
@@ -39,7 +39,6 @@ urlpatterns = [
     path('conta/', include('perfis.urls', namespace='perfis')), # Adicionando url do app Perfis
 
     # Urls auxiliares
-    path('leitura/', leitura, name='leitura'),
     path('login/', tela_login, name='login'),
     path('logout/', logout_view, name='logout'), # Adicionada uma view "logout_view" para a função logout do app Perfis
     path('alterar-senha/', PasswordChangeView.as_view(template_name='perfis/alterar_senha.html'), name='alterar_senha'),

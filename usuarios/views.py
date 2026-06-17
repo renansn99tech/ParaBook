@@ -38,31 +38,6 @@ def tela_login(request):
     # Se for método GET (apenas acessando a página), renderiza a tela limpa
     return render(request, 'usuarios/tela-login.html')
 
-####### MÉTODO ANTIGO
-######################################################################################
-# def register(request):
-#     if request.method == 'POST':
-#         form = UserCreationForm(request.POST)
-
-#         if form.is_valid():
-#             user = form.save()
-            
-#             # opcional: logar automaticamente
-#             login(request, user)
-
-#             messages.success(request, 'Conta criada com sucesso!')
-#             return redirect('home')
-
-#         else:
-#             messages.error(request, 'Erro ao cadastrar usuário')
-
-#     else:
-#         form = UserCreationForm()
-
-#     return render(request, 'usuarios/register.html', {'form': form})
-
-######################################################################################
-
 ####### NOVO MÉTODO "register" ADAPTADO PARA O CRUD DO APP "perfis":
 def register(request):
     if request.method == 'POST':

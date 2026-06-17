@@ -79,83 +79,123 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =============================
-    // EDITAR PERFIL
-    // =============================
-    document.getElementById("btnEditarPerfil")?.addEventListener("click", async () => {
-
-        const { value: nome } = await Swal.fire({
-            title: "Editar nome",
-            input: "text",
-            inputLabel: "Novo nome",
-            inputPlaceholder: "Digite seu nome",
-            showCancelButton: true,
-            confirmButtonText: "Salvar",
-            cancelButtonText: "Cancelar"
-        });
-
-        if (nome) {
-            document.getElementById("nomePerfil").textContent = nome;
-
-            Swal.fire({
-                icon: "success",
-                title: "Nome atualizado!",
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-    });
-
-    // =============================
     // EDITAR BIO
     // =============================
+    // Procure o evento do botão de biografia (ex: btnTrocarBio ou similar)
     document.getElementById("btnEditarBio")?.addEventListener("click", async () => {
+        
+        // Pega o texto atual da bio para exibir como valor padrão no input
+        const bioAtual = document.querySelector(".sobre-texto")?.innerText || "";
 
-        const { value: bio } = await Swal.fire({
-            title: "Editar bio",
+        const { value: novaBio } = await Swal.fire({
+            title: "Editar Biografia",
             input: "textarea",
-            inputLabel: "Nova bio",
-            inputPlaceholder: "Digite sua bio",
+            inputLabel: "Fale um pouco sobre você",
+            inputValue: bioAtual,
+            inputAttributes: {
+                maxlength: 500,
+                rows: 4
+            },
             showCancelButton: true,
             confirmButtonText: "Salvar",
-            cancelButtonText: "Cancelar"
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: '#5C3B2E' // Mantendo sua paleta elegante
         });
 
-        if (bio) {
-            document.querySelector(".bio-text").textContent = bio;
+        // Se o usuário digitou algo e confirmou
+        if (novaBio !== undefined) {
+            // Criamos um formulário virtual (FormData) para enviar os dados via AJAX para o Django
+            const formData = new FormData();
+            formData.append("bio", novaBio);
+            // Importante: Adicionar o token CSRF que o Django exige para segurança
+            formData.append("csrfmiddlewaretoken", document.querySelector('[name=csrfmiddlewaretoken]').value);
 
-            Swal.fire({
-                icon: "success",
-                title: "Bio atualizada!",
-                timer: 1500,
-                showConfirmButton: false
-            });
+            try {
+                // Envia a nova bio para a view de perfil pessoal
+                const response = await fetch(window.location.href, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Atualiza o texto na tela instantaneamente sem precisar recarregar
+                    if (document.querySelector(".sobre-texto")) {
+                        document.querySelector(".sobre-texto").innerText = novaBio || "Nenhuma biografia cadastrada.";
+                    }
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Biografia atualizada!",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro ao salvar",
+                    text: "Não foi possível atualizar sua biografia no momento."
+                });
+            }
         }
     });
 
     // =============================
-    // TROCAR FOTO
+    // TROCAR FOTO (PERSISTENTE)
     // =============================
     document.getElementById("btnTrocarFoto")?.addEventListener("click", async () => {
 
-        const { value: foto } = await Swal.fire({
+        const { value: fotoUrl } = await Swal.fire({
             title: "Trocar foto",
             input: "url",
             inputLabel: "URL da imagem",
-            inputPlaceholder: "https://...",
+            inputPlaceholder: "https://example.com/sua-foto.png",
             showCancelButton: true,
             confirmButtonText: "Salvar",
-            cancelButtonText: "Cancelar"
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: '#5C3B2E' // Paleta elegante do ParaBook
         });
 
-        if (foto) {
-            document.querySelector(".perfil-avatar").src = foto;
+        // Se o usuário inseriu uma URL válida e confirmou
+        if (fotoUrl) {
+            // Criamos o formulário virtual para envio dos dados
+            const formData = new FormData();
+            formData.append("foto", fotoUrl);
+            // Captura o token CSRF obrigatório do Django para requisições seguras
+            formData.append("csrfmiddlewaretoken", document.querySelector('[name=csrfmiddlewaretoken]').value);
 
-            Swal.fire({
-                icon: "success",
-                title: "Foto atualizada!",
-                timer: 1500,
-                showConfirmButton: false
-            });
+            try {
+                // Envia para a mesma URL da View de perfil atual
+                const response = await fetch(window.location.href, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Atualiza a imagem na tela instantaneamente
+                    const avatarImg = document.querySelector(".perfil-avatar");
+                    if (avatarImg) {
+                        avatarImg.src = fotoUrl;
+                    }
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Foto atualizada!",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro ao salvar",
+                    text: "Não foi possível registrar a nova foto no servidor."
+                });
+            }
         }
     });
 
@@ -176,14 +216,5 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
-
-    // =============================
-    // LOGOUT
-    // =============================
-    // document.getElementById("btnLogout")?.addEventListener("click", () => {
-
-    //     localStorage.removeItem("usuarioLogado");
-    //     window.location.href = "index.html";
-    // });
 
 });

@@ -96,8 +96,9 @@
     </div>
 
 
-    <!-- ================= CARROSSEL ================= -->
-<div class="container">
+<!-- ================= CARROSSEL ================= -->
+
+<div class="carousel-container">
 
     <div class="card-carousel">
 
@@ -124,25 +125,20 @@
     </div>
 
     <div class="carousel-buttons">
-        <button class="carousel-btn left">←</button>
-        <button class="carousel-btn right">→</button>
+        <button class="carousel-btn left">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <button class="carousel-btn right">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
     </div>
 
 </div>
 
 
-        <!-- BOTÕES -->
-        <div class="carousel-buttons">
 
-            <button class="carousel-btn left">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
 
-            <button class="carousel-btn right">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-
-        </div>
 
     </div>
 
@@ -262,6 +258,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'js/carrossel.js' %}"></script>
     <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}

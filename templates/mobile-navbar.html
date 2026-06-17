@@ -12,7 +12,9 @@
             <li><a href="acesso-biblioteca.html">Meus Livros</a></li>
             <li><a href="comunidade.html">Comunidades</a></li>
             <li><a href="sobre.html">Sobre</a></li>
-            <li><a href="admin.html">Administrador</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'perfis:perfil_pessoal' %}">Perfil</a></li>
+            {% endif %}
         </ul>
     </div>
 

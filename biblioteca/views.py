@@ -51,19 +51,25 @@ def biblioteca(request):
 
 @login_required
 def adicionar_a_biblioteca(request, livro_id):
-    livro = get_object_or_404(Livro, id_livro=livro_id)
+    if request.method == 'POST':
+        livro = get_object_or_404(Livro, id_livro=livro_id)
 
-    Biblioteca.objects.get_or_create(
-        user=request.user,
-        livro=livro
-    )
+        obj, criado = Biblioteca.objects.get_or_create(
+            user=request.user,
+            livro=livro
+        )
+
+        if criado:
+            messages.success(request, "Livro adicionado com sucesso!")
+        else:
+            messages.info(request, "Este livro já está na sua biblioteca.")
 
     return redirect('acesso_biblioteca')
 
 
-
 @login_required
 def leitura(request):
+    # Buscando o id pela query string (?id=1)
     livro_id = request.GET.get('id')
     livro = get_object_or_404(Livro, id_livro=livro_id)
 
@@ -73,19 +79,19 @@ def leitura(request):
 
 
 # biblioteca/views.py
-from django.http import JsonResponse
-from .models import Livro
+# from django.http import JsonResponse
+# from .models import Livro
 
-def livro_api(request, id):
-    livro = Livro.objects.get(id_livro=id)
+# def livro_api(request, id):
+#     livro = Livro.objects.get(id_livro=id)
 
-    data = {
-        "nome": livro.nome,
-        "autor": livro.autor,
-        "caminho": livro.arquivo.url
-    }
+#     data = {
+#         "nome": livro.nome,
+#         "autor": livro.autor,
+#         "caminho": livro.arquivo.url
+#     }
 
-    return JsonResponse(data)
+#     return JsonResponse(data)
 
 def obras_autores(request):
     categorias = Categoria.objects.all()

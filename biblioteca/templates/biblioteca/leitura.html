@@ -17,10 +17,14 @@ Leitura | ParaBook
     <section class="container leitura-container">
 
         <!-- INFO DO LIVRO -->
-        <section class="livro-info">
-            <h2 id="titulo"></h2>
-            <p id="autor"></p>
-        </section>
+<section class="livro-info" 
+            id="dados-livro" 
+            data-id="{{ livro.id_livro }}" 
+            data-caminho="{% if livro.arquivo %}{{ livro.arquivo.url }}{% else %}/static/pdfs/exemplo.pdf{% endif %}">
+    
+    <h2 id="titulo">{{ livro.nome }}</h2>
+    <p id="autor">Autor: {{ livro.autor }}</p>
+</section>
 
         <!-- LOADING -->
         <div id="loading" class="loading-state">

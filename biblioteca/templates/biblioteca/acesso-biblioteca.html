@@ -184,45 +184,32 @@ Minha Biblioteca
     </section>
 
     <!-- GRID DOS LIVROS -->
-    <section class="biblioteca-section">
+<section class="biblioteca-section">
+    <div class="container">
+        <h3 class="biblioteca-title">Seus Livros</h3>
 
-        <div class="container">
-
-            <h3 class="biblioteca-title">
-                Seus Livros
-            </h3>
-
-            <div
-                id="lista-livros"
-                class="biblioteca-grid"
-            ></div>
-
-            <!-- EMPTY STATE -->
-            <div
-                id="empty-state"
-                class="empty-state"
-                style="display: none;"
-            >
-
-                <i class="fa-solid fa-book-open"></i>
-
-                <p>
-                    Você ainda não adicionou nenhum livro
-                    à sua biblioteca.
-                </p>
-
-                <a
-                    href="{% url 'biblioteca' %}"
-                    class="btn-empty-state"
-                >
-                    Explorar Livros
-                </a>
-
-            </div>
-
+        <div id="lista-livros" class="biblioteca-grid">
+            {% for item in livros %}
+                <div class="card-livro" data-genero="{{ item.livro.categoria.nome|lower }}" data-status="{{ item.status }}">
+                    <img src="{% if item.livro.capa %}{% static item.livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ item.livro.nome }}">
+                    <h3>{{ item.livro.nome }}</h3>
+                    <p><strong>Autor:</strong> {{ item.livro.autor }}</p>
+                    <p><strong>Status:</strong> {{ item.get_status_display }}</p>
+                    
+                    <a href="{% url 'leitura' %}?id={{ item.livro.id_livro }}" class="btn-adicionar" style="text-align: center; display: block;">
+                        📖 Ler Agora
+                    </a>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-book-open"></i>
+                    <p>Você ainda não adicionou nenhum livro à sua biblioteca.</p>
+                    <a href="{% url 'biblioteca' %}" class="btn-empty-state">Explorar Livros</a>
+                </div>
+            {% endfor %}
         </div>
-
-    </section>
+    </div>
+</section>
 
     <!-- BOTÃO TOPO -->
     <a href="#topo">

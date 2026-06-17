@@ -1,9 +1,10 @@
+# usuarios/views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .models import Usuario
 from perfis.models import Perfil # Importa a classe Usuario e Perfil das models dos apps
+from .forms import RegistroUsuarioForm  # <-- Importa o novo formulário customizado
 
 
 def index(request):
@@ -36,35 +37,38 @@ def tela_login(request):
     # Se for método GET (apenas acessando a página), renderiza a tela limpa
     return render(request, 'usuarios/tela-login.html')
 
-####### NOVO MÉTODO "register" ADAPTADO PARA O CRUD DO APP "perfis":
+#####################################################################################
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegistroUsuarioForm(request.POST) # <-- Usa o novo form
         if form.is_valid():
-            # 1. Salva o usuário no sistema de autenticação do Django
+            # 1. Salva o usuário no sistema do Django
             auth_user = form.save()
             
-            # 2. Cria o Perfil dinamicamente (Operação CREATE do CRUD de perfis)
+            # 2. Cria o Perfil injetando o username explicitamente!
             novo_perfil = Perfil.objects.create(
+                username=auth_user.username,  # <-- CORREÇÃO: Preenche o username do Perfil
                 descricao_perfil="Olá! Sou um novo leitor do ParaBook.",
                 historico="Nenhum livro lido ainda."
             )
             
-            # 3. Cria o Usuário de vocês amarrando tudo
+            # 3. Cria o Usuário vinculando os dados limpos do formulário
             Usuario.objects.create(
-                user_auth=auth_user, # O campo OneToOne que foi criado
+                user_auth=auth_user,
                 nome=auth_user.username,
-                email=auth_user.email,
+                email=auth_user.email,  # <-- Agora virá preenchido pelo form
                 perfil=novo_perfil
             )
 
+            # Efetua o login e direciona
             login(request, auth_user)
             messages.success(request, 'Conta criada com sucesso!')
-            return redirect('perfis:perfil_pessoal') # Redireciona para a página de perfil
+            return redirect('perfis:perfil_pessoal')
     else:
-        form = UserCreationForm()
+        form = RegistroUsuarioForm() # <-- Usa o novo form
     
     return render(request, 'usuarios/register.html', {'form': form})
+#####################################################################################
 
 def logout_view(request):
     logout(request) # Encerra a sessão do usuário no banco/servidor

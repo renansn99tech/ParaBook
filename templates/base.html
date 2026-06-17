@@ -1,18 +1,15 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
+<body>
 
-<head>
-    <meta charset="UTF-8">
+{% include 'components/navbar.html' %}
 
-    <title>
-        {% block title %}
-            ParaBook
-        {% endblock %}
-    </title>
+{% block content %}
+{% endblock %}
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% include 'components/footer.html' %}
 
+<<<<<<< HEAD
+</body>
+=======
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon"
         href="{% static 'img/favicon.ico' %}">
@@ -189,3 +186,4 @@
 
 </body>
 </html>
+>>>>>>> 2c0caac00413494d1c4818f211cc14a09cbfb681

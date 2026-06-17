@@ -58,19 +58,26 @@ def adicionar_a_biblioteca(request, livro_id):
         livro=livro
     )
 
-    return redirect('acesso-biblioteca')
+    return redirect('acesso_biblioteca')
+
 
 
 @login_required
 def leitura(request):
-    return render(request, 'biblioteca/leitura.html')
+    livro_id = request.GET.get('id')
+    livro = get_object_or_404(Livro, id_livro=livro_id)
+
+    return render(request, 'biblioteca/leitura.html', {
+        'livro': livro
+    })
+
 
 # biblioteca/views.py
 from django.http import JsonResponse
 from .models import Livro
 
 def livro_api(request, id):
-    livro = Livro.objects.get(id=id)
+    livro = Livro.objects.get(id_livro=id)
 
     data = {
         "nome": livro.nome,
@@ -135,9 +142,13 @@ def deletar_livro(request, id):
 
     return redirect('biblioteca')  # sem tela de confirmação
 
-
+@login_required
 def acesso_biblioteca(request):
-    return render(request, 'biblioteca/acesso-biblioteca.html')
+    livros = Biblioteca.objects.filter(user=request.user).select_related('livro')
+
+    return render(request, 'biblioteca/acesso-biblioteca.html', {
+        'livros': livros
+    })
 
 
 def mais_acessados(request):

@@ -1,189 +1,43 @@
-<body>
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
 
-{% include 'components/navbar.html' %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-{% block content %}
-{% endblock %}
+    <title>{% block title %}ParaBook{% endblock %}</title>
 
-{% include 'components/footer.html' %}
+    <link rel="icon" href="{% static 'img/favicon.ico' %}">
 
-<<<<<<< HEAD
-</body>
-=======
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon"
-        href="{% static 'img/favicon.ico' %}">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 
-    <!-- CSS GLOBAL -->
     <link rel="stylesheet"
-        href="{% static 'css/navbar.css' %}">
+          href="{% static 'css/navbar.css' %}">
 
-    <!-- CSS DA PÁGINA -->
     {% block extra_css %}
     {% endblock %}
-
 </head>
 
 <body id="topo">
 
-    <!-- ================================= -->
-    <!-- HEADER / NAVBAR -->
-    <!-- ================================= -->
+    <!-- Navbar -->
+    {% include 'components/navbar.html' %}
 
-    <header>
-        <nav class="container nav">
-
-            <div class="logo-container">
-
-                <img src="{% static 'img/logo-nova.png' %}"
-                    alt="Logo Parabook"
-                    class="logo-img">
-
-                <h1 class="logo">
-                    <span class="para">Para</span>
-                    <span class="book">Book</span>
-                </h1>
-
-            </div>
-
-            <ul class="menu">
-
-                <li>
-                    <a href="{% url 'home' %}">
-                        Início
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'biblioteca' %}">
-                        Meus Livros
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'comunidades' %}">
-                        Comunidades
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'sobre' %}">
-                        Sobre
-                    </a>
-                </li>
-
-                {% if user.is_authenticated %}
-                <li>
-                    <a href="{% url 'perfis:perfil_pessoal' %}">Perfil</a>
-                </li>
-                {% endif %}
-
-                <li>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'usuarios:logout' %}" class="btn-nav btn-sair" id="btnLogout">
-                            Sair <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        </a>
-                    {% else %}
-                        <a href="{% url 'usuarios:login' %}" class="btn-nav btn-entrar">
-                            Entrar <i class="fa-solid fa-user"></i> 
-                        </a>
-                    {% endif %}
-                </li>
-
-                <li>
-                    <button id="theme-toggle"
-                        class="login-btn">
-                        🌙
-                    </button>
-                </li>
-
-            </ul>
-        </nav>
-    </header>
-
-    <!-- NAVBAR MOBILE -->
-    <div id="mobile-navbar-container">
-        {% include 'mobile-navbar.html' %}
-    </div>
-
-    <!-- ================================= -->
-    <!-- CONTEÚDO DAS PÁGINAS -->
-    <!-- ================================= -->
-
+    <!-- Conteúdo -->
     <main>
-
         {% block content %}
         {% endblock %}
-
     </main>
 
-    <!-- ================================= -->
-    <!-- FOOTER -->
-    <!-- ================================= -->
-
-    <footer class="footer">
-
-        <div class="footer-container">
-
-            <div class="footer-brand">
-                <h2>ParaBook</h2>
-                <p>O melhor site de livros.</p>
-            </div>
-
-            <div class="footer-links">
-
-                <h4>Links</h4>
-
-                <a href="{% url 'home' %}">
-                    Início
-                </a>
-
-                <a href="{% url 'biblioteca' %}">
-                    Biblioteca
-                </a>
-
-                <a href="{% url 'comunidades' %}">
-                    Comunidades
-                </a>
-
-            </div>
-
-            <div class="footer-social">
-
-                <h4>Redes</h4>
-
-                <div class="icons">
-                    <i class="fa-brands fa-instagram"></i>
-                    <i class="fa-brands fa-facebook"></i>
-                    <i class="fa-brands fa-github"></i>
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="footer-bottom">
-            <p>© 2026. Todos os direitos reservados.</p>
-        </div>
-
-    </footer>
-
-    <hr class="footer-bottom-line">
-
-    <!-- ================================= -->
-    <!-- JS GLOBAL -->
-    <!-- ================================= -->
+    <!-- Footer -->
+    {% include 'components/footer.html' %}
 
     <script src="{% static 'js/navbar.js' %}"></script>
 
-    <!-- JS ESPECÍFICO -->
     {% block extra_js %}
     {% endblock %}
 
 </body>
 </html>
->>>>>>> 2c0caac00413494d1c4818f211cc14a09cbfb681

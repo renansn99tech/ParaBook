@@ -1,0 +1,38 @@
+.footer{
+    margin-top:100px;
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+    padding:60px 8% 20px;
+}
+
+.footer-content{
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:40px;
+}
+
+.footer a{
+    display:block;
+
+    color:#bdbdbd;
+
+    text-decoration:none;
+
+    margin-top:10px;
+}
+
+.footer a:hover{
+    color:#8b5cf6;
+}
+
+.footer-bottom{
+    text-align:center;
+
+    margin-top:40px;
+
+    color:#777;
+}

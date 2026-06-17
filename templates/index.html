@@ -1,262 +1,190 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-    Home
-{% endblock %}
-
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/communities.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<!-- ================= HERO ================= -->
-<section class="hero-section">
+<section class="hero">
 
-    <div class="titulo">
-        <h2>Bem-Vindo ao ParaBook</h2>
+    <div class="hero-content">
 
-        <p>
-            Explore e leia milhares de livros
-            no conforto da sua casa.
-        </p>
+        <span class="badge">
+            📚 Biblioteca Digital Colaborativa
+        </span>
 
-        <a href="{% url 'biblioteca' %}" class="titulo-btn">
-            Explorar Livros ➔
-        </a>
-        
-    </div>
-
-</section>
-
-
-<!-- ================= CARDS PRINCIPAIS ================= -->
-<section class="carrosseis">
-
-    <div class="grid-container">
-
-        <!-- CARD 1 -->
-        <div class="card-novo">
-            <a href="{% url 'mais_acessados' %}" class="card-link">
-
-                <div class="card-titulo">
-                    Mais Acessados
-                </div>
-
-                <div class="icon">
-                    <i class="fa-solid fa-book"></i>
-                </div>
-
-                <div class="content">
-                    <p>Descubra os títulos mais acessados.</p>
-                </div>
-
-            </a>
-        </div>
-
-        <!-- CARD 2 -->
-        <div class="card-novo">
-            <a href="{% url 'comunidades' %}" class="card-link">
-
-                <div class="card-titulo">
-                    Comunidades
-                </div>
-
-                <div class="icon">
-                    <i class="fa-solid fa-users"></i>
-                </div>
-
-                <div class="content">
-                    <p>Encontre pessoas com os mesmos interesses.</p>
-                </div>
-
-            </a>
-        </div>
-
-        <!-- CARD 3 -->
-        <div class="card-novo">
-            <a href="{% url 'novidade' %}" class="card-link">
-
-                <div class="card-titulo">
-                    Novidades
-                </div>
-
-                <div class="icon">
-                    <i class="fa-regular fa-newspaper"></i>
-                </div>
-
-                <div class="content">
-                    <p>Confira novos livros e comunidades.</p>
-                </div>
-
-            </a>
-        </div>
-
-    </div>
-
-
-<!-- ================= CARROSSEL ================= -->
-
-<div class="carousel-container">
-
-    <div class="card-carousel">
-
-        <div class="card card-1">
-            <div class="image-container"></div>
-            <p><strong>Inácio de Loyola</strong> — O amar e servir...</p>
-        </div>
-
-        <div class="card card-2">
-            <div class="image-container"></div>
-            <p><strong>Platão</strong> — A República</p>
-        </div>
-
-        <div class="card card-3">
-            <div class="image-container"></div>
-            <p><strong>George Orwell</strong> — A Revolução dos Bichos</p>
-        </div>
-
-        <div class="card card-4">
-            <div class="image-container"></div>
-            <p><strong>Machado de Assis</strong> — O Alienista</p>
-        </div>
-
-    </div>
-
-    <div class="carousel-buttons">
-        <button class="carousel-btn left">
-            <i class="fa-solid fa-chevron-left"></i>
-        </button>
-
-        <button class="carousel-btn right">
-            <i class="fa-solid fa-chevron-right"></i>
-        </button>
-    </div>
-
-</div>
-
-
-
-
-
-    </div>
-
-</section>
-
-
-<!-- ================= CTA AUTOR ================= -->
-<section class="cta-autor">
-
-    <div class="cta-box">
-
-        <h2>Você é autor?</h2>
+        <h1>
+            Descubra, leia e publique
+            <span>histórias incríveis</span>
+        </h1>
 
         <p>
-            Publique sua obra e alcance novos leitores no ParaBook.
+            Conectamos leitores, autores e comunidades em um único
+            espaço para compartilhar conhecimento e incentivar a leitura.
         </p>
 
-        <a href="{% url 'obras_autores' %}" class="card-link">
-            <button class="cta-btn">
-                Enviar minha obra
-            </button>
-        </a>
+        <div class="hero-buttons">
+            <a href="{% url 'biblioteca' %}" class="btn-primary">
+                Explorar Biblioteca
+            </a>
+
+            <a href="{% url 'obras_autores' %}" class="btn-secondary">
+                Publicar Obra
+            </a>
+        </div>
 
     </div>
 
-</section>
-
-
-<hr>
-
-
-<!-- ================= FAQ ================= -->
-<section id="secao-FAQ">
-
-    <!-- DÚVIDAS -->
-    <div class="duvidas-frequentes">
-
-    <h3>Dúvidas Frequentes</h3>
-
-    <details class="bloco-duvidas">
-        <summary class="detalhe-duvidas">
-            Quais gêneros de livros?
-        </summary>
-
-        <div class="conteudo-duvidas">
-            <p>Religião, literatura, filosofia e mais.</p>
-        </div>
-    </details>
-
-    <details class="bloco-duvidas">
-        <summary class="detalhe-duvidas">
-            Posso participar de comunidades?
-        </summary>
-
-        <div class="conteudo-duvidas">
-            <p>Sim! Existem várias comunidades disponíveis.</p>
-        </div>
-    </details>
-
-    <details class="bloco-duvidas">
-        <summary class="detalhe-duvidas">
-            Como criar conta?
-        </summary>
-
-        <div class="conteudo-duvidas">
-            <p>Clique em "Entrar" no topo do site.</p>
-        </div>
-    </details>
-
+   <div class="hero-image">
+    <img src="{% static 'img/open-book.png' %}" alt="Livro aberto">
 </div>
 
+</section>
 
-    <!-- FORMULÁRIO -->
-    <div id="faq-form">
+<section class="books">
 
-        <h3>Fale Conosco</h3>
+    <div class="section-title">
+        <h2>Em alta</h2>
+    </div>
 
-        <form method="POST" class="contact-form">
+    <div class="books-grid">
 
-            {% csrf_token %}
+        {% for livro in livros %}
+        <div class="book-card">
 
-            <input
-                type="text"
-                placeholder="Seu nome"
-                class="contact-input"
-                required
-            >
+            {% if livro.capa %}
+            <img src="{{ livro.capa.url }}">
+            {% endif %}
 
-            <input
-                type="email"
-                placeholder="Seu email"
-                class="contact-input"
-                required
-            >
+            <h3>{{ livro.titulo }}</h3>
 
-            <textarea
-                placeholder="Sua mensagem"
-                class="contact-textarea"
-            ></textarea>
+            <p>{{ livro.autor.nome }}</p>
 
-            <button type="submit" class="contact-btn">
-                Enviar
-            </button>
-
-        </form>
+        </div>
+        {% endfor %}
 
     </div>
 
 </section>
 
+<section class="features">
 
-<!-- ================= BOTÃO TOPO ================= -->
-<a href="#topo" class="button-top" id="voltar-topo">
-    ↑
-</a>
+    <div class="feature-card">
 
-{% endblock %}
+        <div class="feature-icon">📚</div>
 
-{% block extra_js %}
-    <script src="{% static 'js/index.js' %}"></script>
+        <h2>Para Leitores</h2>
+
+        <p>
+            Explore milhares de livros, salve favoritos e participe
+            de comunidades literárias.
+        </p>
+
+        <ul>
+            <li>✔ Biblioteca Digital</li>
+            <li>✔ Livros Gratuitos</li>
+            <li>✔ Comunidades</li>
+            <li>✔ Favoritos</li>
+        </ul>
+
+    </div>
+
+    <div class="feature-card">
+
+        <div class="feature-icon">✍️</div>
+
+        <h2>Para Autores</h2>
+
+        <p>
+            Compartilhe suas obras e alcance novos leitores.
+        </p>
+
+        <ul>
+            <li>✔ Publicação Gratuita</li>
+            <li>✔ Divulgação</li>
+            <li>✔ Feedback</li>
+            <li>✔ Comunidade</li>
+        </ul>
+
+    </div>
+
+</section>
+
+<section class="communities">
+
+    <div class="section-title">
+        <h2>Comunidades em Destaque</h2>
+    </div>
+
+    <div class="communities-grid">
+
+        {% for comunidade in comunidades %}
+
+        <div class="community-card">
+
+            <h3>
+                {{ comunidade.nome }}
+            </h3>
+
+            <p>
+                {{ comunidade.descricao|truncatechars:100 }}
+            </p>
+
+            <span>
+                Criada em
+                {{ comunidade.data_criacao|date:"d/m/Y" }}
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<footer class="footer">
+
+    <div class="footer-content">
+
+        <div>
+
+            <h2>ParaBook</h2>
+
+            <p>
+                Conectando leitores, autores e comunidades.
+            </p>
+
+        </div>
+
+        <div>
+
+            <h4>Navegação</h4>
+
+            <a href="#">Biblioteca</a>
+            <a href="#">Comunidades</a>
+            <a href="#">Autores</a>
+
+        </div>
+
+        <div>
+
+            <h4>Autores</h4>
+
+            <a href="#">Publicar Obra</a>
+            <a href="#">Minhas Obras</a>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        © 2026 ParaBook. Todos os direitos reservados.
+    </div>
+
+</footer>
+
 {% endblock %}

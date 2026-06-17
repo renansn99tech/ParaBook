@@ -1,0 +1,20 @@
+.communities{
+    padding:80px 8%;
+}
+
+.communities-grid{
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:25px;
+}
+
+.community-card{
+    background:#111827;
+
+    border-radius:18px;
+
+    padding:25px;
+}

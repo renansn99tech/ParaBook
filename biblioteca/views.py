@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Categoria, Livro, ObraAutor, Biblioteca
 from django.contrib.auth.decorators import login_required
+from comunidades.models import Comunidade
 
 # Create your views here.
 def novidade(request):
@@ -142,3 +143,23 @@ def acesso_biblioteca(request):
 
 def mais_acessados(request):
     return render(request, 'biblioteca/mais-acessados.html')
+
+def home(request):
+
+    livros = Livro.objects.all()[:6]
+
+    obras_independentes = ObraAutor.objects.filter(
+        status='aprovado'
+    )[:6]
+
+    comunidades = Comunidade.objects.all()[:6]
+
+    return render(
+        request,
+        'index.html',
+        {
+            'livros': livros,
+            'obras_independentes': obras_independentes,
+            'comunidades': comunidades
+        }
+    )

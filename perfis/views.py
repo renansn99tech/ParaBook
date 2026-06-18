@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from usuarios.models import Usuario # Importação do app usuários existente
+from django.shortcuts import render
 
 @login_required
 def perfil(request):
@@ -72,5 +73,13 @@ def perfil(request):
     return render(request, 'perfis/perfil.html', contexto)
 
 
-def admin(request):
+
+
+# View do perfil
+def perfil(request):
+    return render(request, 'perfis/perfil.html')
+
+
+# View do painel administrativo customizado
+def painel_admin(request):
     return render(request, 'perfis/admin.html')

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 class Categoria(models.Model):
     id_categoria = models.AutoField(db_column='Id_Categorias', primary_key=True)
@@ -22,6 +23,9 @@ class Livro(models.Model):
     isbn = models.CharField(max_length=45, db_column='ISBN')
     capa = models.CharField(max_length=255, null=True, blank=True)
     
+    # ADICIONE A LINHA EXATAMENTE AQUI:
+    pdf = models.CharField(max_length=255, db_column='Caminho_PDF', null=True, blank=True)
+    
     categoria = models.ForeignKey(
         Categoria,
         on_delete=models.DO_NOTHING,
@@ -30,6 +34,13 @@ class Livro(models.Model):
     class Meta:
         db_table = 'livros'
         managed = False
+        
+    @property
+    def url_pdf_estatico(self):
+        # Transforma "O Alquimista" em "o-alquimista"
+        nome_limpo = slugify(self.nome)
+        categoria_limpa = slugify(self.categoria.nome)
+        return f"livros/{categoria_limpa}/{nome_limpo}.pdf"
     
 class ObraAutor(models.Model):
     nome = models.CharField(max_length=100)

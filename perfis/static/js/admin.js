@@ -1,385 +1,147 @@
-// =======================
-// CHARTS
-// =======================
 let chartBarra = null;
 let chartPizza = null;
 let chartLinha = null;
 
-// =======================
-// CONFIG
-// =======================
-const USER = "admin";
-const PASS = "123";
-
-// =======================
-// STATE
-// =======================
-const state = {
-    livros: [],
-    usuarios: [],
-    filtro: ""
-};
-
-// =======================
-// INIT
-// =======================
 document.addEventListener("DOMContentLoaded", () => {
     bindEvents();
-
-    if (localStorage.getItem("adminLogado")) {
-        entrar();
-    }
+    renderGraficos();
 });
 
-// =======================
-// EVENTOS
-// =======================
 function bindEvents() {
-    document.getElementById("btnLogin")?.addEventListener("click", login);
-    document.getElementById("btnVoltar")?.addEventListener("click", voltar);
-    document.getElementById("btnLogout")?.addEventListener("click", logout);
-    document.getElementById("btnAdd")?.addEventListener("click", adicionarLivro);
-    document.getElementById("btnAddUser")?.addEventListener("click", adicionarUsuario);
-
     document.getElementById("busca")?.addEventListener("input", buscarLivro);
 
+    // Mapeia cliques nos botões da sidebar
     document.querySelectorAll("[data-nav]").forEach(btn => {
         btn.addEventListener("click", () => {
             mostrarSecao(btn.dataset.nav);
         });
     });
+
+    // Gatilhos para o botão editar ✏️
+    document.querySelectorAll(".btn-editar-trigger").forEach(btn => {
+        btn.addEventListener("click", () => {
+            prepararEdicao(btn.dataset.id, btn.dataset.titulo, btn.dataset.categoria);
+        });
+    });
+
+    // Botão cancelar edição
+    document.getElementById("btnCancelarEdicao")?.addEventListener("click", cancelarEdicao);
 }
 
-// =======================
-// LOGIN
-// =======================
-function login() {
-    const user = document.getElementById("user").value;
-    const pass = document.getElementById("pass").value;
-
-    if (user === USER && pass === PASS) {
-        localStorage.setItem("adminLogado", "true");
-        entrar();
-    } else {
-        alert("Login inválido");
-    }
-}
-
-function entrar() {
-    document.getElementById("login").style.display = "none";
-    document.getElementById("app").style.display = "flex";
-
-    state.livros = carregar("livros");
-    state.usuarios = carregar("usuarios");
-
-    render();
-}
-
-// VOLTAR
-
-function voltar() {
-    const user = document.getElementById("user").value;
-    const pass = document.getElementById("pass").value;
-
-    if (user === USER && pass === PASS) {
-        localStorage.setItem("adminLogado", "true");
-        entrar();
-    } else {
-
-        notify("Voltando para a tela inicial");
-
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 1200);
-    }
-}
-
-
-
-// =======================
-// LOGOUT
-// =======================
-function logout() {
-    localStorage.removeItem("adminLogado");
-    location.reload();
-}
-
-// =======================
-// NAVEGAÇÃO
-// =======================
 function mostrarSecao(secao) {
     document.querySelectorAll(".secao").forEach(s => {
         s.style.display = "none";
     });
-
     const el = document.getElementById(secao);
     if (el) el.style.display = "block";
 }
 
-// =======================
-// LIVROS
-// =======================
-function adicionarLivro() {
-    const titulo = document.getElementById("titulo").value.trim();
-    const categoria = document.getElementById("categoria").value;
-
-    if (!titulo || !categoria) {
-        alert("Preencha todos os campos");
-        return;
-    }
-
-    const novoLivro = {
-        id: Date.now(),
-        titulo,
-        categoria,
-        criadoEm: new Date().toISOString()
-    };
-
-    state.livros.unshift(novoLivro);
-    salvar("livros", state.livros);
-
-    limparFormulario();
-    render();
-}
-
-function removerLivro(id) {
-    state.livros = state.livros.filter(l => l.id !== id);
-    salvar("livros", state.livros);
-    render();
-}
-
-// =======================
-// BUSCA
-// =======================
 function buscarLivro(e) {
-    state.filtro = e.target.value.toLowerCase();
-    renderLista();
+    const termo = e.target.value.toLowerCase();
+    const itens = document.querySelectorAll("#listaLivros li");
+
+    itens.forEach(li => {
+        const titulo = li.getAttribute("data-titulo");
+        if (titulo) {
+            li.style.display = titulo.includes(termo) ? "flex" : "none";
+        }
+    });
 }
 
-// =======================
-// USUÁRIOS
-// =======================
-function adicionarUsuario() {
-    const nome = document.getElementById("novoUsuario").value.trim();
-    const role = document.getElementById("roleUsuario").value;
+// --- FUNÇÕES DE UPDATE (INTERAÇÃO DO VISUAL) ---
+function prepararEdicao(id, titulo, categoria) {
+    // Rola suavemente até o formulário
+    document.getElementById("tituloSecaoLivros")?.scrollIntoView({ behavior: 'smooth' });
 
-    if (!nome) {
-        alert("Digite um nome");
-        return;
-    }
+    // Preenche os inputs com os dados do livro selecionado
+    document.getElementById("inputLivroId").value = id;
+    document.getElementById("inputTitulo").value = titulo;
+    document.getElementById("selectCategoria").value = categoria;
 
-    const novoUsuario = {
-        id: Date.now(),
-        nome,
-        role
-    };
+    // Altera propriedades do botão de envio para agir como Update no Django
+    const btnSalvar = document.getElementById("btnSubmeterForm");
+    btnSalvar.textContent = "Salvar Alterações";
+    btnSalvar.name = "btn_editar_livro"; // Troca o name capturado pelo view.py
+    btnSalvar.style.background = "#eab308"; // Muda cor para amarelo (alerta/edição)
 
-    state.usuarios.push(novoUsuario);
-    salvar("usuarios", state.usuarios);
-
-    document.getElementById("novoUsuario").value = "";
-
-    renderUsuarios();
-    renderPermissoes();
+    // Exibe o botão de cancelar
+    document.getElementById("btnCancelarEdicao").style.display = "inline-block";
 }
 
-// =======================
-// RENDER GERAL
-// =======================
-function render() {
-    atualizarDashboard();
-    renderLista();
-    renderUsuarios();
-    renderPermissoes();
+function cancelarEdicao() {
+    // Limpa os campos do formulário
+    document.getElementById("inputLivroId").value = "";
+    document.getElementById("formLivro").reset();
+
+    // Restaura o botão para o modo de criação padrão
+    const btnSalvar = document.getElementById("btnSubmeterForm");
+    btnSalvar.textContent = "Adicionar";
+    btnSalvar.name = "btn_add_livro";
+    btnSalvar.style.background = "var(--primary)";
+
+    // Oculta o botão de cancelar
+    document.getElementById("btnCancelarEdicao").style.display = "none";
 }
 
-// =======================
-// DASHBOARD
-// =======================
-function atualizarDashboard() {
-    const totalEl = document.getElementById("totalLivros");
-    if (!totalEl) return;
+// --- CHARTS (DADOS RENDERIZADOS DO DJANGO) ---
+function renderGraficos() {
+    const elementoDados = document.getElementById("dados-graficos");
+    if (!elementoDados) return;
 
-    totalEl.textContent = state.livros.length;
-
+    const livros = JSON.parse(elementoDados.textContent);
     const categorias = {};
-
-    state.livros.forEach(l => {
-        const cat = l.categoria || "Sem categoria";
-        categorias[cat] = (categorias[cat] || 0) + 1;
-    });
-
-    const labels = Object.keys(categorias);
-    const dados = Object.values(categorias);
-
-    if (chartBarra) chartBarra.destroy();
-    chartBarra = new Chart(document.getElementById("graficoBarra"), {
-        type: "bar",
-        data: {
-            labels,
-            datasets: [{
-                data: dados,
-                backgroundColor: "#22c55e"
-            }]
-        }
-    });
-
-    if (chartPizza) chartPizza.destroy();
-    chartPizza = new Chart(document.getElementById("graficoPizza"), {
-        type: "pie",
-        data: {
-            labels,
-            datasets: [{
-                data: dados
-            }]
-        }
-    });
-
     const datas = {};
 
-    state.livros.forEach(l => {
-        const d = new Date(l.criadoEm).toLocaleDateString();
-        datas[d] = (datas[d] || 0) + 1;
+    livros.forEach(l => {
+        const cat = l.categoria || "Sem categoria";
+        categorias[cat] = (categorias[cat] || 0) + 1;
+
+        const dataFormatada = new Date(l.criadoEm).toLocaleDateString();
+        datas[dataFormatada] = (datas[dataFormatada] || 0) + 1;
     });
 
+    const labelsCat = Object.keys(categorias);
+    const dadosCat = Object.values(categorias);
+
+    const ctxBarra = document.getElementById("graficoBarra");
+    if (ctxBarra && labelsCat.length > 0) {
+        if (chartBarra) chartBarra.destroy();
+        chartBarra = new Chart(ctxBarra, {
+            type: "bar",
+            data: {
+                labels: labelsCat,
+                datasets: [{ label: 'Quantidade', data: dadosCat, backgroundColor: "#22c55e" }]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    const ctxPizza = document.getElementById("graficoPizza");
+    if (ctxPizza && labelsCat.length > 0) {
+        if (chartPizza) chartPizza.destroy();
+        chartPizza = new Chart(ctxPizza, {
+            type: "pie",
+            data: {
+                labels: labelsCat,
+                datasets: [{ data: dadosCat, backgroundColor: ["#22c55e", "#3b82f6", "#ef4444", "#eab308", "#a855f7"] }]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    const ctxLinha = document.getElementById("graficoLinha");
     const labelsLinha = Object.keys(datas);
     const dadosLinha = Object.values(datas);
 
-    if (chartLinha) chartLinha.destroy();
-    chartLinha = new Chart(document.getElementById("graficoLinha"), {
-        type: "line",
-        data: {
-            labels: labelsLinha,
-            datasets: [{
-                data: dadosLinha,
-                borderColor: "#22c55e",
-                fill: false
-            }]
-        }
-    });
-}
-
-// =======================
-// LISTA DE LIVROS
-// =======================
-function renderLista() {
-    const ul = document.getElementById("listaLivros");
-    if (!ul) return;
-
-    ul.innerHTML = "";
-
-    const filtrados = state.livros.filter(l =>
-        l.titulo.toLowerCase().includes(state.filtro)
-    );
-
-    filtrados.forEach(l => {
-        const li = document.createElement("li");
-
-        li.innerHTML = `
-            <div>
-                <strong>${l.titulo}</strong><br>
-                <small>${l.categoria}</small>
-            </div>
-            <button>❌</button>
-        `;
-
-        li.querySelector("button").onclick = () => removerLivro(l.id);
-
-        ul.appendChild(li);
-    });
-}
-
-// =======================
-// USUÁRIOS
-// =======================
-function renderUsuarios() {
-    const ul = document.getElementById("listaUsuarios");
-    if (!ul) return;
-
-    ul.innerHTML = "";
-
-    state.usuarios.forEach(u => {
-        const li = document.createElement("li");
-
-        li.innerHTML = `
-            <span>${u.nome} (${u.role})</span>
-        `;
-
-        ul.appendChild(li);
-    });
-}
-
-// =======================
-// PERMISSÕES
-// =======================
-function renderPermissoes() {
-    const ul = document.getElementById("listaPermissoes");
-    if (!ul) return;
-
-    ul.innerHTML = "";
-
-    state.usuarios.forEach(u => {
-        let permissao = "";
-
-        if (u.role === "ADMIN") permissao = "Acesso total";
-        else if (u.role === "AUTOR") permissao = "Criar conteúdo";
-        else permissao = "Somente leitura";
-
-        const li = document.createElement("li");
-
-        li.innerHTML = `
-            <span>${u.nome}</span>
-            <span>${permissao}</span>
-        `;
-
-        ul.appendChild(li);
-    });
-}
-
-// =======================
-// STORAGE
-// =======================
-function salvar(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-}
-
-function carregar(key) {
-    try {
-        return JSON.parse(localStorage.getItem(key)) || [];
-    } catch {
-        return [];
+    if (ctxLinha && labelsLinha.length > 0) {
+        if (chartLinha) chartLinha.destroy();
+        chartLinha = new Chart(ctxLinha, {
+            type: "line",
+            data: {
+                labels: labelsLinha,
+                datasets: [{ label: 'Livros Adicionados', data: dadosLinha, borderColor: "#22c55e", tension: 0.1, fill: false }]
+            },
+            options: { responsive: true }
+        });
     }
-}
-
-// =======================
-// UTIL
-// =======================
-function limparFormulario() {
-    document.getElementById("titulo").value = "";
-    document.getElementById("categoria").value = "";
-}
-
-// =======================
-// NOTIFY
-// =======================
-function notify(msg) {
-    const div = document.createElement("div");
-
-    div.className = "notify";
-    div.textContent = msg;
-
-    document.body.appendChild(div);
-
-    setTimeout(() => {
-        div.classList.add("show");
-    }, 10);
-
-    setTimeout(() => {
-        div.classList.remove("show");
-
-        setTimeout(() => {
-            div.remove();
-        }, 300);
-
-    }, 2500);
 }

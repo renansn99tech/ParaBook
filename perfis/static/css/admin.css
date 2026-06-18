@@ -170,10 +170,12 @@ li {
 BADGE (ROLES)
 ========================= */
 .badge {
-    padding: 4px 8px;
+padding: 4px 10px;
     border-radius: 6px;
     font-size: 12px;
     margin-left: 10px;
+    color: white;
+    font-weight: bold;
 }
 
 .admin { background: #ef4444; }

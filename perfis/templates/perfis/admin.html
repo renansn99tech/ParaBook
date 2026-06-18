@@ -6,227 +6,159 @@ Painel Administrativo
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet"
-    href="{% static 'css/admin.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<style>
+    /* Isso vai sumir com a barra azul quebrada do topo */
+    #topo navbar, header, nav, .navbar { 
+        display: none !important; 
+    }
+    /* Garante que o painel admin ocupe a tela toda corretamente */
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
+<div id="app" class="admin-container" style="display: flex;">
 
-<div class="admin-container">
-
-    <!-- SIDEBAR -->
     <aside class="admin-sidebar">
-
         <h2>ParaBook</h2>
+        <button data-nav="dashboard">Dashboard</button>
+        <button data-nav="livros">Livros</button>
+        <button data-nav="usuarios">Usuários</button>
+        <button data-nav="permissoes">Permissões</button>
 
-        <button data-nav="dashboard">
-            Dashboard
-        </button>
-
-        <button data-nav="livros">
-            Livros
-        </button>
-
-        <button data-nav="usuarios">
-            Usuários
-        </button>
-
-        <button data-nav="permissoes">
-            Permissões
-        </button>
-
-        <button id="btnLogout">
-            Sair
-        </button>
-
+        <a href="{% url 'logout' %}" id="btnLogout" style="text-decoration: none; text-align: center; margin-top: auto;">
+            <button class="danger" style="width: 100%;">Sair</button>
+        </a>
     </aside>
 
-    <!-- CONTEÚDO -->
     <main class="admin-main">
 
-        <!-- DASHBOARD -->
-        <section
-            id="dashboard"
-            class="secao"
-        >
-
+        <section id="dashboard" class="secao">
             <h1>Dashboard</h1>
-
-            <div class="card">
-
+            <div class="card" style="margin-bottom: 20px;">
                 <h3>Total de livros</h3>
-
-                <p id="totalLivros">
-                    {{ total_livros }}
-                </p>
-
+                <p id="totalLivros">{{ total_livros }}</p>
             </div>
 
             <div class="grid-graficos">
-
-                <div class="card">
-
-                    <h3>Por Categoria</h3>
-
-                    <canvas id="graficoBarra"></canvas>
-
-                </div>
-
-                <div class="card">
-
-                    <h3>Distribuição</h3>
-
-                    <canvas id="graficoPizza"></canvas>
-
-                </div>
-
-                <div class="card">
-
-                    <h3>Crescimento</h3>
-
-                    <canvas id="graficoLinha"></canvas>
-
-                </div>
-
+                <div class="card"><canvas id="graficoBarra"></canvas></div>
+                <div class="card"><canvas id="graficoPizza"></canvas></div>
+                <div class="card"><canvas id="graficoLinha"></canvas></div>
             </div>
-
         </section>
 
-        <!-- LIVROS -->
-        <section
-            id="livros"
-            class="secao"
-            style="display:none;"
-        >
+        <section id="livros" class="secao" style="display:none;">
+            <h1 id="tituloSecaoLivros">Gerenciar Livros</h1>
+            <input type="text" id="busca" placeholder="Buscar livro..." style="margin-bottom: 15px; width: 100%;">
 
-            <h1>Gerenciar Livros</h1>
-
-            <input
-                type="text"
-                id="busca"
-                placeholder="Buscar livro..."
-            >
-
-            <div class="form">
-
-                <input
-                    type="text"
-                    id="titulo"
-                    placeholder="Título"
-                >
-
-                <select id="categoria">
-
-                    <option value="">
-                        Selecione categoria
-                    </option>
-
-                    <option>
-                        Literatura
-                    </option>
-
-                    <option>
-                        Filosofia
-                    </option>
-
-                    <option>
-                        Religião
-                    </option>
-
-                    <option>
-                        Infantil
-                    </option>
-
-                    <option>
-                        Ciências Exatas
-                    </option>
-
+            <form method="POST" class="form" id="formLivro">
+                {% csrf_token %}
+                <input type="hidden" name="livro_id" id="inputLivroId">
+                
+                <input type="text" name="titulo" id="inputTitulo" placeholder="Título" required>
+                <select name="categoria" id="selectCategoria" required>
+                    <option value="">Selecione Gênero</option>
+                    <option value="Literatura">Literatura</option>
+                    <option value="Filosofia">Filosofia</option>
+                    <option value="Religião">Religião</option>
+                    <option value="Infantil">Infantil</option>
+                    <option value="Ciências Exatas">Ciências Exatas</option>
                 </select>
+                <button type="submit" name="btn_add_livro" id="btnSubmeterForm">Adicionar</button>
+                <button type="button" id="btnCancelarEdicao" style="display: none; background: #6b7280;">Cancelar</button>
+            </form>
 
-                <button id="btnAdd">
-                    Adicionar
-                </button>
-
-            </div>
-
-            <ul id="listaLivros"></ul>
-
+            <ul id="listaLivros">
+                {% for livro in livros %}
+                <li data-titulo="{{ livro.nome|lower }}">
+                    <div>
+                        <strong>{{ livro.nome }}</strong><br>
+                        <small>{{ livro.genero }}</small>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-editar-trigger" 
+                                data-id="{{ livro.id_livro }}" 
+                                data-titulo="{{ livro.nome }}" 
+                                data-categoria="{{ livro.genero }}" 
+                                style="background: #3b82f6; padding: 5px 10px;">✏️</button>
+                        
+                        <form method="POST" style="margin: 0; padding: 0; background: transparent; border: none;">
+                            {% csrf_token %}
+                            <input type="hidden" name="livro_id" value="{{ livro.id_livro }}">
+                            <button type="submit" name="btn_deletar_livro" class="danger" style="padding: 5px 10px;">❌</button>
+                        </form>
+                    </div>
+                </li>
+                {% empty %}
+                <li>Nenhum livro cadastrado no banco de dados ainda.</li>
+                {% endfor %}
+            </ul>
         </section>
 
-        <!-- USUÁRIOS -->
-        <section
-            id="usuarios"
-            class="secao"
-            style="display:none;"
-        >
-
+        <section id="usuarios" class="secao" style="display:none;">
             <h1>Gerenciar Usuários</h1>
-
-            <div class="form">
-
-                <input
-                    type="text"
-                    id="novoUsuario"
-                    placeholder="Nome do usuário"
-                >
-
-                <select id="roleUsuario">
-
-                    <option value="LEITOR">
-                        Leitor
-                    </option>
-
-                    <option value="AUTOR">
-                        Autor
-                    </option>
-
-                    <option value="ADMIN">
-                        Admin
-                    </option>
-
-                </select>
-
-                <button id="btnAddUser">
-                    Adicionar
-                </button>
-
-            </div>
-
-            <ul id="listaUsuarios"></ul>
-
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Lista de usuários cadastrados:</p>
+            <ul id="listaUsuarios">
+                {% for u in usuarios %}
+                <li>
+                    <span><strong>{{ u.nome }}</strong> ({{ u.user_auth.username }})</span>
+                    {% if u.user_auth.is_superuser %}
+                        <span class="badge admin">Admin</span>
+                    {% elif u.user_auth.is_staff %}
+                        <span class="badge autor">Autor</span>
+                    {% else %}
+                        <span class="badge leitor">Leitor</span>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li>Nenhum usuário cadastrado.</li>
+                {% endfor %}
+            </ul>
         </section>
 
-        <!-- PERMISSÕES -->
-        <section
-            id="permissoes"
-            class="secao"
-            style="display:none;"
-        >
-
-            <h1>
-                Controle de Permissões
-            </h1>
-
-            <p>
-                Defina o nível de acesso de cada usuário:
-            </p>
-
-            <ul id="listaPermissoes"></ul>
-
+        <section id="permissoes" class="secao" style="display:none;">
+            <h1>Controle de Permissões</h1>
+            <p>Nível de acesso de cada conta:</p>
+            <ul id="listaPermissoes">
+                {% for u in usuarios %}
+                <li>
+                    <span><strong>{{ u.nome }}</strong></span>
+                    {% if u.user_auth.is_superuser %}
+                        <span style="color: var(--danger); font-weight: bold;">Acesso Total</span>
+                    {% elif u.user_auth.is_staff %}
+                        <span style="color: #3b82f6; font-weight: bold;">Criar/Editar</span>
+                    {% else %}
+                        <span style="color: var(--text-muted);">Somente Leitura</span>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li>Nenhum usuário encontrado.</li>
+                {% endfor %}
+            </ul>
         </section>
 
     </main>
-
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
-
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- JS ADMIN -->
-<script src="{% static 'js/admin.js' %}"></script>
+<script id="dados-graficos" type="application/json">
+[
+    {% for livro in livros %}
+    {
+        "titulo": "{{ livro.nome|escapejs }}",
+        "categoria": "{{ livro.genero|escapejs }}",
+        "criadoEm": "2026-01-01" 
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
 
+<script src="{% static 'js/admin.js' %}"></script>
 {% endblock %}

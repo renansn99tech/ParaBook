@@ -1,63 +1,6 @@
 /* Fontes padrão do site, a saber: Playfair Display, Montserrat, Lora e Inter */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
-:root {
-    
-    --color-primary-dark: #14213d; 
-    --color-secondary: #4D4AE8;  
-    --color-accent-olive: #58504a;  
-    --color-neutral-tan: #e9ecef; 
-    --color-bg-warm: #F5FFFA; 
-    --color-ui-charcoal: #303136; 
-
-    /* Cores para os articles Sobre o projeto e Porque o Parabook */
-    --deep-blue: #0A1128;
-    --purple: #5B21B6;
-    --rose-orange: linear-gradient(90deg, #F43F5E, #FB923C);
-    --main-gradient: linear-gradient(135deg, #0A1128 0%, #5B21B6 50%, #F43F5E 100%);
-
-    /* Definindo as Fontes nas variáveis de ambiente */
-    --font-playfair: 'Playfair Display', serif; /* Fonte para títulos */
-    --font-ui: 'Montserrat', sans-serif; /* Fonte para elementos de interface, sub-títulos e legendas */
-    --font-body: 'Lora', serif; /* Fonte para o corpo do texto */
-    --font-data: 'Inter', sans-serif; /* Fonte para dados e informações */
-
-    /* 'Pesos' das fontes */
-    --fw-regular: 400;
-    --fw-medium: 500;
-    --fw-bold: 700;
-
-    /* Escala de tamanhos baseada no Root (1 rem = 16px) */
-    --fs-h1: 3rem; /* Tamanho para títulos principais (40px) */
-    --fs-h2: 2rem; /* Tamanho para títulos secundários (32px) */
-    --fs-h3: 1.5rem; /* Tamanho para títulos terciários (24px) */
-    --fs-body: 1.125rem; /* Tamanho para o corpo do texto (18px) */
-    --fs-small: 0.875rem; /* Tamanho para dados e informações (14px) */
-
-    /* Espaçamento de linhas para maior conforto */
-    --lh-body: 1.6; /* Espaçamento para o corpo do texto */
-}
-
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box; /* Garantindo que o padding e border sejam incluídos no tamanho total dos elementos */
-}
-
-/*  ================================================================================================================
-        Definindo as variáveis aplicáveis para todas as páginas do site, como cores, fontes, tamanhos e espaçamento.
-    ================================================================================================================  */
-
-
-/* Aplicando as Variáveis padrão no corpo da página */
-
-body {
-    color: #E5E7EB;
-    font-family: 'Inter', sans-serif;
-    background-color: var(--deep-blue); /* Substituir por --color-primary-dark */
-    overflow-x: hidden;
-}
-
 /* ======================================================= NOVA ADIÇÃO LIGHT-MODE ======================================================= */
 
 body.light-mode {

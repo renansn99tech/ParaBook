@@ -2,189 +2,179 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}">
-<link rel="stylesheet" href="{% static 'css/communities.css' %}">
+  <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/comunidades.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/footer.css' %}" />
 {% endblock %}
 
 {% block content %}
-
-<section class="hero">
-
+  <section class="hero">
     <div class="hero-content">
+      <span class="badge">📚 Biblioteca Digital Colaborativa</span>
 
-        <span class="badge">
-            📚 Biblioteca Digital Colaborativa
-        </span>
+      <h1>
+        Descubra, leia e publique
+        <span>histórias incríveis</span>
+      </h1>
 
-        <h1>
-            Descubra, leia e publique
-            <span>histórias incríveis</span>
-        </h1>
+      <p>Conectamos leitores, autores e comunidades em um único espaço para compartilhar conhecimento e incentivar a leitura.</p>
 
-        <p>
-            Conectamos leitores, autores e comunidades em um único
-            espaço para compartilhar conhecimento e incentivar a leitura.
-        </p>
+      <div class="hero-buttons">
+        <a href="{% url 'biblioteca' %}" class="btn-primary">Explorar Biblioteca</a>
 
-        <div class="hero-buttons">
-            <a href="{% url 'biblioteca' %}" class="btn-primary">
-                Explorar Biblioteca
-            </a>
+        <a href="{% url 'obras_autores' %}" class="btn-secondary">Publicar Obra</a>
+      </div>
+    </div>
 
-            <a href="{% url 'obras_autores' %}" class="btn-secondary">
-                Publicar Obra
-            </a>
+    <div class="hero-image">
+      <div class="floating-card author-card">
+        <div class="avatar">👩</div>
+
+        <div>
+          <h4>Ana Clara</h4>
+          <span>Autora</span>
+        </div>
+      </div>
+
+      <div class="floating-card book-card-float">
+        <h4>O Caminho das Estrelas</h4>
+        <span>Fantasia</span>
+      </div>
+
+      <div class="floating-card stats-card">
+        <h4>1.250</h4>
+        <span>Leituras</span>
+      </div>
+
+      <img src="{% static 'img/open-book.png' %}" alt="Livro Aberto" />
+    </div>
+
+  </section>
+
+  <section class="features">
+
+    <div class="feature-card">
+
+        <div class="feature-content">
+
+            <div class="feature-icon">📚</div>
+
+            <h2>Para Leitores</h2>
+
+            <p>
+                Explore milhares de livros, descubra novos autores
+                e participe de comunidades literárias.
+            </p>
+
+            <ul>
+                <li>✔ Biblioteca Digital</li>
+                <li>✔ Livros Gratuitos</li>
+                <li>✔ Comunidades</li>
+                <li>✔ Favoritos</li>
+            </ul>
+
+        </div>
+
+        <div class="feature-image">
+            <i class="fa-solid fa-book-open"></i>
         </div>
 
     </div>
 
-   <div class="hero-image">
-    <img src="{% static 'img/open-book.png' %}" alt="Livro aberto">
-</div>
+    <div class="feature-card">
+
+        <div class="feature-content">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-feather"></i>
+            </div>
+
+            <h2>Para Autores</h2>
+
+            <p>
+                Compartilhe suas obras, alcance novos leitores
+                e faça parte da comunidade ParaBook.
+            </p>
+
+            <ul>
+                <li>✔ Publicação Gratuita</li>
+                <li>✔ Divulgação</li>
+                <li>✔ Feedback</li>
+                <li>✔ Comunidade</li>
+            </ul>
+
+        </div>
+
+        <div class="feature-image">
+            <i class="fa-solid fa-users"></i>
+        </div>
+
+    </div>
 
 </section>
 
-<section class="books">
+  <section class="books">
+    <div class="section-header">
+      <h2>Em Alta</h2>
 
-    <div class="section-title">
-        <h2>Em alta</h2>
+      <a href="{% url 'biblioteca' %}">Ver todos →</a>
     </div>
 
     <div class="books-grid">
-
-        {% for livro in livros %}
+      {% for livro in livros %}
         <div class="book-card">
+          {% if livro.capa %}
+            <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}" />
+          {% endif %}
 
-            {% if livro.capa %}
-            <img src="{{ livro.capa.url }}">
-            {% endif %}
-
+          <div class="book-info">
             <h3>{{ livro.titulo }}</h3>
 
-            <p>{{ livro.autor.nome }}</p>
+            <p class="book-author">{{ livro.autor.nome }}</p>
 
+            <div class="book-rating">⭐ 4.8</div>
+          </div>
         </div>
-        {% endfor %}
-
+      {% endfor %}
     </div>
+  </section>
 
-</section>
+  <section class="communities">
+    <div class="section-header">
+      <h2>Comunidades em Destaque</h2>
 
-<section class="features">
-
-    <div class="feature-card">
-
-        <div class="feature-icon">📚</div>
-
-        <h2>Para Leitores</h2>
-
-        <p>
-            Explore milhares de livros, salve favoritos e participe
-            de comunidades literárias.
-        </p>
-
-        <ul>
-            <li>✔ Biblioteca Digital</li>
-            <li>✔ Livros Gratuitos</li>
-            <li>✔ Comunidades</li>
-            <li>✔ Favoritos</li>
-        </ul>
-
-    </div>
-
-    <div class="feature-card">
-
-        <div class="feature-icon">✍️</div>
-
-        <h2>Para Autores</h2>
-
-        <p>
-            Compartilhe suas obras e alcance novos leitores.
-        </p>
-
-        <ul>
-            <li>✔ Publicação Gratuita</li>
-            <li>✔ Divulgação</li>
-            <li>✔ Feedback</li>
-            <li>✔ Comunidade</li>
-        </ul>
-
-    </div>
-
-</section>
-
-<section class="communities">
-
-    <div class="section-title">
-        <h2>Comunidades em Destaque</h2>
+      <a href="{% url 'comunidades' %}">Ver todas →</a>
     </div>
 
     <div class="communities-grid">
-
-        {% for comunidade in comunidades %}
-
+      {% for comunidade in comunidades %}
         <div class="community-card">
+          <div class="community-icon">
+            <i class="fa-solid fa-users"></i>
+          </div>
 
-            <h3>
-                {{ comunidade.nome }}
-            </h3>
+          <h3>{{ comunidade.nome }}</h3>
 
-            <p>
-                {{ comunidade.descricao|truncatechars:100 }}
-            </p>
+          <p>{{ comunidade.descricao|truncatechars:100 }}</p>
 
+          <div class="community-footer">
             <span>
-                Criada em
-                {{ comunidade.data_criacao|date:"d/m/Y" }}
+              Criada em
+              {{ comunidade.data_criacao|date:'d/m/Y' }}
             </span>
-
+          </div>
         </div>
-
-        {% endfor %}
-
+      {% endfor %}
     </div>
 
-</section>
+    <section class="cta">
+      <h2>Tem uma história para contar?</h2>
 
-<footer class="footer">
+      <p>Compartilhe sua obra gratuitamente e alcance novos leitores através da comunidade ParaBook.</p>
 
-    <div class="footer-content">
+      <a href="{% url 'obras_autores' %}" class="btn-primary">Publicar Minha Obra</a>
+    </section>
+  </section>
 
-        <div>
-
-            <h2>ParaBook</h2>
-
-            <p>
-                Conectando leitores, autores e comunidades.
-            </p>
-
-        </div>
-
-        <div>
-
-            <h4>Navegação</h4>
-
-            <a href="#">Biblioteca</a>
-            <a href="#">Comunidades</a>
-            <a href="#">Autores</a>
-
-        </div>
-
-        <div>
-
-            <h4>Autores</h4>
-
-            <a href="#">Publicar Obra</a>
-            <a href="#">Minhas Obras</a>
-
-        </div>
-
-    </div>
-
-    <div class="footer-bottom">
-        © 2026 ParaBook. Todos os direitos reservados.
-    </div>
-
-</footer>
-
+  
 {% endblock %}

@@ -1,16 +1,24 @@
-{% load static %}
 <footer class="footer">
 
-    <div class="footer-container">
+    <div class="footer-content">
 
         <div class="footer-brand">
-            <h2>ParaBook</h2>
-            <p>O melhor site de livros.</p>
+
+            <h2>
+                <span class="para">Para</span>
+                <span class="book">Book</span>
+            </h2>
+
+            <p>
+                Uma plataforma colaborativa para leitores,
+                autores e comunidades literárias.
+            </p>
+
         </div>
 
-        <div class="footer-links">
+        <div class="footer-column">
 
-            <h4>Links</h4>
+            <h4>Navegação</h4>
 
             <a href="{% url 'home' %}">
                 Início
@@ -26,24 +34,46 @@
 
         </div>
 
-        <div class="footer-social">
+        <div class="footer-column">
 
-            <h4>Redes</h4>
+            <h4>Autores</h4>
 
-            <div class="icons">
+            <a href="{% url 'obras_autores' %}">
+                Publicar Obra
+            </a>
+
+            <a href="#">
+                Diretrizes
+            </a>
+
+        </div>
+
+        <div class="footer-column">
+
+            <h4>Contato</h4>
+
+            <a href="#">
                 <i class="fa-brands fa-instagram"></i>
-                <i class="fa-brands fa-facebook"></i>
+            </a>
+
+            <a href="#">
+                <i class="fa-brands fa-linkedin"></i>
+            </a>
+
+            <a href="#">
                 <i class="fa-brands fa-github"></i>
-            </div>
+            </a>
 
         </div>
 
     </div>
 
     <div class="footer-bottom">
-        <p>© 2026. Todos os direitos reservados.</p>
+
+        <p>
+            © 2026 ParaBook • Todos os direitos reservados
+        </p>
+
     </div>
 
 </footer>
-
-<hr class="footer-bottom-line">

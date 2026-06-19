@@ -1073,3 +1073,225 @@ body:not(.light-mode) {
     background: radial-gradient(circle at top, #111827, #020617);
     color: #E5E7EB;
 }
+
+/* =======================================================
+   COMUNIDADES
+======================================================= */
+
+.btn-criar-comunidade {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    text-decoration: none;
+
+    padding: 14px 24px;
+
+    margin-top: 20px;
+    margin-bottom: 30px;
+
+    border-radius: 999px;
+
+    background: linear-gradient(
+        90deg,
+        #22C55E,
+        #16A34A
+    );
+
+    color: white;
+    font-weight: bold;
+
+    transition: all 0.3s ease;
+}
+
+.btn-criar-comunidade:hover {
+    transform: translateY(-3px);
+}
+
+.card-comunidade {
+    background: linear-gradient(
+        145deg,
+        rgba(255,255,255,0.05),
+        rgba(255,255,255,0.02)
+    );
+
+    border: 1px solid #1F2937;
+
+    border-radius: 18px;
+
+    padding: 24px;
+
+    backdrop-filter: blur(10px);
+
+    transition: 0.3s ease;
+
+    min-height: 230px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.card-comunidade:hover {
+    transform: translateY(-6px);
+
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+}
+
+.card-header h2 {
+    color: #E5E7EB;
+    margin-bottom: 15px;
+}
+
+.card-body {
+    flex: 1;
+}
+
+.card-body p {
+    color: #9CA3AF;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.btn-comunidade {
+    text-decoration: none;
+
+    padding: 10px 16px;
+
+    border-radius: 999px;
+
+    color: white;
+
+    font-weight: 600;
+
+    transition: 0.3s ease;
+}
+
+.btn-comunidade:hover {
+    transform: translateY(-2px);
+}
+
+.btn-entrar {
+    background: #4F46E5;
+}
+
+.btn-editar {
+    background: #F59E0B;
+}
+
+.btn-excluir {
+    background: #DC2626;
+}
+
+/* =======================================================
+   FORMULÁRIOS
+======================================================= */
+
+.form-container {
+    max-width: 700px;
+
+    margin: 50px auto;
+
+    padding: 30px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.05);
+
+    backdrop-filter: blur(12px);
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.form-container input,
+.form-container textarea {
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    border: 1px solid #374151;
+
+    margin-top: 8px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* =======================================================
+   EXCLUIR
+======================================================= */
+
+.confirmacao-container {
+    display: flex;
+
+    justify-content: center;
+
+    padding: 60px 20px;
+}
+
+.confirmacao-card {
+    max-width: 600px;
+
+    width: 100%;
+
+    text-align: center;
+
+    padding: 40px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.05);
+
+    backdrop-filter: blur(12px);
+}
+
+.confirmacao-card i {
+    font-size: 3rem;
+
+    color: #F59E0B;
+
+    margin-bottom: 20px;
+}
+
+.confirmacao-card p {
+    margin: 20px 0;
+}
+
+.acoes-confirmacao {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    margin-top: 25px;
+}
+
+.btn-voltar {
+    text-decoration: none;
+
+    padding: 12px 20px;
+
+    border-radius: 10px;
+
+    background: #6B7280;
+
+    color: white;
+}
+
+.btn-excluir-confirmacao {
+    background: #DC2626;
+}
+

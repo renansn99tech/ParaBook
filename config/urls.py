@@ -37,7 +37,8 @@ urlpatterns = [
 
     # App perfis
     path('conta/', include('perfis.urls', namespace='perfis')), # Adicionando url do app Perfis
-
+    # App dashboard
+    path('dashboard/', include('dashboard.urls')),
     # Urls auxiliares
     path('login/', tela_login, name='login'),
     path('logout/', logout_view, name='logout'), # Adicionada uma view "logout_view" para a função logout do app Perfis

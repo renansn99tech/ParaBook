@@ -2,16 +2,18 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 
+
 class Categoria(models.Model):
     id_categoria = models.AutoField(db_column='Id_Categorias', primary_key=True)
     nome = models.CharField(max_length=45, db_column='Nome_Categoria')
 
     class Meta:
-        db_table = 'categorias'  # usa tabela existente
-        managed = False  # Django NÃO cria essa tabela
+        db_table = 'categorias'
+        managed = False
 
     def __str__(self):
         return self.nome
+
 
 class Livro(models.Model):
     id_livro = models.AutoField(db_column='Id_Livros', primary_key=True)
@@ -22,26 +24,31 @@ class Livro(models.Model):
     avaliacao = models.CharField(max_length=45, db_column='Avaliacao')
     isbn = models.CharField(max_length=45, db_column='ISBN')
     capa = models.CharField(max_length=255, null=True, blank=True)
-    
-    # ADICIONE A LINHA EXATAMENTE AQUI:
-    pdf = models.CharField(max_length=255, db_column='Caminho_PDF', null=True, blank=True)
-    
+
+    pdf = models.CharField(
+        max_length=255,
+        db_column='Caminho_PDF',
+        null=True,
+        blank=True
+    )
+
     categoria = models.ForeignKey(
         Categoria,
         on_delete=models.DO_NOTHING,
         db_column='Categorias_Id_Categorias'
     )
+
     class Meta:
         db_table = 'livros'
         managed = False
-        
+
     @property
     def url_pdf_estatico(self):
-        # Transforma "O Alquimista" em "o-alquimista"
         nome_limpo = slugify(self.nome)
         categoria_limpa = slugify(self.categoria.nome)
         return f"livros/{categoria_limpa}/{nome_limpo}.pdf"
-    
+
+
 class ObraAutor(models.Model):
     nome = models.CharField(max_length=100)
     email = models.EmailField()
@@ -55,7 +62,7 @@ class ObraAutor(models.Model):
         on_delete=models.CASCADE,
         db_column='categoria_id'
     )
-    
+
     status = models.CharField(
         max_length=20,
         choices=[
@@ -66,7 +73,6 @@ class ObraAutor(models.Model):
         default='pendente'
     )
 
-
     data_envio = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -75,7 +81,8 @@ class ObraAutor(models.Model):
 
     def __str__(self):
         return self.titulo
-        
+
+
 class Biblioteca(models.Model):
     STATUS_CHOICES = [
         ('lendo', 'Lendo'),
@@ -86,44 +93,33 @@ class Biblioteca(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     livro = models.ForeignKey(Livro, on_delete=models.CASCADE)
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='quero_ler')
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='quero_ler'
+    )
+
     nota = models.IntegerField(null=True, blank=True)
     data_adicao = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'livro')  # evita duplicação
+        unique_together = ('user', 'livro')
 
     def __str__(self):
         return f"{self.user.username} - {self.livro.nome}"
-    
-class Perfil(models.Model):
 
+
+class Perfil(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         related_name='perfil'
     )
 
-    foto = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True
-    )
+    foto = models.CharField(max_length=255, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    localizacao = models.CharField(max_length=100, blank=True, null=True)
 
-    bio = models.TextField(
-        blank=True,
-        null=True
-    )
-
-    localizacao = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True
-    )
-    class Meta:
-        db_table = 'perfil'
-        managed = False
-    
     status = models.CharField(
         max_length=20,
         choices=[
@@ -134,9 +130,9 @@ class Perfil(models.Model):
         default='pendente'
     )
 
-
-    def __str__(self):
-        return self.nome
+    class Meta:
+        db_table = 'perfil'
+        managed = False
 
     def __str__(self):
         return self.user.username

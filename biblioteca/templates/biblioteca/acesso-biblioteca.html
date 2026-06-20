@@ -196,9 +196,25 @@ Minha Biblioteca
                     <p><strong>Autor:</strong> {{ item.livro.autor }}</p>
                     <p><strong>Status:</strong> {{ item.get_status_display }}</p>
                     
-                    <a href="{% url 'leitura' %}?id={{ item.livro.id_livro }}" class="btn-adicionar" style="text-align: center; display: block;">
-                        📖 Ler Agora
-                    </a>
+<a href="{% url 'leitura' %}?id={{ item.livro.id_livro }}"
+    class="btn-adicionar"
+    style="text-align:center; display:block;">
+    📖 Ler Agora
+</a>
+
+<form method="POST"
+        action="{% url 'remover_da_biblioteca' item.id %}"
+        style="margin-top:10px;">
+
+    {% csrf_token %}
+
+    <button type="submit"
+            class="btn-remover"
+            onclick="return confirm('Remover este livro da sua biblioteca?');">
+        🗑️ Remover
+    </button>
+
+</form>
                 </div>
             {% empty %}
                 <div class="empty-state">

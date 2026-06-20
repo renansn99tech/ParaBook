@@ -1,24 +1,24 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+
 from .services import livros_por_categoria
 from .models import Categoria, Livro, ObraAutor, Biblioteca
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
-from django.contrib.auth.decorators import login_required, user_passes_test
 
 def novidade(request):
     return render(request, 'biblioteca/novidade.html')
 
-
 def biblioteca(request):
     categorias = [
-        'filosofia',
-        'literatura',
-        'religiosos',
-        'exatas',
-        'infantis'
+    'filosofia',
+    'literatura',
+    'religiosos',
+    'exatas',
+    'infantis'
     ]
+
 
     livros = livros_por_categorias(categorias)
 
@@ -41,16 +41,34 @@ def biblioteca(request):
 def adicionar_a_biblioteca(request, livro_id):
     if request.method == 'POST':
         livro = get_object_or_404(Livro, id_livro=livro_id)
-
         obj, criado = Biblioteca.objects.get_or_create(
             user=request.user,
             livro=livro
         )
 
-        if criado:
+    if criado:
             messages.success(request, "Livro adicionado com sucesso!")
-        else:
+    else:
             messages.info(request, "Este livro já está na sua biblioteca.")
+
+    return redirect('acesso_biblioteca')
+
+
+@login_required
+def remover_da_biblioteca(request, livro_id):
+    registro = get_object_or_404(
+    Biblioteca,
+    user=request.user,
+    livro__id_livro=livro_id
+    )
+
+
+    if request.method == 'POST':
+        registro.delete()
+        messages.success(
+            request,
+            "Livro removido da sua biblioteca."
+        )
 
     return redirect('acesso_biblioteca')
 
@@ -58,6 +76,7 @@ def adicionar_a_biblioteca(request, livro_id):
 @login_required
 def leitura(request):
     livro_id = request.GET.get('id')
+
 
     if not livro_id:
         messages.error(request, "Livro não informado.")
@@ -78,6 +97,7 @@ def leitura(request):
 
 def obras_autores(request):
     categorias = Categoria.objects.all()
+
 
     if request.method == 'POST':
         form = ObraAutorForm(request.POST, request.FILES)
@@ -104,8 +124,11 @@ def obras_autores(request):
     return render(request, 'biblioteca/obras-autores.html', {
         'categorias': categorias
     })
+
+
 def listar_obras(request):
     obras = ObraAutor.objects.filter(status='aprovado')
+
 
     return render(request, 'biblioteca/lista_obras.html', {
         'obras': obras
@@ -115,11 +138,11 @@ def listar_obras(request):
 def is_admin(user):
     return user.is_superuser or user.is_staff
 
-
 @login_required
 @user_passes_test(is_admin)
 def deletar_livro(request, id):
     livro = get_object_or_404(Livro, id_livro=id)
+
 
     if request.method == 'POST':
         livro.delete()
@@ -131,7 +154,10 @@ def deletar_livro(request, id):
 
 @login_required
 def acesso_biblioteca(request):
-    livros = Biblioteca.objects.filter(user=request.user).select_related('livro')
+    livros = Biblioteca.objects.filter(
+    user=request.user
+    ).select_related('livro')
+
 
     return render(request, 'biblioteca/acesso-biblioteca.html', {
         'livros': livros

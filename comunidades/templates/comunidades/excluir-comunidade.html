@@ -1,15 +1,59 @@
-<h1>Excluir Comunidade</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-<p>
-    Deseja realmente excluir
-    "{{ comunidade.nome }}"?
-</p>
+{% block title %}
+Excluir Comunidade
+{% endblock %}
 
-<form method="POST">
-    {% csrf_token %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/comunidade.css' %}">
+{% endblock %}
 
-    <button type="submit">
-        Sim, excluir
-    </button>
+{% block content %}
 
-</form>
+<section class="confirmacao-container">
+
+    <div class="confirmacao-card">
+
+        <i class="fas fa-triangle-exclamation"></i>
+
+        <h2>
+            Excluir Comunidade
+        </h2>
+
+        <p>
+            Deseja realmente excluir a comunidade
+            <strong>
+                "{{ comunidade.nome }}"
+            </strong>?
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="acoes-confirmacao">
+
+                <a
+                    href="{% url 'comunidades' %}"
+                    class="btn-voltar"
+                >
+                    Cancelar
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn-excluir-confirmacao"
+                >
+                    Excluir
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -4,60 +4,41 @@ let totalPaginas = 0;
 let livroAtualId = null;
 
 /* =========================
-INIT
+INIT 
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Leitura iniciada");
-    carregarLeitura();
+    console.log("Leitura iniciada direto pelos dados do banco.");
+    carregarLeituraDireta();
 });
 
 /* =========================
-CARREGA DADOS DO LIVRO
+CARREGA DADOS DIRETO DO HTML (BANCO DE DADOS)
 ========================= */
-function carregarLeitura() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("livro");
+function carregarLeituraDireta() {
+    // Pega o elemento do HTML que recebeu os dados do Django
+    const elementoDados = document.getElementById("dados-livro");
 
-    if (!id) {
-        exibirErro("Livro não especificado na URL.");
+    if (!elementoDados) {
+        exibirErro("Erro crítico: Elemento de dados do livro não encontrado no HTML.");
+        return;
+    }
+
+    // Lê os atributos data- que o Django preencheu no HTML
+    const id = elementoDados.getAttribute("data-id");
+    const caminhoPDF = elementoDados.getAttribute("data-caminho");
+
+    if (!id || !caminhoPDF) {
+        exibirErro("Dados do livro ou arquivo PDF não encontrados.");
         return;
     }
 
     livroAtualId = id;
 
-    carregarDadosLivro(id);
-}
+    // Recupera a página onde o usuário parou do localStorage
+    paginaAtual = Number(localStorage.getItem(`pagina_${id}`)) || 1;
 
-/* =========================
-BUSCA DADOS DO BACKEND
-========================= */
-function carregarDadosLivro(id) {
-    fetch(`/biblioteca/api/livro/${id}/`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erro ao buscar livro");
-            }
-            return response.json();
-        })
-        .then(livro => {
-            atualizarInfoLivro(livro);
-
-            paginaAtual = Number(localStorage.getItem(`pagina_${id}`)) || 1;
-
-            carregarPDF(livro.caminho);
-        })
-        .catch(error => {
-            console.error(error);
-            exibirErro("Erro ao carregar livro.");
-        });
-}
-
-/* =========================
-ATUALIZA INFO
-========================= */
-function atualizarInfoLivro(livro) {
-    document.getElementById("titulo").innerText = livro.nome;
-    document.getElementById("autor").innerText = `Autor: ${livro.autor}`;
+    // Carrega o PDF diretamente usando o caminho vindo do banco
+    carregarPDF(caminhoPDF);
 }
 
 /* =========================
@@ -85,7 +66,7 @@ function carregarPDF(caminho) {
         })
         .catch(error => {
             console.error(error);
-            exibirErro("Erro ao carregar PDF.");
+            exibirErro("Erro ao carregar o arquivo PDF. Verifique se o caminho está correto.");
         });
 }
 
@@ -97,8 +78,9 @@ function renderizarPagina(numero) {
 
     pdfDoc.getPage(numero).then(page => {
         const canvas = document.getElementById("pdf-canvas");
+        if (!canvas) return;
+        
         const ctx = canvas.getContext("2d");
-
         const viewport = page.getViewport({ scale: 1.5 });
 
         canvas.height = viewport.height;
@@ -177,5 +159,10 @@ function salvarProgresso() {
 ERRO
 ========================= */
 function exibirErro(msg) {
-    document.body.innerHTML = `<p style="color:red;text-align:center;">${msg}</p>`;
+    const container = document.querySelector(".leitor-pdf");
+    if (container) {
+        container.innerHTML = `<p style="color:red; text-align:center; padding: 20px;">⚠️ ${msg}</p>`;
+    } else {
+        document.body.innerHTML = `<p style="color:red; text-align:center; padding: 50px;">⚠️ ${msg}</p>`;
+    }
 }

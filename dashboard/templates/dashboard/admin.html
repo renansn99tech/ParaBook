@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Painel Administrativo
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<style>
+    /* Isso vai sumir com a barra azul quebrada do topo */
+    #topo navbar, header, nav, .navbar { 
+        display: none !important; 
+    }
+    /* Garante que o painel admin ocupe a tela toda corretamente */
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="app" class="admin-container" style="display: flex;">
+
+    <aside class="admin-sidebar">
+        <h2>ParaBook</h2>
+        <button data-nav="dashboard">Dashboard</button>
+        <button data-nav="livros">Livros</button>
+        <button data-nav="usuarios">Usuários</button>
+        <button data-nav="permissoes">Permissões</button>
+
+        <a href="{% url 'logout' %}" id="btnLogout" style="text-decoration: none; text-align: center; margin-top: auto;">
+            <button class="danger" style="width: 100%;">Sair</button>
+        </a>
+    </aside>
+
+    <main class="admin-main">
+
+        <section id="dashboard" class="secao">
+            <h1>Dashboard</h1>
+            <div class="card" style="margin-bottom: 20px;">
+                <h3>Total de livros</h3>
+                <p id="totalLivros">{{ total_livros }}</p>
+            </div>
+
+            <div class="grid-graficos">
+                <div class="card"><canvas id="graficoBarra"></canvas></div>
+                <div class="card"><canvas id="graficoPizza"></canvas></div>
+                <div class="card"><canvas id="graficoLinha"></canvas></div>
+            </div>
+        </section>
+
+        <section id="livros" class="secao" style="display:none;">
+            <h1 id="tituloSecaoLivros">Gerenciar Livros</h1>
+            <input type="text" id="busca" placeholder="Buscar livro..." style="margin-bottom: 15px; width: 100%;">
+
+            <form method="POST" class="form" id="formLivro">
+                {% csrf_token %}
+                <input type="hidden" name="livro_id" id="inputLivroId">
+                
+                <input type="text" name="titulo" id="inputTitulo" placeholder="Título" required>
+                <select name="categoria" id="selectCategoria" required>
+                    <option value="">Selecione Gênero</option>
+                    <option value="Literatura">Literatura</option>
+                    <option value="Filosofia">Filosofia</option>
+                    <option value="Religião">Religião</option>
+                    <option value="Infantil">Infantil</option>
+                    <option value="Ciências Exatas">Ciências Exatas</option>
+                </select>
+                <button type="submit" name="btn_add_livro" id="btnSubmeterForm">Adicionar</button>
+                <button type="button" id="btnCancelarEdicao" style="display: none; background: #6b7280;">Cancelar</button>
+            </form>
+
+            <ul id="listaLivros">
+                {% for livro in livros %}
+                <li data-titulo="{{ livro.nome|lower }}">
+                    <div>
+                        <strong>{{ livro.nome }}</strong><br>
+                        <small>{{ livro.genero }}</small>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-editar-trigger" 
+                                data-id="{{ livro.id_livro }}" 
+                                data-titulo="{{ livro.nome }}" 
+                                data-categoria="{{ livro.genero }}" 
+                                style="background: #3b82f6; padding: 5px 10px;">✏️</button>
+                        
+                        <form method="POST" style="margin: 0; padding: 0; background: transparent; border: none;">
+                            {% csrf_token %}
+                            <input type="hidden" name="livro_id" value="{{ livro.id_livro }}">
+                            <button type="submit" name="btn_deletar_livro" class="danger" style="padding: 5px 10px;">❌</button>
+                        </form>
+                    </div>
+                </li>
+                {% empty %}
+                <li>Nenhum livro cadastrado no banco de dados ainda.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section id="usuarios" class="secao" style="display:none;">
+            <h1>Gerenciar Usuários</h1>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Lista de usuários cadastrados:</p>
+            <ul id="listaUsuarios">
+                {% for u in usuarios %}
+                <li>
+                    <span><strong>{{ u.nome }}</strong> ({{ u.user_auth.username }})</span>
+                    {% if u.user_auth.is_superuser %}
+                        <span class="badge admin">Admin</span>
+                    {% elif u.user_auth.is_staff %}
+                        <span class="badge autor">Autor</span>
+                    {% else %}
+                        <span class="badge leitor">Leitor</span>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li>Nenhum usuário cadastrado.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section id="permissoes" class="secao" style="display:none;">
+            <h1>Controle de Permissões</h1>
+            <p>Nível de acesso de cada conta:</p>
+            <ul id="listaPermissoes">
+                {% for u in usuarios %}
+                <li>
+                    <span><strong>{{ u.nome }}</strong></span>
+                    {% if u.user_auth.is_superuser %}
+                        <span style="color: var(--danger); font-weight: bold;">Acesso Total</span>
+                    {% elif u.user_auth.is_staff %}
+                        <span style="color: #3b82f6; font-weight: bold;">Criar/Editar</span>
+                    {% else %}
+                        <span style="color: var(--text-muted);">Somente Leitura</span>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li>Nenhum usuário encontrado.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script id="dados-graficos" type="application/json">
+[
+    {% for livro in livros %}
+    {
+        "titulo": "{{ livro.nome|escapejs }}",
+        "categoria": "{{ livro.genero|escapejs }}",
+        "criadoEm": "2026-01-01" 
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+
+<script src="{% static 'js/admin.js' %}"></script>
+{% endblock %}

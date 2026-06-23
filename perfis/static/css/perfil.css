@@ -585,24 +585,6 @@ main hr {
     transition-duration: 0.3s;
     }
 
-/* RESPONSIVO */
-
-@media (max-width: 768px) {
-    .perfil-content {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .perfil-meta {
-        flex-direction: column;
-    }
-
-    .perfil-info-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 /* FOOTER */
 
 .footer {
@@ -679,50 +661,6 @@ main hr {
     border: none;
 }
 
-/* =========================================================
-   RESPONSIVO NAV
-   ========================================================= */
-
-@media (max-width: 768px) {
-    .nav {
-        flex-direction: column;
-    }
-
-    .menu {
-        flex-direction: column;
-    }
-
-    #secao-FAQ {
-        flex-direction: column;
-    }
-
-    .grid-container {
-        grid-template-columns: 1fr;
-    }
-    .footer {
-        padding: 40px 20px; /* Reduz o padding lateral que era muito grande */
-    }
-
-    .footer-container {
-        flex-direction: column; /* Empilha os itens verticalmente */
-        text-align: center;     /* Centraliza o texto de tudo */
-        gap: 30px;              /* Espaçamento entre as seções */
-    }
-
-    .footer-brand, .footer-links, .footer-social {
-        margin: 0;
-        top: 0;                 /* Remove os offsets negativos que desalinhariam no mobile */
-    }
-
-    .footer-links {
-        margin-right: 0;        /* Remove a margem lateral específica */
-    }
-
-    .footer-bottom-line {
-        top: 0;                 /* Ajusta a linha para não sobrepor o conteúdo */
-        margin-bottom: 20px;
-    }
-}
 
 /* =========================================================
    LIGHT MODE — PERFIL
@@ -889,6 +827,60 @@ body.light-mode .btn-remover-favorito {
     DIFERENCIAÇÃO DE PAPÉIS (LEITOR vs AUTOR)
    ========================================================================== */
 
+/* Container de Upgrade */
+.upgrade-autor-section {
+    max-width: 1140px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(139, 92, 246, 0.3) !important; /* Borda tracejada roxa sutil */
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    margin-top: 1.5rem;
+}
+
+.upgrade-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.upgrade-text h3 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.upgrade-text p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Botão de Transição */
+.btn-upgrade-autor {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--secondary, #8B5CF6);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-upgrade-autor:hover {
+    background: linear-gradient(135deg, var(--primary, #6366F1) 0%, var(--secondary, #8B5CF6) 100%);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
 /* Selos (Badges) ao lado do nome */
 .badge-autor {
     display: inline-flex;
@@ -924,8 +916,91 @@ body.light-mode .btn-remover-favorito {
     vertical-align: middle;
 }
 
+/* ==========================================================================
+   NOVOS SELOS E ESTADOS DO PERFIL
+   ========================================================================== */
+
+/* Selo de Administrador (Vermelho/Dourado ou Vermelho Escuro) */
+.badge-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    margin-left: 12px;
+    vertical-align: middle;
+}
+
+/* Selo de Em Análise (Amarelo/Laranja) */
+.badge-pendente {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 50px;
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    margin-left: 12px;
+    vertical-align: middle;
+}
+
+/* Atalho do Admin e Card Pendente */
+.admin-shortcut-card {
+    max-width: 1140px;
+    margin: auto;
+    background: rgba(239, 68, 68, 0.03);
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    margin-top: 1.5rem;
+}
+
+.btn-ir-dashboard {
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-ir-dashboard:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+}
+
+.pendente-section {
+    background: rgba(234, 179, 8, 0.03);
+    border: 1px dashed rgba(234, 179, 8, 0.3) !important;
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    margin-top: 1.5rem;
+}
+
 /* Painel Exclusivo do Autor */
 .autor-dashboard-card {
+    max-width: 1140px;
+    margin: auto;
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.07) 0%, rgba(5, 8, 22, 0.4) 100%);
     border: 1px solid rgba(139, 92, 246, 0.2) !important;
     box-shadow: 0 8px 32px 0 rgba(139, 92, 246, 0.05);
@@ -1011,6 +1086,88 @@ body.light-mode .btn-remover-favorito {
     color: var(--text-main);
 }
 
+/* ==========================================================================
+   FORMULÁRIO DE CONFIGURAÇÕES E INPUTS (ABA CONFIGURAÇÕES)
+   ========================================================================== */
+
+.perfil-form-group {
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.perfil-form-group label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.perfil-form-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.perfil-form-input:focus {
+    border-color: var(--primary, #6366F1);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* Modo Claro para os Inputs */
+body.light-mode .perfil-form-input {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .perfil-form-input:focus {
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Botão Salvar Alterações */
+.btn-salvar-perfil {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-salvar-perfil:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    filter: brightness(1.1);
+}
+
+/* Area de Ações Perigosas (Danger Zone) */
+.danger-zone {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(239, 68, 68, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
 
 /* =========================================================
    RESPONSIVIDADE — PERFIL.HTML

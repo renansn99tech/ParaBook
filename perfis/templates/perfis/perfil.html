@@ -44,9 +44,17 @@
                     <h1 class="perfil-nome"> 
                         {{ usuario_custom.nome }}  
         
-                        {% if usuario_custom.tipo == 'autor' %}
+                        {% if usuario_custom.tipo == 'admin' %}
+                            <span class="badge-admin" title="Administrador do Sistema">
+                                <i class="fa-solid fa-shield-halved"></i> Admin
+                            </span>
+                        {% elif usuario_custom.tipo == 'autor' %}
                             <span class="badge-autor" title="Autor Independente Verificado">
                                 <i class="fa-solid fa-feather-pointed"></i> Autor
+                            </span>
+                        {% elif usuario_custom.tipo == 'aguardando_aprovacao' %}
+                            <span class="badge-pendente" title="Sua solicitação está em análise">
+                                <i class="fa-solid fa-clock-rotate-left"></i> Em Análise
                             </span>
                         {% else %}
                             <span class="badge-leitor">
@@ -83,34 +91,6 @@
             </div>
 
         </section>
-
-        {% if usuario_custom.tipo == 'autor' %}
-        <section class="config-section autor-dashboard-card">
-            <div class="autor-card-header">
-                <div class="autor-title-group">
-                    <i class="fa-solid fa-wand-magic-sparkles icon-autor-panel"></i>
-                    <div>
-                        <h3>Painel do Autor Independente</h3>
-                        <p class="section-subtitle">Gerencie suas publicações e veja o alcance das suas obras</p>
-                    </div>
-                </div>
-                <button class="btn-publicar-obra" onclick="location.href='#'">
-                    <i class="fa-solid fa-plus"></i> Publicar Novo Livro
-                </button>
-            </div>
-            
-            <div class="autor-stats-preview">
-                <div class="stat-box-mini">
-                    <span class="stat-label">Obras Publicadas</span>
-                    <span class="stat-value">0</span>
-                </div>
-                <div class="stat-box-mini">
-                    <span class="stat-label">Leitores Totais</span>
-                    <span class="stat-value">0</span>
-                </div>
-            </div>
-        </section>
-        {% endif %}
 
         <!-- ESTATÍSTICAS -->
         <section class="perfil-stats">
@@ -364,68 +344,158 @@
 
                 <!-- TAB CONFIGURAÇÕES -->
                 <section id="configuracoes" class="tab-content">
-
                     <div class="config-container">
-                        <h2> Configurações da Conta </h2>
+                        <h2 style="margin-bottom: 20px;">Configurações da Conta</h2>
 
                         <div class="config-section">
-
-                            <h3>Conta</h3>
-                            {% comment %} FORM inserido para operação Update do CRUD {% endcomment %}
+                            <h3 style="margin-bottom: 15px; color: var(--primary);">Editar Perfil</h3>
+                            
                             <form action="{% url 'perfis:perfil_pessoal' %}" method="POST">
                                 {% csrf_token %} 
-                                <div class="config-section2">
-                                    <h3>Editar Perfil</h3>
-                                    
-                                    <div class="form-group">
-                                        <label for="input-nome">Nome de Exibição</label>
-                                        <input type="text" id="input-nome" name="nome" value="{{ usuario_custom.nome }}">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="input-username">Nome de Usuário (Username)</label>
-                                        <input type="text" id="input-username" name="username" value="{{ perfil.username|default:'' }}" placeholder="Ex: renan_santos">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="input-descricao">Frase de Status (Curta)</label>
-                                        <input type="text" id="input-descricao" name="descricao_perfil" value="{{ perfil.descricao_perfil }}">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="input-localizacao">Localização / Cidade</label>
-                                        <input type="text" id="input-localizacao" name="localizacao" value="{{ perfil.localizacao|default:'' }}" placeholder="Ex: Belém - PA">
-                                    </div>
-
-                                    <input type="hidden" name="foto" value="{{ perfil.foto|default:'' }}">
+                                
+                                <div class="perfil-form-group">
+                                    <label for="input-nome">Nome de Exibição</label>
+                                    <input type="text" id="input-nome" name="nome" class="perfil-form-input" value="{{ usuario_custom.nome }}">
                                 </div>
 
-                                <div class="config-actions">
-                                    <button type="submit" class="btn primary">Salvar Alterações</button>
+                                <div class="perfil-form-group">
+                                    <label for="input-username">Nome de Usuário (Username)</label>
+                                    <input type="text" id="input-username" name="username" class="perfil-form-input" value="{{ perfil.username|default:'' }}" placeholder="Ex: renan_santos">
                                 </div>
+
+                                <div class="perfil-form-group">
+                                    <label for="input-descricao">Frase de Status (Curta)</label>
+                                    <input type="text" id="input-descricao" name="descricao_perfil" class="perfil-form-input" value="{{ perfil.descricao_perfil }}" placeholder="Uma frase que te define...">
+                                </div>
+
+                                <div class="perfil-form-group">
+                                    <label for="input-localizacao">Localização / Cidade</label>
+                                    <input type="text" id="input-localizacao" name="localizacao" class="perfil-form-input" value="{{ perfil.localizacao|default:'' }}" placeholder="Ex: Belém - PA">
+                                </div>
+
+                                <input type="hidden" name="foto" value="{{ perfil.foto|default:'' }}">
+
+                                <button type="submit" class="btn-salvar-perfil">
+                                    <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+                                </button>
                             </form>
 
-                            <a href="{% url 'alterar_senha' %}">
-                                <button class="btn-config btn-light">
-                                    Alterar Senha
-                                </button>
-                            </a> 
-
-                            <a href="{% url 'logout' %}">
-                                <button class="btn-config btn-danger">
-                                    Excluir conta
-                                </button>
-                            </a>
+                            <div class="danger-zone">
+                                <div>
+                                    <h4 style="color: var(--text-main); margin-bottom: 4px;">Segurança da Conta</h4>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted);">Gerencie sua senha ou encerre sua conta.</p>
+                                </div>
+                                
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    <a href="{% url 'usuarios:logout' %}" style="text-decoration: none;"> <button class="btn-config" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                                            Alterar Senha
+                                        </button>
+                                    </a> 
+                                    
+                                    <form action="{% url 'usuarios:excluir_conta' %}" method="POST" id="form-excluir-conta">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn-config btn-danger" onclick="confirmarExclusao()">
+                                            <i class="fa-solid fa-trash"></i> Excluir conta
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
 
                         </div>
-
                     </div>
-
                 </section>
 
+                <script>
+                    function confirmarExclusao() {
+                        Swal.fire({
+                            title: 'Você tem certeza?',
+                            text: "Esta ação é irreversível! Todos os seus dados, livros e histórico serão apagados para sempre.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ef4444',
+                            cancelButtonColor: '#374151',
+                            confirmButtonText: 'Sim, excluir minha conta!',
+                            cancelButtonText: 'Cancelar'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Se o usuário clicou em sim, nós submetemos o formulário POST via JavaScript
+                                document.getElementById('form-excluir-conta').submit();
+                            }
+                        })
+                    }
+                </script>
             </div>
 
         </section>
+
+        {% if usuario_custom.tipo == 'admin' %}
+        <section class="config-section admin-shortcut-card">
+            <div class="upgrade-card-content">
+                <div class="upgrade-text">
+                    <h3><i class="fa-solid fa-server"></i> Central de Comando</h3>
+                    <p>Você tem privilégios totais. Acesse o dashboard para gerenciar a plataforma.</p>
+                </div>
+                <a href="{% url 'dashboard:painel_admin' %}" style="text-decoration: none;">
+                    <button class="btn-ir-dashboard">
+                        Acessar Dashboard <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </a>
+            </div>
+        </section>
+
+        {% elif usuario_custom.tipo == 'autor' %}
+        <section class="config-section autor-dashboard-card">
+            <div class="autor-card-header">
+                <div class="autor-title-group">
+                    <i class="fa-solid fa-wand-magic-sparkles icon-autor-panel"></i>
+                    <div>
+                        <h3>Painel do Autor Independente</h3>
+                        <p class="section-subtitle">Gerencie suas publicações e veja o alcance das suas obras</p>
+                    </div>
+                </div>
+                <button class="btn-publicar-obra" onclick="location.href='#'">
+                    <i class="fa-solid fa-plus"></i> Publicar Novo Livro
+                </button>
+            </div>
+            
+            <div class="autor-stats-preview">
+                <div class="stat-box-mini">
+                    <span class="stat-label">Obras Publicadas</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="stat-box-mini">
+                    <span class="stat-label">Leitores Totais</span>
+                    <span class="stat-value">0</span>
+                </div>
+            </div>
+        </section>
+
+        {% elif usuario_custom.tipo == 'aguardando_aprovacao' %}
+        <section class="config-section pendente-section">
+            <div class="upgrade-card-content">
+                <div class="upgrade-text">
+                    <h3 style="color: #eab308;"><i class="fa-solid fa-hourglass-half"></i> Solicitação em Análise</h3>
+                    <p>Nossa equipe de moderação está avaliando seu pedido para se tornar Autor Independente. Em breve você terá novidades!</p>
+                </div>
+            </div>
+        </section>
+
+        {% else %}
+        <section class="config-section upgrade-autor-section">
+            <div class="upgrade-card-content">
+                <div class="upgrade-text">
+                    <h3>Escreve ou deseja publicar suas próprias obras?</h3>
+                    <p>Mude sua conta para Autor Independente e comece a compartilhar suas histórias.</p>
+                </div>
+                <form action="{% url 'perfis:virar_autor' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-upgrade-autor">
+                        <i class="fa-solid fa-feather"></i> Quero ser um Autor
+                    </button>
+                </form>
+            </div>
+        </section>
+        {% endif %}
 
         <!-- BOTÃO TOPO -->
         <a href="#topo">

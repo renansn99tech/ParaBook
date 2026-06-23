@@ -1,24 +1,91 @@
-{% extends 'base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta | ParaBook</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    
+    <link rel="stylesheet" href="{% static 'css/tela-login.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="auth-body">
 
-{% block content %}
-<div class="container">
-    <h2>Criar Conta</h2>
+    <script>
+        const temaSalvo = localStorage.getItem("theme");
+        if (temaSalvo === "light") {
+            document.body.classList.add("light-mode");
+        } else {
+            document.body.classList.add("dark-mode");
+        }
+    </script>
+                    
+    <a href="{% url 'home' %}" class="btn-voltar-fixo">
+        <i class="fa-solid fa-arrow-left"></i> Voltar ao Menu
+    </a>
 
-    <form method="post" novalidate>
-        {% csrf_token %}
+    <button id="theme-toggle">🌙</button>
+    
+    <main class="auth-container auth-container-register" id="authContainer">
         
-        {% if form.errors %}
-            <div class="alert alert-danger" style="color: #ef4444; margin-bottom: 15px;">
-                Por favor, corrija os erros abaixo.
+        <section class="auth-image-side">
+            <div class="auth-brand-info">
+                <h2>Junte-se ao ParaBook</h2>
+                <p>Crie sua conta para gerenciar sua biblioteca digital, interagir com comunidades e expandir seu conhecimento.</p>
             </div>
-        {% endif %}
-        
-        {{ form.as_p }}
+        </section>
 
-        <button type="submit">
-            Cadastrar
-        </button>
-    </form>
-</div>
-{% endblock %}
+        <section class="auth-form-side">
+            <div class="auth-form-box">
+                
+                <div class="auth-form-header">
+                    <h2>Criar Conta</h2>
+                    <p>Preencha os dados abaixo para começar sua jornada</p>
+                </div>
+
+                <form method="post" novalidate class="auth-form">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <div class="auth-error-alert">
+                                <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% for field in form %}
+                        <div class="auth-input-group">
+                            <input type="{{ field.field.widget.input_type }}" 
+                                   name="{{ field.html_name }}" 
+                                   id="{{ field.id_for_label }}"
+                                   required 
+                                   placeholder=" "
+                                   {% if field.value %}value="{{ field.value }}"{% endif %}>
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <span class="field-error-message" style="color: #ef4444; font-size: 12px; display: block; margin-top: -4px; margin-bottom: 12px; padding-left: 4px;">
+                                        <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="auth-btn-submit">Cadastrar</button>
+
+                    <p class="auth-footer-text">
+                        Já possui uma conta? <a href="{% url 'usuarios:login' %}">Acesse aqui</a>
+                    </p>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{% static 'js/index.js' %}"></script>
+</body>
+</html>

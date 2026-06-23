@@ -42,7 +42,17 @@
                 <div class="perfil-user-info">
 
                     <h1 class="perfil-nome"> 
-                        {{ usuario_custom.nome }}  {% comment %} Somente o NOME usará a classe Usuário {% endcomment %}
+                        {{ usuario_custom.nome }}  
+        
+                        {% if usuario_custom.tipo == 'autor' %}
+                            <span class="badge-autor" title="Autor Independente Verificado">
+                                <i class="fa-solid fa-feather-pointed"></i> Autor
+                            </span>
+                        {% else %}
+                            <span class="badge-leitor">
+                                <i class="fa-solid fa-book-open"></i> Leitor
+                            </span>
+                        {% endif %}
                     </h1>
 
                     <p class="perfil-username">
@@ -73,6 +83,34 @@
             </div>
 
         </section>
+
+        {% if usuario_custom.tipo == 'autor' %}
+        <section class="config-section autor-dashboard-card">
+            <div class="autor-card-header">
+                <div class="autor-title-group">
+                    <i class="fa-solid fa-wand-magic-sparkles icon-autor-panel"></i>
+                    <div>
+                        <h3>Painel do Autor Independente</h3>
+                        <p class="section-subtitle">Gerencie suas publicações e veja o alcance das suas obras</p>
+                    </div>
+                </div>
+                <button class="btn-publicar-obra" onclick="location.href='#'">
+                    <i class="fa-solid fa-plus"></i> Publicar Novo Livro
+                </button>
+            </div>
+            
+            <div class="autor-stats-preview">
+                <div class="stat-box-mini">
+                    <span class="stat-label">Obras Publicadas</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="stat-box-mini">
+                    <span class="stat-label">Leitores Totais</span>
+                    <span class="stat-value">0</span>
+                </div>
+            </div>
+        </section>
+        {% endif %}
 
         <!-- ESTATÍSTICAS -->
         <section class="perfil-stats">

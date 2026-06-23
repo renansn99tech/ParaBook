@@ -885,6 +885,132 @@ body.light-mode .btn-remover-favorito {
     box-shadow: 0 8px 20px rgba(239,68,68,0.12);
 }
 
+/* ==========================================================================
+    DIFERENCIAÇÃO DE PAPÉIS (LEITOR vs AUTOR)
+   ========================================================================== */
+
+/* Selos (Badges) ao lado do nome */
+.badge-autor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--secondary, #8B5CF6) 0%, #d946ef 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
+    margin-left: 12px;
+    vertical-align: middle;
+}
+
+.badge-leitor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted, #9CA3AF);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-left: 12px;
+    vertical-align: middle;
+}
+
+/* Painel Exclusivo do Autor */
+.autor-dashboard-card {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.07) 0%, rgba(5, 8, 22, 0.4) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.2) !important;
+    box-shadow: 0 8px 32px 0 rgba(139, 92, 246, 0.05);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.autor-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.autor-title-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon-autor-panel {
+    font-size: 2rem;
+    color: #d946ef;
+}
+
+.section-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Botão de Publicação Premium */
+.btn-publicar-obra {
+    background: linear-gradient(135deg, var(--primary, #6366F1) 0%, var(--secondary, #8B5CF6) 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-publicar-obra:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+    filter: brightness(1.1);
+}
+
+/* Mini Métricas */
+.autor-stats-preview {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1.5rem;
+}
+
+.stat-box-mini {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
 
 /* =========================================================
    RESPONSIVIDADE — PERFIL.HTML

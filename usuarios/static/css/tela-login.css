@@ -113,6 +113,11 @@ body.light-mode #theme-toggle:hover {
     height: 100vh;
 }
 
+/* Modificador exclusivo para inverter os lados durante o CADASTRO - REGISTER usando Flexbox nativo */
+.auth-container-register {
+    flex-direction: row-reverse;
+}
+
 /* ==========================================================================
    PAINEL DA IMAGEM - ABORDAGEM DE ARQUIVO ÚNICO (SPRITE COMPORTAMENTO)
    ========================================================================== */
@@ -241,6 +246,10 @@ body.light-mode .auth-image-text p {
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+.auth-form-header {
+    margin-bottom: .75rem;
+}
+
 .auth-box {
     width: 100%;
     max-width: 360px;
@@ -331,6 +340,11 @@ body.light-mode .auth-form-side {
     border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+body.light-mode .auth-form-header {
+    margin-bottom: .75rem;
+    color: #1F2937;
+}
+
 body.light-mode .pure-form h2 {
     color: #111827; /* Título escuro para alto contraste */
 }
@@ -413,5 +427,8 @@ body.light-mode .auth-input-group input:not(:placeholder-shown) ~ label {
     }
     .auth-form-side {
         border-left: none;
+    }
+    .auth-container-register {
+        flex-direction: column;
     }
 }

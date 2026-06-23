@@ -1,240 +1,91 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | ParaBook</title>
-
+    <title>Acesso | ParaBook</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
-
     <link rel="stylesheet" href="{% static 'css/tela-login.css' %}">
-
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="auth-body">
 
-<body>
+    <script>
+        const temaSalvo = localStorage.getItem("theme");
+        if (temaSalvo === "light") {
+            document.body.classList.add("light-mode");
+        } else {
+            document.body.classList.add("dark-mode"); // Garante o dark por padrão
+        }
+    </script>
+                    
+    <a href="{% url 'home' %}" class="btn-voltar-fixo">
+        <i class="fa-solid fa-arrow-left"></i> Voltar ao Menu
+    </a>
 
-    <header>
-        <nav class="container nav">
-            <ul class="menu">
-                <li>
-                    <a href="{% url 'home' %}">
-                        <button class="voltar-btn">
-                            Voltar ao Menu
-                        </button>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
+    <button id="theme-toggle">🌙</button>
+    
+    <main class="auth-container" id="authContainer">
+        
+        <section class="auth-image-side">
+            <div class="auth-image-overlay"></div>
+            
+            <div class="abstract-glow-1"></div>
+            <div class="abstract-glow-2"></div>
 
-    <main class="form-container" id="container">
-
-        <!-- IMAGEM -->
-        <section class="image-side">
-            <img src="{% static 'img/login.jpg' %}" alt="Imagem de login">
+            <div class="auth-image-text">
+                <div class="brand-logo-login">
+                    <i class="fa-solid fa-book-open-reader animate-book"></i>
+                    <h1 class="logo-text">Para<span>Book</span></h1>
+                </div>
+                <p>Gerencie suas leituras, descubra novas comunidades e organize seu conhecimento em um ecossistema minimalista e performático.</p>
+            </div>
         </section>
 
-        <!-- LOGIN -->
-        <section class="form-side login-form">
+        <section class="auth-form-side">
+            
+            <div class="auth-box login-box">
+                <form method="POST" action="{% url 'usuarios:login' %}" novalidate class="pure-form">
+                    {% csrf_token %}
+                    <h2>Entrar no ParaBook</h2>
+                    <p class="auth-subtitle">Seja bem-vindo de volta!</p>
 
-            <form method="POST" action="{% url 'login' %}" novalidate>
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags == 'error' %}
+                                <div class="auth-error-alert">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> {{ message }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
 
-                {% csrf_token %}
+                    <div class="auth-input-group">
+                        <input type="text" name="username" required placeholder=" ">
+                        <label>Usuário</label>
+                    </div>
 
-                <h2>Login</h2>
+                    <div class="auth-input-group">
+                        <input type="password" name="password" required placeholder=" ">
+                        <label>Senha</label>
+                    </div>
 
-                <div class="input-box">
-                    <input 
-                        type="text"
-                        name="username"
-                        required
-                        placeholder=" "
-                    >
-                    <span>Usuário</span>
-                </div>
+                    <div class="auth-form-utilities">
+                        <a href="#" class="auth-forgot-link">Esqueceu a senha?</a>
+                    </div>
 
-                <div class="input-box password-box">
-                    <input
-                        type="password"
-                        name="password"
-                        id="loginPassword"
-                        required
-                        placeholder=" "
-                    >
-                    <span>Senha</span>
+                    <button type="submit" class="auth-btn-submit">Acessar Conta</button>
 
-                    <button
-                        type="button"
-                        class="toggle-password"
-                        data-target="loginPassword"
-                    >
-                        👁
-                    </button>
-                </div>
-
-                <div class="button-box">
-                    <button type="submit" class="submit-btn">
-                        Entrar
-                    </button>
-                </div>
-
-                <div class="input-box">
-                    <p>
-                        Esqueceu a senha?
-                        <a href="{% url 'password_reset' %}">
-                            Recuperar acesso
-                        </a>
+                    <p class="auth-footer-text">
+                        Ainda não tem conta? <a href="{% url 'usuarios:register' %}">Cadastre-se</a>
                     </p>
-                </div>
+                </form>
+            </div>
 
-                <div class="account-box">
-                    <p>
-                        Não tem conta?
-                        <a href="#" id="showRegister">
-                            Crie sua Conta →
-                        </a>
-                    </p>
-                </div>
-
-            </form>
         </section>
-
-        <!-- REGISTRO -->
-        <section class="form-side register-form">
-
-            <form method="POST" action="{% url 'register' %}" novalidate>
-
-                {% csrf_token %}
-
-                <h2>Criar Conta</h2>
-
-                <div class="input-box">
-                    <input
-                        type="text"
-                        name="username"
-                        required
-                        placeholder=" "
-                    >
-                    <span>Nome de Usuário</span>
-                </div>
-
-                <div class="input-box">
-                    <input
-                        type="email"
-                        name="email"
-                        required
-                        placeholder=" "
-                    >
-                    <span>Email</span>
-                </div>
-
-                <div class="input-box password-box">
-                    <input
-                        type="password"
-                        name="password1"
-                        id="registerPassword"
-                        required
-                        placeholder=" "
-                    >
-
-                    <span>Senha</span>
-
-                    <button
-                        type="button"
-                        class="toggle-password"
-                        data-target="registerPassword"
-                    >
-                        👁
-                    </button>
-                </div>
-
-                <div class="input-box password-box">
-                    <input
-                        type="password"
-                        name="password2"
-                        id="confirmPassword"
-                        required
-                        placeholder=" "
-                    >
-
-                    <span>Confirmar Senha</span>
-
-                    <button
-                        type="button"
-                        class="toggle-password"
-                        data-target="confirmPassword"
-                    >
-                        👁
-                    </button>
-                </div>
-
-                <div class="button-box">
-                    <button type="submit" class="submit-btn">
-                        Cadastrar
-                    </button>
-                </div>
-
-                <div class="account-box">
-                    <p>
-                        Já tem conta?
-                        <a href="#" id="showLogin">
-                            Entrar →
-                        </a>
-                    </p>
-                </div>
-
-            </form>
-        </section>
-
-        <!-- RECUPERAR SENHA -->
-        <section class="form-side forgot-form">
-
-            <form method="POST" action="{% url 'alterar_senha' %}" novalidate>
-
-                {% csrf_token %}
-
-                <h2>Recuperar Senha</h2>
-
-                <div class="input-box">
-                    <input
-                        type="email"
-                        name="email"
-                        required
-                        placeholder=" "
-                    >
-
-                    <span>Digite seu e-mail</span>
-                </div>
-
-                <div class="button-box">
-                    <button type="submit" class="submit-btn">
-                        Enviar link
-                    </button>
-                </div>
-
-                <div class="account-box">
-                    <p>
-                        Lembrou a senha?
-                        <a href="#" id="backToLogin">
-                            Entrar →
-                        </a>
-                    </p>
-                </div>
-
-            </form>
-        </section>
-
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script src="{% static 'js/auth.js' %}"></script>
-
+<script src="{% static 'js/index.js' %}"></script>
 </body>
-
 </html>

@@ -1,391 +1,417 @@
-:root {
-    --color-primary-dark: #14213d;
-    --color-secondary: #6366F1;
-    --color-accent-olive: #58504a;
-    --color-neutral-tan: #1F2937;
-    --color-bg-warm: #050816;
-    --color-ui-charcoal: #E5E7EB;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    --color-card: #111827;
-    --color-input: #020617;
-    --color-text-secondary: #9CA3AF;
-    --color-green: #22C55E;
-    --color-green-hover: #1d9f4c;
-}
-
-
-/* Reset */
-* {
+/* Reset local e seguro */
+.auth-body, .auth-body * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Fundo geral */
-body {
-    background: var(--color-bg-warm);
-    color: var(--color-ui-charcoal);
-    overflow-x: hidden;
-    /* impede scroll lateral */
-}
-
-
-/* NAV */
-
-.nav {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    background: rgba(2, 6, 23, 0.7);
-    backdrop-filter: blur(10px);
-    margin-top: 40px;
-    margin-right: 30px;
-}
-
-.menu {
-    list-style: none;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-}
-
-.menu a {
-    color: var(--color-ui-charcoal);
-    text-decoration: none;
-}
-
-/* BOTÃO VOLTAR */
-
-.voltar-btn {
-    background-color: var(--color-green);
-    color: #020617;
-    padding: 10px 20px;
-    border-radius: 25px;
-    border: none;
-    text-decoration: none;
-    font-weight: bold;
-    transition: 0.3s;
-    cursor: pointer;
+.auth-body {
+    background-color: #050816;
+    color: #E5E7EB;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
     position: relative;
 }
 
-.voltar-btn:hover {
-    background-color: var(--color-green-hover);
-    color: white;
+/* ==========================================================================
+   BOTÕES FLUTUANTES (PADRÃO - MODO ESCURO)
+   ========================================================================= */
+
+/* Botão de Voltar Flutuante */
+.btn-voltar-fixo {
+    position: absolute;
+    top: 2vh;
+    left: 90vw;
+    z-index: 50;
+    color: #9CA3AF;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+}
+
+.btn-voltar-fixo:hover {
+    color: #6366F1;
+    border-color: #6366F1;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* Botão Theme Toggle */
+#theme-toggle {
+    position: absolute;
+    top: 2vh;
+    left: 86vw;
+    z-index: 50;
+    color: #9CA3AF;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#theme-toggle:hover {
+    border-color: #6366F1;
     transform: scale(1.05);
 }
 
-/* CONTAINER PRINCIPAL */
 
-.form-container {
-    position: relative;
-    width: 1100px;
-    max-width: 95%;
-    /* evita estourar a tela */
-    height: 600px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--color-neutral-tan);
-    border-radius: 15px;
-    overflow: hidden;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    margin: 5% auto;
-    /* centraliza corretamente */
+/* ==========================================================================
+   AJUSTES PARA O MODO CLARO (LIGHT MODE)
+   ========================================================================= */
+
+/* Ajuste do Botão Voltar no Modo Claro */
+body.light-mode .btn-voltar-fixo {
+    color: #374151; /* Texto cinza escuro para contraste */
+    background: rgba(0, 0, 0, 0.04); /* Fundo escuro sutil que funciona sobre o cinza claro */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Borda mais visível */
 }
 
-
-/* LADO DA IMAGEM */
-
-.image-side {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 45%;
-    height: 100%;
-    transition: transform 0.6s ease;
+body.light-mode .btn-voltar-fixo:hover {
+    color: #4F46E5;
+    border-color: #4F46E5;
+    background: rgba(79, 70, 229, 0.08);
 }
 
-.image-side img {
+/* Ajuste do Botão Toggle no Modo Claro */
+body.light-mode #theme-toggle {
+    color: #111827; /* Garante que o ícone mude de cor */
+    background: rgba(0, 0, 0, 0.04); /* Inverte o padrão da transparência */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode #theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: #6366F1;
+}
+
+/* Container Principal Split 50/50 */
+.auth-container {
+    display: flex;
     width: 100%;
-    /* removido 115% que causava overflow */
-    height: 100%;
-    object-fit: cover;
-    border-radius: 15px 0 0 15px;
+    height: 100vh;
 }
 
-/* ÁREA DOS FORMULÁRIOS */
-
-.form-side {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 55%;
-    height: 100%;
+/* ==========================================================================
+   PAINEL DA IMAGEM - ABORDAGEM DE ARQUIVO ÚNICO (SPRITE COMPORTAMENTO)
+   ========================================================================== */
+.auth-image-side {
+    flex: 1.2;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     padding: 50px;
-    background: transparent;
-    transition: transform 0.6s ease;
+    overflow: hidden;
+    
+    /* Injeta a imagem como background do container */
+    background-image: url('../img/logo-parabook-bg.png');
+    background-size: 201% 100%; /* Força a imagem a ter o dobro da largura do painel || 201% para não aparecer a metade do light-mode à direita*/
+    background-repeat: no-repeat;
+    
+    /* 🌙 COMPORTAMENTO PADRÃO: MODO ESCURO (Exibe a metade Esquerda) */
+    background-position: left center; 
+    background-color: #050816;
+    
+    transition: background-position 0.6s ease, background-color 0.6s ease;
 }
 
-/* FORMULÁRIOS */
-
-.login-form,
-.register-form,
-.forgot-form {
+.auth-image-overlay {
     position: absolute;
-    width: calc(60% - 100px);
-    transition: transform 0.6s ease;
-}
-
-/* ESTADOS INICIAIS */
-
-.login-form {
-    transform: translateX(0);
-}
-
-.register-form {
-    transform: translateX(100%);
-}
-
-.forgot-form {
-    transform: translateX(100%);
-}
-
-/* CADASTRO */
-
-.form-container.active .login-form {
-    transform: translateX(100%);
-}
-
-.form-container.active .register-form {
-    transform: translateX(0);
-}
-
-/* RECUPERAÇÃO */
-
-.form-container.forgot-active .login-form {
-    transform: translateX(100%);
-}
-
-.form-container.forgot-active .forgot-form {
-    transform: translateX(0);
-}
-
-/* ANIMAÇÃO IMAGEM */
-
-.form-container.active .image-side,
-.form-container.forgot-active .image-side {
-    transform: translateX(-40px) scale(1.02);
-}
-
-/* TÍTULO */
-
-h2 {
-    margin-bottom: 20px;
-    color: var(--color-ui-charcoal);
-    text-align: center;
-}
-
-/* INPUT BOX */
-
-.input-box {
-    margin-top: 20px;
-    position: relative;
-}
-
-/* INPUT */
-
-.input-box input {
+    top: 0;
+    left: 0;
     width: 100%;
-    padding: 12px 15px;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--color-ui-charcoal);
-    font-size: 18px;
-    border-bottom: 2px solid var(--color-neutral-tan);
-    transition: 0.4s;
+    height: 100%;
+    background: linear-gradient(to top, #050816 20%, rgba(5, 8, 22, 0.1));
+    z-index: 1;
+    transition: background 0.6s ease;
 }
 
-/* FOCUS */
-
-.input-box input:focus {
-    border-bottom-color: var(--color-secondary);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+.auth-image-text {
+    position: relative;
+    z-index: 2;
 }
 
-/* LABEL */
+/* ==========================================================================
+   TRANSFORMAÇÃO PARA O MODO CLARO (LIGHT MODE)
+   ========================================================================== */
+body.light-mode .auth-image-side {
+    /* ☀️ MÁGICA 1: Move o background para exibir a metade Direita da imagem */
+    background-position: left center; 
+    
+    /* ☀️ MÁGICA 2: Inverte tons escuros e claros da imagem para casar com o tema */
+    filter: invert(0.9) hue-rotate(180deg) brightness(1.1); 
+}
 
-.input-box span {
+body.light-mode .auth-image-overlay {
+    /* Gradiente claro que se funde com o novo fundo do container */
+    background: linear-gradient(to top, #E5E7EB 20%, rgba(229, 231, 235, 0.2));
+}
+
+body.light-mode .auth-image-text .logo-text {
+    color: #1F2937; /* Escurece o texto principal da logo para leitura */
+}
+
+body.light-mode .auth-image-text p {
+    color: #4B5563; /* Melhora o contraste do texto auxiliar */
+}
+
+/* Nova Logo Estilizada para o Login */
+.brand-logo-login {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.brand-logo-login i {
+    font-size: 42px;
+    color: #6366F1;
+    filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
+}
+
+.logo-text {
+    font-size: 46px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: #FFF;
+}
+
+.logo-text span {
+    color: #6366F1;
+    background: linear-gradient(to right, #6366F1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Efeito de iluminação abstrata no fundo do painel (Estilo Dark Futurista) */
+.abstract-glow-1 {
     position: absolute;
-    top: 50%;
-    left: 15px;
-    color: var(--color-text-secondary);
-    font-size: 16px;
-    pointer-events: none;
-    transition: 0.4s;
-    transform: translateY(-50%);
+    top: -10%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(99, 102, 241, 0.15);
+    filter: blur(100px);
+    border-radius: 50%;
+}
+.abstract-glow-2 {
+    position: absolute;
+    bottom: 20%;
+    left: -10%;
+    width: 250px;
+    height: 250px;
+    background: rgba(139, 92, 246, 0.1);
+    filter: blur(80px);
+    border-radius: 50%;
 }
 
-/* FLOAT LABEL */
-
-.input-box input:focus+span,
-.input-box input:not(:placeholder-shown)+span {
-    top: -5px;
-    font-size: 12px;
-    color: var(--color-secondary);
+/* ==========================================================================
+   LADO DO FORMULÁRIO (PADRÃO - MODO ESCURO)
+   ========================================================================== */
+.auth-form-side {
+    flex: 1;
+    background: #0b0f19;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* LINKS */
-
-a {
-    color: var(--color-secondary);
-    text-decoration: none;
-    font-weight: bold;
+.auth-box {
+    width: 100%;
+    max-width: 360px;
 }
 
-a:hover {
-    color: #8B5CF6;
-    transition: 0.4s;
+.pure-form h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #FFF;
+    transition: color 0.3s ease;
 }
 
-/* ACCOUNT BOX */
-
-.account-box {
-    text-align: center;
-    margin-top: 30px;
-    color: var(--color-text-secondary);
+.auth-subtitle {
+    color: #9CA3AF;
     font-size: 14px;
+    margin-bottom: 30px;
+    transition: color 0.3s ease;
 }
 
-/* BOTÃO */
-
-.submit-btn {
-    width: 100%;
-    background: linear-gradient(90deg, #6366F1, #4F46E5);
-    border: none;
-    padding: 14px;
-    border-radius: 25px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.4s;
-    margin-top: 20px;
-}
-
-.submit-btn:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
-}
-
-/* SENHA */
-
-.password-box {
+/* Campos de Input Flutuantes */
+.auth-input-group {
     position: relative;
+    margin-bottom: 20px;
 }
 
-.toggle-password {
+.auth-input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: #FFF;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.auth-input-group input:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+.auth-input-group label {
     position: absolute;
-    right: 10px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
+    color: #9CA3AF;
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.auth-input-group input:focus ~ label,
+.auth-input-group input:not(:placeholder-shown) ~ label {
+    top: 0;
+    font-size: 12px;
+    color: #6366F1;
+    background: #0b0f19; /* Fundo do label no modo dark */
+    padding: 0 6px;
+}
+
+/* Botão de Envio */
+.auth-btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: #6366F1;
+    color: #FFF;
     border: none;
-    background: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 18px;
-    color: var(--color-text-secondary);
+    transition: background 0.2s ease;
+    margin-top: 10px;
 }
 
-/* ===============================
-   LIGHT MODE
-================================= */
-
-body.light-mode {
-    background: #F5FFFA;
-    color: #020617;
+.auth-btn-submit:hover {
+    background: #4F46E5;
 }
 
-/* NAV */
 
-body.light-mode .nav {
-    background: #F5FFFA;
-    border-bottom: 1px solid #d1d5db;
+/* ==========================================================================
+    REGRAS DE CONTEXTO PARA O MODO CLARO (LIGHT MODE)
+   ========================================================================== */
+body.light-mode .auth-form-side {
+    background: #F3F4F6;
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-body.light-mode .menu a {
-    color: #374151;
+body.light-mode .pure-form h2 {
+    color: #111827; /* Título escuro para alto contraste */
 }
 
-/* CONTAINER */
-
-body.light-mode .form-container {
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px solid #d1d5db;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+body.light-mode .auth-subtitle {
+    color: #6B7280; /* Subtítulo cinza médio legível */
 }
 
-/* TÍTULO */
-
-body.light-mode h2 {
-    color: #020617;
+/* Ajuste dos inputs no modo claro */
+body.light-mode .auth-input-group input {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #111827; /* Texto digitado escuro */
 }
 
-/* INPUTS */
-
-body.light-mode .input-box input {
-    color: #020617;
-    border-bottom: 2px solid #d1d5db;
+body.light-mode .auth-input-group label {
+    color: #6B7280; /* Label em repouso mais escura */
 }
 
-body.light-mode .input-box input:focus {
-    border-bottom-color: #6366F1;
+/* O grande truque: Altera o fundo da label flutuante para coincidir com o fundo claro */
+body.light-mode .auth-input-group input:focus ~ label,
+body.light-mode .auth-input-group input:not(:placeholder-shown) ~ label {
+    background: #F3F4F6; /* Cor idêntica ao background do .auth-form-side */
+    color: #4F46E5; /* Um tom de roxo levemente mais escuro para melhor legibilidade */
 }
 
-body.light-mode .input-box span {
-    color: #6b7280;
+.auth-footer-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #9CA3AF;
 }
 
-body.light-mode .input-box input:focus+span,
-body.light-mode .input-box input:not(:placeholder-shown)+span {
-    color: #4F46E5;
+.auth-footer-text a {
+    color: #6366F1;
+    text-decoration: none;
+    font-weight: 600;
 }
 
-/* LINKS */
-
-body.light-mode a {
-    color: #4F46E5;
+.auth-error-alert {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #EF4444;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-body.light-mode a:hover {
+/* Container de utilidades (alinha o link à direita) */
+.auth-form-utilities {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -10px; /* Aproxima ligeiramente do campo de senha */
+    margin-bottom: 7px; /* Afasta do botão de entrar */
+    width: 100%;
+}
+
+/* Estilização minimalista do link */
+.auth-forgot-link {
+    color: #9CA3AF;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+/* Efeito Hover com a cor de destaque do seu projeto */
+.auth-forgot-link:hover {
     color: #6366F1;
 }
 
-/* TEXTOS */
-
-body.light-mode .account-box,
-body.light-mode .input-box p {
-    color: #4b5563;
-}
-
-/* BOTÕES */
-
-body.light-mode .submit-btn {
-    background: linear-gradient(90deg, #6366F1, #4F46E5);
-}
-
-body.light-mode .voltar-btn {
-    background: #22C55E;
-    color: #020617;
-}
-
-body.light-mode .voltar-btn:hover {
-    background: #1d9f4c;
-    color: white;
-}
-
-/* OLHO SENHA */
-
-body.light-mode .toggle-password {
-    color: #6b7280;
+/* Responsividade de Alta Performance */
+@media (max-width: 850px) {
+    .auth-image-side {
+        display: none;
+    }
+    .auth-form-side {
+        border-left: none;
+    }
 }

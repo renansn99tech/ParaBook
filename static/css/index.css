@@ -118,19 +118,17 @@ main hr{
 .titulo {
     position: relative;
     min-height: 100vh;
-
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
     text-align: center;
     color: #fff;
-
-    background: url('../img/hero-bg.jpg') no-repeat center center/cover;
 }
 
 .hero-section {
+    position: relative;
+    top: -5;
     background: url('../img/hero-bg.jpg') no-repeat center center/cover;
 }
 
@@ -874,6 +872,20 @@ body.light-mode .login-btn:hover {
 }
 
 /* TÍTULO */
+
+body.light-mode .titulo {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+body.light-mode .hero-section {
+    background: url('../img/hero-light-bg.jpg') no-repeat center center/cover;
+}
+
+
 body.light-mode .titulo h2,
 body.light-mode .titulo p {
     color: #020617;

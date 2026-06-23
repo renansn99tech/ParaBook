@@ -1,23 +1,30 @@
 body{
-    background:#0f172a;
-    color:#e2e8f0;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin:0;
-    padding:0;
+
+    background:
+    radial-gradient(
+        circle at center,
+        rgba(124,58,237,.15),
+        transparent 40%
+    ),
+    #050816;
+
+    color:white;
+
+    overflow-x:hidden;
 }
 
 .hero{
     display:grid;
-
-    grid-template-columns:
-    1fr 1fr;
-
+    grid-template-columns:45% 55%;
     align-items:center;
+    gap:40px;
 
-    padding:
-    120px 8% 80px;
+    max-width:1400px;
+    margin:0 auto;
+    padding:90px 60px 60px;
 
-    min-height:90vh;
+    min-height:720px;
+    background:none;
 }
 
 .hero::before{
@@ -47,20 +54,6 @@ body{
     max-width:650px;
 }
 
-.badge{
-    display:inline-block;
-
-    padding:10px 16px;
-
-    border-radius:999px;
-
-    background:rgba(139,92,246,.15);
-
-    border:1px solid rgba(139,92,246,.4);
-
-    margin-bottom:20px;
-}
-
 .hero-content h1{
     font-size:4rem;
     line-height:1.1;
@@ -82,6 +75,12 @@ body{
     margin-top:20px;
     color:#bdbdbd;
     font-size:1.2rem;
+}
+
+.hero-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:30px;
 }
 
 .btn-primary{
@@ -112,38 +111,52 @@ body{
 }
 
 .hero-image{
-    flex:1;
     position:relative;
-
-    min-height:600px;
+    min-height:560px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:visible;
 }
 
 .hero-image img{
-    position:absolute;
-
-    width:520px;
-
-    left:50%;
-    top:55%;
-
-    transform:translate(-50%, -50%);
-
+    position:relative;
     z-index:2;
+    width:620px;
+    max-width:100%;
 
     filter:
-        drop-shadow(0 0 30px rgba(139,92,246,.6))
-        drop-shadow(0 0 80px rgba(139,92,246,.4));
-
-    animation: floatBook 5s ease-in-out infinite;
+        drop-shadow(0 0 40px rgba(139,92,246,.7))
+        drop-shadow(0 0 100px rgba(139,92,246,.35));
 }
 
 .hero-image::before{
     content:"";
+    position:absolute;
+    width:780px;
+    height:560px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+
+    background:
+        radial-gradient(circle at center, rgba(139,92,246,.35), transparent 45%),
+        url("/static/img/stars-bg.png") center/cover no-repeat;
+
+    mask-image:radial-gradient(circle at center, black 35%, transparent 75%);
+    -webkit-mask-image:radial-gradient(circle at center, black 35%, transparent 75%);
+
+    opacity:.95;
+    z-index:0;
+}
+
+.hero-image::after{
+    content:"";
 
     position:absolute;
 
-    width:700px;
-    height:700px;
+    width:500px;
+    height:500px;
 
     left:50%;
     top:50%;
@@ -151,30 +164,36 @@ body{
     transform:translate(-50%, -50%);
 
     background:
-    radial-gradient(
-        circle,
-        rgba(139,92,246,.35),
-        transparent 70%
-    );
+        radial-gradient(
+            circle,
+            rgba(139,92,246,.35),
+            transparent 70%
+        );
 
-    z-index:1;
+    filter:blur(50px);
+
+    z-index:0;
 }
 
 .floating-card{
-    background:
-    rgba(15,23,42,.85);
+    position:absolute;
+    z-index:5;
 
-    backdrop-filter:blur(15px);
+    background:linear-gradient(
+        145deg,
+        rgba(35,22,78,.88),
+        rgba(17,24,39,.78)
+    );
 
-    border:
-    1px solid rgba(255,255,255,.08);
-
-    border-radius:20px;
+    border:1px solid rgba(139,92,246,.35);
+    border-radius:18px;
 
     padding:18px;
+    backdrop-filter:blur(20px);
 
     box-shadow:
-    0 15px 40px rgba(0,0,0,.35);
+        0 20px 50px rgba(0,0,0,.35),
+        0 0 30px rgba(139,92,246,.18);
 }
 
 .floating-card h4{
@@ -187,8 +206,9 @@ body{
 }
 
 .author-card{
-    top:90px;
-    left:40px;
+    top:80px;
+    left:55px;
+    width:200px;
 }
 
 .stats{
@@ -203,46 +223,43 @@ body{
 }
 
 .stats-card{
-    top:250px;
-    right:-20px;
+    top:135px;
+    right:10px;
+    width:200px;
+    transform:rotate(6deg);
 }
 
 .features{
-    padding:80px 8%;
+    max-width:1400px;
+    margin:0 auto;
+    padding:40px 60px 80px;
 
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
-
-    gap:30px;
+    grid-template-columns:1fr 1fr;
+    gap:28px;
 }
 
 .feature-card{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:40px;
-
-    min-height:280px;
-
-    background:
-    rgba(255,255,255,.03);
-
-    border:
-    1px solid rgba(255,255,255,.08);
-
-    border-radius:24px;
-
-    backdrop-filter:blur(12px);
-
-    transition:.3s;
-
+    position:relative;
     overflow:hidden;
 
-    position:relative;
+    min-height:300px;
+    padding:36px;
+
+    border-radius:22px;
+    border:1px solid rgba(255,255,255,.08);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(15,23,42,.96) 0%,
+            rgba(15,23,42,.88) 42%,
+            rgba(88,28,135,.25) 62%,
+            rgba(15,23,42,.75) 100%
+        );
+
+    display:flex;
+    align-items:center;
 }
 
 .feature-card:hover{
@@ -278,10 +295,9 @@ body{
 }
 
 .feature-content{
-
-    flex:1;
-
-    z-index:2;
+    width:55%;
+    position:relative;
+    z-index:3;
 }
 
 .feature-content h2{
@@ -295,6 +311,36 @@ body{
     z-index:2;
 
     opacity:.9;
+}
+
+.feature-photo{
+    position:absolute;
+    right:0;
+    bottom:0;
+    width:52%;
+    height:100%;
+    z-index:1;
+}
+
+.feature-photo::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        90deg,
+        rgba(15,23,42,1) 0%,
+        rgba(15,23,42,.75) 20%,
+        rgba(15,23,42,.15) 55%,
+        transparent 100%
+    );
+    z-index:2;
+}
+
+.feature-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:0;
 }
 
 .feature-card p{
@@ -317,45 +363,34 @@ body{
 }
 
 .books{
-    padding:60px 8%;
+    max-width:1400px;
+    margin:0 auto;
+    padding:60px 60px;
 }
 
 .books-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-    gap:25px;
+    grid-template-columns:repeat(6, 1fr);
+    gap:24px;
 }
 
 .book-card{
-    background:rgba(255,255,255,.03);
-
+    background:rgba(15,23,42,.75);
     border:1px solid rgba(255,255,255,.08);
-
-    border-radius:18px;
-
+    border-radius:14px;
     overflow:hidden;
-
     transition:.3s;
-
-    backdrop-filter:blur(10px);
 }
 
 .book-card:hover{
-    transform:
-        translateY(-8px);
-
-    border-color:
-        rgba(139,92,246,.5);
-
-    box-shadow:
-        0 15px 40px rgba(139,92,246,.15);
+    transform:translateY(-8px);
+    border-color:rgba(139,92,246,.45);
+    box-shadow:0 20px 50px rgba(139,92,246,.16);
 }
 
 .book-card img{
     width:100%;
-
-    height:320px;
-
+    height:260px;
     object-fit:cover;
 }
 
@@ -369,30 +404,31 @@ body{
 }
 
 .book-card-float{
-    top:70px;
-    right:20px;
+    top:45px;
+    right:170px;
+    width:220px;
 }
 
 .book-info{
-    padding:18px;
+    padding:16px;
 }
 
 .book-info h3{
-    margin-bottom:8px;
-
-    font-size:1.1rem;
+    font-size:1rem;
+    color:white;
+    margin-bottom:6px;
+    line-height:1.2;
 }
 
 .book-author{
+    font-size:.85rem;
     color:#9ca3af;
-
-    margin-bottom:12px;
+    margin-bottom:10px;
 }
 
 .book-rating{
     color:#fbbf24;
-
-    font-weight:600;
+    font-size:.9rem;
 }
 
 .avatar{
@@ -421,8 +457,22 @@ body{
 }
 
 .section-header h2{
-    font-size:2rem;
+    font-size:1.7rem;
     color:white;
+    position:relative;
+    padding-left:18px;
+}
+
+.section-header h2::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:50%;
+    transform:translateY(-50%);
+    width:4px;
+    height:28px;
+    border-radius:999px;
+    background:#8b5cf6;
 }
 
 .section-header a{
@@ -511,7 +561,7 @@ body{
         display:flex;
         justify-content:center;
         flex-wrap:wrap;
-        gap:15px;
+        gap: 20px;
     }
 
     .hero-image{
@@ -623,4 +673,20 @@ body{
         grid-template-columns:1fr;
     }
 
+}
+
+@media(max-width:1100px){
+    .books-grid{
+        grid-template-columns:repeat(3, 1fr);
+    }
+}
+
+@media(max-width:650px){
+    .books{
+        padding:50px 24px;
+    }
+
+    .books-grid{
+        grid-template-columns:1fr 1fr;
+    }
 }

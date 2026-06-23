@@ -10,19 +10,20 @@
 {% block content %}
   <section class="hero">
     <div class="hero-content">
-      <span class="badge">📚 Biblioteca Digital Colaborativa</span>
-
-      <h1>
-        Descubra, leia e publique
-        <span>histórias incríveis</span>
-      </h1>
+      <h1>Descubra, leia e publique <span>histórias</span></h1>
 
       <p>Conectamos leitores, autores e comunidades em um único espaço para compartilhar conhecimento e incentivar a leitura.</p>
 
       <div class="hero-buttons">
-        <a href="{% url 'biblioteca' %}" class="btn-primary">Explorar Biblioteca</a>
+        <a href="{% url 'biblioteca' %}" class="btn-primary">
+          <i class="fa-solid fa-book-open"></i>
+          Explorar livros
+        </a>
 
-        <a href="{% url 'obras_autores' %}" class="btn-secondary">Publicar Obra</a>
+        <a href="{% url 'obras_autores' %}" class="btn-secondary">
+          <i class="fa-solid fa-feather"></i>
+          Publicar meu livro
+        </a>
       </div>
     </div>
 
@@ -48,70 +49,53 @@
 
       <img src="{% static 'img/open-book.png' %}" alt="Livro Aberto" />
     </div>
-
   </section>
 
   <section class="features">
-
     <div class="feature-card">
+      <div class="feature-content">
+        <div class="feature-icon">📚</div>
 
-        <div class="feature-content">
+        <h2>Para Leitores</h2>
 
-            <div class="feature-icon">📚</div>
+        <p>Explore milhares de livros, descubra novos autores e participe de comunidades literárias.</p>
 
-            <h2>Para Leitores</h2>
+        <ul>
+          <li>✔ Biblioteca Digital</li>
+          <li>✔ Livros Gratuitos</li>
+          <li>✔ Comunidades</li>
+          <li>✔ Favoritos</li>
+        </ul>
+      </div>
 
-            <p>
-                Explore milhares de livros, descubra novos autores
-                e participe de comunidades literárias.
-            </p>
-
-            <ul>
-                <li>✔ Biblioteca Digital</li>
-                <li>✔ Livros Gratuitos</li>
-                <li>✔ Comunidades</li>
-                <li>✔ Favoritos</li>
-            </ul>
-
-        </div>
-
-        <div class="feature-image">
-            <i class="fa-solid fa-book-open"></i>
-        </div>
-
+      <div class="feature-photo">
+        <img src="{% static 'img/leitora.png' %}" alt="" />
+      </div>
     </div>
 
     <div class="feature-card">
-
-        <div class="feature-content">
-
-            <div class="feature-icon">
-                <i class="fa-solid fa-feather"></i>
-            </div>
-
-            <h2>Para Autores</h2>
-
-            <p>
-                Compartilhe suas obras, alcance novos leitores
-                e faça parte da comunidade ParaBook.
-            </p>
-
-            <ul>
-                <li>✔ Publicação Gratuita</li>
-                <li>✔ Divulgação</li>
-                <li>✔ Feedback</li>
-                <li>✔ Comunidade</li>
-            </ul>
-
+      <div class="feature-content">
+        <div class="feature-icon">
+          <i class="fa-solid fa-feather"></i>
         </div>
 
-        <div class="feature-image">
-            <i class="fa-solid fa-users"></i>
-        </div>
+        <h2>Para Autores</h2>
 
+        <p>Compartilhe suas obras, alcance novos leitores e faça parte da comunidade ParaBook.</p>
+
+        <ul>
+          <li>✔ Publicação Gratuita</li>
+          <li>✔ Divulgação</li>
+          <li>✔ Feedback</li>
+          <li>✔ Comunidade</li>
+        </ul>
+      </div>
+
+      <div class="feature-photo">
+        <img src="{% static 'img/autor.png' %}" alt="" />
+      </div>
     </div>
-
-</section>
+  </section>
 
   <section class="books">
     <div class="section-header">
@@ -175,6 +159,4 @@
       <a href="{% url 'obras_autores' %}" class="btn-primary">Publicar Minha Obra</a>
     </section>
   </section>
-
-  
 {% endblock %}

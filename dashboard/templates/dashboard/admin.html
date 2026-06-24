@@ -101,15 +101,18 @@ Painel Administrativo
 
         <section id="usuarios" class="secao" style="display:none;">
             <h1>Gerenciar Usuários</h1>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">Lista de usuários cadastrados:</p>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Lista de usuários cadastrados no ParaBook:</p>
             <ul id="listaUsuarios">
                 {% for u in usuarios %}
                 <li>
-                    <span><strong>{{ u.nome }}</strong> ({{ u.user_auth.username }})</span>
+                    <span><strong>{{ u.nome|default:u.user_auth.username }}</strong> ({{ u.user_auth.username }})</span>
+                    
                     {% if u.user_auth.is_superuser %}
                         <span class="badge admin">Admin</span>
-                    {% elif u.user_auth.is_staff %}
-                        <span class="badge autor">Autor</span>
+                    {% elif u.tipo == 'autor' %}
+                        <span class="badge autor" style="background: #8b5cf6;">Autor</span>
+                    {% elif u.tipo == 'aguardando_aprovacao' %}
+                        <span class="badge" style="background: #eab308; color: #000;">Pendente</span>
                     {% else %}
                         <span class="badge leitor">Leitor</span>
                     {% endif %}
@@ -121,22 +124,31 @@ Painel Administrativo
         </section>
 
         <section id="permissoes" class="secao" style="display:none;">
-            <h1>Controle de Permissões</h1>
-            <p>Nível de acesso de cada conta:</p>
-            <ul id="listaPermissoes">
-                {% for u in usuarios %}
-                <li>
-                    <span><strong>{{ u.nome }}</strong></span>
-                    {% if u.user_auth.is_superuser %}
-                        <span style="color: var(--danger); font-weight: bold;">Acesso Total</span>
-                    {% elif u.user_auth.is_staff %}
-                        <span style="color: #3b82f6; font-weight: bold;">Criar/Editar</span>
-                    {% else %}
-                        <span style="color: var(--text-muted);">Somente Leitura</span>
-                    {% endif %}
+            <h1>Controle de Solicitações para Autor</h1>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Abaixo estão listados os leitores que pediram upgrade de conta:</p>
+            
+            <ul id="listaSolicitacoes">
+                {% for s in solicitacoes %}
+                <li style="border-left: 4px solid #eab308; padding: 20px;">
+                    <div>
+                        <strong>{{ s.nome }}</strong> <small style="color: var(--text-muted);">(@{{ s.user_auth.username }})</small>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">E-mail: {{ s.email }}</p>
+                    </div>
+                    
+                    <form method="POST" style="display: flex; gap: 8px; background: transparent; border: none; padding: 0; margin: 0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="usuario_id" value="{{ s.id }}">
+                        
+                        <button type="submit" name="btn_gerenciar_solicitacao" value="aprovar" style="background: #22c55e; padding: 8px 12px;">
+                            ✓ Aprovar
+                        </button>
+                        <button type="submit" name="btn_gerenciar_solicitacao" value="rejeitar" class="danger" style="padding: 8px 12px;">
+                            ✕ Recusar
+                        </button>
+                    </form>
                 </li>
                 {% empty %}
-                <li>Nenhum usuário encontrado.</li>
+                <li style="color: var(--text-muted); font-style: italic;">Não há nenhuma solicitação pendente no momento.</li>
                 {% endfor %}
             </ul>
         </section>

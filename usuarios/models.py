@@ -7,6 +7,7 @@ class Usuario(models.Model):
     TIPO_USUARIO_CHOICES = [
         ('leitor', 'Leitor'),
         ('autor', 'Autor Independente'),
+        ('admin', 'Administrador'),
     ]
     user_auth = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil_customizado', null=True, blank=True)
     nome = models.CharField(max_length=45, blank=True, null=True)

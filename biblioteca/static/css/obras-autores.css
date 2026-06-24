@@ -33,20 +33,15 @@
 }
 
 /* =============================== */
-
 .form-group {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
 }
 
-.form-group label {
-    margin-bottom: 6px;
-}
+/* INPUTS (exceto checkbox) */
 
-/* INPUTS */
-
-.form-group input,
+.form-group input:not([type="checkbox"]),
 .form-group textarea,
 .form-group select {
     padding: 12px;
@@ -56,43 +51,60 @@
     color: white;
 }
 
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #6366F1;
-}
 
 /* CHECKBOX */
-
-.checkbox {
-    font-size: 0.9rem;
+/* CHECKBOX CONTENER */
+.form-group.checkbox {
+    display: flex !important;       
+    flex-direction: row !important; 
+    align-items: center !important;   
+    justify-content: flex-start !important; /* Garante que fiquem juntos na esquerda */
+    gap: 10px;            
+    margin-top: 15px;      
+    margin-bottom: 20px;   
 }
 
-/* FILE NAME */
-
-.file-name {
-    margin-top: 8px;
-    font-size: 0.9rem;
-    color: #9CA3AF;
+/* Ajuste do Label contra heranças do formulário */
+.form-group.checkbox label {
+    margin: 0 !important;
+    padding: 0 !important;
+    cursor: pointer;
+    display: inline-block !important; 
+    width: auto !important; /* Impede que o label herde larguras de 100% ou fixas */
 }
 
-/* BOTÃO */
+/* Tamanho do quadradinho */
+.form-group.checkbox input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;             
+    cursor: pointer;
+    accent-color: #8B5CF6; 
+}
 
+/* ESTILIZAÇÃO DO BOTÃO ENVIAR */
 .submit-btn {
     width: 100%;
-    padding: 14px;
-    border-radius: 999px;
-    border: none;
-    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    background-color: #8B5CF6; /* Roxo idêntico ao da primeira imagem */
     color: white;
+    padding: 14px 20px;
+    font-size: 16px;
     font-weight: bold;
+    border: none;
+    border-radius: 30px; /* Bordas bem arredondadas como no print */
     cursor: pointer;
-    transition: 0.3s;
+    transition: background 0.2s ease, transform 0.1s ease;
+    margin-top: 10px;
 }
 
+/* Efeito sutil ao passar o mouse */
 .submit-btn:hover {
-    transform: scale(1.05);
+    background-color: #7c3aed; 
+}
+
+/* Efeito ao clicar */
+.submit-btn:active {
+    transform: scale(0.99);
 }
 
 /* ===============================

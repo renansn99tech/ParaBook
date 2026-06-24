@@ -1,118 +1,131 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+<<<<<<< HEAD
 from .models import Categoria, Livro, ObraAutor, Biblioteca
 from django.contrib.auth.decorators import login_required
 from comunidades.models import Comunidade
+=======
+from django.contrib.auth.decorators import login_required, user_passes_test
 
-# Create your views here.
+from .services import livros_por_categoria
+from .models import Categoria, Livro, ObraAutor, Biblioteca
+from .forms import ObraAutorForm
+from .querysets import livros_por_categorias, livros_independentes
+>>>>>>> develop
+
 def novidade(request):
     return render(request, 'biblioteca/novidade.html')
 
-
-# def biblioteca(request):
-#     livros_filosofia = Livro.objects.filter(categoria__nome='filosofia')
-#     livros_literatura = Livro.objects.filter(categoria__nome='literatura')
-#     livros_religiosos = Livro.objects.filter(categoria__nome='religiosos')
-#     livros_exatas = Livro.objects.filter(categoria__nome='exatas')
-#     livros_infantis = Livro.objects.filter(categoria__nome='infantis')
-#     livros_independentes = Livro.objects.filter(categoria__nome='independente')
-    
-#     livros_independentes = ObraAutor.objects.filter(status='aprovado',categoria__nome__iexact='independente')
-
-
-
-#     return render(request, 'biblioteca/biblioteca.html', {
-#         'livros_filosofia': livros_filosofia,
-#         'livros_literatura': livros_literatura,
-#         'livros_religiosos': livros_religiosos,
-#         'livros_exatas': livros_exatas,
-#         'livros_infantis': livros_infantis,
-#         'livros_independentes': livros_independentes,
-#     })
-
 def biblioteca(request):
-    # Filtrando os livros do modelo Livro por categoria
-    livros_filosofia = Livro.objects.filter(categoria__nome__iexact='filosofia')
-    livros_literatura = Livro.objects.filter(categoria__nome__iexact='literatura')
-    livros_religiosos = Livro.objects.filter(categoria__nome__iexact='religiosos')
-    livros_exatas = Livro.objects.filter(categoria__nome__iexact='exatas')
-    livros_infantis = Livro.objects.filter(categoria__nome__iexact='infantis')
-    
-    # IMPORTANTE: Corrigido o conflito. Obras dos autores independentes vêm de ObraAutor
-    livros_independentes = ObraAutor.objects.filter(status='aprovado', categoria__nome__iexact='independente')
+    categorias = [
+    'filosofia',
+    'literatura',
+    'religiosos',
+    'exatas',
+    'infantis'
+    ]
+
+
+    livros = livros_por_categorias(categorias)
+
+    livros_map = {cat: [] for cat in categorias}
+
+    for livro in livros:
+        livros_map[livro.categoria.nome.lower()].append(livro)
 
     return render(request, 'biblioteca/biblioteca.html', {
-        'livros_filosofia': livros_filosofia,
-        'livros_literatura': livros_literatura,
-        'livros_religiosos': livros_religiosos,
-        'livros_exatas': livros_exatas,
-        'livros_infantis': livros_infantis,
-        'livros_independentes': livros_independentes,
+        'livros_filosofia': livros_map['filosofia'],
+        'livros_literatura': livros_map['literatura'],
+        'livros_religiosos': livros_map['religiosos'],
+        'livros_exatas': livros_map['exatas'],
+        'livros_infantis': livros_map['infantis'],
+        'livros_independentes': livros_independentes(),
     })
+
 
 @login_required
 def adicionar_a_biblioteca(request, livro_id):
-    livro = get_object_or_404(Livro, id_livro=livro_id)
+    if request.method == 'POST':
+        livro = get_object_or_404(Livro, id_livro=livro_id)
+        obj, criado = Biblioteca.objects.get_or_create(
+            user=request.user,
+            livro=livro
+        )
 
-    Biblioteca.objects.get_or_create(
-        user=request.user,
-        livro=livro
+    if criado:
+            messages.success(request, "Livro adicionado com sucesso!")
+    else:
+            messages.info(request, "Este livro já está na sua biblioteca.")
+
+    return redirect('acesso_biblioteca')
+
+
+@login_required
+def remover_da_biblioteca(request, livro_id):
+    registro = get_object_or_404(
+    Biblioteca,
+    user=request.user,
+    livro__id_livro=livro_id
     )
 
-    return redirect('acesso-biblioteca')
+
+    if request.method == 'POST':
+        registro.delete()
+        messages.success(
+            request,
+            "Livro removido da sua biblioteca."
+        )
+
+    return redirect('acesso_biblioteca')
 
 
 @login_required
 def leitura(request):
-    return render(request, 'biblioteca/leitura.html')
+    livro_id = request.GET.get('id')
 
-# biblioteca/views.py
-from django.http import JsonResponse
-from .models import Livro
 
-def livro_api(request, id):
-    livro = Livro.objects.get(id=id)
+    if not livro_id:
+        messages.error(request, "Livro não informado.")
+        return redirect('biblioteca')
 
-    data = {
-        "nome": livro.nome,
-        "autor": livro.autor,
-        "caminho": livro.arquivo.url
-    }
+    try:
+        livro_id = int(livro_id)
+    except (ValueError, TypeError):
+        messages.error(request, "ID inválido.")
+        return redirect('biblioteca')
 
-    return JsonResponse(data)
+    livro = get_object_or_404(Livro, id_livro=livro_id)
+
+    return render(request, 'biblioteca/leitura.html', {
+        'livro': livro
+    })
+
 
 def obras_autores(request):
     categorias = Categoria.objects.all()
 
+
     if request.method == 'POST':
-        nome = request.POST.get('nome')
-        email = request.POST.get('email')
-        titulo = request.POST.get('titulo')
-        descricao = request.POST.get('descricao')
-        arquivo = request.FILES.get('arquivo')
-        categoria_id = request.POST.get('categoria')
-        autor = request.POST.get('autor') == 'on'
+        form = ObraAutorForm(request.POST, request.FILES)
 
-        if arquivo and arquivo.size > 5 * 1024 * 1024:
-            return render(request, 'biblioteca/obras-autores.html', {
-                'categorias': categorias,
-                'erro': 'Arquivo muito grande'
-            })
+        if form.is_valid():
+            ObraAutor.objects.create(
+                nome=form.cleaned_data['nome'],
+                email=form.cleaned_data['email'],
+                titulo=form.cleaned_data['titulo'],
+                descricao=form.cleaned_data['descricao'],
+                arquivo=form.cleaned_data['arquivo'],
+                autor=form.cleaned_data['autor'],
+                categoria=form.cleaned_data['categoria'],
+            )
 
-        categoria = Categoria.objects.get(pk=categoria_id)
+            messages.success(request, 'Obra enviada para análise!')
+            return redirect('biblioteca')
 
-        ObraAutor.objects.create(
-            nome=nome,
-            email=email,
-            titulo=titulo,
-            descricao=descricao,
-            arquivo=arquivo,
-            autor=autor,
-            categoria=categoria
-        )
-
-        messages.success(request, 'Obra enviada para análise!')
-        return redirect('biblioteca')
+        return render(request, 'biblioteca/obras-autores.html', {
+            'categorias': categorias,
+            'errors': form.errors
+        })
 
     return render(request, 'biblioteca/obras-autores.html', {
         'categorias': categorias
@@ -122,23 +135,39 @@ def obras_autores(request):
 def listar_obras(request):
     obras = ObraAutor.objects.filter(status='aprovado')
 
+
     return render(request, 'biblioteca/lista_obras.html', {
         'obras': obras
     })
 
 
+def is_admin(user):
+    return user.is_superuser or user.is_staff
+
+@login_required
+@user_passes_test(is_admin)
 def deletar_livro(request, id):
-    livro = get_object_or_404(Livro, id=id)
+    livro = get_object_or_404(Livro, id_livro=id)
+
 
     if request.method == 'POST':
         livro.delete()
+        messages.success(request, "Livro removido com sucesso.")
         return redirect('biblioteca')
 
-    return redirect('biblioteca')  # sem tela de confirmação
+    return redirect('biblioteca')
 
 
+@login_required
 def acesso_biblioteca(request):
-    return render(request, 'biblioteca/acesso-biblioteca.html')
+    livros = Biblioteca.objects.filter(
+    user=request.user
+    ).select_related('livro')
+
+
+    return render(request, 'biblioteca/acesso-biblioteca.html', {
+        'livros': livros
+    })
 
 
 def mais_acessados(request):

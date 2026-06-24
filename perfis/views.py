@@ -1,10 +1,34 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from usuarios.models import Usuario # Importação do app usuários existente
+from django.views.decorators.http import require_POST
+from django.contrib import messages
+from usuarios.models import Usuario
+from perfis.models import Perfil
 
 @login_required
 def perfil(request):
-    dados_usuario = get_object_or_404(Usuario, user_auth=request.user)
+    # 1. Buscamos ou criamos o usuário em uma única variável (Resolve o aviso do VS Code)
+    try:
+        dados_usuario = Usuario.objects.get(user_auth=request.user)
+    except Usuario.DoesNotExist:
+        
+        # 2. Proteção Sênior: Verifica se é o Super User real do Django
+        is_admin = request.user.is_superuser
+        
+        novo_perfil = Perfil.objects.create(
+            username=request.user.username,
+            descricao_perfil="Administrador do Sistema" if is_admin else "Novo Leitor"
+        )
+        
+        dados_usuario = Usuario.objects.create(
+            user_auth=request.user,
+            nome="Super User" if is_admin else request.user.username,
+            email=request.user.email,
+            tipo='admin' if is_admin else 'leitor',
+            perfil=novo_perfil
+        )
+
+    # 3. A partir daqui, usamos apenas a variável dados_usuario
     perfil_do_usuario = dados_usuario.perfil
 
     if request.method == 'POST':
@@ -71,6 +95,16 @@ def perfil(request):
 
     return render(request, 'perfis/perfil.html', contexto)
 
-
-def admin(request):
-    return render(request, 'perfis/admin.html')
+@login_required
+@require_POST
+def virar_autor(request):
+    usuario_custom = get_object_or_404(Usuario, user_auth=request.user)
+    
+    if usuario_custom.tipo == 'leitor':
+        usuario_custom.tipo = 'aguardando_aprovacao' # <-- Vai para a fila do admin
+        usuario_custom.save()
+        messages.success(request, 'Sua solicitação de autor foi enviada com sucesso e está sob análise da moderação!')
+    else:
+        messages.info(request, 'Você já possui uma solicitação em andamento ou já é um autor.')
+        
+    return redirect('perfis:perfil_pessoal')

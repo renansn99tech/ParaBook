@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'perfis',
     'comunidades',
     'biblioteca',
+    'dashboard',
 ]
 
 MIDDLEWARE = [

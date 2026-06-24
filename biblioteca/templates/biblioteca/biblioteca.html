@@ -30,9 +30,14 @@ Biblioteca
                 <h3>{{ livro.nome }}</h3>
                 <p><strong>Autor:</strong> {{ livro.autor }}</p>
                 <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
-                <a href="{% url 'adicionar_biblioteca' livro.id_livro %}" class="btn-adicionar">
-                    Adicionar à minha biblioteca
-                </a>
+
+<form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-adicionar">
+        Adicionar à minha biblioteca
+    </button>
+</form>
+
             </div>
         {% empty %}
             <p>Nenhum livro de filosofia encontrado.</p>
@@ -48,9 +53,14 @@ Biblioteca
                 <h3>{{ livro.nome }}</h3>
                 <p><strong>Autor:</strong> {{ livro.autor }}</p>
                 <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
-                <a href="{% url 'adicionar_biblioteca' livro.id_livro %}" class="btn-adicionar">
-                    Adicionar à minha biblioteca
-                </a>
+
+<form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-adicionar">
+        Adicionar à minha biblioteca
+    </button>
+</form>
+
             </div>
         {% empty %}
             <p>Nenhum livro de literatura encontrado.</p>
@@ -66,9 +76,14 @@ Biblioteca
                 <h3>{{ livro.nome }}</h3>
                 <p><strong>Autor:</strong> {{ livro.autor }}</p>
                 <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
-                <a href="{% url 'adicionar_biblioteca' livro.id_livro %}" class="btn-adicionar">
-                    Adicionar à minha biblioteca
-                </a>
+
+<form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-adicionar">
+        Adicionar à minha biblioteca
+    </button>
+</form>
+
             </div>
         {% empty %}
             <p>Nenhum livro religioso encontrado.</p>
@@ -84,9 +99,14 @@ Biblioteca
                 <h3>{{ livro.nome }}</h3>
                 <p><strong>Autor:</strong> {{ livro.autor }}</p>
                 <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
-                <a href="{% url 'adicionar_biblioteca' livro.id_livro %}" class="btn-adicionar">
-                    Adicionar à minha biblioteca
-                </a>
+
+<form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-adicionar">
+        Adicionar à minha biblioteca
+    </button>
+</form>
+
             </div>
         {% empty %}
             <p>Nenhum livro de exatas encontrado.</p>
@@ -102,9 +122,14 @@ Biblioteca
                 <h3>{{ livro.nome }}</h3>
                 <p><strong>Autor:</strong> {{ livro.autor }}</p>
                 <p><strong>Gênero:</strong> {{ livro.categoria.nome }}</p>
-                <a href="{% url 'adicionar_biblioteca' livro.id_livro %}" class="btn-adicionar">
-                    Adicionar à minha biblioteca
-                </a>
+
+<form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-adicionar">
+        Adicionar à minha biblioteca
+    </button>
+</form>
+
             </div>
         {% empty %}
             <p>Nenhum livro infantil encontrado.</p>

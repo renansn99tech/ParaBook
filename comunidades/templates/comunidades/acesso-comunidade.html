@@ -1,23 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} ParaBook{% endblock %}
+{% block title %}Minhas Comunidades{% endblock %}
+
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/comunidade.css' %}">
+<link rel="stylesheet" href="{% static 'css/comunidade-extra.css' %}">
+{% endblock %}
+
+
 
 {% block content %}
 
-<section class="comunidades-salvas">
-    <h3>Comunidades que você participa</h3>
+<section class="pagina-comunidade">
 
-    <div id="lista-comunidades-salvas">
+    <h1>Minhas Comunidades</h1>
+    <p>Acompanhe as comunidades que você faz parte.</p>
+
+    <div class="grid">
+
         {% for comunidade in comunidades %}
             <div class="card">
-                <h4>{{ comunidade.nome }}</h4>
-                <p>{{ comunidade.descricao }}</p>
+                <div class="card-content">
+                    <h3>{{ comunidade.nome }}</h3>
+                    <p>{{ comunidade.descricao }}</p>
+
+                    <a href="#" class="btn">
+                        Acessar
+                    </a>
+                </div>
             </div>
         {% empty %}
-            <p>Você ainda não participa de nenhuma comunidade.</p>
+            <p class="empty-state">
+                <i class="fas fa-users"></i><br>
+                Você ainda não participa de nenhuma comunidade.
+            </p>
         {% endfor %}
+
     </div>
+
 </section>
 
 {% endblock %}

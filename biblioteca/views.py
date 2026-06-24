@@ -1,17 +1,11 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-<<<<<<< HEAD
-from .models import Categoria, Livro, ObraAutor, Biblioteca
-from django.contrib.auth.decorators import login_required
-from comunidades.models import Comunidade
-=======
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .services import livros_por_categoria
 from .models import Categoria, Livro, ObraAutor, Biblioteca
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
->>>>>>> develop
 
 def novidade(request):
     return render(request, 'biblioteca/novidade.html')

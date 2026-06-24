@@ -990,6 +990,8 @@ body.light-mode .btn-remover-favorito {
 }
 
 .pendente-section {
+    max-width: 1140px;
+    margin: auto;
     background: rgba(234, 179, 8, 0.03);
     border: 1px dashed rgba(234, 179, 8, 0.3) !important;
     border-radius: var(--radius);

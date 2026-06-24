@@ -14,13 +14,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Postagem',
+            name='Comentario',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('titulo_postagem', models.CharField(blank=True, max_length=45, null=True)),
-                ('data_hora', models.CharField(blank=True, max_length=45, null=True)),
-                ('conteudo', models.CharField(blank=True, max_length=45, null=True)),
-                ('usuario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='usuarios.usuario')),
+                ('conteudo', models.TextField(blank=True, null=True)),
+                ('data_hora', models.DateTimeField(auto_now_add=True)),
+                ('usuario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comentarios', to='usuarios.usuario')),
             ],
         ),
     ]

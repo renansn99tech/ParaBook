@@ -9,7 +9,6 @@ class Categoria(models.Model):
 
     class Meta:
         db_table = 'categorias'
-        managed = False
 
     def __str__(self):
         return self.nome
@@ -40,7 +39,6 @@ class Livro(models.Model):
 
     class Meta:
         db_table = 'livros'
-        managed = False
 
     @property
     def url_pdf_estatico(self):
@@ -77,7 +75,6 @@ class ObraAutor(models.Model):
 
     class Meta:
         db_table = 'obras_autores'
-        managed = False
 
     def __str__(self):
         return self.titulo
@@ -132,7 +129,6 @@ class Perfil(models.Model):
 
     class Meta:
         db_table = 'perfil'
-        managed = False
 
     def __str__(self):
         return self.user.username

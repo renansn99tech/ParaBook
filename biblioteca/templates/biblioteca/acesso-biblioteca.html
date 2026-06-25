@@ -1,260 +1,171 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-Minha Biblioteca
-{% endblock %}
+{% block title %}Minha Biblioteca | ParaBook{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet"
-    href="{% static 'css/acesso-biblioteca.css' %}">
+<style>
+    /* Estilização moderna e profissional da Estante */
+    .container-biblioteca { padding: 2rem 1rem; max-width: 1200px; margin: 0 auto; }
+    .banner-biblioteca { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff; padding: 3rem 2rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .titulo-biblioteca { font-size: 2.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+    
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .body.light-mode .stat-card { background: #fff; }
+    body:not(.light-mode) .stat-card { background: #1e293b; border-color: #334155; color: #f8fafc; }
+    .stat-icon { font-size: 1.5rem; background: #f1f5f9; padding: 0.5rem; border-radius: 6px; }
+    body:not(.light-mode) .stat-icon { background: #334155; }
+    .stat-label { font-size: 0.875rem; color: #64748b; margin: 0; }
+    body:not(.light-mode) .stat-label { color: #94a3b8; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; margin: 0; }
+
+    /* Filtros */
+    .filter-group { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .filter-input { flex: 1; min-width: 250px; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; }
+    .filter-select { padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #fff; font-size: 0.95rem; cursor: pointer; }
+    body:not(.light-mode) .filter-input, body:not(.light-mode) .filter-select { background: #1e293b; border-color: #334155; color: #fff; }
+
+    /* Cards Grid */
+    .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2rem; }
+    .card-livro { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; }
+    body:not(.light-mode) .card-livro { background: #1e293b; border-color: #334155; }
+    .card-livro:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    
+    .capa-container { width: 100%; height: 280px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+    .capa-img { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* Badges de Status Modernos */
+    .status-badge { position: absolute; top: 12px; right: 12px; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-quero_ler { background: #e2e8f0; color: #475569; }
+    .status-lendo { background: #dbeafe; color: #1d4ed8; }
+    .status-lido { background: #dcfce7; color: #15803d; }
+
+    .card-info { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
+    .book-title { font-size: 1.1rem; font-weight: 600; margin: 0 0 0.25rem 0; line-height: 1.4; }
+    .book-author { font-size: 0.875rem; color: #64748b; margin: 0 0 1rem 0; }
+    body:not(.light-mode) .book-author { color: #94a3b8; }
+
+    /* Botões Modernos e Profissionais */
+    .card-actions { display: flex; gap: 0.5rem; margin-top: auto; border-top: 1px solid #f1f5f9; padding-top: 1rem; }
+    body:not(.light-mode) .card-actions { border-color: #334155; }
+    
+    .btn-ler { flex: 2; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; background: #2563eb; color: #fff; padding: 0.625rem; border-radius: 6px; font-weight: 500; font-size: 0.9rem; text-decoration: none; transition: background 0.2s ease; border: none; cursor: pointer; }
+    .btn-ler:hover { background: #1d4ed8; }
+    
+    .btn-remover { flex: 1; display: inline-flex; align-items: center; justify-content: center; background: #ef4444; color: #fff; padding: 0.625rem; border-radius: 6px; transition: background 0.2s ease, transform 0.1s ease; border: none; cursor: pointer; }
+    .btn-remover:hover { background: #dc2626; }
+    .btn-remover:active { transform: scale(0.95); }
+
+    .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #64748b; }
+</style>
 {% endblock %}
 
 {% block content %}
+{% csrf_token %}
+<main class="container-biblioteca" id="conteudo-principal">
+    
+    <header class="banner-biblioteca">
+        <div class="banner-content">
+            <h1 class="titulo-biblioteca">Minha Biblioteca</h1>
+            <p>Organize sua coleção, acompanhe seus status e gerencie seu progresso de leitura em tempo real.</p>
+        </div>
+    </header>
 
-<main class="container-biblioteca">
+    <section class="biblioteca-stats" aria-label="Estatísticas de leitura">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-book" style="color: #3b82f6;"></i></div>
+                <div class="stat-content">
+                    <p class="stat-label">Total de Livros</p>
+                    <p class="stat-value" id="total-livros">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-circle-check" style="color: #10b981;"></i></div>
+                <div class="stat-content">
+                    <p class="stat-label">Concluídos</p>
+                    <p class="stat-value" id="livros-concluidos">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-book-open" style="color: #f59e0b;"></i></div>
+                <div class="stat-content">
+                    <p class="stat-label">Lendo Agora</p>
+                    <p class="stat-value" id="livros-lendo">0</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- BANNER -->
-    <section class="banner-biblioteca">
+    <section class="biblioteca-filters" aria-label="Filtros da coleção">
+        <div class="filter-group">
+            <input type="text" id="buscar-livros" class="filter-input" placeholder="🔍 Buscar livro por título ou autor..." aria-label="Buscar livros">
+            
+            <select id="filtro-genero" class="filter-select" aria-label="Filtrar por Gênero">
+                <option value="">Todos os gêneros</option>
+                <option value="filosofia">Filosofia</option>
+                <option value="literatura">Literatura</option>
+                <option value="religioso">Religioso</option>
+                <option value="exatas">Ciências Exatas</option>
+                <option value="infantis">Infantis</option>
+            </select>
 
-        <article class="container banner-content">
+            <select id="filtro-status" class="filter-select" aria-label="Filtrar por Status">
+                <option value="">Todos os status</option>
+                <option value="quero_ler">Quero ler</option>
+                <option value="lendo">Lendo</option>
+                <option value="lido">Lido</option>
+            </select>
+        </div>
+    </section>
 
-            <h2 class="titulo-biblioteca">
-                Minha Biblioteca
-            </h2>
+    <section class="books-grid" id="lista-livros" aria-label="Listagem de livros da coleção">
+        {% for item in livros %}
+        <article class="card-livro" 
+                 data-id="{{ item.livro.id_livro }}" 
+                 data-genero="{{ item.livro.genero|lower }}" 
+                 data-status="{{ item.status }}">
+            
+            <div class="capa-container">
+                {% if item.livro.capa %}
+                    <img src="{{ item.livro.capa }}" alt="Capa do livro {{ item.livro.nome }}" class="capa-img">
+                {% else %}
+                    <div class="capa-placeholder"><i class="fa-solid fa-book" style="font-size: 3rem; color: #cbd5e1;"></i></div>
+                {% endif %}
+                <span class="status-badge status-{{ item.status }}">
+                    {% if item.status == 'lido' %}Lido{% elif item.status == 'lendo' %}Lendo{% else %}Quero ler{% endif %}
+                </span>
+            </div>
 
-            <p>
-                Aqui estão todos os livros que você adicionou.
-                Organize sua coleção e acompanhe suas leituras!
-            </p>
-
+            <div class="card-info">
+                <h2 class="book-title">{{ item.livro.nome }}</h2>
+                <p class="book-author">Por {{ item.livro.autor }}</p>
+                
+                <div class="card-actions">
+                    <a href="{% url 'leitura' %}?id={{ item.livro.id_livro }}" class="btn-ler" title="Abrir leitor digital do livro">
+                        <i class="fa-solid fa-book-open-reader"></i> Ler
+                    </a>
+                    <button type="button" 
+                            class="btn-remover" 
+                            title="Remover da coleção"
+                            onclick="removerLivroAssincrono(this, '{{ item.livro.id_livro }}', '{% url 'remover_da_biblioteca' item.livro.id_livro %}')">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
         </article>
-
-    </section>
-
-    <!-- ESTATÍSTICAS -->
-    <section class="biblioteca-stats">
-
-        <div class="container">
-
-            <div class="stats-grid">
-
-                <div class="stat-card">
-
-                    <div class="stat-icon">📚</div>
-
-                    <div class="stat-content">
-                        <p class="stat-label">
-                            Total de Livros
-                        </p>
-
-                        <p class="stat-value" id="total-livros">
-                            0
-                        </p>
-                    </div>
-
-                </div>
-
-                <div class="stat-card">
-
-                    <div class="stat-icon">✅</div>
-
-                    <div class="stat-content">
-                        <p class="stat-label">
-                            Concluídos
-                        </p>
-
-                        <p class="stat-value" id="livros-concluidos">
-                            0
-                        </p>
-                    </div>
-
-                </div>
-
-                <div class="stat-card">
-
-                    <div class="stat-icon">📖</div>
-
-                    <div class="stat-content">
-                        <p class="stat-label">
-                            Lendo Agora
-                        </p>
-
-                        <p class="stat-value" id="livros-lendo">
-                            0
-                        </p>
-                    </div>
-
-                </div>
-
-                <div class="stat-card">
-
-                    <div class="stat-icon">❤️</div>
-
-                    <div class="stat-content">
-                        <p class="stat-label">
-                            Desejo Ler
-                        </p>
-
-                        <p class="stat-value" id="livros-desejo">
-                            0
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
+        {% empty %}
+        <div id="empty-state" class="empty-state">
+            <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 1rem; color: #94a3b8;"></i>
+            <p>Você ainda não possui livros guardados na sua biblioteca pessoal.</p>
         </div>
-
+        {% endfor %}
     </section>
-
-    <!-- FILTROS -->
-    <section class="biblioteca-filters">
-
-        <div class="container">
-
-            <div class="filter-group">
-
-                <input
-                    type="text"
-                    id="buscar-livros"
-                    class="filter-input"
-                    placeholder="🔍 Buscar livro por título ou autor..."
-                >
-
-                <select
-                    id="filtro-genero"
-                    class="filter-select"
-                >
-
-                    <option value="">
-                        Todos os gêneros
-                    </option>
-
-                    <option value="filosofia">
-                        Filosofia
-                    </option>
-
-                    <option value="literatura">
-                        Literatura
-                    </option>
-
-                    <option value="religioso">
-                        Religioso
-                    </option>
-
-                    <option value="exatas">
-                        Ciências Exatas
-                    </option>
-
-                    <option value="infantis">
-                        Infantis
-                    </option>
-
-                </select>
-
-                <select
-                    id="filtro-status"
-                    class="filter-select"
-                >
-
-                    <option value="">
-                        Todos os status
-                    </option>
-
-                    <option value="lendo">
-                        Lendo
-                    </option>
-
-                    <option value="concluido">
-                        Concluído
-                    </option>
-
-                    <option value="desejo">
-                        Desejo ler
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- GRID DOS LIVROS -->
-<section class="biblioteca-section">
-    <div class="container">
-        <h3 class="biblioteca-title">Seus Livros</h3>
-
-        <div id="lista-livros" class="biblioteca-grid">
-            {% for item in livros %}
-                <div class="card-livro" data-genero="{{ item.livro.categoria.nome|lower }}" data-status="{{ item.status }}">
-                    <img src="{% if item.livro.capa %}{% static item.livro.capa %}{% else %}{% static 'img/capa-padrao.png' %}{% endif %}" alt="{{ item.livro.nome }}">
-                    <h3>{{ item.livro.nome }}</h3>
-                    <p><strong>Autor:</strong> {{ item.livro.autor }}</p>
-                    <p><strong>Status:</strong> {{ item.get_status_display }}</p>
-                    
-<a href="{% url 'leitura' %}?id={{ item.livro.id_livro }}"
-    class="btn-adicionar"
-    style="text-align:center; display:block;">
-    📖 Ler Agora
-</a>
-
-<form method="POST"
-        action="{% url 'remover_da_biblioteca' item.id %}"
-        style="margin-top:10px;">
-
-    {% csrf_token %}
-
-    <button type="submit"
-            class="btn-remover"
-            onclick="return confirm('Remover este livro da sua biblioteca?');">
-        🗑️ Remover
-    </button>
-
-</form>
-                </div>
-            {% empty %}
-                <div class="empty-state">
-                    <i class="fa-solid fa-book-open"></i>
-                    <p>Você ainda não adicionou nenhum livro à sua biblioteca.</p>
-                    <a href="{% url 'biblioteca' %}" class="btn-empty-state">Explorar Livros</a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
-    <!-- BOTÃO TOPO -->
-    <a href="#topo">
-
-        <button
-            class="button-top"
-            id="voltar-topo"
-        >
-
-            <svg
-                class="svgIcon"
-                viewBox="0 0 384 512"
-            >
-
-                <path
-                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-                ></path>
-
-            </svg>
-
-        </button>
-
-    </a>
-
 </main>
-
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/index.js' %}"></script>
 <script src="{% static 'js/biblioteca.js' %}"></script>
 {% endblock %}

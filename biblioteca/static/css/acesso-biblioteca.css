@@ -990,7 +990,63 @@ main hr {
     gap: 10px;
     margin-top: 10px;
 }
+/* Efeitos de Transição nos Cards e Estado de Animação */
+.card-livro {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* Transições combinadas extremamente suaves */
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.4s ease, 
+                scale 0.4s ease; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    position: relative;
+    opacity: 1;
+    scale: 1;
+}
 
+/* Estado ocultado por filtros (com animação de fade/scale em vez de sumiço seco) */
+.card-livro.filtrado-oculto {
+    opacity: 0;
+    scale: 0.9;
+    pointer-events: none;
+    position: absolute;
+    visibility: hidden;
+}
+
+/* Hover altamente responsivo e moderno */
+.card-livro:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Transições nos botões de ação */
+.btn-ler, .btn-remover {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ler:active, .btn-remover:active {
+    transform: scale(0.95);
+}
+
+/* Badge animado ao alterar status */
+.status-badge {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Grid preparado para transições dinâmicas de layout */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    transition: all 0.3s ease;
+}
 /* =========================
    LIGHT MODE
 ========================= */

@@ -1,6 +1,9 @@
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.http import require_POST
+from config.settings import AUTH_PASSWORD_VALIDATORS
 
 from .services import livros_por_categoria
 from .models import Categoria, Livro, ObraAutor, Biblioteca
@@ -8,6 +11,10 @@ from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
 
 from comunidades.models import Comunidade
+from django.shortcuts import render
+from django.core.paginator import Paginator
+from django.db.models import Count
+
 
 def novidade(request):
     return render(request, 'biblioteca/novidade.html')
@@ -57,22 +64,22 @@ def adicionar_a_biblioteca(request, livro_id):
 
 
 @login_required
+@require_POST
 def remover_da_biblioteca(request, livro_id):
-    registro = get_object_or_404(
-    Biblioteca,
-    user=request.user,
-    livro__id_livro=livro_id
-    )
-
-
-    if request.method == 'POST':
-        registro.delete()
-        messages.success(
-            request,
-            "Livro removido da sua biblioteca."
-        )
-
-    return redirect('acesso_biblioteca')
+    try:
+        item = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+        item.delete()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': 'Livro removido com sucesso.'})
+            
+        # Fallback para caso não seja AJAX (preserva retrocompatibilidade)
+        from django.shortcuts import redirect
+        return redirect('acesso_biblioteca')
+    except Biblioteca.DoesNotExist:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'error': 'Livro não encontrado na biblioteca.'}, status=404)
+        return redirect('acesso_biblioteca')
 
 
 @login_required
@@ -188,3 +195,38 @@ def home(request):
             'comunidades': comunidades
         }
     )
+    
+def lista_autores(request):
+    termo_busca = request.GET.get('busca', '').strip()
+    
+    # Extrai os nomes de autores distintos e conta quantos livros cada um possui
+    autores_query = (
+        Livro.objects.values('autor')
+        .annotate(total_obras=Count('id_livro'))
+        .order_by('autor')
+    )
+    
+    # Aplica o filtro de pesquisa por nome do autor caso exista
+    if termo_busca:
+        autores_query = autores_query.filter(autor__icontains=termo_busca)
+        
+    # Como o values() retorna dicionários, mapeamos para manter a compatibilidade com o template
+    autores_list = []
+    for item in autores_query:
+        autores_list.append({
+            'nome': item['autor'],
+            'total_obras': item['total_obras'],
+            'biografia': None,  # Como o autor é CharField, não há biografia cadastrada
+            'foto': None        # Como o autor é CharField, não há foto de perfil associada
+        })
+        
+    # Paginação: Exibe 8 autores por página
+    paginator = Paginator(autores_list, 8)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'termo_busca': termo_busca,
+    }
+    return render(request, 'biblioteca/autores.html', context)

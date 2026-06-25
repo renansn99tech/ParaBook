@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Autores | ParaBook{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/autores.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="container-autores" id="conteudo-principal">
+    
+    <header class="header-autores">
+        <div class="header-content">
+            <h1>Conheça Nossos Autores</h1>
+            <p>Explore o perfil, as biografias e descubra o acervo de obras publicadas pelos grandes nomes do Parabook.</p>
+        </div>
+    </header>
+
+    <section class="busca-autores-container" aria-label="Filtro de busca">
+        <form method="GET" action="{% url 'lista_autores' %}" class="form-busca-autores">
+            <div class="input-grupo-busca">
+                <i class="fa-solid fa-magnifying-glass icone-busca"></i>
+                <input type="text" 
+                       name="busca" 
+                       id="input-busca-autores" 
+                       placeholder="Buscar autor por nome..." 
+                       value="{{ termo_busca }}"
+                       aria-label="Buscar autor por nome">
+                {% if termo_busca %}
+                    <a href="{% url 'lista_autores' %}" class="btn-limpar-busca" title="Limpar busca">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn-buscar-autores">Pesquisar</button>
+        </form>
+    </section>
+
+    <section class="grid-autores" aria-label="Lista de autores">
+        {% for autor in page_obj %}
+        <article class="card-autor">
+            <div class="avatar-autor-container">
+                {% if autor.foto %}
+                    <img src="{{ autor.foto.url }}" alt="Foto de {{ autor.nome }}" class="foto-autor">
+                {% else %}
+                    <div class="foto-autor-placeholder">
+                        <i class="fa-solid fa-user-nib"></i>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="info-autor-card">
+                <h2 class="nome-autor">{{ autor.nome }}</h2>
+                
+                <span class="badge-obras">
+                    <i class="fa-solid fa-book"></i> {{ autor.total_obras }} {% if autor.total_obras == 1 %}obra{% else %}obras{% endif %}
+                </span>
+
+                <p class="biografia-autor-resumo">
+                    {% if autor.biografia %}
+                        {{ autor.biografia|truncatechars:120 }}
+                    {% else %}
+                        Nenhuma biografia disponível para este autor até o momento.
+                    {% endif %}
+                </p>
+                
+                <div class="acoes-autor-card">
+                    <a href="#" class="btn-autor-perfil" title="Ver perfil completo de {{ autor.nome }}">
+                        <i class="fa-regular fa-id-card"></i> Perfil
+                    </a>
+                <a href="{% url 'acesso_biblioteca' %}?busca={{ autor.nome }}" class="btn-autor-obras" title="Ver livros publicados por {{ autor.nome }}">
+                    <i class="fa-solid fa-list-ul"></i> Obras
+                </a>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="empty-state-autores">
+            <i class="fa-solid fa-users-slash"></i>
+            <p>Nenhum autor foi encontrado correspondendo aos critérios de pesquisa.</p>
+            <a href="{% url 'lista_autores' %}" class="btn-voltar-lista">Ver todos os autores</a>
+        </div>
+        {% endfor %}
+    </section>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="navegacao-paginacao" aria-label="Navegação de páginas">
+        <ul class="lista-paginacao">
+            {% if page_obj.has_previous %}
+                <li>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if termo_busca %}&busca={{ termo_busca }}{% endif %}" class="item-paginacao seta" aria-label="Página Anterior">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li><span class="item-paginacao ativo" aria-current="page">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li>
+                        <a href="?page={{ num }}{% if termo_busca %}&busca={{ termo_busca }}{% endif %}" class="item-paginacao">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li>
+                    <a href="?page={{ page_obj.next_page_number }}{% if termo_busca %}&busca={{ termo_busca }}{% endif %}" class="item-paginacao seta" aria-label="Próxima Página">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</main>
+{% endblock %}

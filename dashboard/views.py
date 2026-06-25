@@ -36,7 +36,6 @@ def painel_admin(request):
 
     # --- CRUD DE LIVROS ---
     # CREATE (C)
-# CREATE (C)
     if request.method == 'POST' and 'btn_add_livro' in request.POST:
         nome_livro = request.POST.get('titulo')
         categoria_id = request.POST.get('categoria')  
@@ -46,9 +45,9 @@ def painel_admin(request):
         arquivo_capa = request.FILES.get('capa')
         arquivo_pdf = request.FILES.get('pdf')
 
-        # Validação Arquitetural Obrigatória: Título, Categoria, Capa E PDF precisam existir
-        if not (nome_livro and categoria_id and arquivo_capa and arquivo_pdf):
-            messages.error(request, "Erro: OBRIGATÓRIO enviar o título, categoria, imagem de capa e o arquivo PDF do livro.")
+        # Validação Arquitetural Obrigatória: Título, Categoria, Autor, Capa E PDF precisam existir
+        if not (nome_livro and categoria_id and autor_livro and arquivo_capa and arquivo_pdf):
+            messages.error(request, "Erro: OBRIGATÓRIO enviar o título, categoria, autor, imagem de capa e o arquivo PDF do livro.")
             return redirect('dashboard:painel_admin')
 
         try:
@@ -95,13 +94,15 @@ def painel_admin(request):
         livro_id = request.POST.get('livro_id')
         novo_nome = request.POST.get('titulo')
         categoria_id = request.POST.get('categoria')
+        novo_autor = request.POST.get('autor')
 
-        if livro_id and novo_nome and categoria_id:
+        if livro_id and novo_nome and categoria_id and novo_autor:
             cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
             Livro.objects.filter(id_livro=livro_id).update(
                 nome=novo_nome,
                 categoria=cat_instancia,
-                genero=cat_instancia.nome
+                genero=cat_instancia.nome,
+                autor=novo_autor
             )
             messages.success(request, "Livro atualizado com sucesso!")
         return redirect('dashboard:painel_admin')
@@ -121,7 +122,7 @@ def painel_admin(request):
     obras_aprovadas = ObraAutor.objects.filter(status='aprovado').count()
     obras_pendentes = solicitacoes_pendentes.count()
     obras_rejeitadas = ObraAutor.objects.filter(status='rejeitado').count()
-
+    
     contexto = {
         'livros': todos_livros,
         'categorias': todas_categorias,

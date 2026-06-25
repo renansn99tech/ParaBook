@@ -15,79 +15,75 @@
         <h1>Envie sua obra</h1>
         <p>Compartilhe seu livro com a comunidade ParaBook</p>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success" style="background-color: #d1e7dd; color: #0f5132; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #badbcc; text-align: center; font-weight: bold;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-    <div class="form-group">
-        <label>Nome</label>
-        <input type="text" name="nome" value="{{ livro.nome|default:'' }}">
-    </div>
-
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" value="{{ livro.email|default:'' }}">
-    </div>
-
-    <div class="form-group">
-        <label>Título</label>
-        <input type="text" name="titulo" value="{{ livro.titulo|default:'' }}">
-    </div>
-
-<div class="form-group">
-    <label for="id_categoria">Categoria</label>
-    <select name="categoria" id="id_categoria">
-        <option value="">Selecione uma categoria</option>
-        {% for cat in categorias %}
-            <option value="{{ cat.id_categoria }}">
-                {{ cat.nome }}
-            </option>
-        {% endfor %}
-    </select>
-</div>
-
-    {% if errors %}
-        <div class="form-errors" style="color: red; margin-bottom: 15px;">
-            <p>Por favor, corrija os erros abaixo:</p>
-            <ul>
-                {% for field, field_errors in errors.items %}
-                    <li><strong>{{ field }}:</strong> {{ field_errors|striptags }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert">
-                {{ message }}
+        {% if errors %}
+            <div class="form-errors" style="color: red; margin-bottom: 15px;">
+                <p>Por favor, corrija os erros abaixo:</p>
+                <ul>
+                    {% for field, field_errors in errors.items %}
+                        <li><strong>{{ field }}:</strong> {{ field_errors|striptags }}</li>
+                    {% endfor %}
+                </ul>
             </div>
-        {% endfor %}
-    {% endif %}
+        {% endif %}
 
-    <div class="form-group">
-        <label>Descrição</label>
-        <textarea name="descricao">{{ livro.descricao|default:'' }}</textarea>
-    </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-    <div class="form-group">
-        <label>Arquivo</label>
-        <input type="file" name="arquivo">
-    </div>
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" name="nome" value="{{ livro.nome|default:'' }}">
+            </div>
 
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ livro.email|default:'' }}">
+            </div>
 
-<div class="form-group checkbox">
-    <input type="checkbox" name="autor" id="autor">
-    <label for="autor">Sou o autor</label>
-</div>
+            <div class="form-group">
+                <label>Título</label>
+                <input type="text" name="titulo" value="{{ livro.titulo|default:'' }}">
+            </div>
 
+            <div class="form-group">
+                <label for="id_categoria">Categoria</label>
+                <select name="categoria" id="id_categoria">
+                    <option value="">Selecione uma categoria</option>
+                    {% for cat in categorias %}
+                        <option value="{{ cat.id_categoria }}">
+                            {{ cat.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea name="descricao">{{ livro.descricao|default:'' }}</textarea>
+            </div>
 
-    <button type="submit" class="submit-btn">
-        Enviar obra
-    </button>
+            <div class="form-group">
+                <label>Arquivo</label>
+                <input type="file" name="arquivo">
+            </div>
 
-</form>
+            <div class="form-group checkbox">
+                <input type="checkbox" name="autor" id="autor">
+                <label for="autor">Sou o autor</label>
+            </div>
 
+            <button type="submit" class="submit-btn">
+                Enviar obra
+            </button>
+
+        </form>
 
     </div>
 </section>

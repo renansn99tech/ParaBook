@@ -97,45 +97,48 @@ Painel Administrativo - ParaBook
             <h1 id="tituloSecaoLivros">Gerenciar Livros</h1>
             <input type="text" id="busca" placeholder="Buscar livro..." style="margin-bottom: 15px; width: 100%;">
 
-<form method="POST" enctype="multipart/form-data" class="form" id="formLivro">
-    {% csrf_token %}
-    <input type="hidden" name="livro_id" id="inputLivroId">
-    
-    <input type="text" name="titulo" id="inputTitulo" placeholder="Título" required>
-    
-    <select name="categoria" id="selectCategoria" required>
-        <option value="">Selecione Categoria</option>
-        {% for cat in categorias %}
-            <option value="{{ cat.id_categoria }}">{{ cat.nome }}</option>
-        {% endfor %}
-    </select>
+            <form method="POST" enctype="multipart/form-data" class="form" id="formLivro">
+                {% csrf_token %}
+                <input type="hidden" name="livro_id" id="inputLivroId">
+                
+                <input type="text" name="titulo" id="inputTitulo" placeholder="Título" required>
+                
+                <select name="categoria" id="selectCategoria" required>
+                    <option value="">Selecione Categoria</option>
+                    {% for cat in categorias %}
+                        <option value="{{ cat.id_categoria }}">{{ cat.nome }}</option>
+                    {% endfor %}
+                </select>
 
-    <div style="display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 5px;">
-        <label style="font-size: 13px; color: var(--text-muted);">Capa (Imagem): 
-            <input type="file" name="capa" id="inputCapa" accept="image/*" required style="margin-top: 5px;">
-        </label>
-        
-        <label style="font-size: 13px; color: var(--text-muted);">Obra (PDF): 
-            <input type="file" name="pdf" id="inputPdf" accept=".pdf" required style="margin-top: 5px;">
-        </label>
-    </div>
-    
-    <button type="submit" name="btn_add_livro" id="btnSubmeterForm" style="margin-top: 10px;">Adicionar</button>
-    <button type="button" id="btnCancelarEdicao" style="display: none; background: #6b7280; margin-top: 10px;">Cancelar</button>
-</form>
+                <input type="text" name="autor" id="inputAutor" placeholder="Nome do Autor" required style="margin-top: 5px;">
+
+                <div style="display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 5px;">
+                    <label style="font-size: 13px; color: var(--text-muted);">Capa (Imagem): 
+                        <input type="file" name="capa" id="inputCapa" accept="image/*" required style="margin-top: 5px;">
+                    </label>
+                    
+                    <label style="font-size: 13px; color: var(--text-muted);">Obra (PDF): 
+                        <input type="file" name="pdf" id="inputPdf" accept=".pdf" required style="margin-top: 5px;">
+                    </label>
+                </div>
+                
+                <button type="submit" name="btn_add_livro" id="btnSubmeterForm" style="margin-top: 10px;">Adicionar</button>
+                <button type="button" id="btnCancelarEdicao" style="display: none; background: #6b7280; margin-top: 10px;">Cancelar</button>
+            </form>
 
             <ul id="listaLivros">
                 {% for livro in livros %}
                 <li data-titulo="{{ livro.nome|lower }}">
                     <div>
                         <strong>{{ livro.nome }}</strong><br>
-                        <small style="color: var(--text-muted);">Gênero: {{ livro.categoria.nome }}</small>
+                        <small style="color: var(--text-muted);">Autor: {{ livro.autor }} | Gênero: {{ livro.categoria.nome }}</small>
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button type="button" class="btn-editar-trigger" 
                                 data-id="{{ livro.id_livro }}" 
                                 data-titulo="{{ livro.nome }}" 
                                 data-categoria="{{ livro.categoria.id_categoria }}" 
+                                data-autor="{{ livro.autor }}" 
                                 style="background: #3b82f6; padding: 5px 10px;">✏️</button>
                         
                         <form method="POST" style="margin: 0; padding: 0; background: transparent; border: none;">

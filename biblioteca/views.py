@@ -117,8 +117,9 @@ def obras_autores(request):
                 categoria=form.cleaned_data['categoria'],
             )
 
-            messages.success(request, 'Obra enviada para análise!')
-            return redirect('biblioteca')
+            messages.success(request, 'Sua obra foi enviada para análise com sucesso!')
+            # CORREÇÃO: Redireciona para a mesma página para exibir o alerta imediatamente
+            return redirect('obras_autores')
 
         return render(request, 'biblioteca/obras-autores.html', {
             'categorias': categorias,
@@ -180,7 +181,7 @@ def home(request):
         {
             'livros': livros,
             'obras_independentes': obras_independentes,
-            'comunidades': comunidades
+            'comunidades': communities
         }
     )
 

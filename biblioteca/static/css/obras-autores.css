@@ -1,147 +1,319 @@
-/* ===============================
-   FORMULÁRIO AUTORES
+/* =================================
+   PUBLICAR OBRA - PARABOOK
 ================================= */
 
-.form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 80px 20px;
+.form-container{
+    min-height:calc(100vh - 120px);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:70px 24px;
 }
 
-.form-box {
-    width: 100%;
-    max-width: 600px;
-    padding: 40px;
+.form-box{
+    position:relative;
+    overflow:hidden;
 
-    background: rgba(255,255,255,0.03);
-    border: 1px solid #1F2937;
-    border-radius: 20px;
-    backdrop-filter: blur(12px);
-    animation: pulse 4s infinite;
+    width:100%;
+    max-width:720px;
+
+    padding:44px;
+
+    border-radius:28px;
+
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(139,92,246,.25),
+            transparent 32%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(16,25,45,.96),
+            rgba(16,25,45,.72)
+        );
+
+    border:1px solid rgba(139,92,246,.25);
+
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.35),
+        0 0 60px rgba(139,92,246,.1);
 }
 
-.form-box h1 {
-    text-align: center;
-    margin-bottom: 10px;
+.form-box::before{
+    content:"✍️";
+
+    position:absolute;
+
+    right:35px;
+    top:28px;
+
+    font-size:5rem;
+
+    opacity:.08;
+
+    transform:rotate(-10deg);
 }
 
-.form-box p {
-    text-align: center;
-    color: #9CA3AF;
-    margin-bottom: 30px;
+.form-box h1{
+    position:relative;
+    z-index:2;
+
+    text-align:center;
+
+    margin-bottom:10px;
+
+    font-size:2.6rem;
+    font-weight:800;
+
+    color:white;
+
+    letter-spacing:-1px;
 }
 
-/* =============================== */
-.form-group {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
+.form-box p{
+    position:relative;
+    z-index:2;
+
+    text-align:center;
+
+    color:var(--text-secondary);
+
+    margin-bottom:34px;
 }
 
-/* INPUTS (exceto checkbox) */
+/* Form */
+
+.form-box form{
+    position:relative;
+    z-index:2;
+}
+
+.form-group{
+    margin-bottom:22px;
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.form-group label{
+    color:#d8d9e6;
+
+    font-size:.92rem;
+    font-weight:600;
+}
 
 .form-group input:not([type="checkbox"]),
 .form-group textarea,
-.form-group select {
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #1F2937;
-    background: #020617;
-    color: white;
+.form-group select{
+    width:100%;
+
+    padding:14px 16px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:#0d1427;
+
+    color:white;
+
+    font-family:inherit;
+
+    transition:.3s;
 }
 
-
-/* CHECKBOX */
-/* CHECKBOX CONTENER */
-.form-group.checkbox {
-    display: flex !important;       
-    flex-direction: row !important; 
-    align-items: center !important;   
-    justify-content: flex-start !important; /* Garante que fiquem juntos na esquerda */
-    gap: 10px;            
-    margin-top: 15px;      
-    margin-bottom: 20px;   
+.form-group textarea{
+    min-height:140px;
+    resize:vertical;
 }
 
-/* Ajuste do Label contra heranças do formulário */
-.form-group.checkbox label {
-    margin: 0 !important;
-    padding: 0 !important;
-    cursor: pointer;
-    display: inline-block !important; 
-    width: auto !important; /* Impede que o label herde larguras de 100% ou fixas */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+    outline:none;
+
+    border-color:var(--purple);
+
+    box-shadow:
+        0 0 0 3px rgba(139,92,246,.16);
 }
 
-/* Tamanho do quadradinho */
-.form-group.checkbox input[type="checkbox"] {
-    width: 18px !important;
-    height: 18px !important;
-    margin: 0 !important;             
-    cursor: pointer;
-    accent-color: #8B5CF6; 
+.form-group select option{
+    background:#0d1427;
+    color:white;
 }
 
-/* ESTILIZAÇÃO DO BOTÃO ENVIAR */
-.submit-btn {
-    width: 100%;
-    background-color: #8B5CF6; /* Roxo idêntico ao da primeira imagem */
-    color: white;
-    padding: 14px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 30px; /* Bordas bem arredondadas como no print */
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
-    margin-top: 10px;
+/* File input */
+
+.form-group input[type="file"]{
+    cursor:pointer;
 }
 
-/* Efeito sutil ao passar o mouse */
-.submit-btn:hover {
-    background-color: #7c3aed; 
+.form-group input[type="file"]::file-selector-button{
+    margin-right:14px;
+
+    padding:10px 14px;
+
+    border:none;
+    border-radius:10px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--purple-dark)
+        );
+
+    cursor:pointer;
+
+    transition:.3s;
 }
 
-/* Efeito ao clicar */
-.submit-btn:active {
-    transform: scale(0.99);
+.form-group input[type="file"]::file-selector-button:hover{
+    transform:translateY(-2px);
 }
 
-/* ===============================
-   LIGHT MODE
-================================= */
+/* Checkbox */
 
-body.light-mode .form-box {
-    background: rgba(0,0,0,0.03);
-    border: 1px solid #d1d5db;
+.form-group.checkbox{
+    flex-direction:row !important;
+    align-items:center !important;
+    gap:12px;
+
+    margin-top:8px;
 }
 
-body.light-mode input,
-body.light-mode textarea,
-body.light-mode select {
-    background: white;
-    color: #020617;
+.form-group.checkbox input[type="checkbox"]{
+    width:18px;
+    height:18px;
+
+    accent-color:var(--purple);
+
+    cursor:pointer;
 }
 
-/* RESPONSIVO */
+.form-group.checkbox label{
+    margin:0;
+    cursor:pointer;
+}
 
-@media (max-width: 480px) {
+/* Erros e mensagens */
 
-    .form-box {
-        padding: 25px;
+.form-errors,
+.alert{
+    position:relative;
+    z-index:2;
+
+    margin-bottom:20px;
+    padding:16px 18px;
+
+    border-radius:16px;
+
+    line-height:1.6;
+}
+
+.form-errors{
+    color:#fecaca !important;
+
+    background:rgba(239,68,68,.12);
+
+    border:1px solid rgba(239,68,68,.32);
+}
+
+.form-errors ul{
+    margin:8px 0 0 18px;
+}
+
+.alert{
+    color:#c4b5fd;
+
+    background:rgba(139,92,246,.14);
+
+    border:1px solid rgba(139,92,246,.35);
+}
+
+/* Botão */
+
+.submit-btn{
+    width:100%;
+
+    margin-top:10px;
+
+    padding:15px 24px;
+
+    border:none;
+    border-radius:16px;
+
+    color:white;
+
+    font-size:1rem;
+    font-weight:700;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--purple-dark)
+        );
+
+    cursor:pointer;
+
+    transition:.35s;
+}
+
+.submit-btn:hover{
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 15px 35px rgba(139,92,246,.38);
+}
+
+.submit-btn:active{
+    transform:scale(.99);
+}
+
+/* Responsivo */
+
+@media(max-width:768px){
+
+    .form-container{
+        padding:50px 24px;
     }
 
-    .submit-btn {
-        font-size: 14px;
+    .form-box{
+        padding:34px 26px;
+        border-radius:22px;
+    }
+
+    .form-box h1{
+        font-size:2.1rem;
     }
 }
 
-@media (max-width: 768px) {
-    .nav {
-        flex-direction: column;
+@media(max-width:480px){
+
+    .form-container{
+        padding:35px 18px;
     }
 
-    .menu {
-        flex-direction: column;
+    .form-box{
+        padding:28px 20px;
+    }
+
+    .form-box h1{
+        font-size:1.8rem;
+    }
+
+    .form-box p{
+        font-size:.95rem;
     }
 }

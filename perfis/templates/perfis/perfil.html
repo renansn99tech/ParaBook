@@ -4,543 +4,297 @@
 {% block title %}Perfil | ParaBook{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/perfil.css' %}"/>
 {% endblock %}
 
 {% block content %}
-
-    <!-- NAVBAR MOBILE -->
-    <div id="mobile-navbar-container"></div>
-
-    <section class="perfil-container">
-
+    <main class="perfil-page">
         <!-- PERFIL HEADER -->
-        <section class="perfil-header">
+        <section class="perfil-header-container">
+            <div class="perfil-cover">
+                <!-- Capa com gradiente e blur inspirado na Home -->
+            </div>
 
-            <div class="perfil-cover"></div>
-
-            <div class="perfil-content">
-
-                <div class="perfil-avatar-section">
-                    
-
-                    {% if perfil.foto %}
-                        <img src="{{ perfil.foto }}" alt="Foto de Perfil" class="perfil-avatar">
-                    {% else %}
-                        <img src="{% static 'img/user.png' %}"
-                            alt="Avatar do Usuário"
-                            class="perfil-avatar">
-                    {% endif %}
-
-                    <button class="btn-editar-avatar"
-                        id="btnTrocarFoto">
-                        📷
-                    </button>
-
+            <div class="perfil-content-wrapper">
+                <div class="perfil-sidebar">
+                    <div class="perfil-avatar-box">
+                        {% if perfil.foto %}
+                            <img src="{{ perfil.foto }}" alt="Foto de Perfil" class="perfil-avatar">
+                        {% else %}
+                            <img src="{% static 'img/user.png' %}" alt="Avatar do Usuário" class="perfil-avatar">
+                        {% endif %}
+                        <button class="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="perfil-user-info">
+                <div class="perfil-main-info glass-card">
+                    <div class="info-header">
+                        <h1 class="perfil-nome"> 
+                            {{ usuario_custom.nome }}  
+                            {% if usuario_custom.tipo == 'admin' %}
+                                <span class="badge badge-admin"><i class="fa-solid fa-shield-halved"></i> Admin</span>
+                            {% elif usuario_custom.tipo == 'autor' %}
+                                <span class="badge badge-autor"><i class="fa-solid fa-feather-pointed"></i> Autor</span>
+                            {% elif usuario_custom.tipo == 'aguardando_aprovacao' %}
+                                <span class="badge badge-pendente"><i class="fa-solid fa-clock-rotate-left"></i> Em Análise</span>
+                            {% else %}
+                                <span class="badge badge-leitor"><i class="fa-solid fa-book-open"></i> Leitor</span>
+                            {% endif %}
+                        </h1>
+                        <p class="perfil-username">@{{ perfil.username|default:"usuario" }}</p>
+                    </div>
 
-                    <h1 class="perfil-nome"> 
-                        {{ usuario_custom.nome }}  
-        
-                        {% if usuario_custom.tipo == 'admin' %}
-                            <span class="badge-admin" title="Administrador do Sistema">
-                                <i class="fa-solid fa-shield-halved"></i> Admin
-                            </span>
-                        {% elif usuario_custom.tipo == 'autor' %}
-                            <span class="badge-autor" title="Autor Independente Verificado">
-                                <i class="fa-solid fa-feather-pointed"></i> Autor
-                            </span>
-                        {% elif usuario_custom.tipo == 'aguardando_aprovacao' %}
-                            <span class="badge-pendente" title="Sua solicitação está em análise">
-                                <i class="fa-solid fa-clock-rotate-left"></i> Em Análise
-                            </span>
-                        {% else %}
-                            <span class="badge-leitor">
-                                <i class="fa-solid fa-book-open"></i> Leitor
-                            </span>
-                        {% endif %}
-                    </h1>
-
-                    <p class="perfil-username">
-                        @{{ perfil.username|default:"usuario" }}
-                    </p>
-
-                    <p class="perfil-descricao">
-                        - {{ perfil.descricao_perfil }}
-                    </p>
-
-                    <p class="perfil-historico">
-                        - {{ perfil.historico|default:"Nenhum livro lido."}}
-                    </p>
-
-                    <div class="perfil-meta">
-
-                        <div class="meta-item">
-                            <span class="meta-label">
-                                Localização
-                            </span>
-
-                            <span class="meta-value">
-                                {{ perfil.localizacao|default:"Não informado" }}
-                            </span>
+                    <div class="info-body">
+                        <p class="perfil-descricao"><i class="fa-solid fa-quote-left"></i> {{ perfil.descricao_perfil }}</p>
+                        <p class="perfil-historico"><i class="fa-solid fa-clock-rotate-left"></i> {{ perfil.historico|default:"Nenhum livro lido."}}</p>
+                        
+                        <div class="perfil-meta">
+                            <div class="meta-item">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div>
+                                    <span class="meta-label">Localização</span>
+                                    <span class="meta-value">{{ perfil.localizacao|default:"Não informado" }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </section>
 
         <!-- ESTATÍSTICAS -->
-        <section class="perfil-stats">
-
-            <div class="container">
-
-                <div class="stats-container">
-
-                    <div class="stat-box">
-                        <div class="stat-icon">📚</div>
-
-                        <div class="stat-info">
-                            <p class="stat-number">
-                                {{ total_lidos }}
-                            </p>
-
-                            <p class="stat-label">
-                                Livros Lidos
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="stat-box">
-                        <div class="stat-icon">📖</div>
-
-                        <div class="stat-info">
-                            <p class="stat-number">
-                                {{ lendo_agora }}
-                            </p>
-
-                            <p class="stat-label">
-                                Lendo Agora
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="stat-box">
-                        <div class="stat-icon">⭐</div>
-
-                        <div class="stat-info">
-                            <p class="stat-number">
-                                {{ total_avaliados }}
-                            </p>
-
-                            <p class="stat-label">
-                                Avaliados
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="stat-box">
-                        <div class="stat-icon">👥</div>
-
-                        <div class="stat-info">
-                            <p class="stat-number">
-                                {{ total_comunidades }}
-                            </p>
-
-                            <p class="stat-label">
-                                Comunidades
-                            </p>
-                        </div>
-                    </div>
-
+        <section class="perfil-stats-grid">
+            <div class="stat-glass-card">
+                <div class="stat-icon"><i class="fa-solid fa-book-open"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">{{ total_lidos }}</p>
+                    <p class="stat-label">Livros Lidos</p>
                 </div>
-
             </div>
-
+            <div class="stat-glass-card">
+                <div class="stat-icon"><i class="fa-solid fa-book-reader"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">{{ lendo_agora }}</p>
+                    <p class="stat-label">Lendo Agora</p>
+                </div>
+            </div>
+            <div class="stat-glass-card">
+                <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">{{ total_avaliados }}</p>
+                    <p class="stat-label">Avaliados</p>
+                </div>
+            </div>
+            <div class="stat-glass-card">
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">{{ total_comunidades }}</p>
+                    <p class="stat-label">Comunidades</p>
+                </div>
+            </div>
         </section>
 
-        <!-- ABAS -->
-        <section class="perfil-tabs">
+        <!-- ABAS DE NAVEGAÇÃO -->
+        <section class="perfil-tabs-section">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="info"><i class="fa-solid fa-circle-info"></i> Informações</button>
+                <button class="tab-btn" data-tab="historico"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
+                <button class="tab-btn" data-tab="favoritos"><i class="fa-solid fa-heart"></i> Favoritos</button>
+                <button class="tab-btn" data-tab="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</button>
+            </div>
 
-            <div class="container">
-
-                <div class="tabs-nav">
-
-                    <button class="tab-btn active"
-                        data-tab="info">
-                        ℹ️ Informações
-                    </button>
-
-                    <button class="tab-btn"
-                        data-tab="historico">
-                        📜 Histórico
-                    </button>
-
-                    <button class="tab-btn"
-                        data-tab="favoritos">
-                        ❤️ Favoritos
-                    </button>
-
-                    <button class="tab-btn"
-                        data-tab="configuracoes">
-                        ⚙️ Configurações
-                    </button>
-
-                </div>
-
-                <!-- TAB INFO -->
-                <div id="info"
-                    class="tab-content active">
-
-                    <div class="perfil-info-grid">
-
-                        <div class="info-card">
-
-                            <h3>Gêneros Favoritos</h3>
-
-                            <div class="genres-list">
-
-                                {% for genero in generos_favoritos %}
-                                    <span class="genre-tag">
-                                        {{ genero.nome }}
-                                    </span>
-                                {% empty %}
-                                    <span class="genre-tag">
-                                        Nenhum gênero
-                                    </span>
-                                {% endfor %}
-
-                            </div>
-
+            <!-- TAB INFO -->
+            <div id="info" class="tab-content active">
+                <div class="perfil-info-grid">
+                    <div class="content-glass-card">
+                        <h3>Gêneros Favoritos</h3>
+                        <div class="genres-list">
+                            {% for genero in generos_favoritos %}
+                                <span class="genre-tag">{{ genero.nome }}</span>
+                            {% empty %}
+                                <span class="genre-tag">Nenhum gênero</span>
+                            {% endfor %}
                         </div>
-
-                        <div class="info-card">
-
-                            <h3>Autores Favoritos</h3>
-
-                            <ul class="authors-list">
-
-                                {% for autor in autores_favoritos %}
-                                    <li>{{ autor.nome }}</li>
-                                {% empty %}
-                                    <li>Nenhum autor favoritado.</li>
-                                {% endfor %}
-
-                            </ul>
-
-                        </div>
-
-                        <div class="info-card full-width">
-
-                            <h3>Sobre Você</h3>
-
-                            <p class="sobre-texto">
-                                {{ perfil.bio|default:"Nenhuma biografia cadastrada." }}
-                            </p>
-
-                            <button class="btn-editar-bio"
-                                id="btnEditarBio">
-                                Trocar Biografia
-                            </button>
-
-                        </div>
-
                     </div>
 
-                </div>
-
-                <!-- TAB HISTÓRICO -->
-                <div id="historico"
-                    class="tab-content">
-
-                    <div class="historico-list">
-
-                        {% for item in historico %}
-
-                            <div class="historico-item">
-
-                                <div class="historico-icon">
-                                    📖
-                                </div>
-
-                                <div class="historico-info">
-
-                                    <h4>
-                                        {{ item.titulo }}
-                                    </h4>
-
-                                    <p class="historico-date">
-                                        {{ item.data }}
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        {% empty %}
-
-                            <p>
-                                Nenhum histórico encontrado.
-                            </p>
-
-                        {% endfor %}
-
+                    <div class="content-glass-card">
+                        <h3>Autores Favoritos</h3>
+                        <ul class="authors-list">
+                            {% for autor in autores_favoritos %}
+                                <li><i class="fa-solid fa-feather-pointed"></i> {{ autor.nome }}</li>
+                            {% empty %}
+                                <li class="text-muted">Nenhum autor favoritado.</li>
+                            {% endfor %}
+                        </ul>
                     </div>
 
-                </div>
-
-                <!-- TAB FAVORITOS -->
-                <div id="favoritos"
-                    class="tab-content">
-
-                    <div class="favoritos-grid">
-
-                        {% for livro in favoritos %}
-
-                            <div class="favorito-card">
-
-                                <div class="favorito-capa">
-
-                                    {% if livro.capa %}
-                                        <img src="{{ livro.capa.url }}"
-                                            alt="{{ livro.titulo }}">
-                                    {% else %}
-                                        <i class="fa-solid fa-book"></i>
-                                    {% endif %}
-
-                                </div>
-
-                                <div class="favorito-info">
-
-                                    <h4>
-                                        {{ livro.titulo }}
-                                    </h4>
-
-                                    <p>
-                                        {{ livro.autor }}
-                                    </p>
-
-                                    <button class="btn-remover-favorito">
-                                        ❌ Remover
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        {% empty %}
-
-                            <p>
-                                Nenhum livro favorito.
-                            </p>
-
-                        {% endfor %}
-
+                    <div class="content-glass-card full-width">
+                        <h3>Sobre Você</h3>
+                        <p class="sobre-texto">{{ perfil.bio|default:"Nenhuma biografia cadastrada." }}</p>
+                        <button class="btn-primary-action" id="btnEditarBio">
+                            <i class="fa-solid fa-pen-to-square"></i> Trocar Biografia
+                        </button>
                     </div>
-
                 </div>
+            </div>
 
-                <!-- TAB CONFIGURAÇÕES -->
-                <section id="configuracoes" class="tab-content">
-                    <div class="config-container">
-                        <h2 style="margin-bottom: 20px;">Configurações da Conta</h2>
+            <!-- TAB HISTÓRICO -->
+            <div id="historico" class="tab-content">
+                <div class="historico-list">
+                    {% for item in historico %}
+                        <div class="historico-item content-glass-card">
+                            <div class="historico-icon"><i class="fa-solid fa-book"></i></div>
+                            <div class="historico-info">
+                                <h4>{{ item.titulo }}</h4>
+                                <p class="historico-date">{{ item.data }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="content-glass-card"><p class="text-muted">Nenhum histórico encontrado.</p></div>
+                    {% endfor %}
+                </div>
+            </div>
 
-                        <div class="config-section">
-                            <h3 style="margin-bottom: 15px; color: var(--primary);">Editar Perfil</h3>
-                            
-                            <form action="{% url 'perfis:perfil_pessoal' %}" method="POST">
-                                {% csrf_token %} 
-                                
-                                <div class="perfil-form-group">
-                                    <label for="input-nome">Nome de Exibição</label>
-                                    <input type="text" id="input-nome" name="nome" class="perfil-form-input" value="{{ usuario_custom.nome }}">
-                                </div>
+            <!-- TAB FAVORITOS -->
+            <div id="favoritos" class="tab-content">
+                <div class="favoritos-grid">
+                    {% for livro in favoritos %}
+                        <div class="favorito-card content-glass-card">
+                            <div class="favorito-capa">
+                                {% if livro.capa %}
+                                    <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}">
+                                {% else %}
+                                    <i class="fa-solid fa-book-open" style="font-size: 3rem; color: rgba(255,255,255,0.1);"></i>
+                                {% endif %}
+                            </div>
+                            <div class="favorito-info">
+                                <h4>{{ livro.titulo }}</h4>
+                                <p>{{ livro.autor }}</p>
+                                <button class="btn-danger-outline btn-remover-favorito"><i class="fa-solid fa-xmark"></i> Remover</button>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="content-glass-card" style="grid-column: 1 / -1;"><p class="text-muted">Nenhum livro favorito.</p></div>
+                    {% endfor %}
+                </div>
+            </div>
 
-                                <div class="perfil-form-group">
-                                    <label for="input-username">Nome de Usuário (Username)</label>
-                                    <input type="text" id="input-username" name="username" class="perfil-form-input" value="{{ perfil.username|default:'' }}" placeholder="Ex: renan_santos">
-                                </div>
+            <!-- TAB CONFIGURAÇÕES -->
+            <div id="configuracoes" class="tab-content">
+                <div class="config-container content-glass-card full-width">
+                    <h2>Configurações da Conta</h2>
+                    <form action="{% url 'perfis:perfil_pessoal' %}" method="POST" class="config-form">
+                        {% csrf_token %} 
+                        <div class="form-grid">
+                            <div class="perfil-form-group">
+                                <label for="input-nome">Nome de Exibição</label>
+                                <input type="text" id="input-nome" name="nome" class="form-input" value="{{ usuario_custom.nome }}">
+                            </div>
+                            <div class="perfil-form-group">
+                                <label for="input-username">Nome de Usuário (Username)</label>
+                                <input type="text" id="input-username" name="username" class="form-input" value="{{ perfil.username|default:'' }}" placeholder="Ex: renan_santos">
+                            </div>
+                            <div class="perfil-form-group">
+                                <label for="input-descricao">Frase de Status (Curta)</label>
+                                <input type="text" id="input-descricao" name="descricao_perfil" class="form-input" value="{{ perfil.descricao_perfil|default:'' }}" placeholder="Uma frase que te define...">
+                            </div>
+                            <div class="perfil-form-group">
+                                <label for="input-localizacao">Localização / Cidade</label>
+                                <input type="text" id="input-localizacao" name="localizacao" class="form-input" value="{{ perfil.localizacao|default:'' }}" placeholder="Ex: Belém - PA">
+                            </div>
+                        </div>
+                        <input type="hidden" name="foto" value="{{ perfil.foto|default:'' }}">
+                        <button type="submit" class="btn-primary-action" style="margin-top: 20px;">
+                            <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+                        </button>
+                    </form>
 
-                                <div class="perfil-form-group">
-                                    <label for="input-descricao">Frase de Status (Curta)</label>
-                                    <input type="text" id="input-descricao" name="descricao_perfil" class="perfil-form-input" value="{{ perfil.descricao_perfil }}" placeholder="Uma frase que te define...">
-                                </div>
-
-                                <div class="perfil-form-group">
-                                    <label for="input-localizacao">Localização / Cidade</label>
-                                    <input type="text" id="input-localizacao" name="localizacao" class="perfil-form-input" value="{{ perfil.localizacao|default:'' }}" placeholder="Ex: Belém - PA">
-                                </div>
-
-                                <input type="hidden" name="foto" value="{{ perfil.foto|default:'' }}">
-
-                                <button type="submit" class="btn-salvar-perfil">
-                                    <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+                    <div class="danger-zone">
+                        <div class="danger-text">
+                            <h4>Segurança da Conta</h4>
+                            <p>Gerencie sua senha ou encerre sua conta.</p>
+                        </div>
+                        <div class="danger-actions">
+                            <a href="{% url 'usuarios:logout' %}" class="btn-outline">Alterar Senha</a> 
+                            <form action="{% url 'usuarios:excluir_conta' %}" method="POST" id="form-excluir-conta">
+                                {% csrf_token %}
+                                <button type="button" class="btn-danger-outline" onclick="confirmarExclusao()">
+                                    <i class="fa-solid fa-trash"></i> Excluir conta
                                 </button>
                             </form>
-
-                            <div class="danger-zone">
-                                <div>
-                                    <h4 style="color: var(--text-main); margin-bottom: 4px;">Segurança da Conta</h4>
-                                    <p style="font-size: 0.8rem; color: var(--text-muted);">Gerencie sua senha ou encerre sua conta.</p>
-                                </div>
-                                
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <a href="{% url 'usuarios:logout' %}" style="text-decoration: none;"> <button class="btn-config" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
-                                            Alterar Senha
-                                        </button>
-                                    </a> 
-                                    
-                                    <form action="{% url 'usuarios:excluir_conta' %}" method="POST" id="form-excluir-conta">
-                                        {% csrf_token %}
-                                        <button type="button" class="btn-config btn-danger" onclick="confirmarExclusao()">
-                                            <i class="fa-solid fa-trash"></i> Excluir conta
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
-                </section>
-
-                <script>
-                    function confirmarExclusao() {
-                        Swal.fire({
-                            title: 'Você tem certeza?',
-                            text: "Esta ação é irreversível! Todos os seus dados, livros e histórico serão apagados para sempre.",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#ef4444',
-                            cancelButtonColor: '#374151',
-                            confirmButtonText: 'Sim, excluir minha conta!',
-                            cancelButtonText: 'Cancelar'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Se o usuário clicou em sim, nós submetemos o formulário POST via JavaScript
-                                document.getElementById('form-excluir-conta').submit();
-                            }
-                        })
-                    }
-                </script>
+                </div>
             </div>
-
         </section>
 
+        <!-- PAINEIS ESPECÍFICOS DE TIPO DE USUÁRIO -->
         {% if usuario_custom.tipo == 'admin' %}
-        <section class="config-section admin-shortcut-card">
-            <div class="upgrade-card-content">
-                <div class="upgrade-text">
+            <section class="special-panel admin-panel content-glass-card">
+                <div class="panel-info">
                     <h3><i class="fa-solid fa-server"></i> Central de Comando</h3>
                     <p>Você tem privilégios totais. Acesse o dashboard para gerenciar a plataforma.</p>
                 </div>
-                <a href="{% url 'dashboard:painel_admin' %}" style="text-decoration: none;">
-                    <button class="btn-ir-dashboard">
-                        Acessar Dashboard <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </a>
-            </div>
-        </section>
-
+                <a href="{% url 'dashboard:painel_admin' %}" class="btn-primary-action">Acessar Dashboard <i class="fa-solid fa-arrow-right"></i></a>
+            </section>
         {% elif usuario_custom.tipo == 'autor' %}
-        <section class="config-section autor-dashboard-card">
-            <div class="autor-card-header">
-                <div class="autor-title-group">
-                    <i class="fa-solid fa-wand-magic-sparkles icon-autor-panel"></i>
-                    <div>
-                        <h3>Painel do Autor Independente</h3>
-                        <p class="section-subtitle">Gerencie suas publicações e veja o alcance das suas obras</p>
-                    </div>
+            <section class="special-panel autor-panel content-glass-card">
+                <div class="panel-info">
+                    <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Painel do Autor Independente</h3>
+                    <p>Gerencie suas publicações e veja o alcance das suas obras.</p>
                 </div>
-                <button class="btn-publicar-obra" onclick="location.href='#'">
-                    <i class="fa-solid fa-plus"></i> Publicar Novo Livro
-                </button>
-            </div>
-            
-            <div class="autor-stats-preview">
-                <div class="stat-box-mini">
-                    <span class="stat-label">Obras Publicadas</span>
-                    <span class="stat-value">0</span>
-                </div>
-                <div class="stat-box-mini">
-                    <span class="stat-label">Leitores Totais</span>
-                    <span class="stat-value">0</span>
-                </div>
-            </div>
-        </section>
-
+                <a href="#" class="btn-primary-action"><i class="fa-solid fa-plus"></i> Publicar Novo Livro</a>
+            </section>
         {% elif usuario_custom.tipo == 'aguardando_aprovacao' %}
-        <section class="config-section pendente-section">
-            <div class="upgrade-card-content">
-                <div class="upgrade-text">
-                    <h3 style="color: #eab308;"><i class="fa-solid fa-hourglass-half"></i> Solicitação em Análise</h3>
-                    <p>Nossa equipe de moderação está avaliando seu pedido para se tornar Autor Independente. Em breve você terá novidades!</p>
+            <section class="special-panel pendente-panel content-glass-card">
+                <div class="panel-info">
+                    <h3 style="color: #fbbf24;"><i class="fa-solid fa-hourglass-half"></i> Solicitação em Análise</h3>
+                    <p>Nossa equipe de moderação está avaliando seu pedido para se tornar Autor Independente.</p>
                 </div>
-            </div>
-        </section>
-
+            </section>
         {% else %}
-        <section class="config-section upgrade-autor-section">
-            <div class="upgrade-card-content">
-                <div class="upgrade-text">
+            <section class="special-panel upgrade-panel content-glass-card">
+                <div class="panel-info">
                     <h3>Escreve ou deseja publicar suas próprias obras?</h3>
                     <p>Mude sua conta para Autor Independente e comece a compartilhar suas histórias.</p>
                 </div>
                 <form action="{% url 'perfis:virar_autor' %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="btn-upgrade-autor">
-                        <i class="fa-solid fa-feather"></i> Quero ser um Autor
-                    </button>
+                    <button type="submit" class="btn-primary-action"><i class="fa-solid fa-feather"></i> Quero ser um Autor</button>
                 </form>
-            </div>
-        </section>
+            </section>
         {% endif %}
-
-        <!-- BOTÃO TOPO -->
-        <a href="#topo">
-
-            <button class="button-top"
-                id="voltar-topo">
-
-                <svg class="svgIcon"
-                    viewBox="0 0 384 512">
-
-                    <path
-                        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z">
-                    </path>
-
-                </svg>
-
-            </button>
-
-        </a>
-
-    </section>
-
-    <!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{% static 'js/perfil.js' %}?v=1.4"></script>
-
-    {% if messages %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            {% for message in messages %}
-                Swal.fire({
-                    title: 'Sucesso!',
-                    text: "{{ message }}",
-                    icon: "{{ message.tags|default:'info' }}", // Ajusta o ícone baseado na tag do Django (success, error, info)
-                    confirmButtonText: 'Continuar',
-                    confirmButtonColor: '#5C3B2E' // Combinando com a paleta elegante do seu projeto
-                });
-            {% endfor %}
-        });
-    </script>
-    {% endif %}
-
+    </main>
 {% endblock %}
 
-<!-- JS ESPECÍFICO -->
 {% block extra_js %}
-<script src="{% static 'js/index.js' %}"></script>
+
+<!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'js/perfil.js' %}?v=1.5"></script>
+
+    <script>
+        function confirmarExclusao() {
+            Swal.fire({
+                title: 'Você tem certeza?',
+                text: "Esta ação é irreversível!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#374151',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar',
+                background: '#0f172a',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-excluir-conta').submit();
+                }
+            })
+        }
+    </script>
+
 {% endblock %}

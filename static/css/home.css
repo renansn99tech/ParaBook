@@ -529,10 +529,10 @@ body{
     margin-bottom:20px;
 }
 
-.books{
-    max-width:1400px;
-    margin:0 auto;
-    padding:60px 60px;
+.books, .communities{
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 60px;
 }
 
 .books-grid{

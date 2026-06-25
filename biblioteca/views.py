@@ -6,6 +6,7 @@ from .services import livros_por_categoria
 from .models import Categoria, Livro, ObraAutor, Biblioteca
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
+from comunidades.models import Comunidade
 
 def novidade(request):
     return render(request, 'biblioteca/novidade.html')

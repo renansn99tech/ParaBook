@@ -6,13 +6,12 @@ Comunidades
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet"
-    href="{% static 'css/comunidade.css' %}">
+    <link rel="stylesheet" href="{% static 'css/comunidade.css' %}?v=2.0">
 {% endblock %}
 
 {% block content %}
 
-<main id="topo">
+<main>
 
     <!-- CONTAINER DE COMUNIDADES -->
     <section class="pagina-comunidade">
@@ -32,13 +31,13 @@ Comunidades
             ao seu interesse.
         </p>
 
-<a
-    href="{% url 'criar_comunidade' %}"
-    class="btn-criar-comunidade"
->
-    <i class="fas fa-plus"></i>
-    Criar Comunidade
-</a>
+        <a
+            href="{% url 'criar_comunidade' %}"
+            class="btn-criar-comunidade"
+        >
+            <i class="fas fa-plus"></i>
+            Criar Comunidade
+        </a>
 
         <div class="grid">
 
@@ -57,25 +56,6 @@ Comunidades
         </div>
 
     </section>
-
-    <!-- BOTÃO TOPO -->
-    <a href="#topo">
-
-        <button
-            class="button-top"
-            id="voltar-topo"
-        >
-
-            <svg
-                class="svgIcon"
-                viewBox="0 0 384 512"
-            >
-                <path d="M214.6 41.4..."></path>
-            </svg>
-
-        </button>
-
-    </a>
 
 </main>
 

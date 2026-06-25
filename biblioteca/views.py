@@ -11,7 +11,6 @@ from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
 
 from comunidades.models import Comunidade
-from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.db.models import Count
 
@@ -19,18 +18,17 @@ from django.db.models import Count
 def novidade(request):
     return render(request, 'biblioteca/novidade.html')
 
+
 def biblioteca(request):
     categorias = [
-    'filosofia',
-    'literatura',
-    'religiosos',
-    'exatas',
-    'infantis'
+        'filosofia',
+        'literatura',
+        'religiosos',
+        'exatas',
+        'infantis'
     ]
 
-
     livros = livros_por_categorias(categorias)
-
     livros_map = {cat: [] for cat in categorias}
 
     for livro in livros:
@@ -55,9 +53,9 @@ def adicionar_a_biblioteca(request, livro_id):
             livro=livro
         )
 
-    if criado:
+        if criado:
             messages.success(request, "Livro adicionado com sucesso!")
-    else:
+        else:
             messages.info(request, "Este livro já está na sua biblioteca.")
 
     return redirect('acesso_biblioteca')
@@ -73,8 +71,6 @@ def remover_da_biblioteca(request, livro_id):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'message': 'Livro removido com sucesso.'})
             
-        # Fallback para caso não seja AJAX (preserva retrocompatibilidade)
-        from django.shortcuts import redirect
         return redirect('acesso_biblioteca')
     except Biblioteca.DoesNotExist:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -85,7 +81,6 @@ def remover_da_biblioteca(request, livro_id):
 @login_required
 def leitura(request):
     livro_id = request.GET.get('id')
-
 
     if not livro_id:
         messages.error(request, "Livro não informado.")
@@ -106,7 +101,6 @@ def leitura(request):
 
 def obras_autores(request):
     categorias = Categoria.objects.all()
-
 
     if request.method == 'POST':
         form = ObraAutorForm(request.POST, request.FILES)
@@ -137,8 +131,6 @@ def obras_autores(request):
 
 def listar_obras(request):
     obras = ObraAutor.objects.filter(status='aprovado')
-
-
     return render(request, 'biblioteca/lista_obras.html', {
         'obras': obras
     })
@@ -147,11 +139,11 @@ def listar_obras(request):
 def is_admin(user):
     return user.is_superuser or user.is_staff
 
+
 @login_required
 @user_passes_test(is_admin)
 def deletar_livro(request, id):
     livro = get_object_or_404(Livro, id_livro=id)
-
 
     if request.method == 'POST':
         livro.delete()
@@ -164,9 +156,8 @@ def deletar_livro(request, id):
 @login_required
 def acesso_biblioteca(request):
     livros = Biblioteca.objects.filter(
-    user=request.user
+        user=request.user
     ).select_related('livro')
-
 
     return render(request, 'biblioteca/acesso-biblioteca.html', {
         'livros': livros
@@ -176,14 +167,10 @@ def acesso_biblioteca(request):
 def mais_acessados(request):
     return render(request, 'biblioteca/mais-acessados.html')
 
+
 def home(request):
-
     livros = Livro.objects.all()[:6]
-
-    obras_independentes = ObraAutor.objects.filter(
-        status='aprovado'
-    )[:6]
-
+    obras_independentes = ObraAutor.objects.filter(status='aprovado')[:6]
     comunidades = Comunidade.objects.all()[:6]
 
     return render(
@@ -195,32 +182,29 @@ def home(request):
             'comunidades': comunidades
         }
     )
-    
+
+
 def lista_autores(request):
     termo_busca = request.GET.get('busca', '').strip()
     
-    # Extrai os nomes de autores distintos e conta quantos livros cada um possui
     autores_query = (
         Livro.objects.values('autor')
         .annotate(total_obras=Count('id_livro'))
         .order_by('autor')
     )
     
-    # Aplica o filtro de pesquisa por nome do autor caso exista
     if termo_busca:
         autores_query = autores_query.filter(autor__icontains=termo_busca)
         
-    # Como o values() retorna dicionários, mapeamos para manter a compatibilidade com o template
     autores_list = []
     for item in autores_query:
         autores_list.append({
             'nome': item['autor'],
             'total_obras': item['total_obras'],
-            'biografia': None,  # Como o autor é CharField, não há biografia cadastrada
-            'foto': None        # Como o autor é CharField, não há foto de perfil associada
+            'biografia': None,
+            'foto': None
         })
         
-    # Paginação: Exibe 8 autores por página
     paginator = Paginator(autores_list, 8)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

@@ -107,7 +107,7 @@
                 <option value="">Todos os gêneros</option>
                 <option value="filosofia">Filosofia</option>
                 <option value="literatura">Literatura</option>
-                <option value="religioso">Religioso</option>
+                <option value="religiosos">Religiosos</option>
                 <option value="exatas">Ciências Exatas</option>
                 <option value="infantis">Infantis</option>
             </select>
@@ -125,12 +125,12 @@
         {% for item in livros %}
         <article class="card-livro" 
                  data-id="{{ item.livro.id_livro }}" 
-                 data-genero="{{ item.livro.genero|lower }}" 
+                 data-genero="{{ item.livro.categoria.nome|lower }}" 
                  data-status="{{ item.status }}">
             
             <div class="capa-container">
                 {% if item.livro.capa %}
-                    <img src="{{ item.livro.capa }}" alt="Capa do livro {{ item.livro.nome }}" class="capa-img">
+                    <img src="{% static item.livro.capa %}" alt="Capa do livro {{ item.livro.nome }}" class="capa-img">
                 {% else %}
                     <div class="capa-placeholder"><i class="fa-solid fa-book" style="font-size: 3rem; color: #cbd5e1;"></i></div>
                 {% endif %}
@@ -157,9 +157,9 @@
             </div>
         </article>
         {% empty %}
-        <div id="empty-state" class="empty-state">
-            <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 1rem; color: #94a3b8;"></i>
-            <p>Você ainda não possui livros guardados na sua biblioteca pessoal.</p>
+        <div class="empty-state">
+            <i class="fa-solid fa-box-open fs-1 d-block mb-3"></i>
+            Sua estante está vazia. Adicione livros através da página principal da biblioteca!
         </div>
         {% endfor %}
     </section>
@@ -168,4 +168,5 @@
 
 {% block extra_js %}
 <script src="{% static 'js/biblioteca.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 {% endblock %}

@@ -35,24 +35,36 @@
         <input type="text" name="titulo" value="{{ livro.titulo|default:'' }}">
     </div>
 
-    <div class="form-group">
-        <label>Categoria</label>
-        <select name="categoria">
-            {% for categoria in categorias %}
-                <option value="{{ categoria.id_categoria }}">
-                    {{ categoria.nome }}
-                </option>
-            {% endfor %}     
-        {% if messages %}
-            {% for message in messages %}
-                <div>
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+<div class="form-group">
+    <label for="id_categoria">Categoria</label>
+    <select name="categoria" id="id_categoria">
+        <option value="">Selecione uma categoria</option>
+        {% for cat in categorias %}
+            <option value="{{ cat.id_categoria }}">
+                {{ cat.nome }}
+            </option>
+        {% endfor %}
+    </select>
+</div>
 
-        </select>
-    </div>
+    {% if errors %}
+        <div class="form-errors" style="color: red; margin-bottom: 15px;">
+            <p>Por favor, corrija os erros abaixo:</p>
+            <ul>
+                {% for field, field_errors in errors.items %}
+                    <li><strong>{{ field }}:</strong> {{ field_errors|striptags }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
     <div class="form-group">
         <label>Descrição</label>

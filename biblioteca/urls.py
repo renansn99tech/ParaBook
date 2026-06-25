@@ -15,10 +15,11 @@ urlpatterns = [
     path('adicionar/<int:livro_id>/', views.adicionar_a_biblioteca, name='adicionar_biblioteca'),
 
     path(
-        'biblioteca/remover/<int:item_id>/',
+        'biblioteca/remover/<int:livro_id>/',
         views.remover_da_biblioteca,
         name='remover_da_biblioteca'
     ),
 
     path('leitura/', views.leitura, name='leitura'),
+    path('autores/', views.lista_autores, name='lista_autores'),
 ]

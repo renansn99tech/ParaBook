@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
 :root {
     --color-primary-dark: #14213d;
@@ -29,585 +29,216 @@
 
 /* Garante que o fundo combine com a Home e permita o efeito translúcido da Navbar */
 body {
-    background: 
-    radial-gradient(circle at top right, rgba(139,92,246,0.1), transparent 40%),
-    #050816;
-    color: white;
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Evita que o conteúdo cole na Navbar que é fixa (sticky) */
-main#topo {
-    padding-top: 40px; 
-    min-height: calc(100vh - 300px); /* Garante que o footer fique no final da página se houver pouco conteúdo */
-}
-
-main hr {
-    border: none;
-    height: 1px;
-    background: #1F2937;
-    margin: 20px 0;
-}
-
-/* Banner (Título da Página) */
-
-.banner-content {
-    text-align: center;
-    line-height: var(--lh-body);
-    padding-top: 1rem;
-    font-family: var(--font-ui);
-}
-
-
-/* ===== PÁGINA BIBLIOTECA ===== */
-
-.genero-titulo {
-    font-size: 2rem;
-    font-family: var(--font-playfair);
-    /*color: var(--color-primary-dark);*/
-    margin: 2.5rem 2rem 1.5rem 3.5rem;
-    padding-left: .7rem;
-    border-left: 5px solid var(--color-accent-olive);
-}
-
-.agrupar-livros {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
-}
-
-/* ===== PÁGINA BIBLIOTECA ===== */
-
-.genero-titulo {
-    font-size: 2rem;
-    font-family: var(--font-playfair);
-    /*color: var(--color-primary-dark);*/
-    margin: 2.5rem 2rem 1.5rem 3.5rem;
-    padding-left: .7rem;
-    border-left: 5px solid var(--color-accent-olive);
-}
-
-.agrupar-livros {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
-}
-
-/* ===== CARD LIVRO ===== */
-
-.card-livro {
-    background: white;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
+/* ===============================
+   NAVBAR & MENUS 
+================================= */
+.nav {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: rgba(2,6,23,0.7);
+    backdrop-filter: blur(10px);
 }
 
-.card-livro:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
-}
-
-.card-livro img {
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
-}
-
-.card-livro h3 {
-    font-size: 1.15rem;
-    color: var(--color-primary-dark);
-    margin: 1rem 1rem 0.5rem;
-    line-height: 1.4;
-    font-family: var(--font-playfair);
-}
-
-.card-livro p {
-    margin: 0.3rem 1rem;
-    color: var(--color-ui-charcoal);
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-.card-livro .btn-adicionar {
-    margin: 1rem;
-    margin-top: auto;
-    padding: 0.9rem 1rem;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #6366F1, #8B5CF6);
-    color: #FFFFFF;
-    font-weight: var(--fw-medium);
-    cursor: pointer;
-    transition: all 0.3s ease;
+.menu {
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    display: inline-block;
-    text-align: center;
+    list-style: none;
+    gap: 20px;
+    margin-bottom: 0;
 }
-.card-livro button {
-    margin: 1rem;
-    margin-top: auto;
-    padding: 0.9rem 1rem;
+
+.menu li a {
+    color: #9CA3AF;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.menu li a:hover {
+    color: #E5E7EB;
+}
+
+.login-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
+    font-size: var(--fs-small);
     border: none;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #6366F1, #8B5CF6);
-    color: #FFFFFF;
-    font-weight: var(--fw-medium);
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.card-livro button:hover {
-    transform: translateY(-2px);
-    opacity: 0.95;
+.login-btn:hover {
+    transform: scale(1.05);
+    transition: 0.3s ease;
+    background-color: #1d9f4c;
+    color: white;
 }
 
-/* ===== LINHAS DIVISÓRIAS ===== */
-
-hr {
-    border: none;
-    height: 1px;
-    background: #ddd;
-    margin: 3rem 2rem 1rem;
+/* ===============================
+   LOGO
+================================= */
+.logo {
+    margin: 2vh 2vw 2vh 0; 
 }
 
-
-    .button-top {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: rgb(20, 20, 20);
-    border: none;
-    font-weight: 600;
+.logo-container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0px 0px 0px 4px rgba(180, 160, 255, 0.253);
-    cursor: pointer;
-    transition-duration: 0.3s;
-    overflow: hidden;
-    position: relative;
-    left: 90%;
-    }
-
-    .svgIcon {
-    width: 12px;
-    transition-duration: 0.3s;
-    }
-
-    .svgIcon path {
-    fill: white;
-    }
-
-    .button-top:hover {
-    width: 140px;
-    border-radius: 50px;
-    transition-duration: 0.3s;
-    background-color: rgb(181, 160, 255);
-    align-items: center;
-    }
-
-    .button-top:hover .svgIcon {
-    /* width: 20px; */
-    transition-duration: 0.3s;
-    transform: translateY(-200%);
-    }
-
-    .button-top::before {
-    position: absolute;
-    bottom: -20px;
-    content: "Subir";
-    color: white;
-    /* transition-duration: .3s; */
-    font-size: 0px;
-    }
-
-    .button-top:hover::before {
-    font-size: 13px;
-    opacity: 1;
-    bottom: unset;
-    /* transform: translateY(-30px); */
-    transition-duration: 0.3s;
-    }
-
-/* =========================================================
-   LIGHT MODE - PÁGINA BIBLIOTECA
-   Adicione no FINAL do seu CSS
-   ========================================================= */
-
-/* ================= TEXTOS ================= */
-
-body.light-mode h1,
-body.light-mode h2,
-body.light-mode h3 {
-    color: #111827;
+    gap: 5px;
 }
 
-body.light-mode p {
-    color: #374151;
+.logo-img {
+    height: 70px;
 }
 
-/* ================= HR ================= */
-
-body.light-mode main hr,
-body.light-mode hr {
-    background: #E5E7EB;
+.para {
+    background: linear-gradient(90deg, #E53935, #6A1B9A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
 }
 
-/* ================= TÍTULO GÊNERO ================= */
-
-body.light-mode .genero-titulo {
-    color: #111827;
-    border-left: 5px solid #D1D5DB;
+.book {
+    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
 }
 
-/* ================= CARDS LIVRO ================= */
-
-body.light-mode .card-livro {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+/* ===============================
+   SINCRO COM CARD BOOTSTRAP (Parabook)
+================================= */
+body:not(.light-mode) .card-livro-publico {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
 }
 
-body.light-mode .card-livro:hover {
-    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+body:not(.light-mode) .card-livro-publico .card-title {
+    color: #ffffff !important;
 }
 
-body.light-mode .card-livro h3 {
-    color: #111827;
+body:not(.light-mode) .card-livro-publico .text-muted {
+    color: #94a3b8 !important;
 }
 
-body.light-mode .card-livro p {
+/* Light mode overrides */
+body.light-mode {
+    background: #F8FAFC;
+    color: #1F2937;
+}
+
+body.light-mode .nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #E5E7EB;
+}
+
+body.light-mode .menu li a {
     color: #4B5563;
 }
 
-/* ================= BOTÃO CARD ================= */
-
-body.light-mode .card-livro button {
-    box-shadow: 0 6px 18px rgba(99,102,241,0.2);
+body.light-mode .menu li a:hover {
+    color: #111827;
 }
 
-/* ===== RESPONSIVO ===== */
+body.light-mode .card-livro-publico {
+    background-color: #FFFFFF !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
 
+body.light-mode .card-livro-publico .card-title {
+    color: #0f172a !important;
+}
+
+/* ===============================
+   FOOTER
+================================= */
+.footer {
+    background: #020617;
+    border-top: 1px solid #1F2937;
+    padding: 40px 60px 20px 60px;
+    color: #9CA3AF;
+    margin-top: 4rem;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer h2 {
+    color: #E5E7EB;
+}
+
+.footer-links a {
+    display: block;
+    color: #9CA3AF;
+    text-decoration: none;
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #6366F1;
+}
+
+.footer-social .icons i {
+    font-size: 1.4rem;
+    margin: 12px 8px 5px 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+body.light-mode .footer {
+    background: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+    color: #4B5563;
+}
+
+body.light-mode .footer h2 {
+    color: #111827;
+}
+
+body.light-mode .footer-links a {
+    color: #4B5563;
+}
+
+body.light-mode .footer-links a:hover {
+    color: #4D4AE8;
+}
+
+/* ===============================
+   RESPONSIVIDADE GERAL
+================================= */
 @media (max-width: 768px) {
-    .agrupar-livros {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-    }
-
-    .card-livro img {
-        height: 280px;
-    }
-
-    .genero-titulo {
-        font-size: 1.6rem;
-        margin: 2rem 1rem 1rem;
-    }
-}
-
- @media (max-width: 768px) {
-    .nav {
-        flex-direction: column;
-    }
-
-    .menu {
-        flex-direction: column;
-    }
-
-    #secao-FAQ {
-        flex-direction: column;
-    }
-
-    .grid-container {
-        grid-template-columns: 1fr;
-    }
-    .footer {
-        padding: 40px 20px; /* Reduz o padding lateral que era muito grande */
-    }
-
-    .footer-container {
-        flex-direction: column; /* Empilha os itens verticalmente */
-        text-align: center;     /* Centraliza o texto de tudo */
-        gap: 30px;              /* Espaçamento entre as seções */
-    }
-
-    .footer-brand, .footer-links, .footer-social {
-        margin: 0;
-        top: 0;                 /* Remove os offsets negativos que desalinhariam no mobile */
-    }
-
-    .footer-links {
-        margin-right: 0;        /* Remove a margem lateral específica */
-    }
-
-    .footer-bottom-line {
-        top: 0;                 /* Ajusta a linha para não sobrepor o conteúdo */
-        margin-bottom: 20px;
-    }
-}
-
-
-/* =========================================================
-   RESPONSIVIDADE COMPLETA — biblioteca.css
-   COLE NO FINAL DO ARQUIVO
-========================================================= */
-
-
-/* =========================================================
-   MOBILE PEQUENO — até 480px
-========================================================= */
-
-@media (max-width: 480px) {
-
-    /* ================= NAV ================= */
-
-    .nav {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 15px;
-        gap: 20px;
-    }
-
-    .logo-container {
-        justify-content: center;
-        text-align: center;
-    }
-
-    .logo {
-        margin: 0;
-        font-size: 1.8rem;
-    }
-
-    .logo-img {
-        height: 55px;
-        margin: 0;
-    }
-
-    .menu {
-        width: 100%;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .menu li {
-        width: 100%;
-    }
-
-    .menu li a {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    .login-btn {
-        width: 100%;
-    }
-
-    /* ================= BANNER ================= */
-
-    .banner-content {
-        padding: 20px;
-    }
-
-    .banner-content h2 {
-        font-size: clamp(1.8rem, 8vw, 2.5rem);
-        line-height: 1.2;
-    }
-
-    .banner-content p {
-        font-size: 1rem;
-        margin-top: 10px;
-    }
-
-    /* ================= GÊNEROS ================= */
-
-    .genero-titulo {
-        font-size: 1.5rem;
-        margin: 2rem 1rem 1rem;
-    }
-
-    /* ================= GRID LIVROS ================= */
-
-    .agrupar-livros {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 1rem;
-    }
-
-    /* ================= CARD ================= */
-
-    .card-livro {
-        border-radius: 18px;
-    }
-
-    .card-livro img {
-        height: 260px;
-        object-fit: cover;
-    }
-
-    .card-livro h3 {
-        font-size: 1rem;
-    }
-
-    .card-livro p {
-        font-size: 0.9rem;
-    }
-
-    .card-livro button {
-        width: calc(100% - 2rem);
-        font-size: 0.9rem;
-    }
-
-    /* ================= FOOTER ================= */
-
-    .footer {
-        padding: 40px 20px;
-    }
-
-    .footer-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 30px;
-    }
-
-    .footer-brand,
-    .footer-links,
-    .footer-social {
-        margin: 0;
-    }
-
-    .footer-links {
-        margin-right: 0;
-    }
-
-    .footer-bottom-line {
-        top: 0;
-        margin-bottom: 20px;
-    }
-}
-
-
-/* =========================================================
-   TABLETS — até 768px
-========================================================= */
-
-@media (max-width: 768px) {
-
-    /* ================= NAV ================= */
-
     .nav {
         flex-direction: column;
         padding: 20px;
-        gap: 20px;
-    }
-
-    .menu {
-        flex-wrap: wrap;
-        justify-content: center;
         gap: 15px;
     }
 
-    /* ================= BANNER ================= */
-
-    .banner-content {
-        padding: 30px 20px;
-    }
-
-    .banner-content h2 {
-        font-size: clamp(2rem, 6vw, 3rem);
-    }
-
-    /* ================= TÍTULOS ================= */
-
-    .genero-titulo {
-        font-size: 1.8rem;
-        margin: 2rem 1rem 1rem;
-    }
-
-    /* ================= GRID ================= */
-
-    .agrupar-livros {
-        grid-template-columns: repeat(2, 1fr);
-        padding: 1.5rem;
-        gap: 1.5rem;
-    }
-
-    /* ================= CARDS ================= */
-
-    .card-livro img {
-        height: 280px;
-    }
-
-    .card-livro h3 {
-        min-height: 60px;
-    }
-
-    .card-livro button {
-        font-size: 0.95rem;
-    }
-
-    /* ================= FOOTER ================= */
-
-    .footer {
-        padding: 40px 30px;
+    .menu {
+        flex-direction: column;
+        gap: 10px;
+        padding-left: 0;
     }
 
     .footer-container {
-        justify-content: center;
+        flex-direction: column;
         text-align: center;
-    }
-}
-
-
-/* =========================================================
-   NOTEBOOK PEQUENO — até 1024px
-========================================================= */
-
-@media (max-width: 1024px) {
-
-    .nav {
-        padding: 20px 30px;
-    }
-
-    .banner-content {
-        padding-inline: 30px;
-    }
-
-    .agrupar-livros {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .footer {
-        padding: 40px;
-    }
-}
-
-
-/* =========================================================
-   TELAS GRANDES — acima de 1440px
-========================================================= */
-
-@media (min-width: 1440px) {
-
-    .banner-content,
-    .agrupar-livros,
-    .footer-container {
-        max-width: 80%;
-        margin-inline: auto;
-    }
-
-    .agrupar-livros {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .banner-content h2 {
-        font-size: 4rem;
-    }
-
-    .banner-content p {
-        font-size: 1.2rem;
     }
 }

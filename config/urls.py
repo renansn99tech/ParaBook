@@ -19,6 +19,8 @@ from django.urls import path, include   # <-- aqui está o include
 from usuarios.views import index, sobre, tela_login, register, logout_view    # importa sua view
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,3 +48,6 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('password-reset/', auth_views.PasswordResetView.as_view(template_name='usuarios/password_reset.html'), name='password_reset'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -287,7 +287,7 @@
     content: ''; display: block; width: 4px; height: 18px; background: #8b5cf6; border-radius: 4px;
 }
 
-.text-muted { color: #aeb3c7; }
+.text-muted { color: #b9c1ce !important; }
 
 /* LISTAS E TAGS */
 .genres-list { display: flex; flex-wrap: wrap; gap: 10px; }

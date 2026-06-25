@@ -1,434 +1,634 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Reset local e seguro */
-.auth-body, .auth-body * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-.auth-body {
-    background-color: #050816;
-    color: #E5E7EB;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    position: relative;
+:root{
+    --bg-main:#050816;
+    --bg-card:#10192d;
+    --purple:#8B5CF6;
+    --purple-light:#A855F7;
+    --purple-dark:#6D28D9;
+    --text:#F8FAFC;
+    --text-secondary:#9CA3AF;
+    --border:rgba(255,255,255,.08);
+    --shadow:0 25px 70px rgba(0,0,0,.35);
 }
 
-/* ==========================================================================
-   BOTÕES FLUTUANTES (PADRÃO - MODO ESCURO)
-   ========================================================================= */
+.auth-body{
+    width:100vw;
+    min-height:100vh;
+    overflow:hidden;
 
-/* Botão de Voltar Flutuante */
-.btn-voltar-fixo {
-    position: absolute;
-    top: 2vh;
-    left: 90vw;
-    z-index: 50;
-    color: #9CA3AF;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 30px;
-    backdrop-filter: blur(10px);
-    transition: all 0.2s ease;
+    font-family:'Inter',sans-serif;
+
+    color:var(--text);
+
+    background:
+        radial-gradient(circle at 20% 20%, rgba(139,92,246,.18), transparent 28%),
+        radial-gradient(circle at 80% 80%, rgba(168,85,247,.12), transparent 26%),
+        #050816;
 }
 
-.btn-voltar-fixo:hover {
-    color: #6366F1;
-    border-color: #6366F1;
-    background: rgba(99, 102, 241, 0.05);
+/* Botões topo */
+
+.btn-voltar-fixo,
+#theme-toggle{
+    position:absolute;
+    top:24px;
+    z-index:50;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    padding:10px 16px;
+
+    border-radius:999px;
+
+    color:var(--text-secondary);
+    text-decoration:none;
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid var(--border);
+
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+
+    transition:.3s;
 }
 
-/* Botão Theme Toggle */
-#theme-toggle {
-    position: absolute;
-    top: 2vh;
-    left: 86vw;
-    z-index: 50;
-    color: #9CA3AF;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 30px;
-    backdrop-filter: blur(10px);
-    cursor: pointer;
-    transition: all 0.2s ease;
+.btn-voltar-fixo{
+    right:24px;
 }
 
-#theme-toggle:hover {
-    border-color: #6366F1;
-    transform: scale(1.05);
+#theme-toggle{
+    right:180px;
+    cursor:pointer;
 }
 
-
-/* ==========================================================================
-   AJUSTES PARA O MODO CLARO (LIGHT MODE)
-   ========================================================================= */
-
-/* Ajuste do Botão Voltar no Modo Claro */
-body.light-mode .btn-voltar-fixo {
-    color: #374151; /* Texto cinza escuro para contraste */
-    background: rgba(0, 0, 0, 0.04); /* Fundo escuro sutil que funciona sobre o cinza claro */
-    border: 1px solid rgba(0, 0, 0, 0.1); /* Borda mais visível */
+.btn-voltar-fixo:hover,
+#theme-toggle:hover{
+    color:white;
+    border-color:rgba(139,92,246,.45);
+    background:rgba(139,92,246,.1);
 }
 
-body.light-mode .btn-voltar-fixo:hover {
-    color: #4F46E5;
-    border-color: #4F46E5;
-    background: rgba(79, 70, 229, 0.08);
+/* Layout */
+
+.auth-container{
+    width:100%;
+    min-height:100vh;
+
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
 }
 
-/* Ajuste do Botão Toggle no Modo Claro */
-body.light-mode #theme-toggle {
-    color: #111827; /* Garante que o ícone mude de cor */
-    background: rgba(0, 0, 0, 0.04); /* Inverte o padrão da transparência */
-    border: 1px solid rgba(0, 0, 0, 0.1);
+.auth-container-register{
+    grid-template-columns:.9fr 1.1fr;
 }
 
-body.light-mode #theme-toggle:hover {
-    background: rgba(0, 0, 0, 0.08);
-    border-color: #6366F1;
+.auth-container-register .auth-image-side{
+    order:2;
 }
 
-/* Container Principal Split 50/50 */
-.auth-container {
-    display: flex;
-    width: 100%;
-    height: 100vh;
+.auth-container-register .auth-form-side{
+    order:1;
 }
 
-/* Modificador exclusivo para inverter os lados durante o CADASTRO - REGISTER usando Flexbox nativo */
-.auth-container-register {
-    flex-direction: row-reverse;
+/* Lado visual */
+
+.auth-image-side{
+    position:relative;
+    overflow:hidden;
+
+    display:flex;
+    align-items:flex-end;
+
+    padding:70px;
+
+    background-image:
+        linear-gradient(
+            180deg,
+            rgba(5,8,22,.15),
+            rgba(5,8,22,.92)
+        ),
+        url("../img/logo-parabook-bg.png");
+
+    background-size:
+        cover,
+        201% 100%;
+
+    background-repeat:
+        no-repeat,
+        no-repeat;
+
+    background-position:
+        center,
+        left center;
+
+    background-color:#050816;
+
+    transition:
+        background-position .6s ease,
+        background-color .6s ease,
+        filter .6s ease;
 }
 
-/* ==========================================================================
-   PAINEL DA IMAGEM - ABORDAGEM DE ARQUIVO ÚNICO (SPRITE COMPORTAMENTO)
-   ========================================================================== */
-.auth-image-side {
-    flex: 1.2;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 50px;
-    overflow: hidden;
-    
-    /* Injeta a imagem como background do container */
-    background-image: url('../img/logo-parabook-bg.png');
-    background-size: 201% 100%; /* Força a imagem a ter o dobro da largura do painel || 201% para não aparecer a metade do light-mode à direita*/
-    background-repeat: no-repeat;
-    
-    /* 🌙 COMPORTAMENTO PADRÃO: MODO ESCURO (Exibe a metade Esquerda) */
-    background-position: left center; 
-    background-color: #050816;
-    
-    transition: background-position 0.6s ease, background-color 0.6s ease;
+body.dark-mode .auth-image-side{
+    background-position:
+        center,
+        left center;
+
+    filter:none;
 }
 
-.auth-image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to top, #050816 20%, rgba(5, 8, 22, 0.1));
-    z-index: 1;
-    transition: background 0.6s ease;
+body.light-mode .auth-image-side{
+    background-position:
+        center,
+        right center;
+
+    background-color:#f8fafc;
+
+    filter:none;
 }
 
-.auth-image-text {
-    position: relative;
-    z-index: 2;
+.auth-image-side::before{
+    content:"";
+
+    position:absolute;
+
+    width:520px;
+    height:520px;
+
+    right:-120px;
+    top:-130px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(139,92,246,.38),
+            transparent 70%
+        );
+
+    filter:blur(20px);
 }
 
-/* ==========================================================================
-   TRANSFORMAÇÃO PARA O MODO CLARO (LIGHT MODE)
-   ========================================================================== */
-body.light-mode .auth-image-side {
-    /* ☀️ MÁGICA 1: Move o background para exibir a metade Direita da imagem */
-    background-position: left center; 
-    
-    /* ☀️ MÁGICA 2: Inverte tons escuros e claros da imagem para casar com o tema */
-    filter: invert(0.9) hue-rotate(180deg) brightness(1.1); 
+.auth-image-side::after{
+    content:"";
+
+    position:absolute;
+
+    width:360px;
+    height:360px;
+
+    left:-100px;
+    bottom:120px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(168,85,247,.22),
+            transparent 70%
+        );
+
+    filter:blur(20px);
 }
 
-body.light-mode .auth-image-overlay {
-    /* Gradiente claro que se funde com o novo fundo do container */
-    background: linear-gradient(to top, #E5E7EB 20%, rgba(229, 231, 235, 0.2));
+.auth-image-overlay{
+    position:absolute;
+    inset:0;
+
+    background:
+        linear-gradient(
+            180deg,
+            transparent 35%,
+            rgba(5,8,22,.92) 100%
+        );
+
+    z-index:1;
+
+    transition:.6s ease;
 }
 
-body.light-mode .auth-image-text .logo-text {
-    color: #1F2937; /* Escurece o texto principal da logo para leitura */
+body.light-mode .auth-image-overlay{
+    background:
+        linear-gradient(
+            180deg,
+            transparent 35%,
+            rgba(248,250,252,.92) 100%
+        );
 }
 
-body.light-mode .auth-image-text p {
-    color: #4B5563; /* Melhora o contraste do texto auxiliar */
+body.light-mode .auth-image-text p,
+body.light-mode .auth-brand-info p{
+    color:#374151;
 }
 
-/* Nova Logo Estilizada para o Login */
-.brand-logo-login {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
+body.light-mode .logo-text,
+body.light-mode .auth-brand-info h2{
+    color:#111827;
 }
 
-.brand-logo-login i {
-    font-size: 42px;
-    color: #6366F1;
-    filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
+.abstract-glow-1,
+.abstract-glow-2{
+    display:none;
 }
 
-.logo-text {
-    font-size: 46px;
-    font-weight: 800;
-    letter-spacing: -1.5px;
-    color: #FFF;
+.auth-image-text,
+.auth-brand-info{
+    position:relative;
+    z-index:2;
+
+    max-width:620px;
 }
 
-.logo-text span {
-    color: #6366F1;
-    background: linear-gradient(to right, #6366F1, #a855f7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.brand-logo-login{
+    display:flex;
+    align-items:center;
+    gap:16px;
+
+    margin-bottom:24px;
 }
 
-/* Efeito de iluminação abstrata no fundo do painel (Estilo Dark Futurista) */
-.abstract-glow-1 {
-    position: absolute;
-    top: -10%;
-    right: -10%;
-    width: 300px;
-    height: 300px;
-    background: rgba(99, 102, 241, 0.15);
-    filter: blur(100px);
-    border-radius: 50%;
-}
-.abstract-glow-2 {
-    position: absolute;
-    bottom: 20%;
-    left: -10%;
-    width: 250px;
-    height: 250px;
-    background: rgba(139, 92, 246, 0.1);
-    filter: blur(80px);
-    border-radius: 50%;
+.brand-logo-login i{
+    font-size:2.7rem;
+    color:var(--purple-light);
+
+    filter:
+        drop-shadow(0 0 18px rgba(139,92,246,.55));
 }
 
-/* ==========================================================================
-   LADO DO FORMULÁRIO (PADRÃO - MODO ESCURO)
-   ========================================================================== */
-.auth-form-side {
-    flex: 1;
-    background: #0b0f19;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+.logo-text{
+    font-size:3rem;
+    font-weight:800;
+    letter-spacing:-1.5px;
+    color:white;
 }
 
-.auth-form-header {
-    margin-bottom: .75rem;
+.logo-text span{
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple-light),
+            var(--purple)
+        );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
-.auth-box {
-    width: 100%;
-    max-width: 360px;
+.auth-image-text p,
+.auth-brand-info p{
+    color:#cbd5e1;
+
+    font-size:1.05rem;
+    line-height:1.8;
+
+    max-width:560px;
 }
 
-.pure-form h2 {
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    color: #FFF;
-    transition: color 0.3s ease;
+.auth-brand-info h2{
+    font-size:3rem;
+    font-weight:800;
+    letter-spacing:-1px;
+
+    color:white;
+
+    margin-bottom:18px;
 }
 
-.auth-subtitle {
-    color: #9CA3AF;
-    font-size: 14px;
-    margin-bottom: 30px;
-    transition: color 0.3s ease;
+/* Lado formulário */
+
+.auth-form-side{
+    position:relative;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:60px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(11,16,35,.96),
+            rgba(5,8,22,.98)
+        );
+
+    border-left:1px solid rgba(255,255,255,.06);
 }
 
-/* Campos de Input Flutuantes */
-.auth-input-group {
-    position: relative;
-    margin-bottom: 20px;
+.auth-form-side::before{
+    content:"";
+
+    position:absolute;
+
+    width:300px;
+    height:300px;
+
+    right:-120px;
+    top:20%;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(139,92,246,.15),
+            transparent 70%
+        );
 }
 
-.auth-input-group input {
-    width: 100%;
-    padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    color: #FFF;
-    font-size: 15px;
-    outline: none;
-    transition: all 0.2s ease;
+.auth-box,
+.auth-form-box{
+    position:relative;
+    z-index:2;
+
+    width:100%;
+    max-width:430px;
+
+    padding:38px;
+
+    border-radius:26px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16,25,45,.9),
+            rgba(16,25,45,.62)
+        );
+
+    border:1px solid var(--border);
+
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+
+    box-shadow:var(--shadow);
 }
 
-.auth-input-group input:focus {
-    border-color: #6366F1;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+.pure-form h2,
+.auth-form-header h2{
+    color:white;
+
+    font-size:2rem;
+    font-weight:800;
+
+    letter-spacing:-.5px;
+
+    margin-bottom:8px;
 }
 
-.auth-input-group label {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9CA3AF;
-    transition: all 0.2s ease;
-    pointer-events: none;
+.auth-subtitle,
+.auth-form-header p{
+    color:var(--text-secondary);
+
+    margin-bottom:28px;
+}
+
+/* Inputs */
+
+.auth-input-group{
+    position:relative;
+
+    margin-bottom:22px;
+}
+
+.auth-input-group input{
+    width:100%;
+
+    padding:15px 16px;
+
+    border-radius:14px;
+
+    border:1px solid var(--border);
+
+    background:#0d1427;
+
+    color:white;
+
+    font-size:.95rem;
+
+    outline:none;
+
+    transition:.3s;
+}
+
+.auth-input-group input:focus{
+    border-color:var(--purple);
+
+    box-shadow:
+        0 0 0 3px rgba(139,92,246,.16);
+}
+
+.auth-input-group label{
+    position:absolute;
+
+    left:16px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:var(--text-secondary);
+
+    pointer-events:none;
+
+    transition:.25s;
 }
 
 .auth-input-group input:focus ~ label,
-.auth-input-group input:not(:placeholder-shown) ~ label {
-    top: 0;
-    font-size: 12px;
-    color: #6366F1;
-    background: #0b0f19; /* Fundo do label no modo dark */
-    padding: 0 6px;
+.auth-input-group input:not(:placeholder-shown) ~ label{
+    top:0;
+
+    padding:0 6px;
+
+    font-size:.75rem;
+
+    color:var(--purple-light);
+
+    background:#10192d;
 }
 
-/* Botão de Envio */
-.auth-btn-submit {
-    width: 100%;
-    padding: 14px;
-    background: #6366F1;
-    color: #FFF;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    margin-top: 10px;
+/* Utilidades */
+
+.auth-form-utilities{
+    display:flex;
+    justify-content:flex-end;
+
+    margin-top:-8px;
+    margin-bottom:18px;
 }
 
-.auth-btn-submit:hover {
-    background: #4F46E5;
+.auth-forgot-link,
+.auth-footer-text a{
+    color:#c4b5fd;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    transition:.3s;
 }
 
-
-/* ==========================================================================
-    REGRAS DE CONTEXTO PARA O MODO CLARO (LIGHT MODE)
-   ========================================================================== */
-body.light-mode .auth-form-side {
-    background: #F3F4F6;
-    border-left: 1px solid rgba(0, 0, 0, 0.08);
+.auth-forgot-link:hover,
+.auth-footer-text a:hover{
+    color:white;
 }
 
-body.light-mode .auth-form-header {
-    margin-bottom: .75rem;
-    color: #1F2937;
+.auth-footer-text{
+    margin-top:22px;
+
+    text-align:center;
+
+    color:var(--text-secondary);
+
+    font-size:.9rem;
 }
 
-body.light-mode .pure-form h2 {
-    color: #111827; /* Título escuro para alto contraste */
+/* Botão submit */
+
+.auth-btn-submit{
+    width:100%;
+
+    padding:15px 24px;
+
+    border:none;
+    border-radius:15px;
+
+    color:white;
+
+    font-size:1rem;
+    font-weight:700;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--purple-dark)
+        );
+
+    cursor:pointer;
+
+    transition:.35s;
 }
 
-body.light-mode .auth-subtitle {
-    color: #6B7280; /* Subtítulo cinza médio legível */
+.auth-btn-submit:hover{
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 15px 35px rgba(139,92,246,.38);
 }
 
-/* Ajuste dos inputs no modo claro */
-body.light-mode .auth-input-group input {
-    background: #FFFFFF;
-    border: 1px solid #D1D5DB;
-    color: #111827; /* Texto digitado escuro */
+/* Erros */
+
+.auth-error-alert,
+.field-error-message{
+    color:#fecaca !important;
+
+    background:rgba(239,68,68,.12);
+
+    border:1px solid rgba(239,68,68,.28);
+
+    border-radius:12px;
+
+    padding:12px 14px;
+
+    font-size:.85rem;
+
+    margin-bottom:16px;
+
+    display:flex !important;
+    align-items:center;
+    gap:8px;
 }
 
-body.light-mode .auth-input-group label {
-    color: #6B7280; /* Label em repouso mais escura */
+/* Light mode simples */
+
+body.light-mode{
+    background:#f8fafc;
+    color:#111827;
 }
 
-/* O grande truque: Altera o fundo da label flutuante para coincidir com o fundo claro */
+body.light-mode .auth-form-side{
+    background:#f8fafc;
+}
+
+body.light-mode .auth-box,
+body.light-mode .auth-form-box{
+    background:white;
+    border-color:#e5e7eb;
+}
+
+body.light-mode .pure-form h2,
+body.light-mode .auth-form-header h2{
+    color:#111827;
+}
+
+body.light-mode .auth-input-group input{
+    background:#fff;
+    border-color:#d1d5db;
+    color:#111827;
+}
+
 body.light-mode .auth-input-group input:focus ~ label,
-body.light-mode .auth-input-group input:not(:placeholder-shown) ~ label {
-    background: #F3F4F6; /* Cor idêntica ao background do .auth-form-side */
-    color: #4F46E5; /* Um tom de roxo levemente mais escuro para melhor legibilidade */
+body.light-mode .auth-input-group input:not(:placeholder-shown) ~ label{
+    background:white;
 }
 
-.auth-footer-text {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: #9CA3AF;
-}
+/* Responsivo */
 
-.auth-footer-text a {
-    color: #6366F1;
-    text-decoration: none;
-    font-weight: 600;
-}
+@media(max-width:1000px){
 
-.auth-error-alert {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    color: #EF4444;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Container de utilidades (alinha o link à direita) */
-.auth-form-utilities {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: -10px; /* Aproxima ligeiramente do campo de senha */
-    margin-bottom: 7px; /* Afasta do botão de entrar */
-    width: 100%;
-}
-
-/* Estilização minimalista do link */
-.auth-forgot-link {
-    color: #9CA3AF;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    transition: color 0.2s ease;
-}
-
-/* Efeito Hover com a cor de destaque do seu projeto */
-.auth-forgot-link:hover {
-    color: #6366F1;
-}
-
-/* Responsividade de Alta Performance */
-@media (max-width: 850px) {
-    .auth-image-side {
-        display: none;
+    .auth-container,
+    .auth-container-register{
+        grid-template-columns:1fr;
     }
-    .auth-form-side {
-        border-left: none;
+
+    .auth-image-side{
+        display:none;
     }
-    .auth-container-register {
-        flex-direction: column;
+
+    .auth-form-side{
+        min-height:100vh;
+        padding:80px 32px;
+        border-left:none;
+    }
+}
+
+@media(max-width:520px){
+
+    .btn-voltar-fixo{
+        left:16px;
+        right:auto;
+        top:16px;
+    }
+
+    #theme-toggle{
+        right:16px;
+        top:16px;
+    }
+
+    .auth-form-side{
+        padding:76px 18px 40px;
+    }
+
+    .auth-box,
+    .auth-form-box{
+        padding:28px 22px;
+        border-radius:22px;
+    }
+
+    .pure-form h2,
+    .auth-form-header h2{
+        font-size:1.7rem;
     }
 }

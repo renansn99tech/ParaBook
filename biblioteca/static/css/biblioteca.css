@@ -1,244 +1,576 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
-
-:root {
-    --color-primary-dark: #14213d;
-    --color-secondary: #4D4AE8;
-    --color-accent-olive: #58504a;
-    --color-neutral-tan: #e9ecef;
-    --color-bg-warm: #F5FFFA;
-    --color-ui-charcoal: #303136;
-
-    --font-playfair: 'Playfair Display', serif;
-    --font-ui: 'Montserrat', sans-serif;
-    --font-body: 'Lora', serif;
-    --font-data: 'Inter', sans-serif;
-
-    --fw-regular: 400;
-    --fw-medium: 500;
-    --fw-bold: 700;
-
-    --fs-h1: 3rem;
-    --fs-h2: 2rem;
-    --fs-h3: 1.5rem;
-    --fs-body: 1.125rem;
-    --fs-small: 0.875rem;
-
-    --lh-body: 1.6;
-}
-
-
-/* Garante que o fundo combine com a Home e permita o efeito translúcido da Navbar */
-body {
-    background: radial-gradient(circle at top, #111827, #020617);
-    color: #E5E7EB;
-    font-family: 'Inter', sans-serif;
-}
-
-/* ===============================
-   NAVBAR & MENUS 
+/* =================================
+   BIBLIOTECA - PARABOOK
+   Mesmo padrão visual da Home
 ================================= */
-.nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 60px;
-    background: rgba(2,6,23,0.7);
-    backdrop-filter: blur(10px);
+
+/* Remove interferências do Bootstrap */
+.container.py-4{
+    max-width:1400px;
+    margin:0 auto;
+    padding:60px 60px 80px !important;
 }
 
-.menu {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    list-style: none;
-    gap: 20px;
-    margin-bottom: 0;
-}
-
-.menu li a {
-    color: #9CA3AF;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.menu li a:hover {
-    color: #E5E7EB;
-}
-
-.login-btn {
-    background: #22C55E;
-    color: #020617;
-    border-radius: 45px;
-    padding: 8px 18px;
-    font-weight: bold;
-    font-size: var(--fs-small);
-    border: none;
-    cursor: pointer;
-}
-
-.login-btn:hover {
-    transform: scale(1.05);
-    transition: 0.3s ease;
-    background-color: #1d9f4c;
-    color: white;
-}
-
-/* ===============================
-   LOGO
+/* =================================
+   HERO / BANNER
 ================================= */
-.logo {
-    margin: 2vh 2vw 2vh 0; 
+
+.banner-biblioteca-publica{
+    position:relative;
+    overflow:hidden;
+
+    padding:56px !important;
+    margin-bottom:70px !important;
+
+    border-radius:28px !important;
+
+    background:
+        radial-gradient(
+            circle at 80% 30%,
+            rgba(139,92,246,.35),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(16,25,45,.96),
+            rgba(16,25,45,.72)
+        ) !important;
+
+    border:1px solid rgba(139,92,246,.25);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.35),
+        0 0 60px rgba(139,92,246,.1);
 }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.banner-biblioteca-publica::before{
+    content:"";
+
+    position:absolute;
+
+    width:420px;
+    height:420px;
+
+    right:-120px;
+    top:-130px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(139,92,246,.35),
+            transparent 70%
+        );
+
+    filter:blur(10px);
+
+    z-index:0;
 }
 
-.logo-img {
-    height: 70px;
+.banner-biblioteca-publica::after{
+    content:"📚";
+
+    position:absolute;
+
+    right:70px;
+    bottom:25px;
+
+    font-size:8rem;
+
+    opacity:.08;
+
+    transform:rotate(-12deg);
+
+    z-index:0;
 }
 
-.para {
-    background: linear-gradient(90deg, #E53935, #6A1B9A);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
+.banner-biblioteca-publica .row{
+    position:relative;
+    z-index:2;
 }
 
-.book {
-    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
+.banner-biblioteca-publica h1{
+    color:white;
+
+    font-size:3.4rem;
+    font-weight:800;
+
+    letter-spacing:-1.5px;
+
+    margin-bottom:16px;
 }
 
-/* ===============================
-   SINCRO COM CARD BOOTSTRAP (Parabook)
+.banner-biblioteca-publica p{
+    color:var(--text-secondary);
+
+    max-width:680px;
+
+    line-height:1.7;
+}
+
+.banner-biblioteca-publica .lead{
+    color:#d8d9e6;
+    font-size:1.15rem;
+}
+
+/* Botão Minha Estante */
+.banner-biblioteca-publica .btn-light{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    padding:14px 24px;
+
+    border:none;
+    border-radius:14px;
+
+    color:white !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--purple-dark)
+        ) !important;
+
+    box-shadow:
+        0 15px 35px rgba(139,92,246,.35);
+
+    transition:.35s;
+}
+
+.banner-biblioteca-publica .btn-light:hover{
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 20px 45px rgba(139,92,246,.45);
+}
+
+.banner-biblioteca-publica .btn-light i{
+    color:white !important;
+}
+
+/* =================================
+   SEÇÕES DE GÊNERO
 ================================= */
-body:not(.light-mode) .card-livro-publico {
-    background-color: #1e293b !important;
-    border-color: #334155 !important;
-    color: #f8fafc !important;
+
+.secao-genero{
+    margin-bottom:70px;
 }
 
-body:not(.light-mode) .card-livro-publico .card-title {
-    color: #ffffff !important;
+.titulo-genero-linha{
+    position:relative;
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    margin-bottom:28px;
+    padding-left:18px;
+    padding-bottom:0;
+
+    border:none !important;
+
+    color:white !important;
+
+    font-size:1.8rem;
+    font-weight:800;
+
+    letter-spacing:-.5px;
 }
 
-body:not(.light-mode) .card-livro-publico .text-muted {
-    color: #94a3b8 !important;
+.titulo-genero-linha::before{
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:4px;
+    height:30px;
+
+    border-radius:999px;
+
+    background:var(--purple);
 }
 
-/* Light mode overrides */
-body.light-mode {
-    background: #F8FAFC;
-    color: #1F2937;
+.titulo-genero-linha i{
+    color:var(--purple) !important;
+    font-size:1.2rem;
 }
 
-body.light-mode .nav {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid #E5E7EB;
-}
-
-body.light-mode .menu li a {
-    color: #4B5563;
-}
-
-body.light-mode .menu li a:hover {
-    color: #111827;
-}
-
-body.light-mode .card-livro-publico {
-    background-color: #FFFFFF !important;
-    border: 1px solid #E5E7EB !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-body.light-mode .card-livro-publico .card-title {
-    color: #0f172a !important;
-}
-
-/* ===============================
-   FOOTER
+/* =================================
+   GRID / BOOTSTRAP
 ================================= */
-.footer {
-    background: #020617;
-    border-top: 1px solid #1F2937;
-    padding: 40px 60px 20px 60px;
-    color: #9CA3AF;
-    margin-top: 4rem;
+
+.secao-genero .row{
+    row-gap:28px;
 }
 
-.footer-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 40px;
-}
-
-.footer h2 {
-    color: #E5E7EB;
-}
-
-.footer-links a {
-    display: block;
-    color: #9CA3AF;
-    text-decoration: none;
-    margin: 5px 0;
-    transition: 0.3s;
-}
-
-.footer-links a:hover {
-    color: #6366F1;
-}
-
-.footer-social .icons i {
-    font-size: 1.4rem;
-    margin: 12px 8px 5px 8px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-body.light-mode .footer {
-    background: #FFFFFF;
-    border-top: 1px solid #E5E7EB;
-    color: #4B5563;
-}
-
-body.light-mode .footer h2 {
-    color: #111827;
-}
-
-body.light-mode .footer-links a {
-    color: #4B5563;
-}
-
-body.light-mode .footer-links a:hover {
-    color: #4D4AE8;
-}
-
-/* ===============================
-   RESPONSIVIDADE GERAL
+/* =================================
+   CARD DO LIVRO
 ================================= */
-@media (max-width: 768px) {
-    .nav {
-        flex-direction: column;
-        padding: 20px;
-        gap: 15px;
+
+.card-livro-publico{
+    position:relative;
+    overflow:hidden;
+
+    height:100%;
+
+    border:1px solid var(--border) !important;
+    border-radius:22px !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16,25,45,.95),
+            rgba(16,25,45,.72)
+        ) !important;
+
+    color:white !important;
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.28);
+
+    transition:.35s ease;
+}
+
+.card-livro-publico::before{
+    content:"";
+
+    position:absolute;
+
+    width:160px;
+    height:160px;
+
+    right:-70px;
+    top:-70px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(139,92,246,.22),
+            transparent 70%
+        );
+
+    opacity:0;
+
+    transition:.35s;
+
+    z-index:1;
+}
+
+.card-livro-publico:hover{
+    transform:translateY(-8px);
+
+    border-color:rgba(139,92,246,.45) !important;
+
+    box-shadow:
+        0 22px 55px rgba(0,0,0,.38),
+        0 0 35px rgba(139,92,246,.13);
+}
+
+.card-livro-publico:hover::before{
+    opacity:1;
+}
+
+/* Capa */
+
+.container-capa{
+    position:relative;
+
+    height:320px;
+
+    background:#0b1023 !important;
+
+    overflow:hidden;
+
+    border-bottom:1px solid rgba(255,255,255,.06) !important;
+}
+
+.container-capa::after{
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            180deg,
+            transparent 60%,
+            rgba(5,8,22,.45)
+        );
+
+    pointer-events:none;
+}
+
+.img-capa-ajustada{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    transition:.45s ease;
+}
+
+.card-livro-publico:hover .img-capa-ajustada{
+    transform:scale(1.06);
+}
+
+/* Conteúdo */
+
+.card-livro-publico .card-body{
+    position:relative;
+    z-index:2;
+
+    padding:18px !important;
+}
+
+.card-livro-publico .card-title{
+    color:white !important;
+
+    font-size:1rem;
+
+    margin-bottom:8px !important;
+}
+
+.card-livro-publico .card-text{
+    color:var(--text-secondary) !important;
+}
+
+.card-livro-publico .text-muted{
+    color:var(--text-secondary) !important;
+}
+
+/* Badges */
+
+.card-livro-publico .badge{
+    padding:7px 12px;
+
+    border-radius:999px;
+
+    background:rgba(139,92,246,.15) !important;
+
+    border:1px solid rgba(139,92,246,.35);
+
+    color:#c4b5fd !important;
+
+    font-weight:600;
+}
+
+.card-livro-publico .bg-success{
+    background:rgba(34,197,94,.15) !important;
+
+    border:1px solid rgba(34,197,94,.35);
+
+    color:#86efac !important;
+}
+
+/* Botões dentro dos cards */
+
+.card-livro-publico .btn-primary,
+.card-livro-publico .btn-outline-success{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    border:none !important;
+
+    border-radius:13px !important;
+
+    padding:11px 16px !important;
+
+    font-size:.86rem;
+
+    color:white !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--purple-dark)
+        ) !important;
+
+    transition:.35s;
+}
+
+.card-livro-publico .btn-primary:hover,
+.card-livro-publico .btn-outline-success:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 28px rgba(139,92,246,.35);
+}
+
+/* Mensagens vazias */
+
+.secao-genero .text-muted.fst-italic{
+    padding:24px;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,.03);
+
+    border:1px solid var(--border);
+
+    color:var(--text-secondary) !important;
+}
+
+/* =================================
+   BOTÃO VOLTAR AO TOPO
+================================= */
+
+.button-top{
+    position:fixed;
+
+    right:26px;
+    bottom:26px;
+
+    z-index:99;
+
+    width:50px;
+    height:50px;
+
+    border:none;
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--purple-dark)
+        ) !important;
+
+    box-shadow:
+        0 0 25px rgba(139,92,246,.4);
+
+    cursor:pointer;
+
+    transition:.35s;
+}
+
+.button-top:hover{
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 15px 35px rgba(139,92,246,.45);
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media(max-width:1200px){
+
+    .container.py-4{
+        padding:50px 40px 70px !important;
     }
 
-    .menu {
-        flex-direction: column;
-        gap: 10px;
-        padding-left: 0;
+    .banner-biblioteca-publica h1{
+        font-size:3rem;
     }
 
-    .footer-container {
-        flex-direction: column;
-        text-align: center;
+    .container-capa{
+        height:290px;
+    }
+}
+
+@media(max-width:992px){
+
+    .banner-biblioteca-publica{
+        padding:42px !important;
+        text-align:center;
+    }
+
+    .banner-biblioteca-publica p{
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+    .banner-biblioteca-publica::after{
+        right:50%;
+        transform:translateX(50%) rotate(-12deg);
+    }
+
+    .titulo-genero-linha{
+        font-size:1.55rem;
+    }
+
+    .container-capa{
+        height:300px;
+    }
+}
+
+@media(max-width:768px){
+
+    .container.py-4{
+        padding:35px 24px 60px !important;
+    }
+
+    .banner-biblioteca-publica{
+        padding:34px 24px !important;
+        margin-bottom:50px !important;
+        border-radius:22px !important;
+    }
+
+    .banner-biblioteca-publica h1{
+        font-size:2.3rem;
+    }
+
+    .banner-biblioteca-publica .lead{
+        font-size:1rem;
+    }
+
+    .secao-genero{
+        margin-bottom:55px;
+    }
+
+    .titulo-genero-linha{
+        font-size:1.35rem;
+    }
+
+    .container-capa{
+        height:340px;
+    }
+}
+
+@media(max-width:480px){
+
+    .container.py-4{
+        padding:28px 18px 50px !important;
+    }
+
+    .banner-biblioteca-publica h1{
+        font-size:2rem;
+    }
+
+    .banner-biblioteca-publica p{
+        font-size:.95rem;
+    }
+
+    .banner-biblioteca-publica .btn-light{
+        width:100%;
+    }
+
+    .container-capa{
+        height:360px;
+    }
+
+    .button-top{
+        width:46px;
+        height:46px;
+
+        right:18px;
+        bottom:18px;
     }
 }

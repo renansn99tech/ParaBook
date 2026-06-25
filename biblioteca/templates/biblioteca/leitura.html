@@ -4,27 +4,7 @@
 {% block title %}Leitura | ParaBook{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/leitura.css' %}">
-<style>
-    /* Estilos das Ferramentas Acessíveis adicionais */
-    .barra-ferramentas-leitura { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-    body:not(.light-mode) .barra-ferramentas-leitura { background: #1e293b; border-color: #334155; }
-    
-    .grupo-controle { display: inline-flex; align-items: center; gap: 0.5rem; }
-    .label-controle { font-size: 0.85rem; font-weight: 600; color: #475569; }
-    body:not(.light-mode) .label-controle { color: #cbd5e1; }
-    
-    .btn-tool { background: #fff; border: 1px solid #cbd5e1; padding: 0.5rem 0.75rem; border-radius: 4px; cursor: pointer; transition: all 0.2s ease; font-size: 0.85rem; }
-    body:not(.light-mode) .btn-tool { background: #334155; border-color: #475569; color: #fff; }
-    .btn-tool:hover { background: #f1f5f9; border-color: #94a3b8; }
-
-    /* Classes de manipulação de contraste via Filtros CSS nativos aplicados ao Canvas */
-    .alto-contraste-filtro canvas { filter: contrast(2) brightness(1.1); }
-    .modo-invertido-filtro canvas { filter: invert(1) hue-rotate(180deg); }
-    
-    /* Fontes de suporte para leitura / dislexia alternáveis */
-    .fonte-acessivel-ativa { font-family: 'OpenDyslexic', Arial, sans-serif !important; }
-</style>
+<link rel="stylesheet" href="{% static 'css/leitura.css' %}?v=2.0">
 {% endblock %}
 
 {% block content %}

@@ -1,17 +1,30 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <!-- reaproveitando o CSS da tela 'recuperar senha' -->
+    <link rel="stylesheet" href="{% static 'css/password-reset.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Alterar Senha</h2>
-
-    <form method="post">
-        {% csrf_token %}
+<div class="reset-page">
+    <div class="reset-container">
         
-        {{ form.as_p }}
+        <h2>Alterar Senha</h2>
+        
+        <p class="reset-text">
+            Crie uma nova senha forte e segura para a sua conta.
+        </p>
 
-        <button type="submit" class="btn btn-primary">
-            Alterar senha
-        </button>
-    </form>
+        <form method="post">
+            {% csrf_token %}
+            
+            {{ form.as_p }}
+
+            <button type="submit" class="reset-btn">
+                Salvar nova senha
+            </button>
+        </form>
+    </div>
 </div>
 {% endblock %}

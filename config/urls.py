@@ -30,6 +30,8 @@ urlpatterns = [
 
     # App usuarios
     path('usuarios/', include('usuarios.urls')), # Linha inserida com os URLs do app Usuarios
+    path('register/', register, name='register'),
+    path('password-reset/', auth_views.PasswordResetView.as_view(template_name='usuarios/password_reset.html'), name='password_reset'),
     
     # App comunidades
     path('comunidades/', include('comunidades.urls')),
@@ -39,14 +41,14 @@ urlpatterns = [
 
     # App perfis
     path('conta/', include('perfis.urls', namespace='perfis')), # Adicionando url do app Perfis
+    path('alterar-senha/', PasswordChangeView.as_view(template_name='perfis/alterar_senha.html'), name='alterar_senha'), #
+
     # App dashboard
     path('dashboard/', include('dashboard.urls')),
+
     # Urls auxiliares
     path('login/', tela_login, name='login'),
     path('logout/', logout_view, name='logout'), # Adicionada uma view "logout_view" para a função logout do app Perfis
-    path('alterar-senha/', PasswordChangeView.as_view(template_name='perfis/alterar_senha.html'), name='alterar_senha'),
-    path('register/', register, name='register'),
-    path('password-reset/', auth_views.PasswordResetView.as_view(template_name='usuarios/password_reset.html'), name='password_reset'),
 ]
 
 if settings.DEBUG:

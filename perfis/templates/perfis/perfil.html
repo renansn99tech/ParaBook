@@ -20,10 +20,11 @@
                 <div class="perfil-sidebar">
                     <div class="perfil-avatar-box">
                         {% if perfil.foto %}
-                            <img src="{{ perfil.foto }}" alt="Foto de Perfil" class="perfil-avatar">
+                            <img src="{{ perfil.foto.url }}" alt="Foto de Perfil" class="perfil-avatar">
                         {% else %}
                             <img src="{% static 'img/user.png' %}" alt="Avatar do Usuário" class="perfil-avatar">
                         {% endif %}
+                        <input type="file" id="inputFotoOculto" accept="image/*" style="display: none;">
                         <button class="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto">
                             <i class="fa-solid fa-camera"></i>
                         </button>
@@ -218,7 +219,8 @@
                             <p>Gerencie sua senha ou encerre sua conta.</p>
                         </div>
                         <div class="danger-actions">
-                            <a href="{% url 'usuarios:logout' %}" class="btn-outline">Alterar Senha</a> 
+                            <!-- Agora aponta para a URL certa -->
+                            <a href="{% url 'usuarios:alterar_senha' %}" class="btn-outline">Alterar Senha</a> 
                             <form action="{% url 'usuarios:excluir_conta' %}" method="POST" id="form-excluir-conta">
                                 {% csrf_token %}
                                 <button type="button" class="btn-danger-outline" onclick="confirmarExclusao()">

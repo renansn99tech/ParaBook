@@ -145,57 +145,39 @@ document.addEventListener("DOMContentLoaded", () => {
     // =============================
     // TROCAR FOTO (PERSISTENTE)
     // =============================
-    document.getElementById("btnTrocarFoto")?.addEventListener("click", async () => {
 
-        const { value: fotoUrl } = await Swal.fire({
-            title: "Trocar foto",
-            input: "url",
-            inputLabel: "URL da imagem",
-            inputPlaceholder: "https://example.com/sua-foto.png",
-            showCancelButton: true,
-            confirmButtonText: "Salvar",
-            cancelButtonText: "Cancelar",
-            confirmButtonColor: '#5C3B2E' // Paleta elegante do ParaBook
-        });
+    document.getElementById("btnTrocarFoto")?.addEventListener("click", () => {
+        // Quando clica na câmera, "clicamos" no input oculto via JavaScript
+        document.getElementById("inputFotoOculto").click();
+    });
 
-        // Se o usuário inseriu uma URL válida e confirmou
-        if (fotoUrl) {
-            // Criamos o formulário virtual para envio dos dados
-            const formData = new FormData();
-            formData.append("foto", fotoUrl);
-            // Captura o token CSRF obrigatório do Django para requisições seguras
-            formData.append("csrfmiddlewaretoken", document.querySelector('[name=csrfmiddlewaretoken]').value);
+    document.getElementById("inputFotoOculto")?.addEventListener("change", async (event) => {
+        const file = event.target.files[0];
+        if (!file) return; // Se o usuário cancelar a janela, não faz nada
 
-            try {
-                // Envia para a mesma URL da View de perfil atual
-                const response = await fetch(window.location.href, {
-                    method: "POST",
-                    body: formData
-                });
+        const formData = new FormData();
+        formData.append("foto", file); // Anexa o arquivo físico
+        formData.append("csrfmiddlewaretoken", document.querySelector('[name=csrfmiddlewaretoken]').value);
 
-                if (response.ok) {
-                    // Atualiza a imagem na tela instantaneamente
-                    const avatarImg = document.querySelector(".perfil-avatar");
-                    if (avatarImg) {
-                        avatarImg.src = fotoUrl;
-                    }
+        try {
+            const response = await fetch(window.location.href, {
+                method: "POST",
+                body: formData
+            });
 
-                    Swal.fire({
-                        icon: "success",
-                        title: "Foto atualizada!",
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                } else {
-                    throw new Error();
-                }
-            } catch (error) {
+            if (response.ok) {
                 Swal.fire({
-                    icon: "error",
-                    title: "Erro ao salvar",
-                    text: "Não foi possível registrar a nova foto no servidor."
+                    icon: "success",
+                    title: "Foto atualizada!",
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Recarrega a página para o Django renderizar a nova imagem processada
+                    window.location.reload(); 
                 });
             }
+        } catch (error) {
+            Swal.fire({ icon: "error", title: "Erro ao fazer upload da imagem." });
         }
     });
 

@@ -61,8 +61,8 @@ def perfil(request):
         if historico is not None:
             perfil_do_usuario.historico = historico
             
-        if foto is not None:
-            perfil_do_usuario.foto = foto
+        if 'foto' in request.FILES:
+            perfil_do_usuario.foto = request.FILES['foto']
             
         perfil_do_usuario.save()
         

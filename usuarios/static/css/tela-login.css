@@ -68,7 +68,7 @@
 }
 
 #theme-toggle{
-    right:180px;
+    right:200px;
     cursor:pointer;
 }
 
@@ -140,6 +140,23 @@
         filter .6s ease;
 }
 
+body.light-mode #theme-toggle, body.light-mode .btn-voltar-fixo{
+    color:var(--purple-dark);
+    text-decoration:none;
+
+    background:rgba(255, 255, 255, 0.135);
+    border:1px solid var(--border);
+    border-color: rgb(169, 128, 217);
+
+    transition:.3s;
+}
+
+body.light-mode #theme-toggle:hover, body.light-mode .btn-voltar-fixo:hover{
+    color:var(--bg-main);
+    border-color:rgba(171, 152, 214, 0.45);
+    background:rgba(139,92,246,.1);
+}
+
 body.dark-mode .auth-image-side{
     background-position:
         center,
@@ -156,6 +173,10 @@ body.light-mode .auth-image-side{
     background-color:#f8fafc;
 
     filter:none;
+}
+
+.auth-image-text h2{
+    margin-bottom: .5rem;
 }
 
 .auth-image-side::before{
@@ -229,14 +250,20 @@ body.light-mode .auth-image-overlay{
         );
 }
 
-body.light-mode .auth-image-text p,
 body.light-mode .auth-brand-info p{
     color:#374151;
 }
 
-body.light-mode .logo-text,
-body.light-mode .auth-brand-info h2{
+body.light-mode .logo-text{
     color:#111827;
+}   
+body.light-mode .auth-image-text h2{
+    color:#8a70fc;
+    margin-bottom:.5rem;
+}
+
+body.light-mode .auth-image-text p{
+    color:#646e7c;
 }
 
 .abstract-glow-1,
@@ -497,6 +524,7 @@ body.light-mode .auth-brand-info h2{
 /* Botão submit */
 
 .auth-btn-submit{
+    margin-top: 1rem;
     width:100%;
 
     padding:15px 24px;
@@ -556,6 +584,22 @@ body.light-mode .auth-brand-info h2{
 body.light-mode{
     background:#f8fafc;
     color:#111827;
+}
+
+body.light-mode .auth-forgot-link {
+    color: rgb(171, 111, 240);
+}
+
+body.light-mode .auth-forgot-link:hover {
+    color: rgb(94, 39, 156);
+}
+
+body.light-mode .auth-footer-text a {
+    color: rgb(171, 111, 240);
+}
+
+body.light-mode .auth-footer-text a:hover {
+    color: rgb(94, 39, 156);
 }
 
 body.light-mode .auth-form-side{

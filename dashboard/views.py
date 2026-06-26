@@ -122,29 +122,29 @@ def painel_admin(request):
                 
             return redirect('dashboard:painel_admin')
             pass
-        # DELETE (D)
-        elif request.method == 'POST' and 'btn_deletar_livro' in request.POST:
-            livro_id = request.POST.get('livro_id')
-            if livro_id:
-                Livro.objects.filter(id_livro=livro_id).delete()
-                messages.success(request, "Livro removido com sucesso!")
-            return redirect('dashboard:painel_admin')
+    # DELETE (D)
+    elif request.method == 'POST' and 'btn_deletar_livro' in request.POST:
+        livro_id = request.POST.get('livro_id')
+        if livro_id:
+            Livro.objects.filter(id_livro=livro_id).delete()
+            messages.success(request, "Livro removido com sucesso!")
+        return redirect('dashboard:painel_admin')
 
-        # UPDATE (U)
-        elif request.method == 'POST' and 'btn_editar_livro' in request.POST:
-            livro_id = request.POST.get('livro_id')
-            novo_nome = request.POST.get('titulo')
-            categoria_id = request.POST.get('categoria')
+    # UPDATE (U)
+    elif request.method == 'POST' and 'btn_editar_livro' in request.POST:
+        livro_id = request.POST.get('livro_id')
+        novo_nome = request.POST.get('titulo')
+        categoria_id = request.POST.get('categoria')
 
-            if livro_id and novo_nome and categoria_id:
-                cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
-                Livro.objects.filter(id_livro=livro_id).update(
-                    nome=novo_nome,
-                    categoria=cat_instancia,
-                    genero=cat_instancia.nome
-                )
-                messages.success(request, "Livro atualizado com sucesso!")
-            return redirect('dashboard:painel_admin')
+        if livro_id and novo_nome and categoria_id:
+            cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
+            Livro.objects.filter(id_livro=livro_id).update(
+                nome=novo_nome,
+                categoria=cat_instancia,
+                genero=cat_instancia.nome
+            )
+            messages.success(request, "Livro atualizado com sucesso!")
+        return redirect('dashboard:painel_admin')
 
     # ==========================================================
     # 4. QUERYS E MÉTRICAS PARA O DASHBOARD (CORREÇÃO AQUI)

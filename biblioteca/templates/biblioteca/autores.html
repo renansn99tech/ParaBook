@@ -18,16 +18,16 @@
         </div>
     </header>
 
-    <section class="acoes-barra-container" aria-label="Filtros e Ações">
+<section class="acoes-barra-container" aria-label="Filtros e Ações">
         <form method="GET" action="{% url 'lista_autores' %}" class="form-busca-autores">
             <div class="input-grupo-busca">
                 <i class="fa-solid fa-magnifying-glass icone-busca"></i>
                 <input type="text" 
-                       name="busca" 
-                       id="input-busca-autores" 
-                       placeholder="Buscar autor por nome..." 
-                       value="{{ termo_busca }}"
-                       aria-label="Buscar autor por nome">
+                        name="busca" 
+                        id="input-busca-autores" 
+                        placeholder="Buscar autor por nome..." 
+                        value="{{ termo_busca }}"
+                        aria-label="Buscar autor por nome">
                 {% if termo_busca %}
                     <a href="{% url 'lista_autores' %}" class="btn-limpar-busca" title="Limpar busca">
                         <i class="fa-solid fa-xmark"></i>
@@ -37,12 +37,15 @@
             <button type="submit" class="btn-buscar-autores">Pesquisar</button>
         </form>
 
+        {# --- AJUSTE DE SEGURANÇA E UX: BOTÃO OCULTO PARA LEITORES --- #}
+        {% if user.is_authenticated and user.perfil.status == 'aprovado' or user.is_staff %}
         <div class="cta-autor-box">
             <p class="cta-texto">Escreveu algo? Publique como autor independente.</p>
             <a href="{% url 'obras_autores' %}" class="btn-enviar-obra-cta">
                 <i class="fa-solid fa-feather-pointed"></i> Enviar Obra
             </a>
         </div>
+        {% endif %}
     </section>
 
     <section class="grid-autores" aria-label="Lista de autores">

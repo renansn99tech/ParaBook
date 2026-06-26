@@ -14,7 +14,7 @@ from comunidades.models import Comunidade
 from comunidades.models import Comunidade
 from django.core.paginator import Paginator
 from django.db.models import Count
-
+from django.core.exceptions import PermissionDenied
 
 def novidade(request):
     return render(request, 'biblioteca/novidade.html')
@@ -100,6 +100,18 @@ def leitura(request):
     })
 
 
+def is_approved_author(user):
+    if user.is_anonymous:
+        return False
+    if user.is_superuser or user.is_staff:
+        return True
+    
+    # Verifica se o usuário possui Perfil associado
+    # Como seu ObraAutor tem uma flag boolean 'autor', podemos validar se ele tem obras aprovadas ou o perfil ativo
+    return hasattr(user, 'perfil') and user.perfil.status == 'aprovado'
+
+@login_required
+@user_passes_test(is_approved_author, login_url='biblioteca', redirect_field_name=None)
 def obras_autores(request):
     categorias = Categoria.objects.all()
 
@@ -118,7 +130,6 @@ def obras_autores(request):
             )
 
             messages.success(request, 'Sua obra foi enviada para análise com sucesso!')
-            # CORREÇÃO: Redireciona para a mesma página para exibir o alerta imediatamente
             return redirect('obras_autores')
 
         return render(request, 'biblioteca/obras-autores.html', {
@@ -129,7 +140,6 @@ def obras_autores(request):
     return render(request, 'biblioteca/obras-autores.html', {
         'categorias': categorias
     })
-
 
 def listar_obras(request):
     obras = ObraAutor.objects.filter(status='aprovado')

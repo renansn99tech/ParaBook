@@ -220,7 +220,7 @@
                         </div>
                         <div class="danger-actions">
                             <!-- Agora aponta para a URL certa -->
-                            <a href="{% url 'usuarios:alterar_senha' %}" class="btn-outline">Alterar Senha</a> 
+                            <a href="{% url 'perfis:alterar_senha' %}" class="btn-outline">Alterar Senha</a> 
                             <form action="{% url 'usuarios:excluir_conta' %}" method="POST" id="form-excluir-conta">
                                 {% csrf_token %}
                                 <button type="button" class="btn-danger-outline" onclick="confirmarExclusao()">

@@ -41,7 +41,6 @@ urlpatterns = [
 
     # App perfis
     path('conta/', include('perfis.urls', namespace='perfis')), # Adicionando url do app Perfis
-    path('alterar-senha/', PasswordChangeView.as_view(template_name='perfis/alterar_senha.html'), name='alterar_senha'), #
 
     # App dashboard
     path('dashboard/', include('dashboard.urls')),

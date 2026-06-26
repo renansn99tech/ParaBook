@@ -11,8 +11,5 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('excluir-conta/', excluir_conta, name='excluir_conta'),
 
-    # Nova rota chamando a ferramenta de senha do Django
-    path('alterar-senha/', auth_views.PasswordChangeView.as_view(template_name='perfis/alterar_senha.html', # página dentro do app perfis
-            success_url='/conta/perfil/' # Volta para o perfil quando der certo
-            ), name='alterar_senha'),
+    
 ]

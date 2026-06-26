@@ -1,6 +1,6 @@
 from django import forms
 from .models import Categoria
-
+from django.conf import settings
 
 class ObraAutorForm(forms.Form):
     nome = forms.CharField(max_length=100)
@@ -21,10 +21,12 @@ class ObraAutorForm(forms.Form):
 
         return categoria
 
-    def clean_arquivo(self):
-        arquivo = self.cleaned_data.get('arquivo')
+def clean_arquivo(self):
+    arquivo = self.cleaned_data.get('arquivo')
 
-        if arquivo and arquivo.size > 5 * 1024 * 1024:
-            raise forms.ValidationError("Arquivo muito grande (máx 5MB).")
+    if arquivo and arquivo.size > settings.MAX_BOOK_UPLOAD_SIZE:
+        raise forms.ValidationError(
+            "Arquivo muito grande (máx 80MB)."
+        )
 
-        return arquivo
+    return arquivo

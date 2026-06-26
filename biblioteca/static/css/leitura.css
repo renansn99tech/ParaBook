@@ -460,3 +460,38 @@
         height:8px;
     }
 }
+/* =================================
+   MELHORIAS DE ACESSIBILIDADE (WCAG)
+================================= */
+
+/* Elementos visivelmente ocultos, mas legíveis por Screen Readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Foco visível e nítido para navegação via Teclado (Tab) */
+.btn:focus-visible,
+.btn-tool:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--purple-light, #a78bfa);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.4);
+}
+
+/* Suporte à redução de movimento para usuários sensíveis */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

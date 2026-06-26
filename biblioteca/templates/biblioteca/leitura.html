@@ -8,45 +8,79 @@
 {% endblock %}
 
 {% block content %}
-<main id="conteudo-principal">
+<main id="conteudo-principal" tabindex="-1">
     <section class="container leitura-container">
         
-        <header class="barra-ferramentas-leitura" aria-label="Ferramentas de customização da leitura">
-            <div class="grupo-controle">
-                <span class="label-controle">Zoom Canvas:</span>
-                <button class="btn-tool" onclick="alterarZoom(0.1)" title="Aumentar tamanho do livro"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-                <button class="btn-tool" onclick="alterarZoom(-0.1)" title="Diminuir tamanho do livro"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-            </div>
-
-            <div class="grupo-controle">
-                <span class="label-controle">Acessibilidade Visual:</span>
-                <button class="btn-tool" onclick="toggleAltoContraste()" title="Alternar Alto Contraste"><i class="fa-solid fa-circle-half-stroke"></i> Contraste</button>
-                <button class="btn-tool" onclick="toggleInverterCores()" title="Inverter cores da página"><i class="fa-solid fa-eye-dropper"></i> Inverter Cores</button>
-            </div>
-
-            <div class="grupo-controle">
-                <span class="label-controle">Layout do Leitor:</span>
-                <button class="btn-tool" onclick="toggleLarguraTotal()" title="Alternar largura expandida"><i class="fa-solid fa-arrows-left-right"></i> Expandir Tela</button>
-            </div>
+        <header class="leitura-acessivel-header">
+            <h1 class="sr-only">Lendo: {{ livro.nome }}</h1>
+            <p class="sr-only">Autor: {{ livro.autor }}</p>
         </header>
+        
+        <nav class="barra-ferramentas-leitura" aria-label="Ferramentas de customização da leitura">
+            <div class="grupo-controle">
+                <span class="label-controle" id="label-zoom">Zoom Canvas:</span>
+                <button class="btn-tool" id="btn-zoom-in" title="Aumentar tamanho do livro" aria-describedby="label-zoom">
+                    <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
+                    <span class="sr-only">Aumentar Zoom</span>
+                </button>
+                <button class="btn-tool" id="btn-zoom-out" title="Diminuir tamanho do livro" aria-describedby="label-zoom">
+                    <i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i>
+                    <span class="sr-only">Diminuir Zoom</span>
+                </button>
+            </div>
 
-        <div class="livro-info" id="dados-livro" data-id="{{ livro.id_livro }}" data-caminho="{{ livro.pdf }}"></div>
+            <div class="grupo-controle">
+                <span class="label-controle" id="label-acessibilidade">Acessibilidade Visual:</span>
+                <button class="btn-tool" id="btn-contraste" title="Alternar Alto Contraste" aria-describedby="label-acessibilidade">
+                    <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i> Contraste
+                </button>
+                <button class="btn-tool" id="btn-inverter" title="Inverter cores da página" aria-describedby="label-acessibilidade">
+                    <i class="fa-solid fa-eye-dropper" aria-hidden="true"></i> Inverter Cores
+                </button>
+            </div>
 
+            <div class="grupo-controle">
+                <span class="label-controle" id="label-layout">Layout do Leitor:</span>
+                <button class="btn-tool" id="btn-expandir" title="Alternar largura expandida" aria-describedby="label-layout">
+                    <i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i> Expandir Tela
+                </button>
+            </div>
+        </nav>
+
+{% if livro.pdf|slice:":4" == "http" or livro.pdf|slice:":1" == "/" %}
+    <div
+        class="livro-info"
+        id="dados-livro"
+        data-id="{{ livro.id_livro }}"
+        data-caminho="{{ livro.pdf }}">
+    </div>
+{% else %}
+    <div
+        class="livro-info"
+        id="dados-livro"
+        data-id="{{ livro.id_livro }}"
+        data-caminho="{% static livro.url_pdf_estatico %}">
+    </div>
+{% endif %}
         <div id="loading" class="loading-state" aria-live="polite"></div>
 
         <article class="leitor-pdf" id="leitor-pdf-container">
-            <canvas id="pdf-canvas"></canvas>
+            <canvas id="pdf-canvas" role="document" aria-label="Visualizador do livro contendo a página atual"></canvas>
         </article>
 
-        <div class="progresso-container">
+        <div class="progresso-container" role="progressbar" aria-valuemin="1" aria-valuemax="100" aria-valuenow="1" id="progresso-acessivel" aria-label="Progresso de leitura do livro">
             <div id="barra-progresso"></div>
         </div>
 
-        <div class="controles-leitura">
-            <button onclick="paginaAnterior()" class="btn"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
-            <span id="pagina-info">Página 1</span>
-            <button onclick="proximaPagina()" class="btn">Próxima <i class="fa-solid fa-arrow-right"></i></button>
-        </div>
+        <nav class="controles-leitura" aria-label="Controles de paginação">
+            <button id="btn-anterior" class="btn">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Anterior
+            </button>
+            <span id="pagina-info" aria-live="assertive" role="status">Página 1</span>
+            <button id="btn-proxima" class="btn">
+                Próxima <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </button>
+        </nav>
 
         <div class="acoes">
             <a href="{% url 'acesso_biblioteca' %}" class="btn secondary">Voltar à Biblioteca</a>
@@ -56,46 +90,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="{% static 'js/biblioteca.js' %}"></script>
 <script src="{% static 'js/leitura.js' %}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-<script>
-    // Injeção de lógica complementar de zoom e filtros dinâmicos no Canvas
-    let zoomAtual = 1.5;
-
-    function alterarZoom(fator) {
-        zoomAtual = Math.min(Math.max(zoomAtual + fator, 0.8), 3.0);
-        if (typeof paginaAtual !== 'undefined') {
-            // Re-renderiza a página atual usando o novo fator de zoom dinâmico
-            renderizarPaginaComZoom(paginaAtual, zoomAtual);
-        }
-    }
-
-    function renderizarPaginaComZoom(numero, scaleValue) {
-        if (!pdfDoc) return;
-        pdfDoc.getPage(numero).then(page => {
-            const canvas = document.getElementById("pdf-canvas");
-            if (!canvas) return;
-            const ctx = canvas.getContext("2d");
-            const viewport = page.getViewport({ scale: scaleValue });
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            page.render({ canvasContext: ctx, viewport });
-        });
-    }
-
-    function toggleAltoContraste() {
-        document.getElementById("leitor-pdf-container").classList.toggle("alto-contraste-filtro");
-    }
-
-    function toggleInverterCores() {
-        document.getElementById("leitor-pdf-container").classList.toggle("modo-invertido-filtro");
-    }
-
-    function toggleLarguraTotal() {
-        const container = document.getElementById("leitor-pdf-container");
-        container.style.maxWidth = container.style.maxWidth === "100%" ? "800px" : "100%";
-    }
-</script>
 {% endblock %}

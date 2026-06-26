@@ -180,4 +180,43 @@
       <a href="{% url 'obras_autores' %}" class="btn-primary">Publicar Minha Obra</a>
     </section>
   </section>
+
+  <section class="books novidades-home">
+    <div class="section-header">
+      <h2>Novidades</h2>
+      <a href="{% url 'novidade' %}" class="btn-ver-mais-news">
+        Ver mais <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="novidades-grid">
+      {% for livro in livros_recentes|slice:":3" %}
+        <article class="book-card card-novidade-evolved">
+          <div class="book-capa-wrapper">
+            {% if livro.capa %}
+              <img src="{{ livro.capa.url }}" alt="Capa do livro {{ livro.titulo }}" loading="lazy" />
+            {% else %}
+              <div class="capa-placeholder">
+                <i class="fa-solid fa-book"></i>
+              </div>
+            {% endif %}
+            <span class="badge-novidade">Novo</span>
+          </div>
+
+          <div class="book-info">
+            <h3>{{ livro.titulo }}</h3>
+            <p class="book-author">{{ livro.autor.nome }}</p>
+            <div class="book-rating">
+              <i class="fa-solid fa-star"></i> 5.0
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <div class="col-fallback">
+          <p>Nenhuma obra recente adicionada no momento.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
 {% endblock %}

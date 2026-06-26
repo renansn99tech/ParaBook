@@ -693,6 +693,109 @@ body{
     }
 
 }
+/* ==========================================================================
+   Componente Adicional: Seção Novidades & Cards Recentes
+   ========================================================================== */
+
+.novidades-home {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+/* Link Ver Mais com micro-interação na seta */
+.btn-ver-mais-news {
+    color: var(--purple);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-ver-mais-news i {
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btn-ver-mais-news:hover i {
+    transform: translateX(6px);
+}
+
+/* Grid Customizado de 3 Colunas Desktop */
+.novidades-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* Wrapper da Capa para Animação de Zoom Controlado */
+.book-capa-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 260px;
+    background: #0d1427;
+}
+
+.book-capa-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+/* Efeito Hover nos Cards de Novidades */
+.card-novidade-evolved:hover .book-capa-wrapper img {
+    transform: scale(1.05);
+}
+
+/* Badge flutuante de novidade */
+.badge-novidade {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--purple);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-uppercase: uppercase;
+    padding: 4px 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    z-index: 3;
+}
+
+/* Fallback de Capa Neutra */
+.capa-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-secondary);
+    font-size: 2rem;
+}
+
+.col-fallback {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   Responsividade Adaptada ao Ecossistema Existente
+   ========================================================================== */
+@media(max-width: 992px) {
+    .novidades-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 520px) {
+    .novidades-grid {
+        grid-template-columns: 1fr;
+    }
+    .card-novidade-evolved .book-capa-wrapper {
+        height: 340px; /* Mantém o padrão estabelecido nos outros cards da sua Home */
+    }
+}
 
 /* =========================
    RESPONSIVIDADE GERAL

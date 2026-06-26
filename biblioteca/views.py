@@ -191,7 +191,7 @@ def home(request):
         {
             'livros': livros,
             'obras_independentes': obras_independentes,
-            'comunidades': communities
+            'comunidades': comunidades
         }
     )
 

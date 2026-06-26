@@ -4,6 +4,9 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from usuarios.models import Usuario
 from perfis.models import Perfil
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
 
 @login_required
 def perfil(request):
@@ -73,6 +76,7 @@ def perfil(request):
                 
         # Garante o redirecionamento correto se for o formulário tradicional
         if not request.headers.get('x-requested-with') == 'XMLHttpRequest' and 'fetch' not in request.path:
+            messages.success(request, "Alterações salvas com sucesso!")
             return redirect('perfis:perfil_pessoal')
         
     # Mocking/Valores temporários para o template não quebrar enquanto biblioteca/comunidades não chegam
@@ -94,6 +98,13 @@ def perfil(request):
     }
 
     return render(request, 'perfis/perfil.html', contexto)
+
+############################################ FUNÇÃO QUE ENVIA MENSAGEM DE SUCESSO NA ALTERAÇÃO DA SENHA ############################################
+class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
+    template_name = 'perfis/alterar_senha.html' # Observe bem o caminho definido!
+    success_url = reverse_lazy('perfis:perfil_pessoal')
+    success_message = "Sua senha foi alterada com segurança!"
+####################################################################################################################################################
 
 @login_required
 @require_POST

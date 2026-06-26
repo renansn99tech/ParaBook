@@ -24,6 +24,31 @@
 <body>
     {% include 'components/navbar.html' %}
 
+    {% if messages %}
+        <div class="mensagens-globais" style="position: fixed; top: 80px; right: 20px; z-index: 9999;">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" 
+                    style="background: #8b5cf6; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                setTimeout(function() {
+                    const toast = document.getElementById('toast-mensagens');
+                    if (toast) {
+                        toast.style.transition = 'opacity 0.5s ease-out';
+                        toast.style.opacity = '0'; // Faz o fade-out
+                        
+                        // Remove o elemento da tela após a animação de meio segundo
+                        setTimeout(() => toast.remove(), 500);
+                    }
+                }, 5000); // 5000 milissegundos = 5 segundos
+            });
+        </script>
+    {% endif %}
+
     {% block content %}{% endblock %}
 
     {% include 'components/footer.html' %}

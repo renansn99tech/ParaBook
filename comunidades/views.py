@@ -53,8 +53,16 @@ def excluir_comunidade(request, id):
 
 
 def acesso_comunidade(request):
-    return render(request, 'comunidades/acesso-comunidade.html')
+    lista_comunidades = Comunidade.objects.all() # Temporariamente listando todas até implementar a relação M2M de membros
+    return render(request, 'comunidades/acesso-comunidade.html', {
+        'comunidades': lista_comunidades
+    })
 
-
-def conteudo_comunidade(request):
-    return render(request, 'comunidades/conteudo-comunidade.html')
+# Alteração: Buscando a comunidade correta pelo ID recebido via URL
+def conteudo_comunidade(request, id):
+    comunidade = get_object_or_404(Comunidade, id=id)
+    # Como o modelo Post ainda não foi unificado ao banco, passamos uma lista vazia para evitar quebras
+    return render(request, 'comunidades/conteudo-comunidade.html', {
+        'comunidade': comunidade,
+        'posts': [] 
+    })

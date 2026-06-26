@@ -30,10 +30,21 @@ def perfil(request):
             tipo='admin' if is_admin else 'leitor',
             perfil=novo_perfil
         )
-
+        pass
     # 3. A partir daqui, usamos apenas a variável dados_usuario
     perfil_do_usuario = dados_usuario.perfil
 
+    # ==========================================================
+    # SISTEMA DE NOTIFICAÇÃO ASSÍNCRONA (Mensagem de Confirmação de Solicitação para Autor)
+    # ==========================================================
+    if dados_usuario.notificacao_autor:
+        dados_usuario.notificacao_autor = False
+        dados_usuario.save()
+        messages.success(request, "🎉 Parabéns! Sua solicitação foi aprovada e você agora é um Autor Independente no ParaBook!")
+
+    # ==========================================================
+    # TRATAMENTO DE FORMULÁRIOS
+    # ==========================================================
     if request.method == 'POST':
         # Captura os dados do POST
         username = request.POST.get('username')

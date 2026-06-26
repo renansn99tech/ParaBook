@@ -24,6 +24,7 @@ def painel_admin(request):
         
         if acao == 'aprovar':
             usuario.tipo = 'autor'
+            usuario.notificacao_autor = True
             usuario.save()
             
             # Automação da Descrição do Perfil
@@ -58,6 +59,7 @@ def painel_admin(request):
             if usuario_qs.exists():
                 usuario = usuario_qs.first()
                 usuario.tipo = 'autor'
+                usuario.notificacao_autor = True
                 usuario.save()
                 
                 # Automação da Descrição do Perfil

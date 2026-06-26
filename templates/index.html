@@ -118,27 +118,47 @@
     </div>
   </section>
 
-  <section class="books">
-    <div class="section-header">
-      <h2>Em Alta</h2>
-
-      <a href="{% url 'biblioteca' %}">Ver todos →</a>
+<section class="books container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title m-0">Em Alta</h2>
+      <a href="{% url 'mais_acessados' %}" class="btn-ver-todos text-decoration-none">
+        Ver todos <i class="fa-solid fa-arrow-right-long ms-1"></i>
+      </a>
     </div>
 
-    <div class="books-grid">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
       {% for livro in livros %}
-        <div class="book-card">
-          {% if livro.capa %}
-            <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}" />
-          {% endif %}
-
-          <div class="book-info">
-            <h3>{{ livro.titulo }}</h3>
-
-            <p class="book-author">{{ livro.autor.nome }}</p>
-
-            <div class="book-rating">⭐ 4.8</div>
+        <div class="col">
+          <div class="card h-100 book-card-modern border-0 shadow-sm">
+            <div class="book-cover-wrapper position-relative">
+              {% if livro.capa_url %}
+                <img src="{{ livro.capa_url }}" class="card-img-top book-cover-img" alt="Capa do livro {{ livro.nome }}" loading="lazy" />
+              {% else %}
+                <div class="capa-placeholder-modern d-flex flex-column align-items-center justify-content-center">
+                  <i class="fa-solid fa-book fa-3x text-muted mb-2"></i>
+                  <small class="text-muted text-uppercase">Sem Capa</small>
+                </div>
+              {% endif %}
+              <div class="book-badge-rating position-absolute top-0 end-0 m-2 bg-dark text-warning px-2 py-1 rounded shadow-sm">
+                <i class="fa-solid fa-star me-1"></i>{{ livro.avaliacao|default:"4.8" }}
+              </div>
+            </div>
+            
+            <div class="card-body d-flex flex-column p-3">
+              <h3 class="card-title h6 text-truncate mb-1" title="{{ livro.nome }}">{{ livro.nome }}</h3>
+              <p class="card-text small text-muted text-truncate mb-3">{{ livro.autor }}</p>
+              
+              <div class="mt-auto">
+                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 rounded-pill small">
+                  {{ livro.genero }}
+                </span>
+              </div>
+            </div>
           </div>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center py-4">
+          <p class="text-muted">Nenhum conteúdo popular disponível no momento.</p>
         </div>
       {% endfor %}
     </div>

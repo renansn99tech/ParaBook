@@ -39,7 +39,7 @@
 .logo-img{
     width: 95px;
     margin-top: 10px;
-    margin-right: -20px;
+    margin-right: -5px;
 }
 
 .logo{
@@ -52,7 +52,7 @@
 
 .book{
     color:#8b5cf6;
-    margin-left: -10px;
+    margin-left: 2px;
 }
 
 .menu{
@@ -140,4 +140,77 @@
 
     box-shadow:
     0 10px 30px rgba(139,92,246,.4);
+}
+/* No desktop, garante o alinhamento correto usando flexbox nativo */
+@media (min-width: 992px) {
+    .navbar-collapse {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-left: 40px;
+    }
+    .nav-actions {
+        margin-left: auto;
+    }
+}
+
+/* No mobile, reconstrói o empilhamento vertical completo */
+@media (max-width: 991.98px) {
+    .navbar-container {
+        padding: 15px 25px;
+        flex-wrap: wrap;
+    }
+
+    .navbar-collapse {
+        width: 100%;
+        /* Garante que o container não esconda os elementos internos */
+        display: none; 
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    /* Quando o Bootstrap abre o menu, ele usa a classe .show */
+    .navbar-collapse.show {
+        display: flex !important;
+    }
+
+    .menu {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px;
+        padding: 20px 0 10px 0;
+        margin: 0;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu a {
+        display: block;
+        padding: 8px 0;
+        font-size: 1.1rem;
+    }
+
+    .nav-actions {
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding-top: 20px;
+        margin-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .search-btn {
+        order: -1; /* Mantém a busca no começo ou fim da linha de botões */
+    }
+
+    .btn-nav {
+        flex: 1;
+        text-align: center;
+        padding: 10px 16px;
+    }
 }

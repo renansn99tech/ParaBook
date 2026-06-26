@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Autores | ParaBook{% endblock %}
+{% block title %}Autores {% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/autores.css' %}">
@@ -12,12 +12,13 @@
     
     <header class="header-autores">
         <div class="header-content">
+            <span class="header-badge">Comunidade Literária</span>
             <h1>Conheça Nossos Autores</h1>
-            <p>Explore o perfil, as biografias e descubra o acervo de obras publicadas pelos grandes nomes do Parabook.</p>
+            <p>Explore o perfil, as biografias e descubra o acervo de obras publicadas pelos grandes nomes e talentos independentes do Parabook.</p>
         </div>
     </header>
 
-    <section class="busca-autores-container" aria-label="Filtro de busca">
+    <section class="acoes-barra-container" aria-label="Filtros e Ações">
         <form method="GET" action="{% url 'lista_autores' %}" class="form-busca-autores">
             <div class="input-grupo-busca">
                 <i class="fa-solid fa-magnifying-glass icone-busca"></i>
@@ -35,14 +36,23 @@
             </div>
             <button type="submit" class="btn-buscar-autores">Pesquisar</button>
         </form>
+
+        <div class="cta-autor-box">
+            <p class="cta-texto">Escreveu algo? Publique como autor independente.</p>
+            <a href="{% url 'obras_autores' %}" class="btn-enviar-obra-cta">
+                <i class="fa-solid fa-feather-pointed"></i> Enviar Obra
+            </a>
+        </div>
     </section>
 
     <section class="grid-autores" aria-label="Lista de autores">
         {% for autor in page_obj %}
         <article class="card-autor">
+            <div class="card-header-decoracao"></div>
+            
             <div class="avatar-autor-container">
                 {% if autor.foto %}
-                    <img src="{{ autor.foto.url }}" alt="Foto de {{ autor.nome }}" class="foto-autor">
+                    <img src="{{ autor.foto }}" alt="Foto de {{ autor.nome }}" class="foto-autor">
                 {% else %}
                     <div class="foto-autor-placeholder">
                         <i class="fa-solid fa-user-nib"></i>
@@ -54,31 +64,29 @@
                 <h2 class="nome-autor">{{ autor.nome }}</h2>
                 
                 <span class="badge-obras">
-                    <i class="fa-solid fa-book"></i> {{ autor.total_obras }} {% if autor.total_obras == 1 %}obra{% else %}obras{% endif %}
+                    <i class="fa-solid fa-book-bookmark"></i> {{ autor.total_obras }} {% if autor.total_obras == 1 %}obra{% else %}obras{% endif %}
                 </span>
 
                 <p class="biografia-autor-resumo">
                     {% if autor.biografia %}
-                        {{ autor.biografia|truncatechars:120 }}
+                        {{ autor.biografia|truncatechars:110 }}
                     {% else %}
-                        Nenhuma biografia disponível para este autor até o momento.
+                        Membro colaborador do acervo ParaBook. Explore suas obras publicadas abaixo.
                     {% endif %}
                 </p>
                 
                 <div class="acoes-autor-card">
-                    <a href="#" class="btn-autor-perfil" title="Ver perfil completo de {{ autor.nome }}">
-                        <i class="fa-regular fa-id-card"></i> Perfil
+                    <a href="{% url 'acesso_biblioteca' %}?busca={{ autor.nome }}" class="btn-autor-obras" title="Ver livros publicados por {{ autor.nome }}">
+                        <i class="fa-solid fa-bookmark"></i> Ver Obras
                     </a>
-                <a href="{% url 'acesso_biblioteca' %}?busca={{ autor.nome }}" class="btn-autor-obras" title="Ver livros publicados por {{ autor.nome }}">
-                    <i class="fa-solid fa-list-ul"></i> Obras
-                </a>
                 </div>
             </div>
         </article>
         {% empty %}
         <div class="empty-state-autores">
-            <i class="fa-solid fa-users-slash"></i>
-            <p>Nenhum autor foi encontrado correspondendo aos critérios de pesquisa.</p>
+            <i class="fa-solid fa-feather"></i>
+            <h3>Nenhum escritor encontrado</h3>
+            <p>Não encontramos autores correspondentes ao termo "{{ termo_busca }}".</p>
             <a href="{% url 'lista_autores' %}" class="btn-voltar-lista">Ver todos os autores</a>
         </div>
         {% endfor %}
@@ -103,7 +111,7 @@
                         <a href="?page={{ num }}{% if termo_busca %}&busca={{ termo_busca }}{% endif %}" class="item-paginacao">
                             {{ num }}
                         </a>
-                    </li>
+                    </td>
                 {% endif %}
             {% endfor %}
 

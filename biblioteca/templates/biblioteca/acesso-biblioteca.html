@@ -124,20 +124,21 @@
     <section class="books-grid" id="lista-livros" aria-label="Listagem de livros da coleção">
         {% for item in livros %}
         <article class="card-livro" 
-                 data-id="{{ item.livro.id_livro }}" 
-                 data-genero="{{ item.livro.categoria.nome|lower }}" 
-                 data-status="{{ item.status }}">
+                data-id="{{ item.livro.id_livro }}" 
+                data-genero="{{ item.livro.categoria.nome|lower }}" 
+                data-status="{{ item.status }}">
             
-            <div class="capa-container">
-                {% if item.livro.capa %}
-                    <img src="{% static item.livro.capa %}" alt="Capa do livro {{ item.livro.nome }}" class="capa-img">
-                {% else %}
-                    <div class="capa-placeholder"><i class="fa-solid fa-book" style="font-size: 3rem; color: #cbd5e1;"></i></div>
-                {% endif %}
-                <span class="status-badge status-{{ item.status }}">
-                    {% if item.status == 'lido' %}Lido{% elif item.status == 'lendo' %}Lendo{% else %}Quero ler{% endif %}
-                </span>
-            </div>
+    <div class="capa-container">
+        {% if item.livro.capa_url %}
+            <img src="{{ item.livro.capa_url }}" alt="Capa do livro {{ item.livro.nome }}" class="capa-img">
+        {% else %}
+            <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="capa-img">
+        {% endif %}
+        
+        <span class="status-badge status-{{ item.status }}">
+            {% if item.status == 'lido' %}Lido{% elif item.status == 'lendo' %}Lendo{% else %}Quero ler{% endif %}
+        </span>
+    </div>
 
             <div class="card-info">
                 <h2 class="book-title">{{ item.livro.nome }}</h2>

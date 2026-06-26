@@ -15,6 +15,7 @@ class Categoria(models.Model):
 
 
 class Livro(models.Model):
+    # ... Seus campos existentes permanecem idênticos ...
     id_livro = models.AutoField(db_column='Id_Livros', primary_key=True)
     nome = models.CharField(max_length=45, db_column='Nome')
     autor = models.CharField(max_length=45, db_column='Autor')
@@ -23,19 +24,8 @@ class Livro(models.Model):
     avaliacao = models.CharField(max_length=45, db_column='Avaliacao')
     isbn = models.CharField(max_length=45, db_column='ISBN')
     capa = models.CharField(max_length=255, null=True, blank=True)
-
-    pdf = models.CharField(
-        max_length=255,
-        db_column='Caminho_PDF',
-        null=True,
-        blank=True
-    )
-
-    categoria = models.ForeignKey(
-        Categoria,
-        on_delete=models.DO_NOTHING,
-        db_column='Categorias_Id_Categorias'
-    )
+    pdf = models.CharField(max_length=255, db_column='Caminho_PDF', null=True, blank=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING, db_column='Categorias_Id_Categorias')
 
     class Meta:
         db_table = 'livros'
@@ -45,6 +35,23 @@ class Livro(models.Model):
         nome_limpo = slugify(self.nome)
         categoria_limpa = slugify(self.categoria.nome)
         return f"livros/{categoria_limpa}/{nome_limpo}.pdf"
+
+    # --- NOVA PROPERTY DE CORREÇÃO PARA A CAPA ---
+    @property
+    def capa_url(self):
+        """
+        Retorna o caminho correto da imagem de capa. Se for uma string de caminho relativo, 
+        insere o prefixo /media/. Se for nulo ou vazio, retorna None para acionar o fallback do template.
+        """
+        if not self.capa:
+            return None
+        
+        # Se já for uma URL completa (ex: HTTP de API externa) ou se já começar com /media/
+        if self.capa.startswith('http://') or self.capa.startswith('https://') or self.capa.startswith('/media/'):
+            return self.capa
+            
+        # Caso seja apenas o nome do arquivo ou caminho interno (ex: "capas/livro.jpg")
+        return f"/media/{self.capa}"
 
 
 class ObraAutor(models.Model):

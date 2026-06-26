@@ -34,13 +34,13 @@ Biblioteca | ParaBook
             {% for livro in livros_filosofia %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <article class="card h-100 card-livro-publico">
-                        <div class="container-capa">
-                            {% if livro.capa %}
-                                <img src="{{ livro.capa.url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
-                            {% else %}
-                                <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="img-capa-ajustada">
-                            {% endif %}
-                        </div>
+<div class="container-capa">
+    {% if livro.capa_url %}
+        <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
+    {% else %}
+        <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="img-capa-ajustada">
+    {% endif %}
+</div>
                         <div class="card-body d-flex flex-column p-3">
                             <h5 class="card-title text-truncate mb-1 fw-bold" title="{{ livro.nome }}">{{ livro.nome }}</h5>
                             <p class="card-text small text-muted mb-2">Por: {{ livro.autor }}</p>

@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from config.settings import AUTH_PASSWORD_VALIDATORS
 
 from .services import livros_por_categoria
-from .models import Categoria, Livro, ObraAutor, Biblioteca
+from .models import Categoria, Livro, ObraAutor, Biblioteca,Perfil
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
 from comunidades.models import Comunidade
@@ -189,6 +189,7 @@ def home(request):
 def lista_autores(request):
     termo_busca = request.GET.get('busca', '').strip()
     
+    # Agrupa por nome de autor cadastrado nos livros
     autores_query = (
         Livro.objects.values('autor')
         .annotate(total_obras=Count('id_livro'))
@@ -198,13 +199,35 @@ def lista_autores(request):
     if termo_busca:
         autores_query = autores_query.filter(autor__icontains=termo_busca)
         
+    # Mapeia perfis aprovados para vincular fotos e biografias reais se existirem
+    # Busca usuários cujos perfis estão vinculados e aprovados
+    perfis_registrados = {
+        p.user.username.lower(): p 
+        for p in Perfil.objects.filter(status='aprovado').select_related('user')
+    }
+    
     autores_list = []
     for item in autores_query:
+        nome_autor = item['autor']
+        autor_chave = nome_autor.lower().strip()
+        
+        # Fallback padrão
+        foto_url = None
+        biografia_texto = None
+        
+        # Se o autor tiver um perfil cadastrado e aprovado no sistema, usa os dados reais
+        if autor_chave in perfis_registrados:
+            perfil = perfis_registrados[autor_chave]
+            biografia_texto = perfil.bio
+            if perfil.foto:
+                # Trata se a foto for um caminho estático ou URL completa
+                foto_url = perfil.foto if (perfil.foto.startswith('http') or perfil.foto.startswith('/')) else f"/static/{perfil.foto}"
+
         autores_list.append({
-            'nome': item['autor'],
+            'nome': nome_autor,
             'total_obras': item['total_obras'],
-            'biografia': None,
-            'foto': None
+            'biografia': biografia_texto,
+            'foto': foto_url
         })
         
     paginator = Paginator(autores_list, 8)

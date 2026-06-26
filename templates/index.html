@@ -164,41 +164,53 @@
     </div>
   </section>
 
-  <section class="communities">
-    <div class="section-header">
-      <h2>Comunidades em Destaque</h2>
-
-      <a href="{% url 'comunidades' %}">Ver todas →</a>
+<section class="communities container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title m-0">Comunidades em Destaque</h2>
+      <a href="{% url 'comunidades' %}" class="btn-ver-todos text-decoration-none">
+        Ver todas <i class="fa-solid fa-arrow-right-long ms-1"></i>
+      </a>
     </div>
 
-    <div class="communities-grid">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
       {% for comunidade in comunidades %}
-        <div class="community-card">
-          <div class="community-icon">
-            <i class="fa-solid fa-users"></i>
+        <div class="col">
+          <div class="card h-100 community-card-modern border-0 shadow-sm d-flex flex-column">
+            
+            <div class="card-body d-flex flex-column p-4">
+              <div class="community-icon-wrapper mb-3 text-purple d-flex align-items-center justify-content-center rounded-circle">
+                <i class="fa-solid fa-users fs-4"></i>
+              </div>
+              
+              <h3 class="card-title h5 fw-bold mb-2 text-white">{{ comunidade.nome }}</h3>
+              <p class="card-text text-secondary small flex-grow-1">
+                {{ comunidade.descricao|truncatechars:100 }}
+              </p>
+              
+              <div class="community-card-footer d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+                <span class="text-muted small">
+                  <i class="fa-solid fa-calendar-day me-1"></i> {{ comunidade.data_criacao|date:'d/m/Y' }}
+                </span>
+                <a href="{% url 'conteudo_comunidade' comunidade.id %}" class="btn btn-sm btn-outline-purple rounded-pill px-3">
+                  Acessar
+                </a>
+              </div>
+            </div>
+
           </div>
-
-          <h3>{{ comunidade.nome }}</h3>
-
-          <p>{{ comunidade.descricao|truncatechars:100 }}</p>
-
-          <div class="community-footer">
-            <span>
-              Criada em
-              {{ comunidade.data_criacao|date:'d/m/Y' }}
-            </span>
-          </div>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center py-4">
+          <p class="text-muted">Nenhuma comunidade em destaque no momento.</p>
         </div>
       {% endfor %}
     </div>
 
-    <section class="cta">
+    <div class="cta">
       <h2>Tem uma história para contar?</h2>
-
       <p>Compartilhe sua obra gratuitamente e alcance novos leitores através da comunidade ParaBook.</p>
-
       <a href="{% url 'obras_autores' %}" class="btn-primary">Publicar Minha Obra</a>
-    </section>
+    </div>
   </section>
 
   <section class="books novidades-home">

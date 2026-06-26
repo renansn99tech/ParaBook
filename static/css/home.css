@@ -847,9 +847,63 @@ body{
         height: 340px; /* Mantém o padrão estabelecido nos outros cards da sua Home */
     }
 }
+/* ==========================================================================
+   Componente Adicional: Comunidades em Destaque (Tema Escuro Parabook)
+   ========================================================================== */
+
+/* Definição de cor utilitária caso não esteja globalizada */
+:root {
+    --purple: #8b5cf6;
+    --purple-hover: #a855f7;
+    --dark-card: rgba(15, 23, 42, 0.75);
+    --border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Customização do Card Moderno de Comunidades */
+.community-card-modern {
+    background: var(--dark-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 14px !important;
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efeito Hover nos Cards */
+.community-card-modern:hover {
+    transform: translateY(-6px);
+    border-color: rgba(139, 92, 246, 0.45) !important;
+    box-shadow: 0 20px 50px rgba(139, 92, 246, 0.16) !important;
+}
+
+/* Wrapper para o ícone circular */
+.community-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--purple);
+    flex-shrink: 0;
+}
+
+/* Linha divisória interna do Card */
+.community-card-footer {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Botão Entrar customizado para o tema do projeto */
+.btn-outline-purple {
+    color: var(--purple);
+    border-color: var(--purple);
+    transition: all 0.2s ease;
+}
+
+.btn-outline-purple:hover {
+    background-color: var(--purple);
+    border-color: var(--purple);
+    color: white;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
 
 /* =========================
-   RESPONSIVIDADE GERAL
+    RESPONSIVIDADE GERAL
 ========================= */
 
 @media(max-width:1200px){

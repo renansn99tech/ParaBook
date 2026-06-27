@@ -145,3 +145,6 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
 MAX_BOOK_UPLOAD_SIZE = 80 * 1024 * 1024
+
+# Configuração para testar envio de e-mails no terminal durante o desenvolvimento
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -18,6 +18,7 @@ class Usuario(models.Model):
         choices=TIPO_USUARIO_CHOICES,
         default='leitor'
     )
+    notificacao_autor = models.BooleanField(default=False)
     data_nascimento = models.CharField(max_length=45, blank=True, null=True)
     senha = models.CharField(max_length=45, blank=True, null=True)
     telefone = models.CharField(max_length=45, blank=True, null=True)

@@ -6,296 +6,142 @@ Novidades | ParaBook
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/novidade.css' %}">
+<link rel="stylesheet" href="{% static 'css/novidade.css' %}?v=3.0">
 {% endblock %}
 
 {% block content %}
 
 <main class="news-page-main" id="topo">
 
-    <!-- HERO -->
     <section class="news-hero-section">
-
         <div class="scroll-ticker-container">
             <span class="ticker-item">
-                NOVIDADES • UPDATES • NEWS •
-                NOVIDADES • UPDATES • NEWS •
+                NOVIDADES • ROADMAP • CHANGELOG •
+                NOVIDADES • ROADMAP • CHANGELOG •
             </span>
         </div>
 
         <div class="news-intro-content">
-
-            <h1 class="gradient-text">
-                Linha do Tempo
-            </h1>
-
-            <p>
-                O rastro da evolução do ParaBook,
-                de um projeto acadêmico a uma
-                plataforma completa.
-            </p>
-
+            <h1 class="gradient-text">A Evolução do ParaBook</h1>
+            <p>Acompanhe a nossa jornada: de um projeto acadêmico a uma plataforma literária moderna e escalável.</p>
         </div>
-
     </section>
 
-    <!-- TIMELINE -->
     <section class="timeline-container">
-
         <div class="timeline-vertical-bar"></div>
 
-        <!-- ITEM 1 -->
         <article class="timeline-entry inverse">
-
             <div class="timeline-pointer"></div>
-
             <div class="glass-card-news">
-
                 <div class="card-header">
-
-                    <span class="date-tag">
-                        12 Mar 2026
-                    </span>
-
-                    <span class="status-badge">
-                        Equipe
-                    </span>
-
+                    <span class="date-tag">Mar 2026</span>
+                    <span class="status-badge">SENAC / GitHub</span>
                 </div>
-
-                <h3>Formação do Time</h3>
-
-                <p>
-                    Primeira reunião de brainstorming
-                    para definir o nicho do projeto
-                    integrador e as tecnologias
-                    Full Stack utilizadas.
-                </p>
-
+                <h3>Kick-off e Repositório</h3>
+                <p>Primeira reunião de brainstorming, definição do nicho do projeto integrador e primeiro push oficial no GitHub.</p>
             </div>
-
         </article>
 
-        <!-- ITEM 2 -->
         <article class="timeline-entry">
-
             <div class="timeline-pointer"></div>
-
             <div class="glass-card-news">
-
                 <div class="card-header">
-
-                    <span class="date-tag">
-                        20 Mar 2026
-                    </span>
-
-                    <span class="status-badge">
-                        SENAC
-                    </span>
-
+                    <span class="date-tag">Abr 2026</span>
+                    <span class="status-badge">Design</span>
                 </div>
-
-                <h3>Kick-off do ParaBook</h3>
-
-                <p>
-                    Aprovação da ideia original:
-                    uma biblioteca digital voltada
-                    para desenvolvimento pessoal
-                    e comunidade de leitura.
-                </p>
-
+                <h3>Identidade Visual Inicial</h3>
+                <p>Definição da primeira paleta de cores futurista e concepção do layout original da biblioteca digital.</p>
             </div>
-
         </article>
 
-        <!-- ITEM 3 -->
         <article class="timeline-entry inverse">
-
             <div class="timeline-pointer"></div>
-
             <div class="glass-card-news">
-
                 <div class="card-header">
-
-                    <span class="date-tag">
-                        28 Mar 2026
-                    </span>
-
-                    <span class="status-badge">
-                        GitHub
-                    </span>
-
+                    <span class="date-tag">Abr 2026</span>
+                    <span class="status-badge">Backend</span>
                 </div>
-
-                <h3>Repositório Integrador</h3>
-
-                <p>
-                    Primeiro push oficial do projeto.
-                    Estruturação inicial das pastas
-                    CSS, JS e imagens.
-                </p>
-
-            </div>
-
-        </article>
-
-        <!-- ITEM 4 -->
-        <article class="timeline-entry">
-
-            <div class="timeline-pointer"></div>
-
-            <div class="glass-card-news">
-
-                <div class="card-header">
-
-                    <span class="date-tag">
-                        05 Abr 2026
-                    </span>
-
-                    <span class="status-badge">
-                        Design
-                    </span>
-
-                </div>
-
-                <h3>Identidade Visual</h3>
-
-                <p>
-                    Definição da paleta de cores
-                    futurista e do conceito visual
-                    principal do ParaBook.
-                </p>
-
-            </div>
-
-        </article>
-
-        <!-- ITEM 5 -->
-        <article class="timeline-entry inverse">
-
-            <div class="timeline-pointer"></div>
-
-            <div class="glass-card-news">
-
-                <div class="card-header">
-
-                    <span class="date-tag">
-                        20 Abr 2026
-                    </span>
-
-                    <span class="status-badge">
-                        Dev
-                    </span>
-
-                </div>
-
                 <h3>Estrutura de Dados</h3>
-
-                <p>
-                    Finalização da modelagem inicial
-                    e integração das primeiras
-                    bibliotecas digitais.
-                </p>
-
+                <p>Finalização da modelagem inicial de banco de dados relacional e integração das primeiras estruturas em Django.</p>
             </div>
-
         </article>
 
-        <!-- ITEM 6 -->
         <article class="timeline-entry">
-
             <div class="timeline-pointer"></div>
-
             <div class="glass-card-news">
-
                 <div class="card-header">
-
-                    <span class="date-tag">
-                        05 Mai 2026
-                    </span>
-
-                    <span class="status-badge">
-                        Deploy
-                    </span>
-
+                    <span class="date-tag">Mai 2026</span>
+                    <span class="status-badge">Deploy</span>
                 </div>
-
                 <h3>Publicação no GitHub Pages</h3>
-
-                <p>
-                    Primeiro deploy público
-                    do projeto para testes
-                    e demonstração.
-                </p>
-
+                <p>Primeiro deploy público do protótipo estático para testes e demonstração estrutural inicial.</p>
             </div>
-
         </article>
 
-        <!-- ITEM 7 -->
         <article class="timeline-entry inverse">
-
             <div class="timeline-pointer"></div>
-
             <div class="glass-card-news">
-
                 <div class="card-header">
-
-                    <span class="date-tag">
-                        12 Mai 2026
-                    </span>
-
-                    <span class="status-badge">
-                        Live
-                    </span>
-
+                    <span class="date-tag">Mai 2026</span>
+                    <span class="status-badge">UI/UX</span>
                 </div>
-
                 <h3>Modernização Visual</h3>
-
-                <p>
-                    Implementação do novo sistema
-                    visual focado em UX,
-                    responsividade e performance.
-                </p>
-
+                <p>Implementação do novo sistema visual focado em experiência de usuário (UX), responsividade inicial e performance de front-end.</p>
             </div>
+        </article>
 
+        <article class="timeline-entry">
+            <div class="timeline-pointer"></div>
+            <div class="glass-card-news">
+                <div class="card-header">
+                    <span class="date-tag">Jun 2026</span>
+                    <span class="status-badge">Admin</span>
+                </div>
+                <h3>Dashboard SPA & Permissões</h3>
+                <p>Criação do painel de controle em Single Page Application, com gráficos dinâmicos e aprovação modular de obras e autores.</p>
+            </div>
+        </article>
+
+        <article class="timeline-entry inverse">
+            <div class="timeline-pointer"></div>
+            <div class="glass-card-news">
+                <div class="card-header">
+                    <span class="date-tag">Jun 2026</span>
+                    <span class="status-badge">Features</span>
+                </div>
+                <h3>Perfis Dinâmicos e Autores</h3>
+                <p>Refatoração do sistema de contas. Usuários agora atualizam imagens de perfil, gerenciam configurações e solicitam status de "Autor Independente".</p>
+            </div>
+        </article>
+
+        <article class="timeline-entry">
+            <div class="timeline-pointer"></div>
+            <div class="glass-card-news">
+                <div class="card-header">
+                    <span class="date-tag">Jun 2026</span>
+                    <span class="status-badge">Rebranding</span>
+                </div>
+                <h3>A Nova Face do ParaBook</h3>
+                <p>Transição de nível Sênior para a arquitetura "Neon Glassmorphism". Adoção de tons de azul profundo e interfaces de vidro para criar imersão focada e madura.</p>
+            </div>
+        </article>
+
+        <article class="timeline-entry inverse current-milestone">
+            <div class="timeline-pointer"></div>
+            <div class="glass-card-news">
+                <div class="card-header">
+                    <span class="date-tag">Jun 2026</span>
+                    <span class="status-badge">SecOps</span>
+                </div>
+                <h3>Segurança Avançada e UX</h3>
+                <p>Implementação do fluxo nativo de Recuperação de Senha, eixos de sincronização assíncrona e notificações não obstrusivas via SweetAlert.</p>
+            </div>
         </article>
 
     </section>
-
-    <!-- BOTÃO TOPO -->
-    <a href="#topo">
-
-        <button class="button-top" id="voltar-topo">
-
-            <svg class="svgIcon" viewBox="0 0 384 512">
-
-                <path
-                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5
-                    12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448
-                    c0 17.7 14.3 32 32 32s32-14.3
-                    32-32V141.2L329.4 246.6
-                    c12.5 12.5 32.8 12.5
-                    45.3 0s12.5-32.8
-                    0-45.3l-160-160z">
-                </path>
-
-            </svg>
-
-        </button>
-
-    </a>
-
 </main>
-
 {% endblock %}
 
 {% block extra_js %}
-
 <script src="{% static 'js/index.js' %}"></script>
-
-<script src="{% static 'js/navbar.js' %}"></script>
-
 {% endblock %}

@@ -31,7 +31,6 @@ urlpatterns = [
     # App usuarios
     path('usuarios/', include('usuarios.urls')), # Linha inserida com os URLs do app Usuarios
     path('register/', register, name='register'),
-    path('password-reset/', auth_views.PasswordResetView.as_view(template_name='usuarios/password_reset.html'), name='password_reset'),
     
     # App comunidades
     path('comunidades/', include('comunidades.urls')),

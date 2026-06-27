@@ -34,7 +34,7 @@ def tela_login(request):
             return redirect('perfis:perfil_pessoal') # Redireciona para o perfil que refatoramos
         else:
             messages.error(request, 'Usuário ou senha incorretos.')
-            return redirect('tela_login')
+            return redirect('usuarios:login')
 
     # Se for método GET (apenas acessando a página), renderiza a tela limpa
     return render(request, 'usuarios/tela-login.html')

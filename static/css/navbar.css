@@ -1,3 +1,8 @@
+html {
+    /* Reserva o espaço da barra de rolagem mesmo quando ela não existir na página */
+    scrollbar-gutter: stable;
+}
+
 .navbar{
 
     position:sticky;
@@ -38,7 +43,6 @@
 
 .logo-img{
     width: 95px;
-    margin-top: 10px;
     margin-right: -5px;
 }
 
@@ -59,7 +63,7 @@
 
     display:flex;
     gap:45px;
-
+    margin-bottom: 0.35rem !important;
     list-style:none;
 }
 
@@ -75,72 +79,68 @@
     color:#8b5cf6;
 }
 
-.nav-actions{
-
-    display:flex;
-    align-items:center;
-    gap:15px;
+.nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; 
+    gap: 15px;
+    /* Trava a área dos botões para que a renderização de fontes diferentes não os empurre */
+    min-width: 300px; 
 }
 
-.search-btn{
-
-    width:45px;
-    height:45px;
-
-    border:none;
-
-    background:transparent;
-
-    color:white;
-
-    cursor:pointer;
-
-    font-size:1rem;
+.search-btn {
+    width: 45px;
+    height: 45px;
+    border: none;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    font-size: 1.1rem;
+    
+    /* Centraliza o ícone da lupa perfeitamente no próprio eixo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.btn-nav{
-
-    text-decoration:none;
-
-    padding:12px 24px;
-
-    border-radius:12px;
-
-    transition:.3s;
+.btn-nav {
+    text-decoration: none;
+    padding: 0 24px; /* O padding vertical agora é controlado de forma rígida pelo height */
+    border-radius: 12px;
+    transition: .3s;
+    
+    /* O SEGREDO DO ALINHAMENTO: Força os botões a se comportarem como blocos idênticos */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px; /* Altura cravada e idêntica para todos */
+    min-width: 120px; /* Largura mínima para manter a simetria visual */
+    font-weight: 500;
 }
 
-.btn-outline{
-
-    border:
-    1px solid rgba(255,255,255,.12);
-
-    color:white;
+.btn-outline {
+    border: 1px solid rgba(255,255,255,.12);
+    color: white;
+    background: transparent;
 }
 
-.btn-outline:hover{
-
-    border-color:#8b5cf6;
+.btn-outline:hover {
+    border-color: #8b5cf6;
 }
 
-.btn-primary-nav{
-
-    background:
-    linear-gradient(
-        135deg,
-        #8b5cf6,
-        #7c3aed
-    );
-
-    color:white;
+.btn-primary-nav {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    
+    /* A COMPENSAÇÃO DE BOX-MODEL: Uma borda transparente para igualar a matemática do .btn-outline */
+    border: 1px solid transparent; 
 }
 
-.btn-primary-nav:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:
-    0 10px 30px rgba(139,92,246,.4);
+.btn-primary-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(139,92,246,.4);
 }
+
 /* No desktop, garante o alinhamento correto usando flexbox nativo */
 @media (min-width: 992px) {
     .navbar-collapse {

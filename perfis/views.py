@@ -82,8 +82,13 @@ def perfil(request):
         
         # Só atualiza o nome de exibição se ele veio no formulário
         if nome is not None:
+            # 1. Atualiza na sua model customizada
             dados_usuario.nome = nome
             dados_usuario.save()
+            
+            # 2. Sincroniza com o first_name do User nativo do Django
+            request.user.first_name = nome
+            request.user.save()
                 
         # Garante o redirecionamento correto se for o formulário tradicional
         if not request.headers.get('x-requested-with') == 'XMLHttpRequest' and 'fetch' not in request.path:

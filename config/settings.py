@@ -144,3 +144,5 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
+# Configuração para testar envio de e-mails no terminal durante o desenvolvimento
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

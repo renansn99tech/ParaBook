@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Diretrizes | ParaBook{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/diretrizes.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="guidelines-main">
+    <section class="hero-guidelines">
+        <h1 class="gradient-text">Diretrizes da Comunidade</h1>
+        <p>Normas e valores que sustentam o ecossistema do ParaBook.</p>
+    </section>
+
+    <div class="guidelines-container">
+        <article class="glass-rule-card">
+            <div class="rule-number">01</div>
+            <h3>Respeito Literário</h3>
+            <p>O ParaBook é um espaço de descoberta. Promovemos debates saudáveis sobre obras clássicas e contemporâneas, onde o contraditório é bem-vindo, mas o ataque pessoal nunca é tolerado.</p>
+        </article>
+
+        <article class="glass-rule-card">
+            <div class="rule-number">02</div>
+            <h3>Autenticidade</h3>
+            <p>Valorizamos o conteúdo original. Ao publicar ou avaliar obras, certifique-se de que sua contribuição reflita sua própria análise, respeitando a propriedade intelectual e as normas de direitos autorais.</p>
+        </article>
+
+        <article class="glass-rule-card">
+            <div class="rule-number">03</div>
+            <h3>Colaboração Ativa</h3>
+            <p>Nosso objetivo é a construção coletiva. Usuários que apoiam outros autores e participam de comunidades ativas ajudam a fortalecer nossa rede literária global.</p>
+        </article>
+
+        <article class="glass-rule-card">
+            <div class="rule-number">04</div>
+            <h3>Foco na Qualidade</h3>
+            <p>Mantenha as interações dentro da temática literária. Evite spam ou publicidade não autorizada, focando na qualidade do conhecimento compartilhado.</p>
+        </article>
+    </div>
+</main>
+{% endblock %}

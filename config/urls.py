@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include   # <-- aqui está o include
-from usuarios.views import index, sobre, tela_login, register, logout_view    # importa sua view
+from usuarios.views import diretrizes, index, sobre, tela_login, register, logout_view    # importa sua view
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -27,6 +27,7 @@ urlpatterns = [
     # Templates globais
     path('', index, name='home'), # Página inicial
     path('sobre/', sobre, name='sobre'), # Página 'Sobre' do projeto
+    path('diretrizes/', diretrizes, name='diretrizes'), # Página 'Diretrizes' do projeto
 
     # App usuarios
     path('usuarios/', include('usuarios.urls')), # Linha inserida com os URLs do app Usuarios

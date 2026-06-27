@@ -3,12 +3,15 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid navbar-container">
         
-        <div class="logo-container">
-            <img src="{% static 'img/logo-nova.png' %}" alt="ParaBook" class="logo-img">
-            <h1 class="logo">
-                <span class="para">Para</span><span class="book">Book</span>
-            </h1>
-        </div>
+        <!-- 1. UX UPDATE: Logo interativa redirecionando para a Home -->
+        <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">
+            <div class="logo-container">
+                <img src="{% static 'img/logo-nova.png' %}" alt="ParaBook" class="logo-img">
+                <h1 class="logo">
+                    <span class="para">Para</span><span class="book">Book</span>
+                </h1>
+            </div>
+        </a>
 
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#parabookNavbar" aria-controls="parabookNavbar" aria-expanded="false" aria-label="Toggle navigation" style="filter: invert(1);">
             <span class="navbar-toggler-icon"></span>
@@ -17,7 +20,8 @@
         <div class="collapse navbar-collapse" id="parabookNavbar">
             
             <ul class="menu">
-                <li><a href="{% url 'home' %}">Explorar</a></li>
+                <!-- 2. ROTEAMENTO: Botão Explorar agora leva ao acervo principal -->
+                <li><a href="{% url 'biblioteca' %}">Explorar</a></li>
                 <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
                 <li><a href="{% url 'lista_autores' %}">Autores</a></li>
                 <li><a href="{% url 'obras_autores' %}">Publicar Livro</a></li>

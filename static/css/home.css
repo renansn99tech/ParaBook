@@ -13,6 +13,10 @@ body{
     overflow-x:hidden;
 }
 
+.row {
+    justify-content: center;
+}
+
 .hero{
     display:grid;
     grid-template-columns:45% 55%;

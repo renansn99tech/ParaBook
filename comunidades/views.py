@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Comunidade
+from .models import Comunidade, PostagemComunidade
 
 
 def comunidades(request):
@@ -60,9 +60,41 @@ def acesso_comunidade(request):
 
 # Alteração: Buscando a comunidade correta pelo ID recebido via URL
 def conteudo_comunidade(request, id):
-    comunidade = get_object_or_404(Comunidade, id=id)
-    # Como o modelo Post ainda não foi unificado ao banco, passamos uma lista vazia para evitar quebras
-    return render(request, 'comunidades/conteudo-comunidade.html', {
-        'comunidade': comunidade,
-        'posts': [] 
-    })
+    comunidade = get_object_or_404(
+        Comunidade,
+        id=id
+    )
+
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            titulo = request.POST.get('titulo')
+            conteudo = request.POST.get('conteudo')
+            imagem = request.FILES.get('imagem')
+
+            PostagemComunidade.objects.create(
+                comunidade=comunidade,
+                autor=request.user,
+                titulo=titulo,
+                conteudo=conteudo,
+                imagem=imagem
+            )
+
+            return redirect(
+                'conteudo_comunidade',
+                id=comunidade.id
+            )
+
+    posts = PostagemComunidade.objects.filter(
+        comunidade=comunidade
+    ).select_related(
+        'autor'
+    )
+
+    return render(
+        request,
+        'comunidades/conteudo-comunidade.html',
+        {
+            'comunidade': comunidade,
+            'posts': posts
+        }
+    )

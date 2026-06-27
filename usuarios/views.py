@@ -19,6 +19,9 @@ def mobile_navbar(request):
 def sobre(request):
     return render(request, 'sobre.html')
 
+def diretrizes(request):
+    return render(request, 'diretrizes.html')
+
 def tela_login(request):
     if request.method == 'POST':
         # Captura o que foi digitado nos inputs com name="username" e name="password"

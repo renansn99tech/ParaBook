@@ -43,7 +43,8 @@ html {
 
 .logo-img{
     width: 95px;
-    margin-right: -5px;
+    margin-right: -1.75rem;
+    margin-bottom: 0.3rem;
 }
 
 .logo{
@@ -68,10 +69,8 @@ html {
 }
 
 .menu a{
-
     text-decoration:none;
     color:#d4d4d8;
-
     transition:.3s;
 }
 

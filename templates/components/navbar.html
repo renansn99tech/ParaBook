@@ -1,56 +1,52 @@
 {% load static %}
 
-<header class="navbar">
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid navbar-container">
+        
+        <!-- 1. UX UPDATE: Logo interativa redirecionando para a Home -->
+        <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">
+            <div class="logo-container">
+                <img src="{% static 'img/logo-nova.png' %}" alt="ParaBook" class="logo-img">
+                <h1 class="logo">
+                    <span class="para">Para</span><span class="book">Book</span>
+                </h1>
+            </div>
+        </a>
 
-    <nav class="navbar-container">
-
-    <div class="logo-container">
-
-        <img
-            src="{% static 'img/logo-nova.png' %}"
-            alt="ParaBook"
-            class="logo-img">
-
-        <h1 class="logo">
-            <span class="para">Para</span>
-            <span class="book">Book</span>
-        </h1>
-
-    </div>
-
-    <ul class="menu">
-
-        <li><a href="{% url 'home' %}">Explorar</a></li>
-
-        <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
-
-        <li><a href="{% url 'lista_autores' %}">Autores</a></li>
-
-        <li><a href="{% url 'obras_autores' %}">
-            Publicar Livro
-        </a></li>
-
-    </ul>
-
-    <div class="nav-actions">
-        <button class="search-btn">
-            <i class="fa-solid fa-magnifying-glass"></i>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#parabookNavbar" aria-controls="parabookNavbar" aria-expanded="false" aria-label="Toggle navigation" style="filter: invert(1);">
+            <span class="navbar-toggler-icon"></span>
         </button>
 
-        {% if user.is_authenticated %}
-            <a href="{% url 'perfis:perfil_pessoal' %}" class="btn-nav btn-primary-nav">
-            Meu Perfil
-            </a>
-            <a href="{% url 'logout' %}" class="btn-nav btn-outline">
-            Sair
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}" class="btn-nav btn-outline">
-            Entrar
-            </a>
-        {% endif %}
+        <div class="collapse navbar-collapse" id="parabookNavbar">
+            
+            <ul class="menu">
+                <!-- 2. ROTEAMENTO: Botão Explorar agora leva ao acervo principal -->
+                <li><a href="{% url 'biblioteca' %}">Explorar</a></li>
+                <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
+                <li><a href="{% url 'lista_autores' %}">Autores</a></li>
+                <li><a href="{% url 'obras_autores' %}">Publicar Livro</a></li>
+                <li><a href="{% url 'sobre' %}">Sobre</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <button class="search-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'perfis:perfil_pessoal' %}" class="btn-nav btn-primary-nav">
+                        Meu Perfil
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn-nav btn-outline">
+                        Sair
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-nav btn-outline">
+                        Entrar
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
     </div>
-
 </nav>
-
-</header>

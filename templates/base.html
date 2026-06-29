@@ -24,29 +24,46 @@
 <body>
     {% include 'components/navbar.html' %}
 
+
     {% if messages %}
-        <div class="mensagens-globais" style="position: fixed; top: 80px; right: 20px; z-index: 9999;">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}" 
-                    style="background: #8b5cf6; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                setTimeout(function() {
-                    const toast = document.getElementById('toast-mensagens');
-                    if (toast) {
-                        toast.style.transition = 'opacity 0.5s ease-out';
-                        toast.style.opacity = '0'; // Faz o fade-out
-                        
-                        // Remove o elemento da tela após a animação de meio segundo
-                        setTimeout(() => toast.remove(), 500);
-                    }
-                }, 5000); // 5000 milissegundos = 5 segundos
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                background: '#0f172a',
+                color: '#ffffff',
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
             });
-        </script>
+
+            // Fila de mensagens (evita atropelamento)
+            let atraso = 0;
+            
+            {% for message in messages %}
+                setTimeout(() => {
+                    let tipoIcone = '{{ message.tags }}';
+                    if (tipoIcone === 'error') tipoIcone = 'error';
+                    else if (tipoIcone === 'warning') tipoIcone = 'warning';
+                    else if (tipoIcone === 'success') tipoIcone = 'success';
+                    else tipoIcone = 'info';
+
+                    Toast.fire({
+                        icon: tipoIcone,
+                        title: '{{ message }}'
+                    });
+                }, atraso);
+                
+                atraso += 1500; // Aguarda 1.5s antes de exibir a próxima notificação
+            {% endfor %}
+        });
+    </script>
     {% endif %}
 
     {% block content %}{% endblock %}

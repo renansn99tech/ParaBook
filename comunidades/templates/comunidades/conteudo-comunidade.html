@@ -67,17 +67,60 @@
         <!-- LISTA POSTS -->
         <div id="lista-posts">
 
-            {% for post in posts %}
+{% for post in posts %}
 
-                {% include 'partials/card_post.html' %}
+<div class="post-card">
 
-            {% empty %}
+    <div class="post-header">
 
-                <p>
-                    Nenhuma postagem encontrada.
-                </p>
+        <div>
 
-            {% endfor %}
+            <h4 class="post-title">
+                {{ post.titulo }}
+            </h4>
+
+            <p class="post-author">
+                {{ post.autor.username }}
+            </p>
+
+        </div>
+
+        <span class="post-date">
+            {{ post.criado_em|date:"d/m/Y H:i" }}
+        </span>
+
+    </div>
+
+    <div class="post-content">
+        {{ post.conteudo }}
+    </div>
+
+    {% if post.imagem %}
+        <img
+            src="{{ post.imagem.url }}"
+            style="
+                width:100%;
+                border-radius:12px;
+                margin-top:15px;
+            "
+        >
+    {% endif %}
+
+</div>
+
+{% empty %}
+
+<div class="empty-state">
+
+    <i class="fas fa-comments"></i>
+
+    <p>
+        Ainda não existem postagens nesta comunidade.
+    </p>
+
+</div>
+
+{% endfor %}
 
         </div>
 
@@ -92,8 +135,20 @@
             Adicionar postagem
         </h3>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
 
+        <div class="form-group">
+
+    <label>
+        Imagem
+    </label>
+
+    <input
+        type="file"
+        name="imagem"
+    >
+
+</div>
             {% csrf_token %}
 
             <div class="form-group">

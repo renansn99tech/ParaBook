@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Comunidade
+from .models import Comunidade, PostagemComunidade
 
 
 def comunidades(request):
@@ -53,8 +53,48 @@ def excluir_comunidade(request, id):
 
 
 def acesso_comunidade(request):
-    return render(request, 'comunidades/acesso-comunidade.html')
+    lista_comunidades = Comunidade.objects.all() # Temporariamente listando todas até implementar a relação M2M de membros
+    return render(request, 'comunidades/acesso-comunidade.html', {
+        'comunidades': lista_comunidades
+    })
 
+# Alteração: Buscando a comunidade correta pelo ID recebido via URL
+def conteudo_comunidade(request, id):
+    comunidade = get_object_or_404(
+        Comunidade,
+        id=id
+    )
 
-def conteudo_comunidade(request):
-    return render(request, 'comunidades/conteudo-comunidade.html')
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            titulo = request.POST.get('titulo')
+            conteudo = request.POST.get('conteudo')
+            imagem = request.FILES.get('imagem')
+
+            PostagemComunidade.objects.create(
+                comunidade=comunidade,
+                autor=request.user,
+                titulo=titulo,
+                conteudo=conteudo,
+                imagem=imagem
+            )
+
+            return redirect(
+                'conteudo_comunidade',
+                id=comunidade.id
+            )
+
+    posts = PostagemComunidade.objects.filter(
+        comunidade=comunidade
+    ).select_related(
+        'autor'
+    )
+
+    return render(
+        request,
+        'comunidades/conteudo-comunidade.html',
+        {
+            'comunidade': comunidade,
+            'posts': posts
+        }
+    )

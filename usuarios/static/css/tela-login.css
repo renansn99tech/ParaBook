@@ -568,10 +568,10 @@ body.light-mode .auth-image-text p{
 
     border-radius:12px;
 
-    padding:12px 14px;
+    padding:8px 10px;
 
     font-size:.85rem;
-
+    margin-top: -12px;
     margin-bottom:16px;
 
     display:flex !important;
@@ -600,6 +600,13 @@ body.light-mode .auth-footer-text a {
 
 body.light-mode .auth-footer-text a:hover {
     color: rgb(94, 39, 156);
+}
+
+body.light-mode .auth-error-alert,
+body.light-mode .field-error-message{
+    color: #b91c1c !important;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.28);
 }
 
 body.light-mode .auth-form-side{

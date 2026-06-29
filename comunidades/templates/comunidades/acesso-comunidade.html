@@ -3,31 +3,24 @@
 
 {% block title %}Minhas Comunidades{% endblock %}
 
-
-
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/comunidade.css' %}">
 <link rel="stylesheet" href="{% static 'css/comunidade-extra.css' %}">
 {% endblock %}
 
-
-
 {% block content %}
-
 <section class="pagina-comunidade">
-
     <h1>Minhas Comunidades</h1>
     <p>Acompanhe as comunidades que você faz parte.</p>
 
     <div class="grid">
-
         {% for comunidade in comunidades %}
             <div class="card">
                 <div class="card-content">
                     <h3>{{ comunidade.nome }}</h3>
                     <p>{{ comunidade.descricao }}</p>
 
-                    <a href="#" class="btn">
+                    <a href="{% url 'conteudo_comunidade' comunidade.id %}" class="btn">
                         Acessar
                     </a>
                 </div>
@@ -38,9 +31,6 @@
                 Você ainda não participa de nenhuma comunidade.
             </p>
         {% endfor %}
-
     </div>
-
 </section>
-
 {% endblock %}

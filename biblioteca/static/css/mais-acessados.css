@@ -99,17 +99,19 @@ main hr{
 }
 
 .para {
-    background: linear-gradient(90deg, #E53935, #6A1B9A);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+    color: white;
 }
 
 .book {
-    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+    color: #8b5cf6;
+    margin-left: 2px;
 }
-
 
 /*  =============================================
         Seção do NAV (NAVEGAÇÃO e suas Classes)

@@ -13,6 +13,10 @@ body{
     overflow-x:hidden;
 }
 
+.row {
+    justify-content: center;
+}
+
 .hero{
     display:grid;
     grid-template-columns:45% 55%;
@@ -693,9 +697,217 @@ body{
     }
 
 }
+/* ==========================================================================
+   Componente Adicional: Seção Novidades & Cards Recentes
+   ========================================================================== */
+
+.novidades-home {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+/* Link Ver Mais com micro-interação na seta */
+.btn-ver-mais-news {
+    color: var(--purple);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-ver-mais-news i {
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btn-ver-mais-news:hover i {
+    transform: translateX(6px);
+}
+
+/* Grid Customizado de 3 Colunas Desktop */
+.novidades-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* Wrapper da Capa para Animação de Zoom Controlado */
+.book-capa-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 260px;
+    background: #0d1427;
+}
+
+.book-capa-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+/* Efeito Hover nos Cards de Novidades */
+.card-novidade-evolved:hover .book-capa-wrapper img {
+    transform: scale(1.05);
+}
+
+/* Badge flutuante de novidade */
+.badge-novidade {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--purple);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-uppercase: uppercase;
+    padding: 4px 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    z-index: 3;
+}
+
+/* Fallback de Capa Neutra */
+.capa-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-secondary);
+    font-size: 2rem;
+}
+
+.col-fallback {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-secondary);
+}
+
+/* Customizações para a Seção Em Alta */
+.btn-ver-todos {
+    color: var(--primary-color, #007bff);
+    font-weight: 600;
+    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-ver-todos:hover {
+    color: var(--primary-color-dark, #0056b3);
+    transform: translateX(4px);
+}
+
+.book-card-modern {
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.3s ease-in-out;
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.book-card-modern:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+.book-cover-wrapper {
+    width: 100%;
+    aspect-ratio: 3 / 4; /* Proporção de capa de livro rígida e idêntica para todos */
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.book-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante o preenchimento sem distorcer a imagem */
+}
+
+.capa-placeholder-modern {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.book-badge-rating {
+    font-size: 0.8rem;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+    background-color: rgba(33, 37, 41, 0.85) !important;
+}
+/* ==========================================================================
+   Responsividade Adaptada ao Ecossistema Existente
+   ========================================================================== */
+@media(max-width: 992px) {
+    .novidades-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 520px) {
+    .novidades-grid {
+        grid-template-columns: 1fr;
+    }
+    .card-novidade-evolved .book-capa-wrapper {
+        height: 340px; /* Mantém o padrão estabelecido nos outros cards da sua Home */
+    }
+}
+/* ==========================================================================
+   Componente Adicional: Comunidades em Destaque (Tema Escuro Parabook)
+   ========================================================================== */
+
+/* Definição de cor utilitária caso não esteja globalizada */
+:root {
+    --purple: #8b5cf6;
+    --purple-hover: #a855f7;
+    --dark-card: rgba(15, 23, 42, 0.75);
+    --border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Customização do Card Moderno de Comunidades */
+.community-card-modern {
+    background: var(--dark-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 14px !important;
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efeito Hover nos Cards */
+.community-card-modern:hover {
+    transform: translateY(-6px);
+    border-color: rgba(139, 92, 246, 0.45) !important;
+    box-shadow: 0 20px 50px rgba(139, 92, 246, 0.16) !important;
+}
+
+/* Wrapper para o ícone circular */
+.community-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--purple);
+    flex-shrink: 0;
+}
+
+/* Linha divisória interna do Card */
+.community-card-footer {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Botão Entrar customizado para o tema do projeto */
+.btn-outline-purple {
+    color: var(--purple);
+    border-color: var(--purple);
+    transition: all 0.2s ease;
+}
+
+.btn-outline-purple:hover {
+    background-color: var(--purple);
+    border-color: var(--purple);
+    color: white;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
 
 /* =========================
-   RESPONSIVIDADE GERAL
+    RESPONSIVIDADE GERAL
 ========================= */
 
 @media(max-width:1200px){

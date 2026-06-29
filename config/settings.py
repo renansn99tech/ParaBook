@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config 
+import dj_database_url 
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-1z+q%(deeme==owa&2+iq5jmk)3r*4-ma8+oea!a)p9$1))u=f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =  config('DEBUG', default=True, cast=bool) 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') 
+if not DEBUG: 
+        ALLOWED_HOSTS += ['.railway.app'] 
+        CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', 
+        default='http://localhost,http://127.0.0.1').split(',') 
+if not DEBUG: 
+        CSRF_TRUSTED_ORIGINS += ['https://*.railway.app'] 
 
 
 # Application definition
@@ -49,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,17 +90,19 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
+DATABASES = { 
+'default': { 
+'ENGINE': 'django.db.backends.mysql', 
+'NAME': config('DB_NAME'), 
+'USER': config('DB_USER'), 
+'PASSWORD': config('DB_PASSWORD'), 
+'HOST': config('DB_HOST'), 
+'PORT': config('DB_PORT'), 
+'OPTIONS': { 
+'ssl': {'ssl_mode': 'REQUIRED'} 
+}, 
 }
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -130,6 +142,14 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+STATIC_ROOT = BASE_DIR / "staticfiles" 
+
+STORAGES = { 
+"default": {"BACKEND": "django.core.files.storage.FileSystemStorage"}, 
+"staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}, 
+}
+
+WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = '/media/'
 import os

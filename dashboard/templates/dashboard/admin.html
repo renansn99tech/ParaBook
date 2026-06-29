@@ -160,7 +160,11 @@ Painel Administrativo - ParaBook
             <ul id="listaUsuarios">
                 {% for u in usuarios %}
                 <li>
-                    <span><strong>{{ u.nome|default:u.user_auth.username }}</strong> (@{{ u.user_auth.username }})</span>
+                    {% if u.user_auth %}
+                        <span><strong>{{ u.nome|default:u.user_auth.username }}</strong> (@{{ u.user_auth.username }})</span>
+                    {% else %}
+                        <span><strong>{{ u.nome|default:"Usuário Sem Nome" }}</strong> <em style="color: red;">(Sem conta de login vinculada)</em></span>
+                    {% endif %}
                     
                     {% if u.user_auth.is_superuser %}
                         <span class="badge admin">Admin</span>

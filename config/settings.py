@@ -92,15 +92,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = { 
 'default': { 
-'ENGINE': 'django.db.backends.mysql', 
-'NAME': config('DB_NAME'), 
-'USER': config('DB_USER'), 
-'PASSWORD': config('DB_PASSWORD'), 
-'HOST': config('DB_HOST'), 
-'PORT': config('DB_PORT'), 
-'OPTIONS': { 
-'ssl': {'ssl_mode': 'REQUIRED'} 
-}, 
+'ENGINE': "django.db.backends.mysql", 
+'NAME': config("DB_NAME", default="mydb"), 
+'USER': config("DB_USER", default="root"), 
+'PASSWORD': config("DB_PASSWORD", default=""), 
+'HOST': config("DB_HOST", default="localhost"), 
+'PORT': config("DB_PORT", default="3306"), 
+'OPTIONS': { "ssl": {"ssl_mode": "REQUIRED"} }, 
 }
 }
 

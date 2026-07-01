@@ -26,8 +26,7 @@
             135deg,
             rgba(88,28,135,.35),
             rgba(5,8,22,.9)
-        ),
-        url('../img/hero/stars-bg.jpg') center/cover no-repeat;
+        );
 
     border: 1px solid rgba(139,92,246,.25);
     box-shadow:

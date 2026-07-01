@@ -28,14 +28,19 @@ SECRET_KEY = 'django-insecure-1z+q%(deeme==owa&2+iq5jmk)3r*4-ma8+oea!a)p9$1))u=f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG =  config('DEBUG', default=True, cast=bool) 
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') 
-if not DEBUG: 
-        ALLOWED_HOSTS += ['.railway.app'] 
-        CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', 
-        default='http://localhost,http://127.0.0.1').split(',') 
-if not DEBUG: 
-        CSRF_TRUSTED_ORIGINS += ['https://*.railway.app'] 
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='localhost,127.0.0.1,.railway.app'
+).split(',')
 
+
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://localhost,http://127.0.0.1'
+).split(',')
+
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS += ['https://*.railway.app']
 
 # Application definition
 
@@ -90,16 +95,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = { 
-'default': { 
-'ENGINE': "django.db.backends.mysql", 
-'NAME': config("DB_NAME", default="mydb"), 
-'USER': config("DB_USER", default="root"), 
-'PASSWORD': config("DB_PASSWORD", default=""), 
-'HOST': config("DB_HOST", default="localhost"), 
-'PORT': config("DB_PORT", default="3306"), 
-'OPTIONS': { "ssl": {"ssl_mode": "REQUIRED"} }, 
-}
+DATABASES = {
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='')
+    )
 }
 
 # Password validation

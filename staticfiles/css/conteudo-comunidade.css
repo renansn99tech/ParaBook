@@ -1,0 +1,912 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@400;500;600&display=swap');
+
+:root {
+    --color-primary-dark: #14213d;
+    --color-secondary: #4D4AE8;
+    --color-accent-olive: #58504a;
+    --color-neutral-tan: #e9ecef;
+    --color-bg-warm: #F5FFFA;
+    --color-ui-charcoal: #303136;
+
+    --font-playfair: 'Playfair Display', serif;
+    --font-ui: 'Montserrat', sans-serif;
+    --font-body: 'Lora', serif;
+    --font-data: 'Inter', sans-serif;
+
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+
+    --fs-h1: 3rem;
+    --fs-h2: 2rem;
+    --fs-h3: 1.5rem;
+    --fs-body: 1.125rem;
+    --fs-small: 0.875rem;
+
+    --lh-body: 1.6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
+}
+
+/* NAV */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: rgba(2,6,23,0.7);
+    backdrop-filter: blur(10px);
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 20px;
+}
+
+.menu li a {
+    color: #9CA3AF;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.menu li a:hover {
+    color: #E5E7EB;
+}
+
+.login-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
+    font-size: var(--fs-small);
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    transform: scale(1.1);
+    transition: 0.5s ease;
+    background-color: #1d9f4c;
+    color: white;
+}
+
+/* LOGO */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 70px;
+    margin-right: -30px;
+    margin-bottom: -10px;
+}
+
+.para {
+    background: linear-gradient(90deg, #E53935, #6A1B9A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.book {
+    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* BANNER */
+.banner-comunidade {
+    max-width: 1200px;
+    margin: 3rem auto 2rem;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-accent-olive));
+    color: white;
+}
+
+.banner-comunidade h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    font-family: var(--font-playfair);
+}
+
+.banner-comunidade p {
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 800px;
+}
+
+/* POSTS */
+.posts-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.posts-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-accent-olive);
+    padding-bottom: 0.8rem;
+}
+
+#lista-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/*.post-card,
+.post {
+    background: white;
+    border-radius: 14px;
+    padding: 1.5rem;
+    color: #111827;
+}*/
+
+/* FORM */
+.post-form-container {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+}
+
+.post-form-container::before {
+    content: '';
+    position: absolute;
+}
+
+.post-form-container h3 {
+    margin-bottom: 1.5rem;
+    color: #E5E7EB;
+    font-family: var(--font-ui);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    margin-bottom: 0.6rem;
+    color: #9CA3AF;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+    background: #020617;
+    border: 1px solid #1F2937;
+    border-radius: 12px;
+    color: #E5E7EB;
+    outline: none;
+    transition: 0.3s;
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #6366F1;
+}
+
+/* BUTTON */
+.btn-publicar {
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: white;
+    cursor: pointer;
+}
+
+/* FOOTER */
+
+.footer {
+    background: #020617;
+    border-top: 1px solid #1F2937;
+    padding: 40px 60px 20px 60px;
+    color: #9CA3AF;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items:center;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer-brand {
+    position: relative;
+    top: -12px;
+    line-height: 2;
+}
+
+.footer h2, .footer {
+    color: #E5E7EB;
+    text-align: center;
+}
+
+.footer-links {
+    margin-right: 30px;
+}
+
+.footer-links a {
+    display: block;
+    color: #9CA3AF;
+    text-decoration: none;
+    margin: 5px;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #6366F1;
+}
+
+.footer-social .icons i {
+    font-size: 1.4rem;
+    margin: 12px 8px 5px 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.footer-social h4 {
+    position: relative;
+    top: -10px;
+}
+
+.footer-social .icons i:hover {
+    color: #6366F1;
+}
+
+.footer-bottom {
+    text-align: center;
+    letter-spacing: .1rem;
+    margin-top: 30px;
+    padding-top: 10px;
+    font-size: 0.9rem;
+}
+
+.footer-bottom-line {
+    position: relative;
+    top: -60px;
+    height: 1px;
+    background: #1F2937;
+    border: none;
+}
+/* Mantido o seu CSS base com pequenos ajustes funcionais */
+
+.post {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem;
+    color: #E5E7EB;
+    /*color: #E5E7EB !important;
+    opacity: 1 !important;*/
+}
+
+.post small {
+    display: block;
+    margin-top: 8px;
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+.post-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.post-actions button {
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    transition: 0.2s ease;
+    color: #E5E7EB;
+    background: rgba(255,255,255,0.06);
+}
+
+.post-actions button:hover {
+    transform: scale(1.05);
+}
+
+/* like */
+.post-actions button:nth-child(1) {
+    background: rgba(99,102,241,0.2);
+}
+
+/* comments */
+.post-actions button:nth-child(2) {
+    background: rgba(34,197,94,0.15);
+}
+
+/* delete */
+.post-actions button:nth-child(3) {
+    background: rgba(239,68,68,0.15);
+}
+
+.btn-like {
+    background: #e0e7ff;
+}
+
+.btn-delete {
+    background: #fee2e2;
+}
+
+.search-box {
+    max-width: 1200px;
+    margin: 0 auto 1.5rem auto;
+    padding: 0 2rem;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 16px;
+
+    border-radius: 12px;
+    border: 1px solid #1F2937;
+
+    background: rgba(2, 6, 23, 0.85);
+    color: #E5E7EB;
+
+    outline: none;
+
+    font-size: 1rem;
+
+    transition: 0.3s ease;
+}
+
+.search-box input::placeholder {
+    color: #6B7280;
+}
+
+.search-box input:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 10px rgba(99,102,241,0.35);
+}
+
+.comments-box {
+    margin-top: 12px;
+    padding: 12px;
+
+    border-radius: 12px;
+
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* comentário individual */
+.comment {
+    padding: 8px 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.05);
+
+    color: #E5E7EB;
+
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* input de comentário */
+.comments-box input {
+    width: 100%;
+    padding: 10px;
+
+    border-radius: 10px;
+    border: 1px solid #1F2937;
+
+    background: #020617;
+    color: #E5E7EB;
+
+    outline: none;
+}
+
+.comments-box input:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 8px rgba(99,102,241,0.3);
+}
+
+/* botão enviar comentário */
+.comments-box button {
+    align-self: flex-end;
+
+    padding: 8px 14px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.comments-box button:hover {
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   LIGHT MODE - PÁGINA COMUNIDADE / POSTS
+   Adicione no FINAL do seu CSS
+   ========================================================= */
+
+body.light-mode {
+    background: #F8FAFC;
+    color: #1F2937;
+}
+
+/* ================= NAV ================= */
+
+body.light-mode .nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #E5E7EB;
+}
+
+body.light-mode .menu li a {
+    color: #4B5563;
+}
+
+body.light-mode .menu li a:hover {
+    color: #111827;
+}
+
+body.light-mode .login-btn {
+    background: #22C55E;
+    color: white;
+}
+
+body.light-mode .login-btn:hover {
+    background: #16A34A;
+}
+
+/* ================= BANNER ================= */
+
+body.light-mode .banner-comunidade {
+    background: linear-gradient(135deg, #E5E7EB, #F3F4F6);
+    color: #111827;
+}
+
+body.light-mode .banner-comunidade p {
+    color: #374151;
+}
+
+/* ================= POSTS ================= */
+
+body.light-mode .posts-section h3 {
+    border-bottom: 2px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .post,
+body.light-mode .post-card {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #111827 !important;
+}
+
+body.light-mode .post small {
+    color: #6B7280;
+}
+
+/* ================= FORM ================= */
+
+body.light-mode .post-form-container {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+}
+
+body.light-mode .post-form-container h3 {
+    color: #111827;
+}
+
+body.light-mode .form-group label {
+    color: #374151;
+}
+
+body.light-mode .form-group input,
+body.light-mode .form-group textarea {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .form-group input:focus,
+body.light-mode .form-group textarea:focus {
+    border-color: #6366F1;
+}
+
+/* ================= BOTÕES ================= */
+
+body.light-mode .post-actions button {
+    background: #F3F4F6;
+    color: #111827;
+}
+
+body.light-mode .post-actions button:nth-child(1) {
+    background: #E0E7FF;
+}
+
+body.light-mode .post-actions button:nth-child(2) {
+    background: #DCFCE7;
+}
+
+body.light-mode .post-actions button:nth-child(3) {
+    background: #FEE2E2;
+}
+
+/* ================= SEARCH ================= */
+
+body.light-mode .search-box input {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .search-box input::placeholder {
+    color: #9CA3AF;
+}
+
+/* ================= COMMENTS ================= */
+
+body.light-mode .comments-box {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+}
+
+body.light-mode .comment {
+    background: #FFFFFF;
+    color: #111827;
+}
+
+body.light-mode .comments-box input {
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #111827;
+}
+
+body.light-mode .comments-box input:focus {
+    border-color: #6366F1;
+}
+
+/* ================= FOOTER ================= */
+
+body.light-mode .footer {
+    background: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+}
+
+body.light-mode .footer-links a {
+    color: #4B5563;
+}
+
+body.light-mode .footer-links a:hover {
+    color: #4D4AE8;
+}
+
+body.light-mode .footer-bottom {
+    color: #6B7280;
+}
+
+body.light-mode .footer-bottom-line {
+    background: #E5E7EB;
+}
+
+#theme-toggle {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+#welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-image: url(/img/bem-vindo-comunidade.jpg);
+    background-size: cover;
+    background-position: center;
+
+    display: none; /* começa escondido */
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+
+    opacity: 1;
+    transition: opacity 0.8s ease;
+}
+
+.welcome-content {
+    text-align: center;
+    color: white;
+}
+
+.welcome-content img {
+    width: 120px;
+    margin-bottom: 20px;
+}
+
+.welcome-content h1 {
+    font-size: 2rem;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    .nav {
+        padding: 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+@media (max-width: 768px) {
+
+    /* FONTES */
+    :root {
+        --fs-h1: 2.2rem;
+        --fs-h2: 1.7rem;
+        --fs-h3: 1.3rem;
+        --fs-body: 1rem;
+        --fs-small: 0.8rem;
+    }
+
+    /* BODY */
+    body {
+        font-size: 15px;
+    }
+
+    /* NAVBAR */
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 16px 20px;
+        gap: 16px;
+    }
+
+    .logo-container {
+        justify-content: center;
+    }
+
+    .logo-img {
+        height: 58px;
+        margin-right: -18px;
+        margin-bottom: -6px;
+    }
+
+    .menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .menu li {
+        width: auto;
+    }
+
+    .menu li a {
+        font-size: 0.95rem;
+    }
+
+    .login-btn {
+        width: 100%;
+        max-width: 220px;
+        padding: 10px 18px;
+    }
+
+    /* BANNER */
+    .banner-comunidade {
+        margin: 1.5rem 1rem;
+        padding: 1.5rem;
+        border-radius: 14px;
+    }
+
+    .banner-comunidade h2 {
+        font-size: 1.6rem;
+        line-height: 1.3;
+    }
+
+    .banner-comunidade p {
+        font-size: 0.95rem;
+    }
+
+    /* POSTS */
+    .posts-section {
+        padding: 0 1rem;
+    }
+
+    .posts-section h3 {
+        font-size: 1.4rem;
+    }
+
+    .post {
+        padding: 1rem;
+    }
+
+    .post-actions {
+        flex-wrap: wrap;
+    }
+
+    .post-actions button {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    /* SEARCH */
+    .search-box {
+        padding: 0 1rem;
+    }
+
+    .search-box input {
+        font-size: 0.95rem;
+    }
+
+    /* FORM */
+    .post-form-container {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        font-size: 16px; /* evita zoom no iPhone */
+    }
+
+    .btn-publicar {
+        width: 100%;
+        padding: 14px;
+    }
+
+    /* COMMENTS */
+    .comments-box {
+        padding: 10px;
+    }
+
+    .comments-box button {
+        width: 100%;
+    }
+
+    /* OVERLAY */
+    .welcome-content {
+        padding: 20px;
+    }
+
+    .welcome-content img {
+        width: 90px;
+    }
+
+    .welcome-content h1 {
+        font-size: 1.5rem;
+        line-height: 1.4;
+    }
+
+    /* FOOTER */
+    .footer {
+        padding: 35px 20px 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 25px;
+    }
+
+    .footer-links,
+    .footer-social,
+    .footer-brand {
+        width: 100%;
+    }
+
+    .footer-links a {
+        margin: 8px 0;
+    }
+
+    .footer-bottom {
+        margin-top: 20px;
+        font-size: 0.8rem;
+    }
+}
+
+/* =========================================================
+   CELULARES PEQUENOS
+   ========================================================= */
+@media (max-width: 480px) {
+
+    .nav {
+        padding: 14px;
+    }
+
+    .menu {
+        gap: 8px;
+    }
+
+    .menu li a {
+        font-size: 0.85rem;
+    }
+
+    .banner-comunidade {
+        padding: 1.2rem;
+    }
+
+    .banner-comunidade h2 {
+        font-size: 1.4rem;
+    }
+
+    .posts-section h3 {
+        font-size: 1.2rem;
+    }
+
+    .post {
+        padding: 0.9rem;
+    }
+
+    .post-actions {
+        flex-direction: column;
+    }
+
+    .post-actions button {
+        width: 100%;
+    }
+
+    .post-form-container {
+        padding: 1.2rem;
+    }
+
+    .footer {
+        padding: 30px 15px 15px;
+    }
+
+    .welcome-content h1 {
+        font-size: 1.2rem;
+    }
+}

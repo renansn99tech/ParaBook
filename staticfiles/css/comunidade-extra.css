@@ -1,0 +1,83 @@
+/* =====================================================
+   CONTAINER FORMULÁRIO
+===================================================== */
+
+.form-container {
+    max-width: 600px;
+    margin: 60px auto;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #1F2937;
+    border-radius: 16px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #E5E7EB;
+}
+
+/* =====================================================
+   INPUTS
+===================================================== */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #9CA3AF;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #374151;
+    background: #020617;
+    color: #E5E7EB;
+    font-size: 0.95rem;
+    transition: 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #6366F1;
+    box-shadow: 0 0 10px rgba(99,102,241,0.4);
+}
+
+.form-group textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+/* =====================================================
+   BOTÃO DO FORM
+===================================================== */
+
+.form-container .btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* =====================================================
+   EMPTY STATE MELHORADO
+===================================================== */
+
+.empty-state {
+    text-align: center;
+    margin-top: 40px;
+    color: #6B7280;
+}
+
+.empty-state i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}

@@ -6,33 +6,7 @@ Painel Administrativo - ParaBook
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin.css' %}">
-<style>
-    #topo navbar, header, nav, .navbar { 
-        display: none !important; 
-    }
-    body {
-        margin: 0;
-        padding: 0;
-    }
-    /* Estilo auxiliar para organização rápida em Grid dos Cards SaaS */
-    .metricas-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 30px;
-    }
-    .metricas-grid .card h3 {
-        font-size: 14px;
-        color: var(--text-muted);
-        margin-bottom: 5px;
-    }
-    .metricas-grid .card p {
-        font-size: 24px;
-        font-weight: bold;
-        color: var(--text);
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/admin.css' %}?v=2.0">
 {% endblock %}
 
 {% block content %}

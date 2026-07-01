@@ -1,0 +1,1638 @@
+/* Fontes padrão do site, a saber: Playfair Display, Montserrat, Lora e Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Lora:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+    /* Paleta de Cores Terrosa (Atemporal) */
+    --color-primary-dark: #14213d; /*#5C3B2E;*/ /* Marrom Profundo para Títulos e elementos de destaque e ícones principais */
+    --color-secondary: #4D4AE8;  /* #422b21;*/
+    --color-accent-olive: #58504a;  /* #4C4A2A; */ /* Verde-oliva escuro (Sofisticado) para detalhes e ícones secundarios */
+    --color-neutral-tan: #e9ecef; /* #C1B59F; */ /* Bege claro */
+    --color-bg-warm: #F5FFFA; /*#E6E2DB;*/ /* Off-white para Fundo principal */
+    --color-ui-charcoal: #303136; /* Grafite para textos e elementos de contraste */
+
+    /* Definindo as Fontes nas variáveis de ambiente */
+    --font-playfair: 'Playfair Display', serif; /* Fonte para títulos */
+    --font-ui: 'Montserrat', sans-serif; /* Fonte para elementos de interface, sub-títulos e legendas */
+    --font-body: 'Lora', serif; /* Fonte para o corpo do texto */
+    --font-data: 'Inter', sans-serif; /* Fonte para dados e informações */
+
+    /* 'Pesos' das fontes */
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+
+    /* Escala de tamanhos baseada no Root (1 rem = 16px) */
+    --fs-h1: 3rem; /* Tamanho para títulos principais (40px) */
+    --fs-h2: 2rem; /* Tamanho para títulos secundários (32px) */
+    --fs-h3: 1.5rem; /* Tamanho para títulos terciários (24px) */
+    --fs-body: 1.125rem; /* Tamanho para o corpo do texto (18px) */
+    --fs-small: 0.875rem; /* Tamanho para dados e informações (14px) */
+
+    /* Espaçamento de linhas para maior conforto */
+    --lh-body: 1.6; /* Espaçamento para o corpo do texto */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --border: rgba(148, 163, 184, 0.2);
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+}
+
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Garantindo que o padding e border sejam incluídos no tamanho total dos elementos */
+}
+
+/*  ================================================================================================================
+        Definindo as variáveis aplicáveis para todas as páginas do site, como cores, fontes, tamanhos e espaçamento.
+    ================================================================================================================  */
+
+
+/* Aplicando as Variáveis padrão no corpo da página */
+
+body {
+    display: grid; /* Adicionado um Grid automático para preencher todo o conteúdo da tela sem "sobras" */
+    grid-template-rows: auto 1fr auto; /* Header, Conteúdo, Footer */
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #111827, #020617);
+    color: #E5E7EB;
+    font-family: 'Inter', sans-serif;
+}
+
+/*  ==============================================
+        Definições da Página Inicial (index.html)
+    ============================================== */
+
+
+
+    /* Classe LOGO (onde está escrito o nome ParaBook) */
+
+.logo {
+    margin: 2vh 2vw 2vh 0;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: -15px;
+}
+
+.logo-img {
+    height: 70px;
+    margin-right: -30px;
+    margin-bottom: -10px;
+}
+
+.para {
+    background: linear-gradient(90deg, #E53935, #6A1B9A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.book {
+    background: linear-gradient(90deg, #6a1b9b, #1E40FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+/*  =============================================
+        Seção do NAV (NAVEGAÇÃO e suas Classes)
+    =============================================  */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: rgba(2,6,23,0.7);
+    backdrop-filter: blur(10px);
+}
+
+
+.menu{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    list-style: none;
+    gap: 20px;
+}
+
+.menu li a {
+    color: #9CA3AF;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.menu li a:hover {
+    color: #E5E7EB;
+}
+
+.login-btn {
+    background: #22C55E;
+    color: #020617;
+    border-radius: 45px;
+    padding: 8px 18px;
+    font-weight: bold;
+    font-size: var(--fs-small);
+    border: none;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    transform: scale(1.1);
+    transition: 0.5s ease;
+    background-color: #1d9f4c;
+    color: white;
+}
+main hr {
+    border: none;
+    height: 1px;
+    background: #1F2937;
+    margin: 20px 0;
+}
+
+
+/* =================================
+   PÁGINA MINHA BIBLIOTECA
+================================= */
+
+.container-biblioteca {
+    padding: 0 2rem 2rem 2rem;
+}
+
+/* =================================
+   BANNER
+================================= */
+
+.banner-biblioteca {
+    margin-bottom: 2rem;
+}
+
+.titulo-biblioteca {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.banner-content {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 16px;
+}
+
+/* =================================
+   FILTROS
+================================= */
+
+/* =========================
+   FILTRO (BIBLIOTECA)
+========================= */
+.biblioteca-filters {
+  padding: 20px 0;
+}
+
+.filter-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* INPUT BUSCA */
+.filter-input {
+  flex: 1 1 260px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text);
+  outline: none;
+  transition: 0.25s;
+}
+
+.filter-input::placeholder {
+  color: var(--text-muted);
+}
+
+.filter-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+/* =========================
+   SELECT MODERNO
+========================= */
+.filter-select {
+  flex: 1 1 180px;
+  padding: 12px 40px 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: 0.25s;
+
+  /* remove estilo padrão */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* seta custom */
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(1em + 2px),
+    calc(100% - 13px) calc(1em + 2px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.filter-select:hover {
+  border-color: var(--accent);
+}
+
+.filter-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+/* =================================
+   GRID DE LIVROS
+================================= */
+
+.biblioteca-section {
+    margin: 2rem 0;
+}
+
+.biblioteca-title {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* =========================================================
+   GRID PRINCIPAL DA BIBLIOTECA
+   ========================================================= */
+
+/* Container dos livros em formato de grid responsivo */
+.biblioteca-grid {
+   
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    /* Espaçamento entre os cards */
+    gap: 30px;
+    margin-top: 2rem;
+}
+
+/* Garante que todos os filhos ocupem 100% da altura */
+.biblioteca-grid > * {
+    height: 100%;
+}
+
+
+/* =========================================================
+   CARD DE LIVRO (ESTILO MODERNO GLASS)
+   ========================================================= */
+
+.card-livro {
+
+    width: 100%;
+    max-width: 400px;
+    
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 15px;
+
+    /* Fundo com efeito glassmorphism */
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+
+    /* Efeito de vidro */
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    /* Borda sutil */
+    border: 1px solid rgba(255,255,255,0.08);
+
+    /* Bordas arredondadas */
+    border-radius: 18px;
+
+    /* Sombra para profundidade */
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+
+    /* Animação suave */
+    transition: all 0.35s ease;
+
+    /* Evita que elementos internos escapem */
+    overflow: hidden;
+
+    /* Necessário para efeitos internos */
+    position: relative;
+}
+
+/* Glow moderno no card */
+.card-livro::before {
+    content: '';
+    position: absolute;
+
+    width: 200px;
+    height: 200px;
+
+    background: radial-gradient(circle, rgba(99,102,241,0.25), transparent);
+
+    top: -60px;
+    right: -60px;
+
+    filter: blur(60px);
+}
+
+/* Efeito ao passar o mouse */
+.card-livro:hover {
+    transform: translateY(-8px) scale(1.02);
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,0.8),
+        0 0 25px rgba(99,102,241,0.3);
+}
+
+.card-livro img {
+    width: 80%;
+    margin: 20px auto; /* centraliza de verdade */
+    display: block;
+    border-radius: 15px;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+
+    /* 🔥 melhora percepção visual */
+    image-rendering: auto;
+    filter: contrast(1.05) brightness(1.05);
+
+    /* 🔥 suaviza serrilhado leve */
+    transform: translateZ(0);
+    background: #0f172a;
+}
+
+/* =========================================================
+   ESTADO VAZIO (SEM LIVROS)
+   ========================================================= */
+
+.empty-state {
+    /* display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; */
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #9CA3AF;
+}
+
+/* Ícone grande */
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #6366F1;
+}
+
+.empty-state a {
+    width: 20%;
+}
+
+/* Botão do estado vazio */
+.btn-empty-state {
+    position: relative;
+    left: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 10px 22px;
+
+    border-radius: 999px;
+    border: none;
+
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: white;
+
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: 0.3s;
+
+    box-shadow: 0 8px 20px rgba(99,102,241,0.3);
+}
+
+.btn-empty-state:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 20px rgba(99,102,241,0.6);
+}
+
+
+/* =========================================================
+   BOTÃO "LER"
+   ========================================================= */
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+
+
+    padding: 10px 18px;
+
+    border-radius: 999px;
+    border: none;
+
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    color: #FFFFFF;
+
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    box-shadow: 0 8px 20px rgba(99,102,241,0.3);
+}
+
+.btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 20px rgba(99,102,241,0.6);
+}
+
+.btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.btn.remover-btn {
+  background: #dc2626 !important;
+}
+
+.btn.remover-btn:hover {
+  background: #b91c1c !important;
+}
+
+.card-acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.rating {
+  display: flex;
+  flex-direction: row-reverse; /* Mantém a lógica do seletor ~ */
+  justify-content: flex-end;
+  width: fit-content;
+}
+
+.rating input {
+  display: none;
+}
+
+.rating label {
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.3s;
+}
+
+.rating label:before {
+  content: '\2605';
+  font-size: 30px;
+}
+
+/* O seletor ~ precisa que os inputs estejam fisicamente ANTES dos labels no HTML */
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+  color: #6f00ff;
+}
+
+/* =========================================================
+   SEÇÃO DE ESTATÍSTICAS
+   ========================================================= */
+
+.biblioteca-stats {
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+/* Grid das estatísticas */
+.stats-grid {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 20px;
+}
+
+/* Card de estatística */
+.stat-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+
+    backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+
+    padding: 1.5rem;
+
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    transition: 0.3s;
+
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glow sutil */
+.stat-card::before {
+    content: '';
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    background: radial-gradient(circle, rgba(99,102,241,0.2), transparent);
+
+    top: -40px;
+    right: -40px;
+
+    filter: blur(50px);
+}
+
+/* Hover */
+.stat-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255,255,255,0.15);
+
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+
+/* Ícone */
+.stat-icon {
+    font-size: 2rem;
+    color: #6366F1;
+}
+
+/* Conteúdo */
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Label */
+.stat-label {
+    font-size: 0.85rem;
+    color: #9CA3AF;
+}
+
+/* Valor */
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #E5E7EB;
+}
+
+
+    .button-top {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgb(20, 20, 20);
+    border: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 0px 4px rgba(180, 160, 255, 0.253);
+    cursor: pointer;
+    transition-duration: 0.3s;
+    overflow: hidden;
+    position: relative;
+    left: 90%;
+    }
+
+    .svgIcon {
+    width: 12px;
+    transition-duration: 0.3s;
+    }
+
+    .svgIcon path {
+    fill: white;
+    }
+
+    .button-top:hover {
+    width: 140px;
+    border-radius: 50px;
+    transition-duration: 0.3s;
+    background-color: rgb(181, 160, 255);
+    align-items: center;
+    }
+
+    .button-top:hover .svgIcon {
+    /* width: 20px; */
+    transition-duration: 0.3s;
+    transform: translateY(-200%);
+    }
+
+    .button-top::before {
+    position: absolute;
+    bottom: -20px;
+    content: "Subir";
+    color: white;
+    /* transition-duration: .3s; */
+    font-size: 0px;
+    }
+
+    .button-top:hover::before {
+    font-size: 13px;
+    opacity: 1;
+    bottom: unset;
+    /* transform: translateY(-30px); */
+    transition-duration: 0.3s;
+    }
+
+/* ===============================
+   FOOTER
+================================= */
+
+.footer {
+    background: #020617;
+    border-top: 1px solid #1F2937;
+    padding: 40px 60px 20px 60px;
+    color: #9CA3AF;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items:center;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer-brand {
+    position: relative;
+    top: -12px;
+    line-height: 2;
+}
+
+.footer h2, .footer {
+    color: #E5E7EB;
+    text-align: center;
+}
+
+.footer-links {
+    margin-right: 30px;
+}
+
+.footer-links a {
+    display: block;
+    color: #9CA3AF;
+    text-decoration: none;
+    margin: 5px;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #6366F1;
+}
+
+.footer-social .icons i {
+    font-size: 1.4rem;
+    margin: 12px 8px 5px 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.footer-social h4 {
+    position: relative;
+    top: -10px;
+}
+
+.footer-social .icons i:hover {
+    color: #6366F1;
+}
+
+.footer-bottom {
+    text-align: center;
+    letter-spacing: .1rem;
+    margin-top: 30px;
+    padding-top: 10px;
+    font-size: 0.9rem;
+}
+
+.footer-bottom-line {
+    position: relative;
+    top: -60px;
+    height: 1px;
+    background: #1F2937;
+    border: none;
+}
+
+
+/* =================================
+   RESPONSIVO
+================================= */
+
+@media (max-width: 768px) {
+    .container-biblioteca {
+        padding: 1rem;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+.filter-input,
+.filter-select {
+    background: rgba(255, 255, 255, 0.05);
+    color: #E5E7EB;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+
+    backdrop-filter: blur(8px);
+}
+
+.filter-input::placeholder {
+    color: #9CA3AF;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: #4D4AE8;
+    box-shadow: 0 0 12px rgba(77, 74, 232, 0.4);
+}
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 768px) {
+    .biblioteca-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-livro{
+        margin: 0 auto;
+    }
+}
+
+/* =========================================================
+   RESPONSIVO NAV
+   ========================================================= */
+
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: column;
+    }
+
+    .menu {
+        flex-direction: column;
+    }
+
+    #secao-FAQ {
+        flex-direction: column;
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    .footer {
+        padding: 40px 20px; /* Reduz o padding lateral que era muito grande */
+    }
+
+    .footer-container {
+        flex-direction: column; /* Empilha os itens verticalmente */
+        text-align: center;     /* Centraliza o texto de tudo */
+        gap: 30px;              /* Espaçamento entre as seções */
+    }
+
+    .footer-brand, .footer-links, .footer-social {
+        margin: 0;
+        top: 0;                 /* Remove os offsets negativos que desalinhariam no mobile */
+    }
+
+    .footer-links {
+        margin-right: 0;        /* Remove a margem lateral específica */
+    }
+
+    .footer-bottom-line {
+        top: 0;                 /* Ajusta a linha para não sobrepor o conteúdo */
+        margin-bottom: 20px;
+    }
+}
+
+/*box-shadow: 0 0 8px rgba(77, 74, 232, 0.2);
+
+ =========================
+   FAVORITOS E AVALIAÇÃO (NOVO)
+========================= */
+
+.favorito-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* ícone dentro */
+.favorito-btn i {
+    font-size: 1.2rem;
+    color: #9CA3AF;
+    transition: 0.3s;
+}
+
+/* hover */
+.favorito-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+.favorito-btn:hover i {
+    color: #F87171;
+}
+
+/* ativo */
+.favorito-btn.ativo {
+    background: linear-gradient(135deg, #ef4444, #f43f5e);
+    border: none;
+    box-shadow: 0 0 20px rgba(239,68,68,0.6);
+}
+
+.favorito-btn.ativo i {
+    color: #fff;
+}
+
+/* animação ao clicar */
+.favorito-btn:active {
+    transform: scale(0.9);
+}
+
+.favorito-btn.ativo {
+    color: #FBBF24;
+}
+
+/* estrelas */
+.estrelas {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 8px;
+    cursor: pointer;
+}
+
+.estrela {
+    font-size: 1.1rem;
+    color: #6B7280;
+    transition: 0.2s;
+}
+
+.estrela.ativa {
+    color: #FBBF24;
+}
+
+/* =========================
+   GRID DE LIVROS
+========================= */
+
+.biblioteca-section {
+    margin: 2rem 0;
+}
+
+.biblioteca-title {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.biblioteca-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 2rem;
+}
+
+.card-livro {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 15px;
+
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    transition: 0.35s;
+    position: relative;
+}
+
+.card-livro:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+/* ações */
+.card-acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+/* Efeitos de Transição nos Cards e Estado de Animação */
+.card-livro {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* Transições combinadas extremamente suaves */
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.4s ease, 
+                scale 0.4s ease; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    position: relative;
+    opacity: 1;
+    scale: 1;
+}
+
+/* Estado ocultado por filtros (com animação de fade/scale em vez de sumiço seco) */
+.card-livro.filtrado-oculto {
+    opacity: 0;
+    scale: 0.9;
+    pointer-events: none;
+    position: absolute;
+    visibility: hidden;
+}
+
+/* Hover altamente responsivo e moderno */
+.card-livro:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Transições nos botões de ação */
+.btn-ler, .btn-remover {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ler:active, .btn-remover:active {
+    transform: scale(0.95);
+}
+
+/* Badge animado ao alterar status */
+.status-badge {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Grid preparado para transições dinâmicas de layout */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    transition: all 0.3s ease;
+}
+/* =========================
+   LIGHT MODE
+========================= */
+
+body.light-mode {
+    background: #F8FAFC;
+    color: #1F2937;
+}
+
+/* NAV */
+
+body.light-mode .nav {
+    background: rgba(255,255,255,0.85);
+}
+
+body.light-mode .menu li a {
+    color: #374151;
+}
+
+body.light-mode .menu li a:hover {
+    color: #111827;
+}
+
+/* CARDS */
+
+body.light-mode .card-livro,
+body.light-mode .stat-card {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #D1D5DB;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+body.light-mode .card-livro h3,
+body.light-mode .stat-value,
+body.light-mode .biblioteca-title,
+body.light-mode .titulo-biblioteca {
+    color: #111827;
+}
+
+body.light-mode .card-livro p,
+body.light-mode .stat-label,
+body.light-mode .empty-state {
+    color: #6B7280;
+}
+
+/* INPUTS */
+
+body.light-mode .filter-input,
+body.light-mode .filter-select {
+    background: white;
+    color: #111827;
+    border: 1px solid #D1D5DB;
+}
+
+body.light-mode .filter-input::placeholder {
+    color: #6B7280;
+}
+
+/* FOOTER */
+
+body.light-mode .footer {
+    background: #FFFFFF;
+    border-top: 1px solid #E5E7EB;
+    color: #6B7280;
+}
+
+body.light-mode .footer h2,
+body.light-mode .footer h4,
+body.light-mode .footer-bottom {
+    color: #111827;
+}
+
+body.light-mode .footer-links a {
+    color: #4B5563;
+}
+
+body.light-mode .footer-bottom-line {
+    background: #E5E7EB;
+}
+
+/* =========================================================
+   RESPONSIVO - MINHA BIBLIOTECA
+   COPIE SOMENTE ESTA PARTE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    /* CONTAINER GERAL */
+    .container-biblioteca {
+        padding: 1rem;
+    }
+
+    /* NAVBAR */
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .menu {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu li a {
+        display: block;
+        width: 100%;
+    }
+
+    /* LOGO */
+    .logo-container {
+        justify-content: center;
+    }
+
+    .logo-img {
+        height: 55px;
+        margin-right: -20px;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    /* BANNER */
+    .banner-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .titulo-biblioteca {
+        font-size: 1.8rem;
+    }
+
+    .banner-content p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* FILTROS */
+    .filter-group {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .filter-input,
+    .filter-select {
+        width: 100%;
+    }
+
+    /* GRID LIVROS */
+    .biblioteca-grid {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* CARD */
+    .card-livro {
+        width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    .card-livro img {
+        width: 70%;
+        max-width: 220px;
+    }
+
+    /* BOTÕES */
+    .card-acoes {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    /* ESTATÍSTICAS */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        width: 100%;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+    .empty-state p {
+        font-size: 0.95rem;
+    }
+
+    /* FOOTER */
+    .footer {
+        padding: 40px 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-social {
+        margin: 0;
+        top: 0;
+    }
+
+    .footer-links {
+        margin-right: 0;
+    }
+
+    .footer-bottom-line {
+        top: 0;
+        margin-bottom: 20px;
+    }
+
+}
+
+/* MOBILE PEQUENO */
+@media (max-width: 480px) {
+
+    .titulo-biblioteca {
+        font-size: 1.5rem;
+    }
+
+    .banner-content p {
+        font-size: 0.9rem;
+    }
+
+    .card-livro img {
+        width: 85%;
+    }
+
+    .stat-value {
+        font-size: 1.3rem;
+    }
+
+    .stat-icon {
+        font-size: 1.5rem;
+    }
+
+}
+
+/* =========================================================
+   RESPONSIVIDADE COMPLETA
+   ========================================================= */
+
+/* TABLETS */
+@media (max-width: 1024px) {
+
+    .nav {
+        padding: 20px 30px;
+    }
+
+    .biblioteca-grid {
+        gap: 24px;
+    }
+
+    .card-livro {
+        max-width: 320px;
+    }
+
+    .footer {
+        padding: 40px 30px 20px 30px;
+    }
+
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    /* ================= NAV ================= */
+
+    .nav {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .menu {
+        flex-direction: column;
+        width: 100%;
+        gap: 14px;
+    }
+
+    .menu li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .menu li a {
+        display: block;
+        width: 100%;
+    }
+
+    .logo-container {
+        justify-content: center;
+    }
+
+    .logo-img {
+        height: 55px;
+        margin-right: -18px;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    /* ================= CONTAINER ================= */
+
+    .container-biblioteca {
+        padding: 1rem;
+    }
+
+    /* ================= BANNER ================= */
+
+    .banner-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .titulo-biblioteca {
+        font-size: 1.8rem;
+    }
+
+    .banner-content p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* ================= FILTROS ================= */
+
+    .biblioteca-filters {
+        padding: 10px 0;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .filter-input,
+    .filter-select {
+        width: 100%;
+        flex: none;
+    }
+
+    /* ================= GRID ================= */
+
+    .biblioteca-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* ================= CARD ================= */
+
+    .card-livro {
+        width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    .card-livro img {
+        width: 70%;
+        max-width: 220px;
+    }
+
+    .card-livro h3 {
+        font-size: 1.1rem;
+    }
+
+    .card-livro p {
+        font-size: 0.95rem;
+    }
+
+    /* ================= AÇÕES ================= */
+
+    .card-acoes {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* ================= FAVORITO ================= */
+
+    .favorito-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    /* ================= ESTRELAS ================= */
+
+    .estrela {
+        font-size: 1rem;
+    }
+
+    /* ================= ESTATÍSTICAS ================= */
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        width: 100%;
+        padding: 1.2rem;
+    }
+
+    .stat-value {
+        font-size: 1.4rem;
+    }
+
+    .stat-icon {
+        font-size: 1.7rem;
+    }
+
+    /* ================= EMPTY ================= */
+
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+    }
+
+    .empty-state p {
+        font-size: 0.95rem;
+    }
+
+    /* ================= FOOTER ================= */
+
+    .footer {
+        padding: 40px 20px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-brand,
+    .footer-links,
+    .footer-social {
+        margin: 0;
+        top: 0;
+    }
+
+    .footer-links {
+        margin-right: 0;
+    }
+
+    .footer-bottom-line {
+        top: 0;
+        margin-bottom: 20px;
+    }
+
+}
+
+/* MOBILE PEQUENO */
+@media (max-width: 480px) {
+
+    /* ================= LOGO ================= */
+
+    .logo {
+        font-size: 1.3rem;
+    }
+
+    .logo-img {
+        height: 48px;
+    }
+
+    /* ================= TITULOS ================= */
+
+    .titulo-biblioteca {
+        font-size: 1.5rem;
+    }
+
+    .biblioteca-title {
+        font-size: 1.3rem;
+    }
+
+    .banner-content p {
+        font-size: 0.9rem;
+    }
+
+    /* ================= CARD ================= */
+
+    .card-livro {
+        padding: 0.9rem;
+        border-radius: 14px;
+    }
+
+    .card-livro img {
+        width: 85%;
+    }
+
+    .card-livro h3 {
+        font-size: 1rem;
+    }
+
+    .card-livro p {
+        font-size: 0.9rem;
+    }
+
+    /* ================= BOTÕES ================= */
+
+    .btn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    /* ================= INPUTS ================= */
+
+    .filter-input,
+    .filter-select {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    /* ================= STATS ================= */
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+    }
+
+    .stat-icon {
+        font-size: 1.4rem;
+    }
+
+    /* ================= FOOTER ================= */
+
+    .footer h2 {
+        font-size: 1.4rem;
+    }
+
+    .footer p,
+    .footer a {
+        font-size: 0.9rem;
+    }
+
+}
+
+/* =========================================================
+    TELAS MUITO GRANDES → acima de 1440px
+========================================================= */
+
+@media (min-width: 1440px) {
+
+    .container-biblioteca,
+    .footer-container {
+        max-width: 80%;
+        margin: 0 10%;
+    }
+
+    .titulo h2 {
+        font-size: 5rem;
+    }
+
+    .titulo p {
+        font-size: 1.3rem;
+    }
+}

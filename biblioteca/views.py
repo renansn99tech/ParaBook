@@ -106,20 +106,35 @@ def is_approved_author(user):
     if user.is_superuser or user.is_staff:
         return True
     
-    # Verifica se o usuário possui Perfil associado
-    # Como seu ObraAutor tem uma flag boolean 'autor', podemos validar se ele tem obras aprovadas ou o perfil ativo
+    # Se o usuário possui a nova engrenagem (perfil_customizado),
+    # o campo 'tipo' manda de forma estrita e isolada.
+    if hasattr(user, 'perfil_customizado'):
+        return user.perfil_customizado.tipo in ['autor', 'admin']
+    
+    # Fallback de compatibilidade apenas para usuários antigos 
+    # que ainda não migraram ou não possuem o 'perfil_customizado'
     return hasattr(user, 'perfil') and user.perfil.status == 'aprovado'
 
+
 @login_required
-@user_passes_test(is_approved_author, login_url='biblioteca', redirect_field_name=None)
 def obras_autores(request):
+    # TRAVA DE SEGURANÇA: Se não for autor aprovado ou admin, impede o carregamento do GET/POST
+    if not is_approved_author(request.user):
+        messages.error(
+            request, 
+            "Acesso restrito. Esta página está disponível apenas para autores aprovados e administradores."
+        )
+        return redirect('biblioteca')  # Redireciona o leitor comum para um local seguro
+
+    # A partir daqui, o usuário é garantidamente um autor aprovado ou administrador
     categorias = Categoria.objects.all()
+    is_author_approved = True 
 
     if request.method == 'POST':
         form = ObraAutorForm(request.POST, request.FILES)
 
         if form.is_valid():
-            ObraAutor.objects.create(
+            obra = ObraAutor.objects.create(
                 nome=form.cleaned_data['nome'],
                 email=form.cleaned_data['email'],
                 titulo=form.cleaned_data['titulo'],
@@ -129,18 +144,16 @@ def obras_autores(request):
                 categoria=form.cleaned_data['categoria'],
             )
 
-            messages.success(request, 'Sua obra foi enviada para análise com sucesso!')
+            obra.status = 'aprovado'
+            obra.save()
+
+            messages.success(request, 'Sua obra foi enviada com sucesso!')
             return redirect('obras_autores')
 
-        return render(request, 'biblioteca/obras-autores.html', {
-            'categorias': categorias,
-            'errors': form.errors
-        })
-
     return render(request, 'biblioteca/obras-autores.html', {
-        'categorias': categorias
+        'categorias': categorias,
+        'is_author_approved': is_author_approved
     })
-
 def listar_obras(request):
     obras = ObraAutor.objects.filter(status='aprovado')
     return render(request, 'biblioteca/lista_obras.html', {

@@ -80,57 +80,52 @@ def painel_admin(request):
     # ==========================================================
     # No bloco: if request.method == 'POST' and 'btn_add_livro' in request.POST:
     if request.method == 'POST' and 'btn_add_livro' in request.POST:
-        if request.method == 'POST' and 'btn_add_livro' in request.POST:
-            nome_livro = request.POST.get('titulo')
-            categoria_id = request.POST.get('categoria')  
-            autor_livro = request.POST.get('autor', 'Desconhecido')
-            
-            # Captura dos arquivos enviados
-            arquivo_capa = request.FILES.get('capa')
-            arquivo_pdf = request.FILES.get('pdf')
+        nome_livro = request.POST.get('titulo')
+        categoria_id = request.POST.get('categoria')  
+        autor_livro = request.POST.get('autor', 'Desconhecido')
+        
+        # NOVOS CAMPOS CAPTURADOS DO TEMPLATE
+        isbn_livro = request.POST.get('isbn', '')
+        data_pub_livro = request.POST.get('data_publicacao', '2026')
+        num_paginas = request.POST.get('num_paginas', 0)
+        editora_livro = request.POST.get('editora', '')
+        
+        # Captura dos arquivos enviados
+        arquivo_capa = request.FILES.get('capa')
+        arquivo_pdf = request.FILES.get('pdf')
 
-            # Validação Arquitetural Obrigatória: Título, Categoria, Capa E PDF precisam existir
-            if not (nome_livro and categoria_id and arquivo_capa and arquivo_pdf):
-                messages.error(request, "Erro: OBRIGATÓRIO enviar o título, categoria, imagem de capa e o arquivo PDF do livro.")
-                return redirect('dashboard:painel_admin')
-
-            try:
-                cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
-                
-                # Inicializa o gerenciador de arquivos do Django
-                fs = FileSystemStorage()
-                
-                # Salva os arquivos fisicamente no diretório de mídias/estáticos
-                nome_arquivo_capa = fs.save(f"capas/{arquivo_capa.name}", arquivo_capa)
-                nome_arquivo_pdf = fs.save(f"livros/{arquivo_pdf.name}", arquivo_pdf)
-                
-                # Recupera a URL/Caminho que o banco espera armazenar
-                url_capa = fs.url(nome_arquivo_capa)
-                url_pdf = fs.url(nome_arquivo_pdf)
-
-                Livro.objects.create(
-                    nome=nome_livro,
-                    categoria=cat_instancia,
-                    genero=cat_instancia.nome,  
-                    autor=autor_livro,
-                    capa=url_capa,         # Salva o caminho gerado da imagem
-                    pdf=url_pdf,           # Salva o caminho gerado do PDF
-                    data_publicacao='2026',
-                    avaliacao='0',
-                    isbn='0000000000'
-                )
-                messages.success(request, "Livro e arquivos cadastrados com sucesso!")
-            except Exception as e:
-                messages.error(request, f"Erro interno ao processar o upload: {str(e)}")
-                
+        if not (nome_livro and categoria_id and arquivo_capa and arquivo_pdf):
+            messages.error(request, "Erro: OBRIGATÓRIO enviar o título, categoria, imagem de capa e o arquivo PDF do livro.")
             return redirect('dashboard:painel_admin')
-            pass
-    # DELETE (D)
-    elif request.method == 'POST' and 'btn_deletar_livro' in request.POST:
-        livro_id = request.POST.get('livro_id')
-        if livro_id:
-            Livro.objects.filter(id_livro=livro_id).delete()
-            messages.success(request, "Livro removido com sucesso!")
+
+        try:
+            cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
+            fs = FileSystemStorage()
+            
+            nome_arquivo_capa = fs.save(f"capas/{arquivo_capa.name}", arquivo_capa)
+            nome_arquivo_pdf = fs.save(f"livros/{arquivo_pdf.name}", arquivo_pdf)
+            
+            url_capa = fs.url(nome_arquivo_capa)
+            url_pdf = fs.url(nome_arquivo_pdf)
+
+            # SALVAMENTO DOS DADOS REAIS REPASSADOS
+            Livro.objects.create(
+                nome=nome_livro,
+                categoria=cat_instancia,
+                genero=cat_instancia.nome,  
+                autor=autor_livro,
+                capa=url_capa,         
+                pdf=url_pdf,           
+                data_publicacao=data_pub_livro,
+                num_paginas=num_paginas,  # Caso exista essa coluna na model
+                editora=editora_livro,    # Caso exista essa coluna na model
+                avaliacao='0',
+                isbn=isbn_livro
+            )
+            messages.success(request, "Livro e arquivos cadastrados com sucesso!")
+        except Exception as e:
+            messages.error(request, f"Erro interno ao processar o upload: {str(e)}")
+            
         return redirect('dashboard:painel_admin')
 
     # No bloco de UPDATE: elif request.method == 'POST' and 'btn_editar_livro' in request.POST:
@@ -138,15 +133,23 @@ def painel_admin(request):
         livro_id = request.POST.get('livro_id')
         novo_nome = request.POST.get('titulo')
         categoria_id = request.POST.get('categoria')
+        autor_livro = request.POST.get('autor')
+        isbn_livro = request.POST.get('isbn')
 
         if livro_id and novo_nome and categoria_id:
             cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
-            Livro.objects.filter(id_livro=livro_id).update(
-                nome=novo_nome,
-                categoria=cat_instancia,
-                genero=cat_instancia.nome,
-            )
-            messages.success(request, "Livro atualizado com sucesso!")
+        Livro.objects.create(
+            nome=nome_livro,
+            categoria=cat_instancia,
+            genero=cat_instancia.nome,  
+            autor=autor_livro,
+            capa=url_capa,         
+            pdf=url_pdf,           
+            data_publicacao=data_pub_livro,  # Este campo já existia como '2026'
+            avaliacao='0',
+            isbn=isbn_livro                 # Este campo já existia como '0000000000'
+        )
+        messages.success(request, "Livro e arquivos cadastrados com sucesso!")
         return redirect('dashboard:painel_admin')
 
     # ==========================================================

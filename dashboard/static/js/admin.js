@@ -21,12 +21,17 @@ function bindEvents() {
     });
 
     // Gatilhos para o botão editar ✏️
-    document.querySelectorAll(".btn-editar-trigger").forEach(btn => {
-        btn.addEventListener("click", () => {
-            // Agora passa o id da categoria numérico corretamente para o formulário
-            prepararEdicao(btn.dataset.id, btn.dataset.titulo, btn.dataset.categoria);
-        });
+document.querySelectorAll(".btn-editar-trigger").forEach(btn => {
+    btn.addEventListener("click", () => {
+        prepararEdicao(
+            btn.dataset.id, 
+            btn.dataset.titulo, 
+            btn.dataset.categoria, 
+            btn.dataset.autor, 
+            btn.dataset.isbn
+        );
     });
+});
 
     // Botão cancelar edição
     document.getElementById("btnCancelarEdicao")?.addEventListener("click", cancelarEdicao);
@@ -53,32 +58,29 @@ function buscarLivro(e) {
 }
 
 // --- FUNÇÕES DE UPDATE (INTERAÇÃO DO VISUAL) ---
-function prepararEdicao(id, titulo, categoriaId) {
-    // Rola suavemente até o formulário
+function prepararEdicao(id, titulo, categoriaId, autor, isbn) {
     document.getElementById("tituloSecaoLivros")?.scrollIntoView({ behavior: 'smooth' });
 
-    // Preenche os inputs com os dados do livro selecionado
     document.getElementById("inputLivroId").value = id;
     document.getElementById("inputTitulo").value = titulo;
+    document.getElementById("inputAutor").value = autor || "";
+    document.getElementById("inputIsbn").value = isbn || "";
 
     document.getElementById("inputCapa").required = false;
     document.getElementById("inputPdf").required = false;
     
-    // Define o valor selecionado do select com o ID da Categoria vinda do banco
     const selectCat = document.getElementById("selectCategoria");
     if (selectCat) {
         selectCat.value = categoriaId;
     }
 
-    // Altera propriedades do botão de envio para agir como Update no Django
     const btnSalvar = document.getElementById("btnSubmeterForm");
     if (btnSalvar) {
         btnSalvar.textContent = "Salvar Alterações";
-        btnSalvar.name = "btn_editar_livro"; // Troca o name capturado pelo view.py
-        btnSalvar.style.background = "#eab308"; // Muda cor para amarelo (edição)
+        btnSalvar.name = "btn_editar_livro"; 
+        btnSalvar.style.background = "#eab308"; 
     }
 
-    // Exibe o botão de cancelar
     const btnCancelar = document.getElementById("btnCancelarEdicao");
     if (btnCancelar) btnCancelar.style.display = "inline-block";
 }

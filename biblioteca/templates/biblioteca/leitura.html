@@ -9,7 +9,7 @@
 
 {% block content %}
 <main id="conteudo-principal" tabindex="-1">
-    <section class="container leitura-container">
+    {% csrf_token %} <section class="container leitura-container">
         
         <header class="leitura-acessivel-header">
             <h1 class="sr-only">Lendo: {{ livro.nome }}</h1>
@@ -47,21 +47,23 @@
             </div>
         </nav>
 
-{% if livro.pdf|slice:":4" == "http" or livro.pdf|slice:":1" == "/" %}
-    <div
-        class="livro-info"
-        id="dados-livro"
-        data-id="{{ livro.id_livro }}"
-        data-caminho="{{ livro.pdf }}">
-    </div>
-{% else %}
-    <div
-        class="livro-info"
-        id="dados-livro"
-        data-id="{{ livro.id_livro }}"
-        data-caminho="{% static livro.url_pdf_estatico %}">
-    </div>
-{% endif %}
+        {% if livro.pdf|slice:":4" == "http" or livro.pdf|slice:":1" == "/" %}
+        <div
+            class="livro-info"
+            id="dados-livro"
+            data-id="{{ livro.id_livro }}"
+            data-url-concluir="{% url 'concluir_leitura' livro.id_livro %}"
+            data-caminho="{{ livro.pdf }}">
+        </div>
+        {% else %}
+        <div
+            class="livro-info"
+            id="dados-livro"
+            data-id="{{ livro.id_livro }}"
+            data-url-concluir="{% url 'concluir_leitura' livro.id_livro %}"
+            data-caminho="{% static livro.url_pdf_estatico %}">
+        </div>
+        {% endif %}
         <div id="loading" class="loading-state" aria-live="polite"></div>
 
         <article class="leitor-pdf" id="leitor-pdf-container">
@@ -77,6 +79,13 @@
                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Anterior
             </button>
             <span id="pagina-info" aria-live="assertive" role="status">Página 1</span>
+
+            <div class="navegacao-rapida">
+                <label for="input-pagina" class="sr-only">Ir para página:</label>
+                <input type="number" id="input-pagina" min="1" placeholder="Ir para...">
+                <button id="btn-ir-pagina" class="btn secondary" style="padding: 8px 18px; margin-left: 5px;">Ir</button>
+            </div>
+
             <button id="btn-proxima" class="btn">
                 Próxima <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
             </button>
@@ -84,6 +93,10 @@
 
         <div class="acoes">
             <a href="{% url 'acesso_biblioteca' %}" class="btn secondary">Voltar à Biblioteca</a>
+
+            <button id="btn-marcar-lido" class="btn btn-success" style="background-color: #10b981; color: white; margin-left: 10px;">
+                <i class="fa-solid fa-check-double"></i> Marcar como Lido
+            </button>
         </div>
     </section>
 </main>

@@ -21,5 +21,7 @@ urlpatterns = [
     ),
 
     path('leitura/', views.leitura, name='leitura'),
+    path('iniciar-leitura/<int:livro_id>/', views.iniciar_leitura, name='iniciar_leitura'), # Nova rota de ação (ela não renderiza tela, apenas processa e redireciona)
+    path('concluir-leitura/<int:livro_id>/', views.concluir_leitura, name='concluir_leitura'), # Esta é a rota que o fetch do JavaScript vai bater
     path('autores/', views.lista_autores, name='lista_autores'),
 ]

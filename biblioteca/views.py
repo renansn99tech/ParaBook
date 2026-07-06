@@ -2,7 +2,9 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 from config.settings import AUTH_PASSWORD_VALIDATORS
 
 from .services import livros_por_categoria
@@ -101,16 +103,37 @@ def leitura(request):
     })
     
 @login_required
-def atualizar_status_leitura(request, livro_id, novo_status):
-    # Busca a relação entre esse usuário e esse livro
-    relacao = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+def iniciar_leitura(request, livro_id):
+    # 1. Busca o registro do livro na estante deste usuário específico
+    registro_biblioteca = get_object_or_404(Biblioteca, user=request.user, livro_id=livro_id)
     
-    # Atualiza o status
-    relacao.status = novo_status # Ex: passa a ser StatusBiblioteca.LENDO
-    relacao.save()
+    # 2. Atualiza o status de 'quero_ler' para 'lendo'
+    registro_biblioteca.status = StatusBiblioteca.LENDO
+    registro_biblioteca.save()
     
-    return redirect('acesso_biblioteca')
+    # 3. Redireciona o usuário para a página de leitura real
+    # O reverse pega a url base, e nós concatenamos o ID no formato que sua página espera
+    url_leitura = reverse('leitura')
+    return redirect(f"{url_leitura}?id={livro_id}")
 
+def concluir_leitura(request, livro_id):
+    # Garante que só quem está logado e via método POST possa fazer isso
+    if request.method == "POST" and request.user.is_authenticated:
+        try:
+            # Busca o livro na estante desse usuário específico
+            registro = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+            
+            # Muda o status para LIDO
+            registro.status = StatusBiblioteca.LIDO
+            registro.save()
+            
+            # Devolve uma resposta rápida e silenciosa (JSON) para o Javascript
+            return JsonResponse({"success": True, "message": "Status atualizado para Lido!"})
+            
+        except Biblioteca.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Livro não encontrado na biblioteca."}, status=404)
+
+    return JsonResponse({"success": False, "error": "Requisição inválida."}, status=400)
 
 def is_approved_author(user):
     if user.is_anonymous:

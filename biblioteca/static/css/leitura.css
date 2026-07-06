@@ -364,6 +364,51 @@
     background:rgba(139,92,246,.08);
 }
 
+/* -----------------------------------------
+   NAVEGAÇÃO RÁPIDA (IR PARA PÁGINA)
+----------------------------------------- */
+.navegacao-rapida {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espaçamento moderno entre o input e o botão */
+}
+
+/* Esconde as setinhas nativas do navegador para um visual mais limpo (Clean UI) */
+.navegacao-rapida input[type="number"]::-webkit-inner-spin-button,
+.navegacao-rapida input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.navegacao-rapida input[type="number"] {
+    -moz-appearance: textfield; /* Aplica a mesma regra no Firefox */
+}
+
+/* O estilo do input moderno */
+.input-pagina-moderno {
+    width: 85px;
+    text-align: center;
+    padding: 8px 12px;
+    background-color: transparent; /* Puxa o fundo escuro da nav */
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Borda sutil */
+    border-radius: 9999px; /* Formato 'Pill' idêntico aos botões */
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* Cor do texto invisível quando não está preenchido */
+.input-pagina-moderno::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Efeito ao clicar no input (Focus State) - Fundamental para Acessibilidade */
+.input-pagina-moderno:focus {
+    border-color: #8b5cf6; /* O tom de roxo exato dos seus botões */
+    background-color: rgba(139, 92, 246, 0.1); /* Brilho leve no fundo */
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); /* Anel de foco moderno */
+}
+
 /* =================================
    RESPONSIVO
 ================================= */

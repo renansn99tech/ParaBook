@@ -25,6 +25,32 @@ function inicializarEventos() {
     document.getElementById("btn-inverter")?.addEventListener("click", toggleInverterCores);
     document.getElementById("btn-expandir")?.addEventListener("click", toggleLarguraTotal);
 
+    // Função que valida a leitura como lida
+    const btnMarcarLido = document.getElementById("btn-marcar-lido");
+    if (btnMarcarLido) {
+        btnMarcarLido.addEventListener("click", () => {
+            Swal.fire({
+                title: 'Concluir Livro?',
+                text: "Deseja marcar este livro como concluído em sua estante?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sim, concluído!',
+                cancelButtonText: 'Ainda não',
+                background: '#1e293b',
+                color: '#f8fafc'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    marcarLivroComoLido(); 
+                    btnMarcarLido.innerHTML = '<i class="fa-solid fa-check-double"></i> Concluído!';
+                    btnMarcarLido.disabled = true;
+                    btnMarcarLido.style.backgroundColor = '#059669';
+                }
+            });
+        });
+    }
+
     // Acessibilidade: Navegação nativa por teclado usando setas laterais (Esquerda / Direita)
     document.addEventListener("keydown", (e) => {
         if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -219,4 +245,80 @@ function exibirErro(msg) {
     } else {
         document.body.innerHTML = `<p style="color:#f87171; text-align:center; padding: 50px; font-weight: 600;">⚠️ ${msg}</p>`;
     }
+}
+
+/* =========================================
+NOVO: NAVEGAÇÃO RÁPIDA (IR PARA PÁGINA)
+========================================= */
+document.addEventListener("DOMContentLoaded", () => {
+    const btnIr = document.getElementById("btn-ir-pagina");
+    const inputPagina = document.getElementById("input-pagina");
+
+    if (btnIr && inputPagina) {
+        // Dispara ao clicar no botão 'Ir'
+        btnIr.addEventListener("click", () => {
+            irParaPaginaEspecifica(inputPagina.value);
+        });
+
+        // Dispara ao apertar 'Enter' dentro do input
+        inputPagina.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                irParaPaginaEspecifica(inputPagina.value);
+            }
+        });
+    }
+});
+
+
+function irParaPaginaEspecifica(numero) {
+    const num = parseInt(numero, 10);
+    if (!isNaN(num) && num >= 1 && num <= totalPaginas) {
+        renderizarPagina(num);
+        document.getElementById("input-pagina").value = ""; // Limpa o campo
+    } else {
+        alert(`Por favor, insira um número de página válido entre 1 e ${totalPaginas}.`);
+    }
+}
+
+/* =========================================
+COMUNICAÇÃO COM O BACKEND
+========================================= */
+function marcarLivroComoLido() {
+    sessionStorage.setItem(`concluido_${livroAtualId}`, "true"); 
+
+    const csrfTokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    const csrfToken = csrfTokenInput ? csrfTokenInput.value : "";
+    
+    if (!csrfToken) {
+         console.warn("CSRF Token não encontrado.");
+         return;
+    }
+
+    // NOVA LÓGICA: Pega a URL exata e blindada a falhas que o Django gerou no HTML
+    const urlConclusao = document.getElementById("dados-livro").getAttribute("data-url-concluir");
+
+    // O fetch agora usa a variável urlConclusao em vez da string fixa
+    fetch(urlConclusao, { 
+        method: "POST",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Sucesso: O servidor foi avisado que a leitura foi concluída!");
+            
+            Swal.fire({
+                title: 'Parabéns! 🎉',
+                text: 'Mais uma obra concluída. Seu progresso já foi atualizado no seu Perfil!',
+                icon: 'success',
+                confirmButtonColor: '#2563eb',
+                background: '#1e293b',
+                color: '#f8fafc'
+            });
+        }
+    })
+    .catch(error => console.error("Erro ao avisar servidor sobre conclusão:", error));
 }

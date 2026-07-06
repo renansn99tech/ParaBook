@@ -9,6 +9,7 @@ from .services import livros_por_categoria
 from .models import Categoria, Livro, ObraAutor, Biblioteca,Perfil
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
+from .constants import StatusBiblioteca
 from comunidades.models import Comunidade
 
 from comunidades.models import Comunidade
@@ -98,6 +99,17 @@ def leitura(request):
     return render(request, 'biblioteca/leitura.html', {
         'livro': livro
     })
+    
+@login_required
+def atualizar_status_leitura(request, livro_id, novo_status):
+    # Busca a relação entre esse usuário e esse livro
+    relacao = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+    
+    # Atualiza o status
+    relacao.status = novo_status # Ex: passa a ser StatusBiblioteca.LENDO
+    relacao.save()
+    
+    return redirect('acesso_biblioteca')
 
 
 def is_approved_author(user):

@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from usuarios.models import Usuario
+from biblioteca.models import Biblioteca
+from comunidades.models import Comunidade
 from perfis.models import Perfil
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
@@ -95,25 +97,37 @@ def perfil(request):
             messages.success(request, "Alterações salvas com sucesso!")
             return redirect('perfis:perfil_pessoal')
         
-    # Mocking/Valores temporários para o template não quebrar enquanto biblioteca/comunidades não chegam
+        
+    # 1. Buscando os livros do usuário na tabela intermediária da Biblioteca
+    meus_livros = Biblioteca.objects.filter(user=request.user)
+    
+    # Armazenando as contagens reais nas variáveis (Ajuste os valores 'lendo' e 'lido' conforme seu models.py)
+    qnt_lendo_agora = meus_livros.filter(status='lendo').count()
+    qnt_livros_lidos = meus_livros.filter(status='lido').count()
+    qnt_avaliados = meus_livros.filter(nota__isnull=False).count()
+
+    # 2. Buscando a quantidade de comunidades usando a model de forma explícita
+    qnt_comunidades = Comunidade.objects.filter(membros=request.user).count()
+
+    # 3. O SEU CONTEXTO ORIGINAL (Mantendo as mesmas chaves para não quebrar o HTML)
     contexto = {
-        'usuario_custom': dados_usuario,
-        'perfil': perfil_do_usuario,
+        'usuario_custom': dados_usuario, # Mantido original
+        'perfil': perfil_do_usuario,     # Mantido original
         
-        # Estatísticas (Temporariamente zeradas para o front-end renderizar sem erros)
-        'total_lidos': 0,
-        'lendo_agora': 0,
-        'total_avaliados': 0,
-        'total_comunidades': 0,
+        # Substituindo os zeros pelos dados REAIS vindos do banco de dados
+        'total_lidos': qnt_livros_lidos,
+        'lendo_agora': qnt_lendo_agora,
+        'total_avaliados': qnt_avaliados,
+        'total_comunidades': qnt_comunidades,
         
-        # Listas vazias prontas para o {% empty %} do template
+        # Listas que vocês implementarão posteriormente
         'generos_favoritos': [],
         'autores_favoritos': [],
         'historico': [],
         'favoritos': []
     }
 
-    return render(request, 'perfis/perfil.html', contexto)
+    return render(request, 'perfis/perfil.html', contexto) # Substitua pelo nome correto do seu template
 
 ############################################ FUNÇÃO QUE ENVIA MENSAGEM DE SUCESSO NA ALTERAÇÃO DA SENHA ############################################
 class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
@@ -135,3 +149,4 @@ def virar_autor(request):
         messages.info(request, 'Você já possui uma solicitação em andamento ou já é um autor.')
         
     return redirect('perfis:perfil_pessoal')
+

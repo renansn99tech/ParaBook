@@ -117,7 +117,7 @@ class Perfil(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        related_name='perfil'
+        related_name='perfil_da_biblioteca' # <- ADICIONE ISSO
     )
 
     foto = models.CharField(max_length=255, blank=True, null=True)

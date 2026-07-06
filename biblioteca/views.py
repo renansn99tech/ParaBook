@@ -144,10 +144,11 @@ def obras_autores(request):
                 categoria=form.cleaned_data['categoria'],
             )
 
-            obra.status = 'aprovado'
+            # CORREÇÃO: Removido a atribuição forçada de status='aprovado'
+            # Agora a obra será salva com o status padrão 'pendente' do model.
             obra.save()
 
-            messages.success(request, 'Sua obra foi enviada com sucesso!')
+            messages.success(request, 'Sua obra foi enviada com sucesso! Ela passará por uma avaliação antes de ser publicada.')
             return redirect('obras_autores')
 
     return render(request, 'biblioteca/obras-autores.html', {

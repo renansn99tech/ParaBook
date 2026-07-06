@@ -99,28 +99,28 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "mydb",
-        "USER": "root",
-        "PASSWORD": "admin",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
-    }
-}
-
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.mysql",
-#         "NAME": config("DB_NAME", default="mydb"),
-#         "USER": config("DB_USER", default="root"),
-#         "PASSWORD": config("DB_PASSWORD", default=""),
-#         "HOST": config("DB_HOST", default="127.0.0.1"),
-#         "PORT": config("DB_PORT", default="3306"),
-#         "OPTIONS": {"ssl": {"ssl_mode": "REQUIRED"}},
+#         "NAME": "mydb",
+#         "USER": "root",
+#         "PASSWORD": "admin",
+#         "HOST": "127.0.0.1",
+#         "PORT": "3306",
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": config("DB_NAME", default="mydb"),
+        "USER": config("DB_USER", default="root"),
+        "PASSWORD": config("DB_PASSWORD", default=""),
+        "HOST": config("DB_HOST", default="127.0.0.1"),
+        "PORT": config("DB_PORT", default="3306"),
+        "OPTIONS": {"ssl": {"ssl_mode": "REQUIRED"}},
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -163,27 +163,27 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles" 
 
 # # Credenciais do Supabase obtidas via decouple/env
-# SUPABASE_URL = config("SUPABASE_URL", default=None)
-# SUPABASE_KEY = config("SUPABASE_KEY", default=None)
-# SUPABASE_STORAGE_BUCKET_NAME = "parabook-media"
+SUPABASE_URL = config("SUPABASE_URL", default=None)
+SUPABASE_KEY = config("SUPABASE_KEY", default=None)
+SUPABASE_STORAGE_BUCKET_NAME = "parabook-media"
 
-# STORAGES = {
-#     # Gerenciamento de arquivos estáticos (Mantenha o WhiteNoise que já funciona perfeitamente)
-#     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
-#     # Gerenciamento de arquivos de mídia (PDFs, imagens de perfil, etc.)
-#     "default": {
-#         "BACKEND": "storages.backends.supabase.SupabaseStorage" if not DEBUG else "django.core.files.storage.FileSystemStorage"
-#     },
-# }
+STORAGES = {
+    # Gerenciamento de arquivos estáticos (Mantenha o WhiteNoise que já funciona perfeitamente)
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    # Gerenciamento de arquivos de mídia (PDFs, imagens de perfil, etc.)
+    "default": {
+        "BACKEND": "storages.backends.supabase.SupabaseStorage" if not DEBUG else "django.core.files.storage.FileSystemStorage"
+    },
+}
 
 # # Se estiver em desenvolvimento (DEBUG=True), ele usa a pasta local media/
 # # Se estiver no Railway (DEBUG=False), ele joga tudo automaticamente para o Supabase
-# if not DEBUG and SUPABASE_URL and SUPABASE_KEY:
-#     MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET_NAME}/"
-# else:
-#     MEDIA_URL = '/media/'
-# import os
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+if not DEBUG and SUPABASE_URL and SUPABASE_KEY:
+        MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET_NAME}/"
+else:
+        MEDIA_URL = '/media/'
+import os
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STORAGES = { 
 "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"}, 

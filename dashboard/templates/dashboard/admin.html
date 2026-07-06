@@ -19,6 +19,9 @@ Painel Administrativo - ParaBook
         <button data-nav="usuarios">Usuários</button>
         <button data-nav="permissoes">Permissões</button>
 
+        <a href="{% url 'perfis:perfil_pessoal' %}" style="text-decoration: none; text-align: center; margin-top: auto; margin-bottom: -5px;">
+            <button style="width: 100%; background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.35); color: #60a5fa;">Meu Perfil</button>
+        </a>
         <a href="{% url 'logout' %}" id="btnLogout" style="text-decoration: none; text-align: center; margin-top: auto;">
             <button class="danger" style="width: 100%;">Sair</button>
         </a>

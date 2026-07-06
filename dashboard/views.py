@@ -79,18 +79,25 @@ def painel_admin(request):
     # 3. CRUD DE LIVROS (MANTIDO INTACTO)
     # ==========================================================
     # No bloco: if request.method == 'POST' and 'btn_add_livro' in request.POST:
+    # ==========================================================
+    # 3. CRUD DE LIVROS (CORRIGIDO E COMPLETO)
+    # ==========================================================
+    # Criar Livro
+    # ==========================================================
+    # 3. CRUD DE LIVROS (AJUSTADO PARA OS CAMPOS REAIS DO MODELO)
+    # ==========================================================
+    # Criar Livro
+  # ==========================================================
+    # 3. CRUD DE LIVROS (COMPLETO: ADICIONAR, EDITAR E DELETAR)
+    # ==========================================================
+    # Criar Livro
     if request.method == 'POST' and 'btn_add_livro' in request.POST:
         nome_livro = request.POST.get('titulo')
         categoria_id = request.POST.get('categoria')  
         autor_livro = request.POST.get('autor', 'Desconhecido')
-        
-        # NOVOS CAMPOS CAPTURADOS DO TEMPLATE
         isbn_livro = request.POST.get('isbn', '')
         data_pub_livro = request.POST.get('data_publicacao', '2026')
-        num_paginas = request.POST.get('num_paginas', 0)
-        editora_livro = request.POST.get('editora', '')
         
-        # Captura dos arquivos enviados
         arquivo_capa = request.FILES.get('capa')
         arquivo_pdf = request.FILES.get('pdf')
 
@@ -108,7 +115,6 @@ def painel_admin(request):
             url_capa = fs.url(nome_arquivo_capa)
             url_pdf = fs.url(nome_arquivo_pdf)
 
-            # SALVAMENTO DOS DADOS REAIS REPASSADOS
             Livro.objects.create(
                 nome=nome_livro,
                 categoria=cat_instancia,
@@ -117,41 +123,68 @@ def painel_admin(request):
                 capa=url_capa,         
                 pdf=url_pdf,           
                 data_publicacao=data_pub_livro,
-                num_paginas=num_paginas,  # Caso exista essa coluna na model
-                editora=editora_livro,    # Caso exista essa coluna na model
                 avaliacao='0',
                 isbn=isbn_livro
             )
-            messages.success(request, "Livro e arquivos cadastrados com sucesso!")
+            messages.success(request, "Livro cadastrado com sucesso!")
         except Exception as e:
             messages.error(request, f"Erro interno ao processar o upload: {str(e)}")
             
         return redirect('dashboard:painel_admin')
 
-    # No bloco de UPDATE: elif request.method == 'POST' and 'btn_editar_livro' in request.POST:
+    # Editar Livro
     elif request.method == 'POST' and 'btn_editar_livro' in request.POST:
         livro_id = request.POST.get('livro_id')
         novo_nome = request.POST.get('titulo')
         categoria_id = request.POST.get('categoria')
         autor_livro = request.POST.get('autor')
-        isbn_livro = request.POST.get('isbn')
+        isbn_livro = request.POST.get('isbn', '')
+        data_pub_livro = request.POST.get('data_publicacao', '2026')
 
         if livro_id and novo_nome and categoria_id:
-            cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
-        Livro.objects.create(
-            nome=nome_livro,
-            categoria=cat_instancia,
-            genero=cat_instancia.nome,  
-            autor=autor_livro,
-            capa=url_capa,         
-            pdf=url_pdf,           
-            data_publicacao=data_pub_livro,  # Este campo já existia como '2026'
-            avaliacao='0',
-            isbn=isbn_livro                 # Este campo já existia como '0000000000'
-        )
-        messages.success(request, "Livro e arquivos cadastrados com sucesso!")
+            try:
+                livro = get_object_or_404(Livro, id_livro=livro_id)
+                cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
+                
+                livro.nome = novo_nome
+                livro.categoria = cat_instancia
+                livro.genero = cat_instancia.nome
+                livro.autor = autor_livro
+                livro.isbn = isbn_livro
+                livro.data_publicacao = data_pub_livro
+
+                fs = FileSystemStorage()
+                if request.FILES.get('capa'):
+                    arquivo_capa = request.FILES.get('capa')
+                    nome_capa = fs.save(f"capas/{arquivo_capa.name}", arquivo_capa)
+                    livro.capa = fs.url(nome_capa)
+                    
+                if request.FILES.get('pdf'):
+                    arquivo_pdf = request.FILES.get('pdf')
+                    nome_pdf = fs.save(f"livros/{arquivo_pdf.name}", arquivo_pdf)
+                    livro.pdf = fs.url(nome_pdf)
+
+                livro.save()
+                messages.success(request, "Livro atualizado com sucesso!")
+            except Exception as e:
+                messages.error(request, f"Erro ao atualizar o livro: {str(e)}")
+                
         return redirect('dashboard:painel_admin')
 
+    # Deletar Livro (Adicionado Corretamente)
+    elif request.method == 'POST' and 'btn_deletar_livro' in request.POST:
+        livro_id = request.POST.get('livro_id')
+        if livro_id:
+            try:
+                livro = get_object_or_404(Livro, id_livro=livro_id)
+                livro.delete()
+                messages.success(request, "Livro removido com sucesso!")
+            except Exception as e:
+                messages.error(request, f"Erro ao deletar o livro: {str(e)}")
+        else:
+            messages.error(request, "Erro: ID do livro não foi enviado pelo formulário.")
+            
+        return redirect('dashboard:painel_admin')
     # ==========================================================
     # 4. QUERYS E MÉTRICAS PARA O DASHBOARD (CORREÇÃO AQUI)
     # ==========================================================

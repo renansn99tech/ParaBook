@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Comunidade, PostagemComunidade
-
+from django.contrib.auth.decorators import login_required
 
 def comunidades(request):
     lista_comunidades = Comunidade.objects.all()
@@ -9,7 +9,7 @@ def comunidades(request):
         'comunidades': lista_comunidades
     })
 
-
+@login_required
 def criar_comunidade(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -24,7 +24,7 @@ def criar_comunidade(request):
 
     return render(request, 'comunidades/criar-comunidade.html')
 
-
+@login_required
 def editar_comunidade(request, id):
     comunidade = get_object_or_404(Comunidade, id=id)
 
@@ -39,7 +39,7 @@ def editar_comunidade(request, id):
         'comunidade': comunidade
     })
 
-
+@login_required
 def excluir_comunidade(request, id):
     comunidade = get_object_or_404(Comunidade, id=id)
 

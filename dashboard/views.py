@@ -222,3 +222,9 @@ def painel_admin(request):
     }
 
     return render(request, 'dashboard/admin.html', contexto)
+
+def surpresa(request):
+    return render(request, "dashboard/surpresa.html")
+
+def leitor(request):
+    return render(request, "dashboard/leitor.html")

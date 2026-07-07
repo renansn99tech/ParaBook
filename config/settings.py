@@ -100,29 +100,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # CONFIGURAÇÃO LOCAL (SUA MÁQUINA)
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "mydb",
-        "USER": "root",
-        "PASSWORD": "admin",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
-    }
-}
-
-# DATABASE DO RAILWAY 
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.mysql",
-#         "NAME": config("DB_NAME", default="mydb"),
-#         "USER": config("DB_USER", default="root"),
-#         "PASSWORD": config("DB_PASSWORD", default=""),
-#         "HOST": config("DB_HOST", default="127.0.0.1"),
-#         "PORT": config("DB_PORT", default="3306"),
-#         "OPTIONS": {"ssl": {"ssl_mode": "REQUIRED"}},
+#         "NAME": "mydb",
+#         "USER": "root",
+#         "PASSWORD": "admin",
+#         "HOST": "127.0.0.1",
+#         "PORT": "3306",
 #     }
 # }
+
+# DATABASE DO RAILWAY 
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": config("DB_NAME", default="mydb"),
+        "USER": config("DB_USER", default="root"),
+        "PASSWORD": config("DB_PASSWORD", default=""),
+        "HOST": config("DB_HOST", default="127.0.0.1"),
+        "PORT": config("DB_PORT", default="3306"),
+        "OPTIONS": {"ssl": {"ssl_mode": "REQUIRED"}},
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

@@ -5,7 +5,9 @@ from .views import (
      conteudo_comunidade,
      criar_comunidade,
      editar_comunidade,
-     excluir_comunidade
+     excluir_comunidade,
+     participar_comunidade,
+     excluir_postagem
 )
 
 urlpatterns = [
@@ -27,4 +29,7 @@ urlpatterns = [
 
      path('conteudo/<int:id>/', conteudo_comunidade, 
           name='conteudo_comunidade'),
+
+     path('participar/<int:id>/', participar_comunidade, name='participar_comunidade'),
+     path('postagem/excluir/<int:id>/', excluir_postagem, name='excluir_postagem'),
 ]

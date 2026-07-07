@@ -112,52 +112,20 @@ main#topo{
     gap:22px;
 }
 
-.post-card{
-    position:relative;
-    overflow:hidden;
-
-    padding:26px;
-
-    border-radius:22px;
-    border:1px solid var(--border);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(16,25,45,.95),
-            rgba(16,25,45,.72)
-        );
-
-    box-shadow:var(--shadow);
-    transition:.35s;
+/* LISTA POSTS - Design Sóbrio */
+.post-card {
+    padding: 26px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Borda muito sutil */
+    background: rgba(15, 23, 42, 0.6); /* Fundo escuro e chapado */
+    transition: border-color 0.3s ease;
 }
 
-.post-card::before{
-    content:"";
-
-    position:absolute;
-
-    width:160px;
-    height:160px;
-
-    right:-70px;
-    top:-70px;
-
-    background:radial-gradient(circle,rgba(139,92,246,.22),transparent 70%);
-
-    opacity:0;
-    transition:.35s;
+.post-card:hover {
+    border-color: rgba(139, 92, 246, 0.3); /* Apenas a borda acende levemente */
 }
 
-.post-card:hover{
-    transform:translateY(-5px);
-    border-color:rgba(139,92,246,.45);
-    box-shadow:0 22px 55px rgba(0,0,0,.38), 0 0 35px rgba(139,92,246,.12);
-}
-
-.post-card:hover::before{
-    opacity:1;
-}
+/* Remova ou comente o .post-card::before e suas animações de hover antigas */
 
 .post-header{
     position:relative;
@@ -380,6 +348,69 @@ main#topo > p{
 
     color:var(--text-secondary);
     text-align:center;
+}
+
+/* =========================================
+   BOTÕES DE AÇÃO DOS POSTS (Clean UI)
+========================================= */
+
+.btn-primary-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.btn-primary-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+}
+
+.btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    color: #d1d5db;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.btn-outline:hover {
+    background: rgba(139, 92, 246, 0.15);
+    color: #c4b5fd;
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.btn-danger-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.05);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-danger-outline:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
 }
 
 /* RESPONSIVO */

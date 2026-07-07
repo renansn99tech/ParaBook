@@ -20,32 +20,47 @@ Comunidades
             Comunidades
         </h1>
 
-        <h3>
-            Sinta-se livre para escolher
-            uma comunidade para participar.
-        </h3>
-
-        <p>
-            Aqui você poderá fazer amigos
-            e participar de discussões relevantes
-            ao seu interesse.
+        <p style="font-size: 1.1rem; color: #d8d9e6; margin-bottom: 40px;">
+            Sinta-se livre para escolher uma comunidade para participar. <br>
+            Aqui você poderá fazer amigos e participar de discussões relevantes ao seu interesse.
         </p>
 
-        <div class="grid">
+        <div style="text-align: left; margin-bottom: 30px;">
+            <h3 style="color: white; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <i class="fa-solid fa-bookmark" style="color: #8b5cf6;"></i> Espaços Oficiais
+            </h3>
+            <p style="color: var(--text-secondary); margin: 0 0 20px 0; font-size: 0.95rem;">Comunidades literárias moderadas e mantidas pelo ParaBook.</p>
+        </div>
 
-            {% for comunidade in comunidades %}
-
+        <div class="grid" style="margin-bottom: 60px;">
+            {% for comunidade in comunidades_sistema %}
                 {% include 'comunidades/card-comunidade.html' %}
-
             {% empty %}
+                <div class="empty-state" style="grid-column: 1 / -1; padding: 30px;">
+                    <p style="margin: 0;">Nenhuma comunidade oficial configurada no momento.</p>
+                </div>
+            {% endfor %}
+        </div>
 
-                <p>
-                    Nenhuma comunidade encontrada.
-                </p>
+        <div style="text-align: left; margin-bottom: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px;">
+            <h3 style="color: white; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <i class="fa-solid fa-users" style="color: #60a5fa;"></i> Comunidades da Galera
+            </h3>
+            <p style="color: var(--text-secondary); margin: 0 0 20px 0; font-size: 0.95rem;">Grupos independentes criados por leitores e autores da plataforma.</p>
+        </div>
 
+        <div class="grid">
+            {% for comunidade in comunidades_usuarios %}
+                {% include 'comunidades/card-comunidade.html' %}
+            {% empty %}
+                <div class="empty-state" style="grid-column: 1 / -1; padding: 40px;">
+                    <i class="fa-solid fa-ghost" style="font-size: 2.5rem; color: #6b7280; margin-bottom: 15px;"></i>
+                    <p style="margin: auto; font-size: 1.1rem;">Nenhuma comunidade criada ou encontrada.</p>
+                    <p style="margin-top: 5px; font-size: 0.9rem;">Seja o primeiro a criar um espaço para discussão!</p>
+                </div>
             {% endfor %}
 
-            <!-- CARD ESPECIAL: CRIAR COMUNIDADE -->
+            {% if not request.user.is_superuser %}
             <a href="{% url 'criar_comunidade' %}" class="card-criar-comunidade-link">
                 <div class="card-criar-comunidade">
                     <div class="card-criar-icone">
@@ -57,7 +72,7 @@ Comunidades
                     </div>
                 </div>
             </a>
-
+            {% endif %}
         </div>
 
     </section>

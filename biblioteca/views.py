@@ -9,7 +9,8 @@ from django.http import JsonResponse
 from config.settings import AUTH_PASSWORD_VALIDATORS
 
 from .services import livros_por_categoria
-from .models import Categoria, Livro, ObraAutor, Biblioteca,Perfil
+from .models import Categoria, Livro, ObraAutor, Biblioteca
+from usuarios.models import Usuario
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
 from .constants import StatusBiblioteca
@@ -260,11 +261,13 @@ def lista_autores(request):
     if termo_busca:
         autores_query = autores_query.filter(autor__icontains=termo_busca)
         
-    # Mapeia perfis aprovados para vincular fotos e biografias reais se existirem
-    # Busca usuários cujos perfis estão vinculados e aprovados
+    # LÓGICA NOVA: Busca os usuários que são autores ou admins na nova arquitetura
+    usuarios_autores = Usuario.objects.filter(tipo__in=['autor', 'admin']).select_related('perfil')
+    
+    # Cria um dicionário vinculando o nome do autor ao seu novo perfil
     perfis_registrados = {
-        p.user.username.lower(): p 
-        for p in Perfil.objects.filter(status='aprovado').select_related('user')
+        u.nome.lower().strip(): u.perfil 
+        for u in usuarios_autores if u.perfil
     }
     
     autores_list = []
@@ -272,17 +275,23 @@ def lista_autores(request):
         nome_autor = item['autor']
         autor_chave = nome_autor.lower().strip()
         
-        # Fallback padrão
         foto_url = None
         biografia_texto = None
         
-        # Se o autor tiver um perfil cadastrado e aprovado no sistema, usa os dados reais
+        # Se o nome do autor do livro bater com um Usuário Autor registrado no sistema:
         if autor_chave in perfis_registrados:
-            perfil = perfis_registrados[autor_chave]
-            biografia_texto = perfil.bio
-            if perfil.foto:
-                # Trata se a foto for um caminho estático ou URL completa
-                foto_url = perfil.foto if (perfil.foto.startswith('http') or perfil.foto.startswith('/')) else f"/static/{perfil.foto}"
+            perfil_novo = perfis_registrados[autor_chave]
+            
+            # Tenta pegar a bio do novo model
+            biografia_texto = getattr(perfil_novo, 'bio', '')
+            
+            if perfil_novo.foto:
+                # Usa a URL do arquivo de imagem do Django
+                try:
+                    foto_url = perfil_novo.foto.url
+                except ValueError:
+                    # Fallback de segurança
+                    foto_url = None
 
         autores_list.append({
             'nome': nome_autor,

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import perfil, virar_autor, CustomPasswordChangeView
+from .views import perfil, perfil_publico, virar_autor, CustomPasswordChangeView
 
 # Namespace do app (boa prática)
 app_name = 'perfis'
@@ -13,4 +13,7 @@ urlpatterns = [
     path('alterar-senha/', CustomPasswordChangeView.as_view(template_name='perfis/alterar_senha.html', # página dentro do app perfis
             success_url='/conta/perfil/' # Volta para o perfil quando der certo
             ), name='alterar_senha'),
+
+    # === NOVA ROTA DO PERFIL COLETIVO ===
+    path('perfil/<str:username_alvo>/', perfil_publico, name='perfil_publico'),
 ]

@@ -48,9 +48,16 @@
     <!-- POSTS -->
     <section class="posts-section">
 
-        <h3>
-            Postagens
-        </h3>
+        <!-- ACESSO POSTAGENS -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3 style="margin-bottom: 0;">Postagens</h3>
+            
+            {% if pode_postar %}
+                <button id="btn-toggle-post" class="btn-primary-action" onclick="toggleFormPost()">
+                    <i class="fa-solid fa-plus"></i> Nova Postagem
+                </button>
+            {% endif %}
+        </div>
 
         <!-- BUSCA -->
         <div class="search-box">
@@ -67,88 +74,93 @@
         <!-- LISTA POSTS -->
         <div id="lista-posts">
 
-{% for post in posts %}
+            {% for post in posts %}
 
-<div class="post-card">
+            <div class="post-card">
+                <div class="post-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
 
-    <div class="post-header">
+                <div>
+                    <h4 class="post-title">{{ post.titulo }}</h4>
+                    <p class="post-author">
+                        <a href="{% url 'perfis:perfil_publico' post.autor.username %}" style="color: #c4b5fd; text-decoration: none;">
+                            @{{ post.autor.username }}
+                        </a> 
+                        <span class="post-date">• {{ post.criado_em|date:"d/m/Y" }}</span>
+                    </p>
+                </div>
 
-        <div>
+                <div class="post-actions" style="display: flex; gap: 10px;">
+                    {% if request.user == post.autor %}
+                        <a href="#" class="btn-outline" style="padding: 6px 12px; font-size: 0.8rem;" title="Editar sua publicação"><i class="fa-solid fa-pen"></i></a>
+                    {% endif %}
+                    
+                    {% if request.user == post.autor or request.user.is_superuser or request.user.is_staff %}
+                        <form action="{% url 'excluir_postagem' post.id %}" method="POST" onsubmit="return confirm('Apagar esta postagem definitivamente?');" style="margin:0; padding:0; background:transparent; border:none;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-danger-outline" style="padding: 6px 12px; font-size: 0.8rem;" title="Remover postagem">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
 
-            <h4 class="post-title">
-                {{ post.titulo }}
-            </h4>
+                <div class="post-content">
+                    {{ post.conteudo }}
+                </div>
 
-            <p class="post-author">
-                {{ post.autor.username }}
-            </p>
+                {% if post.imagem %}
+                    <img
+                        src="{{ post.imagem.url }}"
+                        style="
+                            width:100%;
+                            border-radius:12px;
+                            margin-top:15px;
+                        "
+                    >
+                {% endif %}
 
-        </div>
+            </div>
 
-        <span class="post-date">
-            {{ post.criado_em|date:"d/m/Y H:i" }}
-        </span>
+            {% empty %}
 
-    </div>
+            <div class="empty-state">
 
-    <div class="post-content">
-        {{ post.conteudo }}
-    </div>
+                <i class="fas fa-comments"></i>
 
-    {% if post.imagem %}
-        <img
-            src="{{ post.imagem.url }}"
-            style="
-                width:100%;
-                border-radius:12px;
-                margin-top:15px;
-            "
-        >
-    {% endif %}
+                <p>
+                    Ainda não existem postagens nesta comunidade.
+                </p>
 
-</div>
+            </div>
 
-{% empty %}
-
-<div class="empty-state">
-
-    <i class="fas fa-comments"></i>
-
-    <p>
-        Ainda não existem postagens nesta comunidade.
-    </p>
-
-</div>
-
-{% endfor %}
+            {% endfor %}
 
         </div>
 
     </section>
 
     <!-- FORM POST -->
-    {% if user.is_authenticated %}
+    {% if pode_postar %}
 
-    <section class="post-form-container">
-
-        <h3>
-            Adicionar postagem
-        </h3>
+    <section id="form-nova-postagem" class="post-form-container" style="display: none; margin-bottom: 30px;">
+        
+        <h3>Adicionar postagem</h3>
 
         <form method="POST" enctype="multipart/form-data">
 
         <div class="form-group">
 
-    <label>
-        Imagem
-    </label>
+        <label>
+            Imagem
+        </label>
 
-    <input
-        type="file"
-        name="imagem"
-    >
+        <input
+            type="file"
+            name="imagem"
+        >
 
-</div>
+        </div>
             {% csrf_token %}
 
             <div class="form-group">
@@ -191,9 +203,13 @@
 
     {% else %}
 
-    <p>
-        Faça login para publicar.
-    </p>
+        <div style="text-align: center; margin: 40px auto; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); max-width: 800px;">
+            {% if comunidade.nome == "Oficina de Autores" and user.is_authenticated %}
+                <p style="color: var(--text-muted); margin: 0;"><i class="fa-solid fa-eye" style="color: #8b5cf6; margin-right: 8px;"></i> Você está no modo espectador. Apenas Autores Independentes podem criar publicações nesta sala.</p>
+            {% else %}
+                <p style="color: var(--text-muted); margin: 0;">Faça login na plataforma para interagir e publicar.</p>
+            {% endif %}
+        </div>
 
     {% endif %}
 

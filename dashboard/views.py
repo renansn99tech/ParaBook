@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from usuarios.models import Usuario
 from biblioteca.models import Livro, Categoria, ObraAutor
+from comunidades.models import Comunidade
 from django.core.files.storage import FileSystemStorage
 
 def apenas_superuser(user):
@@ -12,6 +13,44 @@ def apenas_superuser(user):
 @login_required
 @user_passes_test(apenas_superuser, login_url='home', redirect_field_name=None)
 def painel_admin(request):
+
+    # ==========================================================
+    # NOVO: PROCESSAMENTO DE COMUNIDADES NO DASHBOARD (REQUISITOS 3, 5, 7)
+    # ==========================================================
+    if request.method == 'POST' and 'btn_add_comunidade_sistema' in request.POST:
+        nome = request.POST.get('nome')
+        descricao = request.POST.get('descricao')
+        
+        # Criando como comunidade do sistema oficial com limite de 500 membros
+        Comunidade.objects.create(
+            nome=nome,
+            descricao=descricao,
+            criada_por_sistema=True,
+            max_participantes=500
+        )
+        messages.success(request, f"Comunidade oficial '{nome}' criada com sucesso!")
+        return redirect('dashboard:painel_admin')
+
+    elif request.method == 'POST' and 'btn_toggle_manutencao' in request.POST:
+        com_id = request.POST.get('comunidade_id')
+        comunidade = get_object_or_404(Comunidade, id=com_id)
+        comunidade.em_manutencao = not comunidade.em_manutencao
+        comunidade.save()
+        status = "colocada em manutenção" if comunidade.em_manutencao else "reativada"
+        messages.info(request, f"A comunidade '{comunidade.nome}' foi {status}.")
+        return redirect('dashboard:painel_admin')
+
+    elif request.method == 'POST' and 'btn_deletar_comunidade' in request.POST:
+        com_id = request.POST.get('comunidade_id')
+        comunidade = get_object_or_404(Comunidade, id=com_id)
+        
+        # REQUISITO 7: Se for de usuário, só apaga se tiver denúncias suficientes (Ex: 100 ou o critério definido)
+        if not comunidade.criada_por_sistema and comunidade.total_denuncias < 100:
+            messages.error(request, "Erro: Esta comunidade pertence a um usuário e não atingiu os critérios de denúncias para exclusão forçada.")
+        else:
+            comunidade.delete()
+            messages.success(request, "Comunidade removida definitivamente!")
+        return redirect('dashboard:painel_admin')
     
     # ==========================================================
     # 1. GERENCIAMENTO DE USUÁRIOS QUE PEDIRAM PARA SER AUTORES
@@ -198,27 +237,29 @@ def painel_admin(request):
     # BUSCA 2: Usuários que pediram pelo perfil (A CORREÇÃO DA QUERY)
     usuarios_pendentes = Usuario.objects.filter(tipo='aguardando_aprovacao')
 
-    # Métricas
-    total_usuarios = todos_usuarios.count()
-    total_livros = todos_livros.count()
-    total_autores = todos_usuarios.filter(tipo='autor').count()
-    obras_aprovadas = ObraAutor.objects.filter(status='aprovado').count()
-    obras_pendentes = solicitacoes_pendentes.count()
-    obras_rejeitadas = ObraAutor.objects.filter(status='rejeitado').count()
+    # ATUALIZAÇÃO DO CONTEXTO DO DASHBOARD: Carrega as listas separadas para as abas
+    todas_comunidades = Comunidade.objects.all()
+    comunidades_sistema = todas_comunidades.filter(criada_por_sistema=True)
+    comunidades_usuarios = todas_comunidades.filter(criada_por_sistema=False)
     
     contexto = {
         'livros': todos_livros,
         'categorias': todas_categorias,
         'usuarios': todos_usuarios,
         'solicitacoes': solicitacoes_pendentes,
-        'usuarios_pendentes': usuarios_pendentes, # Enviado para o template!
+        'usuarios_pendentes': usuarios_pendentes,
         
-        'total_usuarios': total_usuarios,
-        'total_livros': total_livros,
-        'total_autores': total_autores,
-        'obras_aprovadas': obras_aprovadas,
-        'obras_pendentes': obras_pendentes,
-        'obras_rejeitadas': obras_rejeitadas,
+        'total_usuarios': todos_usuarios.count(),
+        'total_livros': todos_livros.count(),
+        'total_autores': todos_usuarios.filter(tipo='autor').count(),
+        'obras_aprovadas': ObraAutor.objects.filter(status='aprovado').count(),
+        'obras_pendentes': solicitacoes_pendentes.count(),
+        'obras_rejeitadas': ObraAutor.objects.filter(status='rejeitado').count(),
+        
+        # --- NOVOS DADOS DO CONTEXTO ---
+        'comunidades': todas_comunidades,
+        'comunidades_sistema': comunidades_sistema,
+        'comunidades_usuarios': comunidades_usuarios,
     }
 
     return render(request, 'dashboard/admin.html', contexto)

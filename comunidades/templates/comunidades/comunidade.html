@@ -31,14 +31,6 @@ Comunidades
             ao seu interesse.
         </p>
 
-        <a
-            href="{% url 'criar_comunidade' %}"
-            class="btn-criar-comunidade"
-        >
-            <i class="fas fa-plus"></i>
-            Criar Comunidade
-        </a>
-
         <div class="grid">
 
             {% for comunidade in comunidades %}
@@ -52,6 +44,19 @@ Comunidades
                 </p>
 
             {% endfor %}
+
+            <!-- CARD ESPECIAL: CRIAR COMUNIDADE -->
+            <a href="{% url 'criar_comunidade' %}" class="card-criar-comunidade-link">
+                <div class="card-criar-comunidade">
+                    <div class="card-criar-icone">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="card-criar-content">
+                        <h2>Criar Comunidade</h2>
+                        <p>Crie um novo espaço para compartilhar ideias e discussões.</p>
+                    </div>
+                </div>
+            </a>
 
         </div>
 
@@ -68,4 +73,3 @@ Comunidades
 <script src="{% static 'js/index.js' %}"></script>
 
 {% endblock %}
-

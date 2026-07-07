@@ -35,43 +35,20 @@ main{
     line-height:1.7;
 }
 
-/* BOTÃO CRIAR */
-
-.btn-criar-comunidade{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-
-    padding:14px 24px;
-    margin:12px 0 38px;
-
-    border-radius:14px;
-
-    color:white;
-    text-decoration:none;
-    font-weight:700;
-
-    background:linear-gradient(135deg,var(--purple),var(--purple-dark));
-
-    transition:.35s;
+/* REMOVIDO / ADAPTADO: ANTIGO BOTÃO CRIAR SE TORNOU CARD */
+.btn-criar-comunidade {
+    display: none; /* Ocultado caso esteja em caches antigos, substituído pelo card */
 }
 
-.btn-criar-comunidade:hover{
-    transform:translateY(-3px);
-    box-shadow:0 15px 35px rgba(139,92,246,.35);
-}
-
-/* GRID */
-
+/* GRID RESPONSIVA (DEFAULT: DESKTOP - 4 COLUNAS) */
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    grid-template-columns:repeat(4, 1fr);
     gap:24px;
+    align-items:stretch;
 }
 
-/* CARD COMUNIDADE */
-
+/* CARD COMUNIDADE EXISTENTE */
 .card-comunidade,
 .card{
     position:relative;
@@ -94,7 +71,7 @@ main{
         );
 
     box-shadow:var(--shadow);
-    transition:.35s;
+    transition:.35s ease-in-out;
 }
 
 .card-comunidade::before,
@@ -161,8 +138,79 @@ main{
     margin-top:auto;
 }
 
-/* BOTÕES */
+/* CARD ESPECIAL: CRIAR COMUNIDADE */
+.card-criar-comunidade-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
 
+.card-criar-comunidade {
+    position: relative;
+    min-height: 230px;
+    padding: 26px;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    border-radius: 22px;
+    border: 2px dashed rgba(139, 92, 246, 0.4);
+    background: rgba(16, 25, 45, 0.4);
+    
+    box-shadow: var(--shadow);
+    transition: transform 0.35s ease-in-out, border-color 0.35s, background 0.35s, box-shadow 0.35s;
+    cursor: pointer;
+}
+
+.card-criar-icone {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple, #8b5cf6), var(--purple-dark, #6d28d9));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    transition: transform 0.35s;
+}
+
+.card-criar-icone i {
+    font-size: 1.6rem;
+    color: white;
+}
+
+.card-criar-content h2 {
+    color: white;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.card-criar-content p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* HOVER EFFECT: CARD CRIAR */
+.card-criar-comunidade:hover {
+    transform: translateY(-7px);
+    border-color: var(--purple);
+    background: rgba(16, 25, 45, 0.8);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.38), 0 0 35px rgba(139, 92, 246, 0.15);
+}
+
+.card-criar-comunidade:hover .card-criar-icone {
+    transform: scale(1.1);
+}
+
+/* BOTÕES GERAIS */
 .btn,
 .btn-comunidade{
     display:inline-flex;
@@ -224,7 +272,6 @@ main{
 }
 
 /* EMPTY STATE */
-
 .empty-state,
 .grid > p{
     grid-column:1/-1;
@@ -246,7 +293,6 @@ main{
 }
 
 /* FORM CRIAR / EDITAR */
-
 .form-container{
     max-width:720px;
     margin:70px auto;
@@ -318,7 +364,6 @@ main{
 }
 
 /* CONFIRMAÇÃO EXCLUIR */
-
 .confirmacao-container{
     min-height:calc(100vh - 260px);
 
@@ -375,8 +420,25 @@ main{
     margin-top:28px;
 }
 
-/* RESPONSIVO */
+/* ===============================
+   RESPONSIVIDADE AJUSTADA DOS CARDS
+================================ */
 
+/* TABLETS: 2 ou 3 cards por linha */
+@media(max-width:1024px){
+    .grid{
+        grid-template-columns:repeat(2, 1fr);
+    }
+}
+
+@media(min-width:769px) and (max-width:1024px){
+    .grid{
+        /* Caso queira testar explicitamente 3 em telas médias grandes de tablet */
+        grid-template-columns:repeat(3, 1fr); 
+    }
+}
+
+/* CELULAR: 1 card por linha */
 @media(max-width:768px){
     .pagina-comunidade{
         padding:50px 24px;

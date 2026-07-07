@@ -53,6 +53,8 @@
             id="dados-livro"
             data-id="{{ livro.id_livro }}"
             data-url-concluir="{% url 'concluir_leitura' livro.id_livro %}"
+            data-url-avaliar="{% url 'avaliar_livro' livro.id_livro %}"
+            data-url-favoritar="{% url 'favoritar_livro' livro.id_livro %}"
             data-caminho="{{ livro.pdf }}">
         </div>
         {% else %}
@@ -61,9 +63,12 @@
             id="dados-livro"
             data-id="{{ livro.id_livro }}"
             data-url-concluir="{% url 'concluir_leitura' livro.id_livro %}"
+            data-url-avaliar="{% url 'avaliar_livro' livro.id_livro %}"
+            data-url-favoritar="{% url 'favoritar_livro' livro.id_livro %}"
             data-caminho="{% static livro.url_pdf_estatico %}">
         </div>
         {% endif %}
+        
         <div id="loading" class="loading-state" aria-live="polite"></div>
 
         <article class="leitor-pdf" id="leitor-pdf-container">
@@ -96,6 +101,14 @@
 
             <button id="btn-marcar-lido" class="btn btn-success" style="background-color: #10b981; color: white; margin-left: 10px;">
                 <i class="fa-solid fa-check-double"></i> Marcar como Lido
+            </button>
+
+            <button id="btn-favoritar" class="btn" style="background-color: #ec4899; color: white;">
+                <i class="fa-solid fa-heart"></i> Favoritar
+            </button>
+
+            <button id="btn-avaliar" class="btn" style="background-color: #f59e0b; color: white;">
+                <i class="fa-solid fa-star"></i> Avaliar
             </button>
         </div>
     </section>

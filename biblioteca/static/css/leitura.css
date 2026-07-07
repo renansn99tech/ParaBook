@@ -337,17 +337,15 @@
     border:1px solid rgba(139,92,246,.3);
 }
 
-/* =================================
-   AÇÕES
-================================= */
-
-.acoes{
-    max-width:900px;
-
-    margin:28px auto 0;
-
-    display:flex;
-    justify-content:center;
+/* =========================================
+   ÁREA DE BOTÕES DO LEITOR (AÇÕES)
+========================================= */
+.acoes {
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar linha no celular, se não couber tudo */
+    justify-content: center;
+    gap: 16px; /* O segredo do espaçamento perfeito entre os botões */
+    margin-top: 20px;
 }
 
 .acoes .btn.secondary{
@@ -407,6 +405,29 @@
     border-color: #8b5cf6; /* O tom de roxo exato dos seus botões */
     background-color: rgba(139, 92, 246, 0.1); /* Brilho leve no fundo */
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); /* Anel de foco moderno */
+}
+
+/* Correção do Select nativo do SweetAlert2 para o Dark Mode */
+.swal2-select {
+    background-color: #0f172a !important; /* Fundo mais escuro */
+    color: #f8fafc !important; /* Texto claro */
+    border: 1px solid rgba(139, 92, 246, 0.4) !important; /* Borda roxa padrão do projeto */
+    border-radius: 12px !important;
+    padding: 12px !important;
+    font-size: 0.95rem !important;
+    outline: none !important;
+    box-shadow: none !important;
+
+    /* === NOVO: Mantém o select dentro do alerta === */
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 90% !important; /* Deixa um espaço de respiro nas laterais */
+    margin: 1.5rem auto !important; /* Centraliza a barra com perfeição */
+}
+
+.swal2-select:focus {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
 }
 
 /* =================================

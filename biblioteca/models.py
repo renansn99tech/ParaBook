@@ -103,6 +103,7 @@ class Biblioteca(models.Model):
         default='quero_ler'
     )
 
+    favorito = models.BooleanField(default=False)
     nota = models.IntegerField(null=True, blank=True)
     data_adicao = models.DateTimeField(auto_now_add=True)
 

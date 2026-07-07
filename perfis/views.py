@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.db.models import Count
 from usuarios.models import Usuario
 from biblioteca.models import Biblioteca
 from comunidades.models import Comunidade
@@ -109,25 +110,45 @@ def perfil(request):
     # 2. Buscando a quantidade de comunidades usando a model de forma explícita
     qnt_comunidades = Comunidade.objects.filter(membros=request.user).count()
 
-    # 3. O SEU CONTEXTO ORIGINAL (Mantendo as mesmas chaves para não quebrar o HTML)
-    contexto = {
-        'usuario_custom': dados_usuario, # Mantido original
-        'perfil': perfil_do_usuario,     # Mantido original
+    # 3. LÓGICA DE FAVORITOS AUTOMÁTICOS (Top 3)
+    # Agrupa os livros da biblioteca pelo nome da categoria e conta qual aparece mais
+    top_generos = meus_livros.values('livro__categoria__nome') \
+        .annotate(total=Count('livro__categoria__nome')) \
+        .order_by('-total')[:3]
+    
+    # Extrai apenas os nomes para uma lista limpa, ignorando valores nulos
+    lista_generos_favoritos = [item['livro__categoria__nome'] for item in top_generos if item['livro__categoria__nome']]
+
+    # Faz o mesmo processo para descobrir os autores mais lidos/adicionados
+    top_autores = meus_livros.values('livro__autor') \
+        .annotate(total=Count('livro__autor')) \
+        .order_by('-total')[:3]
         
-        # Substituindo os zeros pelos dados REAIS vindos do banco de dados
+    lista_autores_favoritos = [item['livro__autor'] for item in top_autores if item['livro__autor']]
+
+    # Filtra apenas os livros marcados como favoritos pelo usuário
+    livros_favoritos = meus_livros.filter(favorito=True)
+
+    # 4. O SEU CONTEXTO ATUALIZADO
+    contexto = {
+        'usuario_custom': dados_usuario, 
+        'perfil': perfil_do_usuario,     
+        
         'total_lidos': qnt_livros_lidos,
         'lendo_agora': qnt_lendo_agora,
         'total_avaliados': qnt_avaliados,
         'total_comunidades': qnt_comunidades,
         
-        # Listas que vocês implementarão posteriormente
-        'generos_favoritos': [],
-        'autores_favoritos': [],
+        # Injetando os dados reais calculados
+        'generos_favoritos': lista_generos_favoritos,
+        'autores_favoritos': lista_autores_favoritos,
+        
+        # Histórico e favoritos fixos ficam para depois
         'historico': [],
-        'favoritos': []
+        'favoritos': livros_favoritos, # Lista vazia substituída por esta variável
     }
 
-    return render(request, 'perfis/perfil.html', contexto) # Substitua pelo nome correto do seu template
+    return render(request, 'perfis/perfil.html', contexto)
 
 ############################################ FUNÇÃO QUE ENVIA MENSAGEM DE SUCESSO NA ALTERAÇÃO DA SENHA ############################################
 class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):

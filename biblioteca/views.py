@@ -1,4 +1,5 @@
 from django.contrib import messages
+import json
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -190,6 +191,7 @@ def obras_autores(request):
         'categorias': categorias,
         'is_author_approved': is_author_approved
     })
+
 def listar_obras(request):
     obras = ObraAutor.objects.filter(status='aprovado')
     return render(request, 'biblioteca/lista_obras.html', {
@@ -298,3 +300,34 @@ def lista_autores(request):
         'termo_busca': termo_busca,
     }
     return render(request, 'biblioteca/autores.html', context)
+
+# --- NOVAS FUNÇÕES PARA O LEITOR ---
+def avaliar_livro(request, livro_id):
+    if request.method == "POST" and request.user.is_authenticated:
+        try:
+            # O JavaScript vai enviar a nota em formato JSON
+            data = json.loads(request.body)
+            nova_nota = int(data.get('nota'))
+            
+            registro = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+            registro.nota = nova_nota
+            registro.save()
+            
+            return JsonResponse({"success": True, "message": f"Avaliado com {nova_nota} estrelas!"})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+    return JsonResponse({"success": False}, status=400)
+
+
+def favoritar_livro(request, livro_id):
+    if request.method == "POST" and request.user.is_authenticated:
+        try:
+            registro = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+            registro.favorito = not registro.favorito
+            registro.save()
+            
+            # Garante que estamos devolvendo o estado atualizado
+            return JsonResponse({"success": True, "is_favorito": registro.favorito})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+    return JsonResponse({"success": False}, status=400)

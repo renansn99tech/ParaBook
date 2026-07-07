@@ -110,28 +110,6 @@
             <!-- TAB INFO -->
             <div id="info" class="tab-content active">
                 <div class="perfil-info-grid">
-                    <div class="content-glass-card">
-                        <h3>Gêneros Favoritos</h3>
-                        <div class="genres-list">
-                            {% for genero in generos_favoritos %}
-                                <span class="genre-tag">{{ genero.nome }}</span>
-                            {% empty %}
-                                <span class="genre-tag">Nenhum gênero</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="content-glass-card">
-                        <h3>Autores Favoritos</h3>
-                        <ul class="authors-list">
-                            {% for autor in autores_favoritos %}
-                                <li><i class="fa-solid fa-feather-pointed"></i> {{ autor.nome }}</li>
-                            {% empty %}
-                                <li class="text-muted">Nenhum autor favoritado.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
                     <div class="content-glass-card full-width">
                         <h3>Sobre Você</h3>
                         <p class="sobre-texto">{{ perfil.bio|default:"Nenhuma biografia cadastrada." }}</p>
@@ -159,9 +137,33 @@
                 </div>
             </div>
 
-            <!-- TAB FAVORITOS -->
             <div id="favoritos" class="tab-content">
-                <div class="favoritos-grid">
+                
+                <div class="perfil-info-grid" style="margin-bottom: 24px;">
+                    <div class="content-glass-card">
+                        <h3>Gêneros Favoritos</h3>
+                        <ul class="genres-list">
+                            {% for genero in generos_favoritos %}
+                                <li class="genre-tag">{{ genero }}</li>
+                            {% empty %}
+                                <p class="text-muted">Nenhum gênero favoritado ainda.</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="content-glass-card">
+                        <h3>Autores Favoritos</h3>
+                        <ul class="authors-list">
+                            {% for autor in autores_favoritos %}
+                                <li><i class="fa-solid fa-pen-nib"></i> {{ autor }}</li>
+                            {% empty %}
+                                <p class="text-muted">Nenhum autor favoritado ainda.</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="favoritos-grid full">
                     {% for livro in favoritos %}
                         <div class="favorito-card content-glass-card">
                             <div class="favorito-capa">
@@ -172,13 +174,15 @@
                                 {% endif %}
                             </div>
                             <div class="favorito-info">
-                                <h4>{{ livro.titulo }}</h4>
-                                <p>{{ livro.autor }}</p>
+                                <h4>{{ livro.livro.nome }}</h4>
+                                <p>{{ livro.livro.autor }}</p>
                                 <button class="btn-danger-outline btn-remover-favorito"><i class="fa-solid fa-xmark"></i> Remover</button>
                             </div>
                         </div>
                     {% empty %}
-                        <div class="content-glass-card" style="grid-column: 1 / -1;"><p class="text-muted">Nenhum livro favorito.</p></div>
+                        <div class="content-glass-card" style="grid-column: 1 / -1;">
+                            <p class="text-muted">Nenhum livro favorito.</p>
+                        </div>
                     {% endfor %}
                 </div>
             </div>

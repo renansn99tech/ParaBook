@@ -1,14 +1,18 @@
 from django.contrib import messages
+import json
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 from config.settings import AUTH_PASSWORD_VALIDATORS
 
 from .services import livros_por_categoria
 from .models import Categoria, Livro, ObraAutor, Biblioteca,Perfil
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
+from .constants import StatusBiblioteca
 from comunidades.models import Comunidade
 
 from comunidades.models import Comunidade
@@ -98,7 +102,39 @@ def leitura(request):
     return render(request, 'biblioteca/leitura.html', {
         'livro': livro
     })
+    
+@login_required
+def iniciar_leitura(request, livro_id):
+    # 1. Busca o registro do livro na estante deste usuário específico
+    registro_biblioteca = get_object_or_404(Biblioteca, user=request.user, livro_id=livro_id)
+    
+    # 2. Atualiza o status de 'quero_ler' para 'lendo'
+    registro_biblioteca.status = StatusBiblioteca.LENDO
+    registro_biblioteca.save()
+    
+    # 3. Redireciona o usuário para a página de leitura real
+    # O reverse pega a url base, e nós concatenamos o ID no formato que sua página espera
+    url_leitura = reverse('leitura')
+    return redirect(f"{url_leitura}?id={livro_id}")
 
+def concluir_leitura(request, livro_id):
+    # Garante que só quem está logado e via método POST possa fazer isso
+    if request.method == "POST" and request.user.is_authenticated:
+        try:
+            # Busca o livro na estante desse usuário específico
+            registro = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+            
+            # Muda o status para LIDO
+            registro.status = StatusBiblioteca.LIDO
+            registro.save()
+            
+            # Devolve uma resposta rápida e silenciosa (JSON) para o Javascript
+            return JsonResponse({"success": True, "message": "Status atualizado para Lido!"})
+            
+        except Biblioteca.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Livro não encontrado na biblioteca."}, status=404)
+
+    return JsonResponse({"success": False, "error": "Requisição inválida."}, status=400)
 
 def is_approved_author(user):
     if user.is_anonymous:
@@ -155,6 +191,7 @@ def obras_autores(request):
         'categorias': categorias,
         'is_author_approved': is_author_approved
     })
+
 def listar_obras(request):
     obras = ObraAutor.objects.filter(status='aprovado')
     return render(request, 'biblioteca/lista_obras.html', {
@@ -263,3 +300,34 @@ def lista_autores(request):
         'termo_busca': termo_busca,
     }
     return render(request, 'biblioteca/autores.html', context)
+
+# --- NOVAS FUNÇÕES PARA O LEITOR ---
+def avaliar_livro(request, livro_id):
+    if request.method == "POST" and request.user.is_authenticated:
+        try:
+            # O JavaScript vai enviar a nota em formato JSON
+            data = json.loads(request.body)
+            nova_nota = int(data.get('nota'))
+            
+            registro = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+            registro.nota = nova_nota
+            registro.save()
+            
+            return JsonResponse({"success": True, "message": f"Avaliado com {nova_nota} estrelas!"})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+    return JsonResponse({"success": False}, status=400)
+
+
+def favoritar_livro(request, livro_id):
+    if request.method == "POST" and request.user.is_authenticated:
+        try:
+            registro = Biblioteca.objects.get(user=request.user, livro_id=livro_id)
+            registro.favorito = not registro.favorito
+            registro.save()
+            
+            # Garante que estamos devolvendo o estado atualizado
+            return JsonResponse({"success": True, "is_favorito": registro.favorito})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+    return JsonResponse({"success": False}, status=400)

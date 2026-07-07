@@ -141,11 +141,16 @@
     </div>
 
             <div class="card-info">
-                <h2 class="book-title">{{ item.livro.nome }}</h2>
+                <h2 class="book-title">
+                    {% if item.favorito %}
+                        <i class="fa-solid fa-heart" style="color: #ec4899; margin-right: 5px;" title="Livro Favoritado"></i>
+                    {% endif %}
+                    {{ item.livro.nome }}
+                </h2>
                 <p class="book-author">Por {{ item.livro.autor }}</p>
                 
                 <div class="card-actions">
-                    <a href="{% url 'leitura' %}?id={{ item.livro.id_livro }}" class="btn-ler" title="Abrir leitor digital do livro">
+                    <a href="{% url 'iniciar_leitura' item.livro.id_livro %}" class="btn-ler" title="Abrir leitor digital do livro">
                         <i class="fa-solid fa-book-open-reader"></i> Ler
                     </a>
                     <button type="button" 

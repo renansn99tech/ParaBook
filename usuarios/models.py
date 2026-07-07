@@ -27,7 +27,14 @@ class Usuario(models.Model):
     conquistas = models.CharField(max_length=45, blank=True, null=True)
 
     # Tornando o perfil opcional na criação física para evitar o erro de quem nasce primeiro (usuário > perfil || perfil > usuario)
-    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, null=True, blank=True)
+    # Alterado: adicionado related_name para evitar o conflito com perfis.Perfil.usuario
+    perfil = models.ForeignKey(
+        Perfil, 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True, 
+        related_name='usuarios_vinculados' 
+    )
 
     def __str__(self):
         return self.nome or f"Usuario {self.id}"

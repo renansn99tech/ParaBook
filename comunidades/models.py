@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings # Boa prática: importa o usuário global do projeto
 from django.contrib.auth.models import User
 
 
@@ -6,6 +7,13 @@ class Comunidade(models.Model):
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
+    
+    # NOVO CAMPO: Relação Muitos-para-Muitos
+    membros = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, 
+        related_name='comunidades_inscritas',
+        blank=True
+    )
 
     def __str__(self):
         return self.nome

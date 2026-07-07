@@ -103,6 +103,7 @@ class Biblioteca(models.Model):
         default='quero_ler'
     )
 
+    favorito = models.BooleanField(default=False)
     nota = models.IntegerField(null=True, blank=True)
     data_adicao = models.DateTimeField(auto_now_add=True)
 
@@ -117,7 +118,7 @@ class Perfil(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        related_name='perfil'
+        related_name='perfil_da_biblioteca' # <- ADICIONE ISSO
     )
 
     foto = models.CharField(max_length=255, blank=True, null=True)

@@ -45,7 +45,7 @@
                                 <span class="badge badge-leitor"><i class="fa-solid fa-book-open"></i> Leitor</span>
                             {% endif %}
                         </h1>
-                        <p class="perfil-username">@{{ perfil.username|default:"usuario" }}</p>
+                        <p class="perfil-username">@{{ usuario_custom.user_auth.username|default:"usuario" }}</p>
                     </div>
 
                     <div class="info-body">
@@ -176,7 +176,9 @@
                             <div class="favorito-info">
                                 <h4>{{ livro.livro.nome }}</h4>
                                 <p>{{ livro.livro.autor }}</p>
-                                <button class="btn-danger-outline btn-remover-favorito"><i class="fa-solid fa-xmark"></i> Remover</button>
+                                <button class="btn-danger-outline btn-remover-favorito" onclick="removerFavoritoDoPerfil(this, '{% url 'favoritar_livro' livro.livro.id_livro %}')">
+                                    <i class="fa-solid fa-xmark"></i> Remover
+                                </button>
                             </div>
                         </div>
                     {% empty %}
@@ -280,7 +282,7 @@
 
 <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{% static 'js/perfil.js' %}?v=1.5"></script>
+    <script src="{% static 'js/perfil.js' %}?v=1.6"></script>
 
     <script>
         function confirmarExclusao() {

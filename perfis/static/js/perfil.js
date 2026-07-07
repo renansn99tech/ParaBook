@@ -181,22 +181,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // =============================
-    // REMOVER FAVORITOS
-    // =============================
-    document.addEventListener("click", (e) => {
+});
 
-        if (e.target.classList.contains("btn-remover-favorito")) {
+// ============================================================
+// Removendo os livros Favoritos na aba Favoritos do Perfil - Fora do DOMContentLoaded
+// ============================================================
 
-            e.target.closest(".favorito-card")?.remove();
-
-            Swal.fire({
-                icon: "success",
-                title: "Removido dos favoritos",
-                timer: 1200,
-                showConfirmButton: false
+function removerFavoritoDoPerfil(botao, urlToggle) {
+    Swal.fire({
+        title: 'Remover dos Favoritos?',
+        text: "O livro continuará na sua estante, mas sairá desta lista.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Sim, remover',
+        cancelButtonText: 'Cancelar',
+        background: '#1e293b', color: '#f8fafc'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || "";
+            
+            fetch(urlToggle, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": csrfToken,
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Pega o card inteiro do livro e faz uma animação de sumiço
+                    const card = botao.closest('.favorito-card');
+                    card.style.transition = "all 0.4s ease";
+                    card.style.opacity = "0";
+                    card.style.transform = "scale(0.8)";
+                    
+                    setTimeout(() => {
+                        card.remove();
+                        // Opcional: Se a tela ficar sem favoritos, você pode dar um reload suave
+                        // window.location.reload(); 
+                    }, 400);
+                }
             });
         }
     });
-
-});
+}

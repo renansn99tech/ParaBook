@@ -174,4 +174,4 @@ function atualizarEstatisticasEstante() {
     if (elTotal) elTotal.textContent = total;
     if (elConcluidos) elConcluidos.textContent = concluidos;
     if (elLendo) elLendo.textContent = lendo;
-}
+};

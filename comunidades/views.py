@@ -182,3 +182,26 @@ def excluir_postagem(request, id):
         messages.error(request, "Ação não autorizada.")
         
     return redirect('conteudo_comunidade', id=comunidade_id)
+
+@login_required
+def editar_postagem(request, id):
+    post = get_object_or_404(PostagemComunidade, id=id)
+    
+    # Trava de Segurança: Apenas o dono do post pode editá-lo
+    if request.user != post.autor:
+        messages.error(request, "Você não tem permissão para editar esta publicação.")
+        return redirect('conteudo_comunidade', id=post.comunidade.id)
+        
+    if request.method == 'POST':
+        post.titulo = request.POST.get('titulo')
+        post.conteudo = request.POST.get('conteudo')
+        
+        # Se o usuário enviou uma nova imagem, ela substitui a antiga
+        if request.FILES.get('imagem'):
+            post.imagem = request.FILES.get('imagem')
+            
+        post.save()
+        messages.success(request, "Postagem atualizada com sucesso!")
+        return redirect('conteudo_comunidade', id=post.comunidade.id)
+        
+    return render(request, 'comunidades/editar-postagem.html', {'post': post})

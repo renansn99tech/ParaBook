@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Postagem{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/comunidade.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="form-container">
+    <h2>
+        <i class="fa-solid fa-pen-to-square"></i>
+        Editar Publicação
+    </h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Imagem da Publicação (Opcional)</label>
+            {% if post.imagem %}
+                <p style="font-size: 0.85rem; color: #aeb3c7; margin-bottom: 10px;">Imagem atual: {{ post.imagem.name }}</p>
+            {% endif %}
+            <input type="file" name="imagem" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label>Título</label>
+            <input type="text" name="titulo" value="{{ post.titulo }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Mensagem</label>
+            <textarea name="conteudo" required>{{ post.conteudo }}</textarea>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <a href="{% url 'conteudo_comunidade' post.comunidade.id %}" class="btn-voltar" style="flex: 1; text-align: center;">Cancelar</a>
+            <button type="submit" class="btn" style="flex: 2;">Salvar Alterações</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -91,7 +91,7 @@
 
                 <div class="post-actions" style="display: flex; gap: 10px;">
                     {% if request.user == post.autor %}
-                        <a href="#" class="btn-outline" style="padding: 6px 12px; font-size: 0.8rem;" title="Editar sua publicação"><i class="fa-solid fa-pen"></i></a>
+                        <a href="{% url 'editar_postagem' post.id %}" class="btn-outline" style="padding: 6px 12px; font-size: 0.8rem;" title="Editar sua publicação"><i class="fa-solid fa-pen"></i></a>
                     {% endif %}
                     
                     {% if request.user == post.autor or request.user.is_superuser or request.user.is_staff %}

@@ -217,8 +217,8 @@
       {% for livro in livros_recentes|slice:":3" %}
         <article class="book-card card-novidade-evolved">
           <div class="book-capa-wrapper">
-            {% if livro.capa %}
-              <img src="{{ livro.capa.url }}" alt="Capa do livro {{ livro.titulo }}" loading="lazy" />
+            {% if livro.capa_url %}
+              <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" loading="lazy" />
             {% else %}
               <div class="capa-placeholder">
                 <i class="fa-solid fa-book"></i>
@@ -228,8 +228,8 @@
           </div>
 
           <div class="book-info">
-            <h3>{{ livro.titulo }}</h3>
-            <p class="book-author">{{ livro.autor.nome }}</p>
+            <h3>{{ livro.nome }}</h3>
+            <p class="book-author">{{ livro.autor }}</p>
             <div class="book-rating">
               <i class="fa-solid fa-star"></i> 5.0
             </div>

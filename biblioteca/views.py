@@ -233,19 +233,17 @@ def mais_acessados(request):
 
 
 def home(request):
-    livros = Livro.objects.all()[:6]
+    livros_em_alta = Livro.objects.all().order_by('-avaliacao')[:6]
+    livros_recentes = Livro.objects.all().order_by('-id_livro')[:6]
     obras_independentes = ObraAutor.objects.filter(status='aprovado')[:6]
     comunidades = Comunidade.objects.all()[:6]
 
-    return render(
-        request,
-        'index.html',
-        {
-            'livros': livros,
-            'obras_independentes': obras_independentes,
-            'comunidades': comunidades
-        }
-    )
+    return render(request, 'index.html', {
+        'livros': livros_em_alta,
+        'livros_recentes': livros_recentes,
+        'obras_independentes': obras_independentes,
+        'comunidades': comunidades
+    })
 
 
 def lista_autores(request):

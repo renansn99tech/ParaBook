@@ -61,7 +61,6 @@ def register(request):
             
             # 2. Cria o Perfil injetando o username
             novo_perfil = Perfil.objects.create(
-                username=auth_user.username,
                 descricao_perfil="Olá! Sou um novo leitor do ParaBook.",
                 historico="Nenhum livro lido ainda."
             )

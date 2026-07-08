@@ -299,7 +299,7 @@
                     <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Painel do Autor Independente</h3>
                     <p>Gerencie suas publicações e veja o alcance das suas obras.</p>
                 </div>
-                <a href="#" class="btn-primary-action"><i class="fa-solid fa-plus"></i> Publicar Novo Livro</a>
+                <a href="{% url 'obras_autores' %}" class="btn-primary-action"><i class="fa-solid fa-plus"></i> Publicar Novo Livro</a>
             </section>
         {% elif usuario_custom.tipo == 'aguardando_aprovacao' %}
             <section class="special-panel pendente-panel content-glass-card">

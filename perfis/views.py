@@ -22,7 +22,6 @@ def perfil(request):
         is_admin = request.user.is_superuser
         
         novo_perfil = Perfil.objects.create(
-            username=request.user.username,
             descricao_perfil="Administrador do Sistema" if is_admin else "Novo Leitor"
         )
         

@@ -24,10 +24,23 @@
                         {% else %}
                             <img src="{% static 'img/user.png' %}" alt="Avatar do Usuário" class="perfil-avatar">
                         {% endif %}
-                        <input type="file" id="inputFotoOculto" accept="image/*" style="display: none;">
-                        <button class="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto">
-                            <i class="fa-solid fa-camera"></i>
-                        </button>
+                            <input type="file" id="inputFotoOculto" accept="image/*" style="display: none;">
+
+                        <div style="position: absolute; bottom: 5px; right: -15px; display: flex; gap: 8px;">
+                            
+                            {% if perfil.foto %}
+                                <button class="btn-editar-avatar" id="btnRemoverFoto" title="Remover Foto" style="position: relative; top: 0; right: 6.75vw; background-color: #ef4444; border-color: #050816;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            {% endif %}
+                            
+                            {% if not is_perfil_publico %}
+                                <button class="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto" style="position: static;">
+                                    <i class="fa-solid fa-camera"></i>
+                                </button>
+                            {% endif %}
+                            
+                        </div>
                     </div>
                 </div>
 
@@ -104,6 +117,7 @@
                 <button class="tab-btn active" data-tab="info"><i class="fa-solid fa-circle-info"></i> Informações</button>
                 <button class="tab-btn" data-tab="historico"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
                 <button class="tab-btn" data-tab="favoritos"><i class="fa-solid fa-heart"></i> Favoritos</button>
+                <button class="tab-btn" data-tab="comunidades"><i class="fa-solid fa-users"></i> Comunidades</button>
                 <button class="tab-btn" data-tab="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</button>
             </div>
 
@@ -137,8 +151,8 @@
                 </div>
             </div>
 
+            <!-- TAB FAVORITOS -->
             <div id="favoritos" class="tab-content">
-                
                 <div class="perfil-info-grid" style="margin-bottom: 24px;">
                     <div class="content-glass-card">
                         <h3>Gêneros Favoritos</h3>
@@ -184,6 +198,37 @@
                     {% empty %}
                         <div class="content-glass-card" style="grid-column: 1 / -1;">
                             <p class="text-muted">Nenhum livro favorito.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- TAB COMUNIDADES -->
+             <div id="comunidades" class="tab-content">
+                <div class="favoritos-grid full">
+                    {% for comunidade in minhas_comunidades %}
+                        <div class="favorito-card content-glass-card" style="padding: 0; overflow: hidden;">
+                            
+                            <div class="favorito-capa" style="height: 140px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.15); border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <i class="fa-solid fa-users" style="font-size: 3.5rem; color: #8b5cf6;"></i>
+                            </div>
+                            
+                            <div class="favorito-info" style="padding: 20px;">
+                                <h4>{{ comunidade.nome }}</h4>
+                                <p style="margin-bottom: 15px; min-height: 40px;">{{ comunidade.descricao|truncatechars:60 }}</p>
+                                
+                                <a href="{% url 'conteudo_comunidade' comunidade.id %}" class="btn-outline" style="width: 100%; justify-content: center; text-align: center;">
+                                    Acessar Comunidade
+                                </a>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="content-glass-card" style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
+                            <i class="fa-solid fa-comments text-muted" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                            <p class="text-muted">Você ainda não participa de nenhuma comunidade.</p>
+                            <a href="{% url 'comunidades' %}" class="btn-primary-action" style="margin-top: 15px;">
+                                Explorar Comunidades
+                            </a>
                         </div>
                     {% endfor %}
                 </div>

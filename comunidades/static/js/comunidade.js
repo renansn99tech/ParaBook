@@ -181,3 +181,17 @@ function carregarDetalheComunidade() {
         listaPosts.innerHTML = html;
     }
 }
+
+function toggleFormPost() {
+    const formContainer = document.getElementById('form-nova-postagem');
+    const btnIcon = document.querySelector('#btn-toggle-post i');
+    
+    if (formContainer.style.display === 'none') {
+        formContainer.style.display = 'block';
+        btnIcon.classList.replace('fa-plus', 'fa-minus'); // Troca o ícone
+        formContainer.scrollIntoView({ behavior: 'smooth' }); // Rola a tela até o form
+    } else {
+        formContainer.style.display = 'none';
+        btnIcon.classList.replace('fa-minus', 'fa-plus');
+    }
+}

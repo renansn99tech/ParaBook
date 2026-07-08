@@ -193,3 +193,17 @@ function renderGraficos() {
         });
     }
 }
+
+// Função para controlar a alternância de sub-abas dentro do painel de comunidades
+function alternarSubAbaComunidade(idSubAba) {
+    // Esconde todos os conteúdos das sub-abas
+    document.querySelectorAll('.sub-aba-content').forEach(conteudo => {
+        conteudo.style.display = 'none';
+    });
+    
+    // Exibe apenas a clicada
+    const subAbaAlvo = document.getElementById(idSubAba);
+    if (subAbaAlvo) {
+        subAbaAlvo.style.display = 'block';
+    }
+}

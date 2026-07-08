@@ -7,6 +7,20 @@ class Comunidade(models.Model):
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
+
+    criador = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='comunidades_criadas'
+    )
+
+    # --- NOVOS CAMPOS DE GOVERNANÇA ---
+    criada_por_sistema = models.BooleanField(default=False) # True = Oficial do ParaBook, False = Usuário
+    em_manutencao = models.BooleanField(default=False) # Bloqueia acessos temporariamente
+    max_participantes = models.IntegerField(default=200) # Sistema mudará para 500 automaticamente
+    total_denuncias = models.IntegerField(default=0) # Controle para moderação do Admin
     
     # NOVO CAMPO: Relação Muitos-para-Muitos
     membros = models.ManyToManyField(

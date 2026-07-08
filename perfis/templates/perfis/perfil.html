@@ -259,7 +259,7 @@
                             </div>
                             <div class="perfil-form-group">
                                 <label for="input-username">Nome de Usuário (Username)</label>
-                                <input type="text" id="input-username" name="username" class="form-input" value="{{ perfil.username|default:'' }}" placeholder="Ex: renan_santos">
+                                <input type="text" id="input-username" name="username" class="form-input" value="{{ usuario_custom.user_auth.username|default:'usuario' }}" placeholder="Ex: renan_santos">
                             </div>
                             <div class="perfil-form-group">
                                 <label for="input-descricao">Frase de Status (Curta)</label>

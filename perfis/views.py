@@ -29,7 +29,6 @@ def perfil(request):
 
     if request.method == 'POST':
         # Salva o estado de privacidade do switch
-        # Se o checkbox for marcado, ele envia 'on'. Se não for, não envia nada (False)
         perfil_privado_post = request.POST.get('perfil_privado') == 'on'
         perfil_do_usuario.perfil_privado = perfil_privado_post
 
@@ -42,11 +41,14 @@ def perfil(request):
 
         if request.POST.get('remover_foto') == 'true':
             if perfil_do_usuario.foto:
-                perfil_do_usuario.foto.delete()
+                perfil_do_usuario.foto.delete() 
 
-        if username is not None:
+        # ==========================================================
+        # PROTEÇÃO CONTRA CAMPOS VAZIOS: Só salva se houver texto real
+        # ==========================================================
+        if username and username.strip(): 
             user_auth = request.user
-            user_auth.username = username
+            user_auth.username = username.strip()
             user_auth.save()
             
         if descricao_perfil is not None: perfil_do_usuario.descricao_perfil = descricao_perfil
@@ -57,10 +59,11 @@ def perfil(request):
             
         perfil_do_usuario.save()
         
-        if nome is not None:
-            dados_usuario.nome = nome
+        # Proteção idêntica para o nome de exibição
+        if nome and nome.strip():
+            dados_usuario.nome = nome.strip()
             dados_usuario.save()
-            request.user.first_name = nome
+            request.user.first_name = nome.strip()
             request.user.save()
                 
         if not request.headers.get('x-requested-with') == 'XMLHttpRequest' and 'fetch' not in request.path:

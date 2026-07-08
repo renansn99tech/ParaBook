@@ -16,6 +16,9 @@ class Perfil(models.Model):
     foto = models.ImageField(upload_to='avatares/', blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     localizacao = models.CharField(max_length=100, blank=True, null=True)
+
+    # --- NOVO CAMPO: CONTROLE DE PRIVACIDADE ---
+    perfil_privado = models.BooleanField(default=False)
     
     # Dica: O 'username' já existe no modelo User padrão do Django. 
     # Você pode remover daqui para evitar duplicidade de dados (Clean Code), 

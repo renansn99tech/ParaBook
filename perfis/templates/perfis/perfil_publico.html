@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ usuario_custom.nome }} | ParaBook{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/perfil.css' %}"/>
+{% endblock %}
+
+{% block content %}
+    <main class="perfil-page perfil-publico-page">
+        
+        <section class="perfil-header-container">
+            <div class="perfil-cover" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(5, 8, 22, 0.9));">
+                </div>
+
+            <div class="perfil-content-wrapper">
+                <div class="perfil-sidebar">
+                    <div class="perfil-avatar-box">
+                        {% if perfil.foto %}
+                            <img src="{{ perfil.foto.url }}" alt="Foto de Perfil" class="perfil-avatar">
+                        {% else %}
+                            <img src="{% static 'img/user.png' %}" alt="Avatar do Usuário" class="perfil-avatar">
+                        {% endif %}
+                        </div>
+                </div>
+
+                <div class="perfil-main-info glass-card">
+                    <div class="info-header">
+                        <h1 class="perfil-nome"> 
+                            {{ usuario_custom.nome }}  
+                            {% if usuario_custom.tipo == 'admin' %}
+                                <span class="badge badge-admin"><i class="fa-solid fa-shield-halved"></i> Admin</span>
+                            {% elif usuario_custom.tipo == 'autor' %}
+                                <span class="badge badge-autor"><i class="fa-solid fa-feather-pointed"></i> Autor</span>
+                            {% else %}
+                                <span class="badge badge-leitor"><i class="fa-solid fa-book-open"></i> Leitor</span>
+                            {% endif %}
+                        </h1>
+                        <p class="perfil-username">@{{ usuario_custom.user_auth.username }}</p>
+                    </div>
+
+                    <div class="info-body">
+                        <p class="perfil-descricao"><i class="fa-solid fa-quote-left"></i> {{ perfil.descricao_perfil }}</p>
+                        <p class="perfil-historico"><i class="fa-solid fa-clock-rotate-left"></i> {{ perfil.historico|default:"Nenhum livro lido."}}</p>
+                        
+                        <div class="perfil-meta">
+                            <div class="meta-item">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div>
+                                    <span class="meta-label">Localização</span>
+                                    <span class="meta-value">{{ perfil.localizacao|default:"Não informado" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="perfil-stats-grid">
+            <div class="stat-glass-card">
+                <div class="stat-icon" style="color: #60a5fa; background: rgba(59,130,246,.2);"><i class="fa-solid fa-book-open"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">{{ total_lidos }}</p>
+                    <p class="stat-label">Livros Lidos</p>
+                </div>
+            </div>
+            <div class="stat-glass-card">
+                <div class="stat-icon" style="color: #60a5fa; background: rgba(59,130,246,.2);"><i class="fa-solid fa-star"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">{{ total_avaliados }}</p>
+                    <p class="stat-label">Avaliados</p>
+                </div>
+            </div>
+            <div class="stat-glass-card">
+                <div class="stat-icon" style="color: #60a5fa; background: rgba(59,130,246,.2);"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-info">
+                    <p class="stat-number">{{ total_comunidades }}</p>
+                    <p class="stat-label">Comunidades</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="perfil-tabs-section">
+            <div class="tabs-nav" style="justify-content: center;">
+                <button class="tab-btn active" data-tab="info"><i class="fa-solid fa-circle-info"></i> Informações</button>
+                <button class="tab-btn" data-tab="historico"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
+                <button class="tab-btn" data-tab="favoritos"><i class="fa-solid fa-heart"></i> Favoritos</button>
+                <button class="tab-btn" data-tab="comunidades"><i class="fa-solid fa-users"></i> Comunidades</button>
+                </div>
+
+            <div id="info" class="tab-content active">
+                <div class="content-glass-card full-width" style="text-align: center;">
+                    <h3>Sobre {{ usuario_custom.nome }}</h3>
+                    <p class="sobre-texto" style="margin: 20px auto; max-width: 800px; line-height: 1.8;">{{ perfil.bio|default:"Nenhuma biografia cadastrada." }}</p>
+                </div>
+            </div>
+
+            <div id="historico" class="tab-content">
+                <div class="historico-list">
+                    {% for item in historico %}
+                        <div class="historico-item content-glass-card">
+                            <div class="historico-icon"><i class="fa-solid fa-book"></i></div>
+                            <div class="historico-info">
+                                <h4>{{ item.titulo }}</h4>
+                                <p class="historico-date">{{ item.data }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="content-glass-card"><p class="text-muted" style="text-align: center;">Nenhum histórico encontrado.</p></div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="favoritos" class="tab-content">
+                <div class="perfil-info-grid">
+                    <div class="content-glass-card">
+                        <h3>Gêneros acessados recentemente</h3>
+                        <ul class="genres-list" style="justify-content: center;">
+                            {% for genero in generos_favoritos %}
+                                <li class="genre-tag">{{ genero }}</li>
+                            {% empty %}
+                                <p class="text-muted">Nenhum gênero recente ainda.</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="content-glass-card">
+                        <h3>Autores acessados recentemente</h3>
+                        <ul class="authors-list" style="align-items: center;">
+                            {% for autor in autores_favoritos %}
+                                <li><i class="fa-solid fa-pen-nib"></i> {{ autor }}</li>
+                            {% empty %}
+                                <p class="text-muted">Nenhum autor recente ainda.</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="comunidades" class="tab-content">
+                <div class="favoritos-grid full">
+                    {% for comunidade in minhas_comunidades %}
+                        <div class="favorito-card content-glass-card" style="padding: 0; overflow: hidden;">
+                            <div class="favorito-capa" style="height: 140px; display: flex; align-items: center; justify-content: center; background: rgba(59, 130, 246, 0.15); border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <i class="fa-solid fa-users" style="font-size: 3.5rem; color: #60a5fa;"></i>
+                            </div>
+                            <div class="favorito-info" style="padding: 20px;">
+                                <h4>{{ comunidade.nome }}</h4>
+                                <p style="margin-bottom: 0; min-height: 40px;">{{ comunidade.descricao|truncatechars:60 }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="content-glass-card" style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
+                            <i class="fa-solid fa-ghost text-muted" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                            <p class="text-muted">Este usuário ainda não participa de comunidades.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </section>
+        
+        </main>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/perfil.js' %}"></script>
+{% endblock %}

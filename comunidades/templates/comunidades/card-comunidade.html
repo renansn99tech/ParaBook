@@ -32,17 +32,6 @@
                     Participar
                 </a>
             {% endif %}
-
-            {% if request.user == comunidade.criador or user.is_staff %}
-                <a class="btn-comunidade btn-editar" href="{% url 'editar_comunidade' comunidade.id %}">
-                    Editar
-                </a>
-                
-                <a class="btn-comunidade btn-excluir" href="{% url 'excluir_comunidade' comunidade.id %}">
-                    Excluir
-                </a>
-            {% endif %}
-            
         </div>
 
     </div>

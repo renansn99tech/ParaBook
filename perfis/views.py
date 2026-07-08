@@ -58,6 +58,12 @@ def perfil(request):
         foto = request.POST.get('foto')
         nome = request.POST.get('nome')
 
+        # NOVO: LÓGICA DE EXCLUSÃO DA FOTO
+        # ==========================================
+        if request.POST.get('remover_foto') == 'true':
+            if perfil_do_usuario.foto:
+                perfil_do_usuario.foto.delete() # Apaga o arquivo da pasta media e limpa a coluna no banco
+
         # Só atualiza se o campo foi enviado e não é None
         if username is not None:
             perfil_do_usuario.username = username
@@ -108,7 +114,8 @@ def perfil(request):
     qnt_avaliados = meus_livros.filter(nota__isnull=False).count()
 
     # 2. Buscando a quantidade de comunidades usando a model de forma explícita
-    qnt_comunidades = Comunidade.objects.filter(membros=request.user).count()
+    minhas_comunidades = Comunidade.objects.filter(membros=request.user)
+    qnt_comunidades = minhas_comunidades.count() # Mantemos a contagem para o card superior
 
     # 3. LÓGICA DE FAVORITOS AUTOMÁTICOS (Top 3)
     # Agrupa os livros da biblioteca pelo nome da categoria e conta qual aparece mais
@@ -138,6 +145,7 @@ def perfil(request):
         'lendo_agora': qnt_lendo_agora,
         'total_avaliados': qnt_avaliados,
         'total_comunidades': qnt_comunidades,
+        'minhas_comunidades': minhas_comunidades, # <-- A NOVA VARIÁVEL CONTADORA DE COMUNIDADES AQUI
         
         # Injetando os dados reais calculados
         'generos_favoritos': lista_generos_favoritos,
@@ -171,3 +179,45 @@ def virar_autor(request):
         
     return redirect('perfis:perfil_pessoal')
 
+def perfil_publico(request, username_alvo):
+    # Busca o usuário desejado através do username passado na URL
+    user_objeto = get_object_or_404(Usuario, username=username_alvo)
+    
+    # Se o usuário clicado for o próprio usuário logado, redireciona para o perfil pessoal estável dele
+    if request.user.is_authenticated and user_objeto == request.user:
+        return redirect('perfis:perfil_pessoal')
+
+    dados_usuario = get_object_or_404(Usuario, user_auth=user_objeto)
+    perfil_do_usuario = dados_usuario.perfil
+
+    meus_livros = Biblioteca.objects.filter(user=user_objeto)
+    qnt_lendo_agora = meus_livros.filter(status='lendo').count()
+    qnt_livros_lidos = meus_livros.filter(status='lido').count()
+    qnt_avaliados = meus_livros.filter(nota__isnull=False).count()
+
+    minhas_comunidades = Comunidade.objects.filter(membros=user_objeto)
+    qnt_comunidades = minhas_comunidades.count()
+
+    top_generos = meus_livros.values('livro__categoria__nome').annotate(total=Count('livro__categoria__nome')).order_by('-total')[:3]
+    lista_generos_favoritos = [item['livro__categoria__nome'] for item in top_generos if item['livro__categoria__nome']]
+
+    top_autores = meus_livros.values('livro__autor').annotate(total=Count('livro__autor')).order_by('-total')[:3]
+    lista_autores_favoritos = [item['livro__autor'] for item in top_autores if item['livro__autor']]
+
+    livros_favoritos = meus_livros.filter(favorito=True)
+
+    contexto = {
+        'usuario_custom': dados_usuario, 
+        'perfil': perfil_do_usuario,     
+        'total_lidos': qnt_livros_lidos,
+        'lendo_agora': qnt_lendo_agora,
+        'total_avaliados': qnt_avaliados,
+        'total_comunidades': qnt_comunidades,
+        'minhas_comunidades': minhas_comunidades,
+        'generos_favoritos': lista_generos_favoritos,
+        'autores_favoritos': lista_autores_favoritos,
+        'favoritos': livros_favoritos,
+        'is_perfil_publico': True, # Variável sinalizadora que usaremos no HTML!
+    }
+
+    return render(request, 'perfis/perfil.html', contexto)

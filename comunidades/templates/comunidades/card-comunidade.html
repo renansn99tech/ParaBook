@@ -1,7 +1,17 @@
     <div class="card-comunidade">
 
-        <div class="card-header">
-            <h2>{{ comunidade.nome }}</h2>
+        <div class="card-header" style="position: relative;">
+            
+            {% if comunidade.criada_por_sistema %}
+                <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(139,92,246,0.4); white-space: nowrap; z-index: 10;">
+                    <i class="fa-solid fa-certificate"></i> OFICIAL
+                </div>
+            {% endif %}
+
+            <h2 style="margin-top: {% if comunidade.criada_por_sistema %}15px{% else %}0{% endif %};">
+                {{ comunidade.nome }}
+            </h2>
+            
         </div>
 
         <div class="card-body">
@@ -9,24 +19,20 @@
         </div>
 
         <div class="card-footer">
-
-            <a class="btn-comunidade btn-entrar"
-            href="{% url 'acesso_comunidade' %}">
-                Entrar
-            </a>
-
-            {% if user.is_staff %}
-                <a class="btn-comunidade btn-editar"
-                href="{% url 'editar_comunidade' comunidade.id %}">
-                    Editar
+            {% if request.user in comunidade.membros.all %}
+                <a class="btn-comunidade btn-entrar" href="{% url 'conteudo_comunidade' comunidade.id %}">
+                    Acessar
                 </a>
-
-                <a class="btn-comunidade btn-excluir"
-                href="{% url 'excluir_comunidade' comunidade.id %}">
-                    Excluir
+                
+                <a class="btn-comunidade btn-excluir" href="{% url 'participar_comunidade' comunidade.id %}" style="background: rgba(239,68,68,.1); color: #fca5a5; border: 1px solid rgba(239,68,68,.3);">
+                    Sair
+                </a>
+            {% else %}
+                <a class="btn-comunidade btn-entrar" href="{% url 'participar_comunidade' comunidade.id %}">
+                    Participar
                 </a>
             {% endif %}
-
+            
         </div>
 
     </div>

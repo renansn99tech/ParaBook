@@ -181,6 +181,42 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // =============================
+    // REMOVER FOTO DE PERFIL
+    // =============================
+    document.getElementById("btnRemoverFoto")?.addEventListener("click", async () => {
+        const result = await Swal.fire({
+            title: "Remover foto?",
+            text: "Você voltará a usar o avatar padrão.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#374151',
+            confirmButtonText: 'Sim, remover',
+            cancelButtonText: 'Cancelar',
+            background: '#1e293b', color: '#f8fafc'
+        });
+
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append("remover_foto", "true");
+            formData.append("csrfmiddlewaretoken", document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+            try {
+                const response = await fetch(window.location.href, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    window.location.reload(); // Recarrega para mostrar o avatar padrão
+                }
+            } catch (error) {
+                Swal.fire({ icon: "error", title: "Erro ao remover a imagem." });
+            }
+        }
+    });
+
 });
 
 // ============================================================

@@ -235,14 +235,31 @@ def mais_acessados(request):
 def home(request):
     livros_em_alta = Livro.objects.all().order_by('-avaliacao')[:6]
     livros_recentes = Livro.objects.all().order_by('-id_livro')[:6]
-    obras_independentes = ObraAutor.objects.filter(status='aprovado')[:6]
     comunidades = Comunidade.objects.all()[:6]
+
+    livro_atual = None
+    total_leituras = 0
+
+    if request.user.is_authenticated:
+        livro_atual = (
+            Biblioteca.objects
+            .filter(user=request.user, status='lendo')
+            .select_related('livro')
+            .order_by('-data_adicao')
+            .first()
+        )
+
+        total_leituras = Biblioteca.objects.filter(
+            user=request.user,
+            status='lido'
+        ).count()
 
     return render(request, 'index.html', {
         'livros': livros_em_alta,
         'livros_recentes': livros_recentes,
-        'obras_independentes': obras_independentes,
-        'comunidades': comunidades
+        'comunidades': comunidades,
+        'livro_atual': livro_atual,
+        'total_leituras': total_leituras,
     })
 
 

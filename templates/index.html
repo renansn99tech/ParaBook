@@ -32,8 +32,21 @@
         <div class="floating-avatar">👩</div>
 
         <div>
-            <h4>Arthur</h4>
-            <span>Autor</span>
+            <h4>
+  {% if user.is_authenticated %}
+    {{ user.username }}
+  {% else %}
+    Visitante
+  {% endif %}
+</h4>
+
+<span>
+  {% if user.is_authenticated %}
+    {{ user.email }}
+  {% else %}
+    Leitor
+  {% endif %}
+</span>
         </div>
     </div>
 
@@ -43,15 +56,29 @@
 </div>
 
 <div class="floating-card story-card">
-    <img src="{% static 'img/capas_livros/adivinacomedia.png' %}" alt="Livro">
-
-   <div class="story-info">
-
-        <h4>A Divina Comédia</h4>
-
-        <span>Fantasia</span>
-
+    {% if livro_atual %}
+  {% if livro_atual.livro.capa_url %}
+    <img src="{{ livro_atual.livro.capa_url }}" alt="{{ livro_atual.livro.nome }}">
+  {% else %}
+    <div class="floating-book-placeholder">
+      <i class="fa-solid fa-book"></i>
     </div>
+  {% endif %}
+
+  <div class="story-info">
+    <h4>{{ livro_atual.livro.nome }}</h4>
+    <span>{{ livro_atual.livro.genero }}</span>
+  </div>
+{% else %}
+  <div class="floating-book-placeholder">
+    <i class="fa-solid fa-book"></i>
+  </div>
+
+  <div class="story-info">
+    <h4>Nenhuma leitura</h4>
+    <span>Comece um livro</span>
+  </div>
+{% endif %}
 
 
     <i class="fa-solid fa-star"></i>
@@ -61,7 +88,7 @@
     <h4>Estatísticas</h4>
     <span>Leituras</span>
 
-    <strong>1.250</strong>
+    <strong>{{ total_leituras }}</strong>
 
     <div class="mini-chart chart-large">
         <span></span>

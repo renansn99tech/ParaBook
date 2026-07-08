@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from usuarios.models import Usuario
 from biblioteca.models import Livro, Categoria, ObraAutor
+from comunidades.models import Comunidade
 from django.core.files.storage import FileSystemStorage
 
 def apenas_superuser(user):
@@ -12,6 +13,44 @@ def apenas_superuser(user):
 @login_required
 @user_passes_test(apenas_superuser, login_url='home', redirect_field_name=None)
 def painel_admin(request):
+
+    # ==========================================================
+    # NOVO: PROCESSAMENTO DE COMUNIDADES NO DASHBOARD (REQUISITOS 3, 5, 7)
+    # ==========================================================
+    if request.method == 'POST' and 'btn_add_comunidade_sistema' in request.POST:
+        nome = request.POST.get('nome')
+        descricao = request.POST.get('descricao')
+        
+        # Criando como comunidade do sistema oficial com limite de 500 membros
+        Comunidade.objects.create(
+            nome=nome,
+            descricao=descricao,
+            criada_por_sistema=True,
+            max_participantes=500
+        )
+        messages.success(request, f"Comunidade oficial '{nome}' criada com sucesso!")
+        return redirect('dashboard:painel_admin')
+
+    elif request.method == 'POST' and 'btn_toggle_manutencao' in request.POST:
+        com_id = request.POST.get('comunidade_id')
+        comunidade = get_object_or_404(Comunidade, id=com_id)
+        comunidade.em_manutencao = not comunidade.em_manutencao
+        comunidade.save()
+        status = "colocada em manutenção" if comunidade.em_manutencao else "reativada"
+        messages.info(request, f"A comunidade '{comunidade.nome}' foi {status}.")
+        return redirect('dashboard:painel_admin')
+
+    elif request.method == 'POST' and 'btn_deletar_comunidade' in request.POST:
+        com_id = request.POST.get('comunidade_id')
+        comunidade = get_object_or_404(Comunidade, id=com_id)
+        
+        # REQUISITO 7: Se for de usuário, só apaga se tiver denúncias suficientes (Ex: 100 ou o critério definido)
+        if not comunidade.criada_por_sistema and comunidade.total_denuncias < 100:
+            messages.error(request, "Erro: Esta comunidade pertence a um usuário e não atingiu os critérios de denúncias para exclusão forçada.")
+        else:
+            comunidade.delete()
+            messages.success(request, "Comunidade removida definitivamente!")
+        return redirect('dashboard:painel_admin')
     
     # ==========================================================
     # 1. GERENCIAMENTO DE USUÁRIOS QUE PEDIRAM PARA SER AUTORES
@@ -78,76 +117,113 @@ def painel_admin(request):
     # ==========================================================
     # 3. CRUD DE LIVROS (MANTIDO INTACTO)
     # ==========================================================
+    # No bloco: if request.method == 'POST' and 'btn_add_livro' in request.POST:
+    # ==========================================================
+    # 3. CRUD DE LIVROS (CORRIGIDO E COMPLETO)
+    # ==========================================================
+    # Criar Livro
+    # ==========================================================
+    # 3. CRUD DE LIVROS (AJUSTADO PARA OS CAMPOS REAIS DO MODELO)
+    # ==========================================================
+    # Criar Livro
+  # ==========================================================
+    # 3. CRUD DE LIVROS (COMPLETO: ADICIONAR, EDITAR E DELETAR)
+    # ==========================================================
+    # Criar Livro
     if request.method == 'POST' and 'btn_add_livro' in request.POST:
-        if request.method == 'POST' and 'btn_add_livro' in request.POST:
-            nome_livro = request.POST.get('titulo')
-            categoria_id = request.POST.get('categoria')  
-            autor_livro = request.POST.get('autor', 'Desconhecido')
-            
-            # Captura dos arquivos enviados
-            arquivo_capa = request.FILES.get('capa')
-            arquivo_pdf = request.FILES.get('pdf')
+        nome_livro = request.POST.get('titulo')
+        categoria_id = request.POST.get('categoria')  
+        autor_livro = request.POST.get('autor', 'Desconhecido')
+        isbn_livro = request.POST.get('isbn', '')
+        data_pub_livro = request.POST.get('data_publicacao', '2026')
+        
+        arquivo_capa = request.FILES.get('capa')
+        arquivo_pdf = request.FILES.get('pdf')
 
-            # Validação Arquitetural Obrigatória: Título, Categoria, Capa E PDF precisam existir
-            if not (nome_livro and categoria_id and arquivo_capa and arquivo_pdf):
-                messages.error(request, "Erro: OBRIGATÓRIO enviar o título, categoria, imagem de capa e o arquivo PDF do livro.")
-                return redirect('dashboard:painel_admin')
-
-            try:
-                cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
-                
-                # Inicializa o gerenciador de arquivos do Django
-                fs = FileSystemStorage()
-                
-                # Salva os arquivos fisicamente no diretório de mídias/estáticos
-                nome_arquivo_capa = fs.save(f"capas/{arquivo_capa.name}", arquivo_capa)
-                nome_arquivo_pdf = fs.save(f"livros/{arquivo_pdf.name}", arquivo_pdf)
-                
-                # Recupera a URL/Caminho que o banco espera armazenar
-                url_capa = fs.url(nome_arquivo_capa)
-                url_pdf = fs.url(nome_arquivo_pdf)
-
-                Livro.objects.create(
-                    nome=nome_livro,
-                    categoria=cat_instancia,
-                    genero=cat_instancia.nome,  
-                    autor=autor_livro,
-                    capa=url_capa,         # Salva o caminho gerado da imagem
-                    pdf=url_pdf,           # Salva o caminho gerado do PDF
-                    data_publicacao='2026',
-                    avaliacao='0',
-                    isbn='0000000000'
-                )
-                messages.success(request, "Livro e arquivos cadastrados com sucesso!")
-            except Exception as e:
-                messages.error(request, f"Erro interno ao processar o upload: {str(e)}")
-                
+        if not (nome_livro and categoria_id and arquivo_capa and arquivo_pdf):
+            messages.error(request, "Erro: OBRIGATÓRIO enviar o título, categoria, imagem de capa e o arquivo PDF do livro.")
             return redirect('dashboard:painel_admin')
-            pass
-    # DELETE (D)
-    elif request.method == 'POST' and 'btn_deletar_livro' in request.POST:
-        livro_id = request.POST.get('livro_id')
-        if livro_id:
-            Livro.objects.filter(id_livro=livro_id).delete()
-            messages.success(request, "Livro removido com sucesso!")
+
+        try:
+            cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
+            fs = FileSystemStorage()
+            
+            nome_arquivo_capa = fs.save(f"capas/{arquivo_capa.name}", arquivo_capa)
+            nome_arquivo_pdf = fs.save(f"livros/{arquivo_pdf.name}", arquivo_pdf)
+            
+            url_capa = fs.url(nome_arquivo_capa)
+            url_pdf = fs.url(nome_arquivo_pdf)
+
+            Livro.objects.create(
+                nome=nome_livro,
+                categoria=cat_instancia,
+                genero=cat_instancia.nome,  
+                autor=autor_livro,
+                capa=url_capa,         
+                pdf=url_pdf,           
+                data_publicacao=data_pub_livro,
+                avaliacao='0',
+                isbn=isbn_livro
+            )
+            messages.success(request, "Livro cadastrado com sucesso!")
+        except Exception as e:
+            messages.error(request, f"Erro interno ao processar o upload: {str(e)}")
+            
         return redirect('dashboard:painel_admin')
 
-    # UPDATE (U)
+    # Editar Livro
     elif request.method == 'POST' and 'btn_editar_livro' in request.POST:
         livro_id = request.POST.get('livro_id')
         novo_nome = request.POST.get('titulo')
         categoria_id = request.POST.get('categoria')
+        autor_livro = request.POST.get('autor')
+        isbn_livro = request.POST.get('isbn', '')
+        data_pub_livro = request.POST.get('data_publicacao', '2026')
 
         if livro_id and novo_nome and categoria_id:
-            cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
-            Livro.objects.filter(id_livro=livro_id).update(
-                nome=novo_nome,
-                categoria=cat_instancia,
-                genero=cat_instancia.nome
-            )
-            messages.success(request, "Livro atualizado com sucesso!")
+            try:
+                livro = get_object_or_404(Livro, id_livro=livro_id)
+                cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
+                
+                livro.nome = novo_nome
+                livro.categoria = cat_instancia
+                livro.genero = cat_instancia.nome
+                livro.autor = autor_livro
+                livro.isbn = isbn_livro
+                livro.data_publicacao = data_pub_livro
+
+                fs = FileSystemStorage()
+                if request.FILES.get('capa'):
+                    arquivo_capa = request.FILES.get('capa')
+                    nome_capa = fs.save(f"capas/{arquivo_capa.name}", arquivo_capa)
+                    livro.capa = fs.url(nome_capa)
+                    
+                if request.FILES.get('pdf'):
+                    arquivo_pdf = request.FILES.get('pdf')
+                    nome_pdf = fs.save(f"livros/{arquivo_pdf.name}", arquivo_pdf)
+                    livro.pdf = fs.url(nome_pdf)
+
+                livro.save()
+                messages.success(request, "Livro atualizado com sucesso!")
+            except Exception as e:
+                messages.error(request, f"Erro ao atualizar o livro: {str(e)}")
+                
         return redirect('dashboard:painel_admin')
 
+    # Deletar Livro (Adicionado Corretamente)
+    elif request.method == 'POST' and 'btn_deletar_livro' in request.POST:
+        livro_id = request.POST.get('livro_id')
+        if livro_id:
+            try:
+                livro = get_object_or_404(Livro, id_livro=livro_id)
+                livro.delete()
+                messages.success(request, "Livro removido com sucesso!")
+            except Exception as e:
+                messages.error(request, f"Erro ao deletar o livro: {str(e)}")
+        else:
+            messages.error(request, "Erro: ID do livro não foi enviado pelo formulário.")
+            
+        return redirect('dashboard:painel_admin')
     # ==========================================================
     # 4. QUERYS E MÉTRICAS PARA O DASHBOARD (CORREÇÃO AQUI)
     # ==========================================================
@@ -161,27 +237,35 @@ def painel_admin(request):
     # BUSCA 2: Usuários que pediram pelo perfil (A CORREÇÃO DA QUERY)
     usuarios_pendentes = Usuario.objects.filter(tipo='aguardando_aprovacao')
 
-    # Métricas
-    total_usuarios = todos_usuarios.count()
-    total_livros = todos_livros.count()
-    total_autores = todos_usuarios.filter(tipo='autor').count()
-    obras_aprovadas = ObraAutor.objects.filter(status='aprovado').count()
-    obras_pendentes = solicitacoes_pendentes.count()
-    obras_rejeitadas = ObraAutor.objects.filter(status='rejeitado').count()
+    # ATUALIZAÇÃO DO CONTEXTO DO DASHBOARD: Carrega as listas separadas para as abas
+    todas_comunidades = Comunidade.objects.all()
+    comunidades_sistema = todas_comunidades.filter(criada_por_sistema=True)
+    comunidades_usuarios = todas_comunidades.filter(criada_por_sistema=False)
     
     contexto = {
         'livros': todos_livros,
         'categorias': todas_categorias,
         'usuarios': todos_usuarios,
         'solicitacoes': solicitacoes_pendentes,
-        'usuarios_pendentes': usuarios_pendentes, # Enviado para o template!
+        'usuarios_pendentes': usuarios_pendentes,
         
-        'total_usuarios': total_usuarios,
-        'total_livros': total_livros,
-        'total_autores': total_autores,
-        'obras_aprovadas': obras_aprovadas,
-        'obras_pendentes': obras_pendentes,
-        'obras_rejeitadas': obras_rejeitadas,
+        'total_usuarios': todos_usuarios.count(),
+        'total_livros': todos_livros.count(),
+        'total_autores': todos_usuarios.filter(tipo='autor').count(),
+        'obras_aprovadas': ObraAutor.objects.filter(status='aprovado').count(),
+        'obras_pendentes': solicitacoes_pendentes.count(),
+        'obras_rejeitadas': ObraAutor.objects.filter(status='rejeitado').count(),
+        
+        # --- NOVOS DADOS DO CONTEXTO ---
+        'comunidades': todas_comunidades,
+        'comunidades_sistema': comunidades_sistema,
+        'comunidades_usuarios': comunidades_usuarios,
     }
 
     return render(request, 'dashboard/admin.html', contexto)
+
+def surpresa(request):
+    return render(request, "dashboard/surpresa.html")
+
+def leitor(request):
+    return render(request, "dashboard/leitor.html")

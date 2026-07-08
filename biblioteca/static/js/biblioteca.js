@@ -66,68 +66,87 @@ function inicializarFiltrosEstante() {
 }
 
 /**
- * Processa a remoção de um livro da estante do usuário de forma assíncrona
+ * Processa a remoção de um livro da estante do usuário de forma assíncrona com SweetAlert2
  */
 function removerLivroAssincrono(botao, livroId, urlRemocao) {
-    if (!confirm("Deseja realmente remover este livro da sua coleção?")) {
-        return;
-    }
+    // Substituição do confirm nativo pelo SweetAlert2
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: "Você deseja realmente remover este livro da sua coleção?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444', // Vermelho moderno para o botão de deletar
+        cancelButtonColor: '#64748b',  // Slate/Cinza para cancelar
+        confirmButtonText: 'Sim, remover!',
+        cancelButtonText: 'Cancelar',
+        background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e293b',
+        color: document.body.classList.contains('light-mode') ? '#0f172a' : '#f8fafc'
+    }).then((result) => {
+        // Se o usuário confirmou a ação
+        if (result.isConfirmed) {
+            // Obtém o CSRF Token gerado pelo Django na página
+            const csrfTokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+            const csrfToken = csrfTokenInput ? csrfTokenInput.value : "";
 
-    // Obtém o CSRF Token gerado pelo Django na página
-    const csrfTokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
-    const csrfToken = csrfTokenInput ? csrfTokenInput.value : "";
+            botao.disabled = true;
 
-    // Desabilita o botão temporariamente para evitar duplo clique
-    botao.disabled = true;
-
-    fetch(urlRemocao, {
-        method: "POST",
-        headers: {
-            "X-Requested-With": "XMLHttpRequest",
-            "X-CSRFToken": csrfToken,
-            "Content-Type": "application/json"
-        }
-    })
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error("Erro na resposta do servidor.");
-        }
-        return response.json();
-    })
-    .then((data) => {
-        if (data.success) {
-            // Encontra o card do livro baseado no elemento clicado ou atributo data-id
-            const cardLivro = botao.closest(".card-livro");
-            if (cardLivro) {
-                cardLivro.style.transition = "all 0.4s ease";
-                cardLivro.style.opacity = "0";
-                cardLivro.style.transform = "scale(0.8)";
-                
-                setTimeout(() => {
-                    cardLivro.remove();
-                    atualizarEstatisticasEstante();
-                    
-                    // Dispara notificação Toastify se carregado
-                    if (typeof Toastify === "function") {
-                        Toastify({
-                            text: data.message || "Livro removido com sucesso!",
-                            duration: 3000,
-                            gravity: "top",
-                            position: "right",
-                            backgroundColor: "#ef4444"
-                        }).showToast();
+            fetch(urlRemocao, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": csrfToken,
+                    "Content-Type": "application/json"
+                }
+            })
+            .then((response) => {
+                if (!response.ok) throw new Error("Erro na resposta do servidor.");
+                return response.json();
+            })
+            .then((data) => {
+                if (data.success) {
+                    const cardLivro = botao.closest(".card-livro");
+                    if (cardLivro) {
+                        cardLivro.style.transition = "all 0.4s ease";
+                        cardLivro.style.opacity = "0";
+                        cardLivro.style.transform = "scale(0.8)";
+                        
+                        setTimeout(() => {
+                            cardLivro.remove();
+                            atualizarEstatisticasEstante();
+                            
+                            // Toast de Sucesso do SweetAlert2 (Substituindo o Toastify/Alert)
+                            Swal.fire({
+                                title: 'Removido!',
+                                text: data.message || "Livro removido com sucesso!",
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false,
+                                background: document.body.classList.contains('light-mode') ? '#ffffff' : '#1e293b',
+                                color: document.body.classList.contains('light-mode') ? '#0f172a' : '#f8fafc'
+                            });
+                        }, 400);
                     }
-                }, 400);
-            }
-        } else {
-            alert(data.error || "Ocorreu um erro ao tentar remover o livro.");
-            botao.disabled = false;
+                } else {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: data.error || "Ocorreu um erro ao tentar remover o livro.",
+                        icon: 'error',
+                        confirmButtonColor: '#2563eb'
+                    });
+                    botao.disabled = false;
+                }
+            })
+            .catch((error) => {
+                console.error("Erro na exclusion assíncrona:", error);
+                Swal.fire({
+                    title: 'Erro de Conexão',
+                    text: "Não foi possível conectar ao servidor para remover o livro.",
+                    icon: 'error',
+                    confirmButtonColor: '#2563eb'
+                });
+                botao.disabled = false;
+            });
         }
-    })
-    .catch((error) => {
-        console.error("Erro na exclusão assíncrona:", error);
-        alert("Erro de conectividade ao remover o livro da biblioteca.");
-        botao.disabled = false;
     });
 }
 
@@ -155,4 +174,4 @@ function atualizarEstatisticasEstante() {
     if (elTotal) elTotal.textContent = total;
     if (elConcluidos) elConcluidos.textContent = concluidos;
     if (elLendo) elLendo.textContent = lendo;
-}
+};

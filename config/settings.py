@@ -99,6 +99,19 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# CONFIGURAÇÃO LOCAL (SUA MÁQUINA)
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "mydb",
+#         "USER": "root",
+#         "PASSWORD": "admin",
+#         "HOST": "127.0.0.1",
+#         "PORT": "3306",
+#     }
+# }
+
+# DATABASE DO RAILWAY 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
@@ -151,7 +164,7 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles" 
 
-# Credenciais do Supabase obtidas via decouple/env
+# # Credenciais do Supabase obtidas via decouple/env
 SUPABASE_URL = config("SUPABASE_URL", default=None)
 SUPABASE_KEY = config("SUPABASE_KEY", default=None)
 SUPABASE_STORAGE_BUCKET_NAME = "parabook-media"
@@ -165,25 +178,25 @@ STORAGES = {
     },
 }
 
-# Se estiver em desenvolvimento (DEBUG=True), ele usa a pasta local media/
-# Se estiver no Railway (DEBUG=False), ele joga tudo automaticamente para o Supabase
+# # Se estiver em desenvolvimento (DEBUG=True), ele usa a pasta local media/
+# # Se estiver no Railway (DEBUG=False), ele joga tudo automaticamente para o Supabase
 if not DEBUG and SUPABASE_URL and SUPABASE_KEY:
-    MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET_NAME}/"
+        MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET_NAME}/"
 else:
-    MEDIA_URL = '/media/'
+        MEDIA_URL = '/media/'
 import os
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# STORAGES = { 
-# "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"}, 
-# "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}, 
-# }
+STORAGES = { 
+"default": {"BACKEND": "django.core.files.storage.FileSystemStorage"}, 
+"staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}, 
+}
 
-# WHITENOISE_MANIFEST_STRICT = False
+WHITENOISE_MANIFEST_STRICT = False
 
-# MEDIA_URL = '/media/'
-# import os
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+import os
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -194,7 +207,7 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-MAX_BOOK_UPLOAD_SIZE = 80 * 1024 * 1024
+MAX_BOOK_UPLOAD_SIZE = 5 * 1024 * 1024
 
 # Configuração para testar envio de e-mails no terminal durante o desenvolvimento
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

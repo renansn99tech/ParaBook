@@ -205,16 +205,8 @@
         </div>
       {% endfor %}
     </div>
-
-    <div class="cta">
-      <h2>Tem uma história para contar?</h2>
-      <p>Compartilhe sua obra gratuitamente e alcance novos leitores através da comunidade ParaBook.</p>
-      <a href="{% url 'obras_autores' %}" class="btn-primary">Publicar Minha Obra</a>
-    </div>
-  </section>
-
-  <section class="books novidades-home">
-    <div class="section-header">
+    
+      <div class="section-header">
       <h2>Novidades</h2>
       <a href="{% url 'novidade' %}" class="btn-ver-mais-news">
         Ver mais <i class="fa-solid fa-arrow-right"></i>
@@ -249,6 +241,15 @@
         </div>
       {% endfor %}
     </div>
+
+    <div class="cta">
+      <h2>Tem uma história para contar?</h2>
+      <p>Compartilhe sua obra gratuitamente e alcance novos leitores através da comunidade ParaBook.</p>
+      <a href="{% url 'obras_autores' %}" class="btn-primary">Publicar Minha Obra</a>
+    </div>
   </section>
+
+  <!--<section class="books novidades-home"> </section>-->
+  
 
 {% endblock %}

@@ -16,9 +16,14 @@ Painel Administrativo - ParaBook
         <h2>ParaBook</h2>
         <button data-nav="dashboard">Dashboard</button>
         <button data-nav="livros">Livros</button>
+        <button data-nav="comunidades">Comunidades</button>
         <button data-nav="usuarios">Usuários</button>
         <button data-nav="permissoes">Permissões</button>
 
+        <a href="{% url 'perfis:perfil_pessoal' %}" style="text-decoration: none; text-align: center; margin-top: auto; margin-bottom: -5px;">
+            <button style="width: 100%; background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.35); color: #60a5fa;">Meu Perfil</button>
+        </a>
+        <a href="{% url 'dashboard:leitor' %}" class="btn-modo-apresentacao">Modo Apresentação</a>
         <a href="{% url 'logout' %}" id="btnLogout" style="text-decoration: none; text-align: center; margin-top: auto;">
             <button class="danger" style="width: 100%;">Sair</button>
         </a>
@@ -86,6 +91,16 @@ Painel Administrativo - ParaBook
 
                 <input type="text" name="autor" id="inputAutor" placeholder="Nome do Autor" required style="margin-top: 5px;">
 
+                <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px;">
+                    <input type="text" name="isbn" id="inputIsbn" placeholder="ISBN (Ex: 978-3-16-148410-0)" style="flex: 1;">
+                    <input type="text" name="editora" id="inputEditora" placeholder="Editora" style="flex: 1;">
+                </div>
+
+                <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px;">
+                    <input type="number" name="num_paginas" id="inputPaginas" placeholder="Número de Páginas" style="flex: 1;">
+                    <input type="text" name="data_publicacao" id="inputDataPublicacao" placeholder="Ano de Publicação (Ex: 2026)" style="flex: 1;">
+                </div>
+
                 <div style="display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 5px;">
                     <label style="font-size: 13px; color: var(--text-muted);">Capa (Imagem): 
                         <input type="file" name="capa" id="inputCapa" accept="image/*" required style="margin-top: 5px;">
@@ -108,12 +123,14 @@ Painel Administrativo - ParaBook
                         <small style="color: var(--text-muted);">Autor: {{ livro.autor }} | Gênero: {{ livro.categoria.nome }}</small>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-editar-trigger" 
-                                data-id="{{ livro.id_livro }}" 
-                                data-titulo="{{ livro.nome }}" 
-                                data-categoria="{{ livro.categoria.id_categoria }}" 
-                                data-autor="{{ livro.autor }}" 
-                                style="background: #3b82f6; padding: 5px 10px;">✏️</button>
+                        
+        <button type="button" class="btn-editar-trigger" 
+                data-id="{{ livro.id_livro }}" 
+                data-titulo="{{ livro.nome }}" 
+                data-categoria="{{ livro.categoria.id_categoria }}" 
+                data-autor="{{ livro.autor }}" 
+                data-isbn="{{ livro.isbn }}"
+                style="background: #3b82f6; padding: 5px 10px;">✏️</button>
                         
                         <form method="POST" style="margin: 0; padding: 0; background: transparent; border: none;">
                             {% csrf_token %}
@@ -214,6 +231,95 @@ Painel Administrativo - ParaBook
                 <li style="color: var(--text-muted); font-style: italic;">Não há nenhuma nova obra pendente no momento.</li>
                 {% endfor %}
             </ul>
+        </section>
+
+        <section id="comunidades" class="secao" style="display: none;">
+            <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <div class="panel-title">
+                    <h1 style="margin-bottom: 5px;">Gerenciar Comunidades</h1>
+                    <p style="color: var(--text-muted); margin: 0;">Controle de ecossistemas literários e moderação de salas.</p>
+                </div>
+                <form method="POST" style="display: flex; gap: 10px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 14px; border: 1px solid var(--border);">
+                    {% csrf_token %}
+                    <input type="text" name="nome" placeholder="Nome da Comunidade Oficial" required style="width: 220px;">
+                    <input type="text" name="descricao" placeholder="Descrição Curta" required style="width: 300px;">
+                    <button type="submit" name="btn_add_comunidade_sistema">+ Criar Oficial</button>
+                </form>
+            </header>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button onclick="alternarSubAbaComunidade('sub-todas')" style="background: rgba(139,92,246,0.2);">Todas ({{ comunidades.count }})</button>
+                <button onclick="alternarSubAbaComunidade('sub-sistema')" style="background: rgba(34,197,94,0.15); color: #22c55e;">Do Sistema ({{ comunidades_sistema.count }})</button>
+                <button onclick="alternarSubAbaComunidade('sub-usuarios')" style="background: rgba(59,130,246,0.15); color: #60a5fa;">Dos Usuários ({{ comunidades_usuarios.count }})</button>
+            </div>
+
+            <div id="sub-todas" class="sub-aba-content">
+                <ul>
+                    {% for c in comunidades %}
+                    <li>
+                        <div>
+                            <strong>{{ c.nome }}</strong>
+                            {% if c.criada_por_sistema %}
+                                <span class="badge" style="background: rgba(34,197,94,0.15); color: #22c55e; margin-left: 10px;">Sistema</span>
+                            {% else %}
+                                <span class="badge" style="background: rgba(59,130,246,0.15); color: #60a5fa; margin-left: 10px;">Usuário</span>
+                            {% endif %}
+                            <br><small style="color: var(--text-muted);">{{ c.membros.count }}/{{ c.max_participantes }} participantes | Denúncias: {{ c.total_denuncias }}</small>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div id="sub-sistema" class="sub-aba-content" style="display: none;">
+                <ul>
+                    {% for c in comunidades_sistema %}
+                    <li>
+                        <div>
+                            <strong>{{ c.nome }}</strong> 
+                            {% if c.em_manutencao %}
+                                <span class="badge" style="background: rgba(245,158,11,0.2); color: #fbbf24;">Em Manutenção</span>
+                            {% endif %}
+                            <br><small style="color: var(--text-muted);">{{ c.descricao }}</small>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <form method="POST" style="margin:0; padding:0; background:transparent; border:none;">
+                                {% csrf_token %}\n                                <input type="hidden" name="comunidade_id" value="{{ c.id }}">
+                                <button type="submit" name="btn_toggle_manutencao" style="background: #eab308; padding: 6px 12px;">
+                                    {% if c.em_manutencao %}🔧 Ativar{% else %}⚙️ Manutenção{% endif %}
+                                </button>
+                                <button type="submit" name="btn_deletar_comunidade" class="danger" style="padding: 6px 12px;">❌</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div id="sub-usuarios" class="sub-aba-content" style="display: none;">
+                <ul>
+                    {% for c in comunidades_usuarios %}
+                    <li {% if c.total_denuncias >= 100 %} style="border-left: 5px solid #ef4444;"{% endif %}>
+                        <div>
+                            <strong>{{ c.nome }}</strong>
+                            {% if c.total_denuncias >= 100 %}
+                                <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; margin-left: 8px;" title="Elegível para Exclusão por Denúncias"></i>
+                            {% endif %}
+                            <br><small style="color: var(--text-muted);">Denúncias Recebidas: <strong>{{ c.total_denuncias }}</strong></small>
+                        </div>
+                        {% if c.total_denuncias >= 100 %}
+                        <form method="POST" style="margin:0; padding:0; background:transparent; border:none;">
+                            {% csrf_token %}
+                            <input type="hidden" name="comunidade_id" value="{{ c.id }}">
+                            <button type="submit" name="btn_deletar_comunidade" class="danger" style="padding: 6px 12px;">Banir Sala 🗑️</button>
+                        </form>
+                        {% endif %}
+                    </li>
+                    {% empty %}
+                    <li style="color: var(--text-muted); font-style: italic;">Nenhuma comunidade criada por usuários encontrada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </section>
 
     </main>

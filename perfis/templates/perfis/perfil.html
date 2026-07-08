@@ -24,10 +24,23 @@
                         {% else %}
                             <img src="{% static 'img/user.png' %}" alt="Avatar do Usuário" class="perfil-avatar">
                         {% endif %}
-                        <input type="file" id="inputFotoOculto" accept="image/*" style="display: none;">
-                        <button class="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto">
-                            <i class="fa-solid fa-camera"></i>
-                        </button>
+                            <input type="file" id="inputFotoOculto" accept="image/*" style="display: none;">
+
+                        <div style="position: absolute; bottom: 5px; right: -15px; display: flex; gap: 8px;">
+                            
+                            {% if perfil.foto %}
+                                <button class="btn-editar-avatar" id="btnRemoverFoto" title="Remover Foto" style="position: relative; top: 0; right: 6.75vw; background-color: #ef4444; border-color: #050816;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            {% endif %}
+                            
+                            {% if not is_perfil_publico %}
+                                <button class="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto" style="position: static;">
+                                    <i class="fa-solid fa-camera"></i>
+                                </button>
+                            {% endif %}
+                            
+                        </div>
                     </div>
                 </div>
 
@@ -45,7 +58,7 @@
                                 <span class="badge badge-leitor"><i class="fa-solid fa-book-open"></i> Leitor</span>
                             {% endif %}
                         </h1>
-                        <p class="perfil-username">@{{ perfil.username|default:"usuario" }}</p>
+                        <p class="perfil-username">@{{ usuario_custom.user_auth.username|default:"usuario" }}</p>
                     </div>
 
                     <div class="info-body">
@@ -104,34 +117,13 @@
                 <button class="tab-btn active" data-tab="info"><i class="fa-solid fa-circle-info"></i> Informações</button>
                 <button class="tab-btn" data-tab="historico"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
                 <button class="tab-btn" data-tab="favoritos"><i class="fa-solid fa-heart"></i> Favoritos</button>
+                <button class="tab-btn" data-tab="comunidades"><i class="fa-solid fa-users"></i> Comunidades</button>
                 <button class="tab-btn" data-tab="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</button>
             </div>
 
             <!-- TAB INFO -->
             <div id="info" class="tab-content active">
                 <div class="perfil-info-grid">
-                    <div class="content-glass-card">
-                        <h3>Gêneros Favoritos</h3>
-                        <div class="genres-list">
-                            {% for genero in generos_favoritos %}
-                                <span class="genre-tag">{{ genero.nome }}</span>
-                            {% empty %}
-                                <span class="genre-tag">Nenhum gênero</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="content-glass-card">
-                        <h3>Autores Favoritos</h3>
-                        <ul class="authors-list">
-                            {% for autor in autores_favoritos %}
-                                <li><i class="fa-solid fa-feather-pointed"></i> {{ autor.nome }}</li>
-                            {% empty %}
-                                <li class="text-muted">Nenhum autor favoritado.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
                     <div class="content-glass-card full-width">
                         <h3>Sobre Você</h3>
                         <p class="sobre-texto">{{ perfil.bio|default:"Nenhuma biografia cadastrada." }}</p>
@@ -161,7 +153,31 @@
 
             <!-- TAB FAVORITOS -->
             <div id="favoritos" class="tab-content">
-                <div class="favoritos-grid">
+                <div class="perfil-info-grid" style="margin-bottom: 24px;">
+                    <div class="content-glass-card">
+                        <h3>Gêneros Favoritos</h3>
+                        <ul class="genres-list">
+                            {% for genero in generos_favoritos %}
+                                <li class="genre-tag">{{ genero }}</li>
+                            {% empty %}
+                                <p class="text-muted">Nenhum gênero favoritado ainda.</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="content-glass-card">
+                        <h3>Autores Favoritos</h3>
+                        <ul class="authors-list">
+                            {% for autor in autores_favoritos %}
+                                <li><i class="fa-solid fa-pen-nib"></i> {{ autor }}</li>
+                            {% empty %}
+                                <p class="text-muted">Nenhum autor favoritado ainda.</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="favoritos-grid full">
                     {% for livro in favoritos %}
                         <div class="favorito-card content-glass-card">
                             <div class="favorito-capa">
@@ -172,13 +188,48 @@
                                 {% endif %}
                             </div>
                             <div class="favorito-info">
-                                <h4>{{ livro.titulo }}</h4>
-                                <p>{{ livro.autor }}</p>
-                                <button class="btn-danger-outline btn-remover-favorito"><i class="fa-solid fa-xmark"></i> Remover</button>
+                                <h4>{{ livro.livro.nome }}</h4>
+                                <p>{{ livro.livro.autor }}</p>
+                                <button class="btn-danger-outline btn-remover-favorito" onclick="removerFavoritoDoPerfil(this, '{% url 'favoritar_livro' livro.livro.id_livro %}')">
+                                    <i class="fa-solid fa-xmark"></i> Remover
+                                </button>
                             </div>
                         </div>
                     {% empty %}
-                        <div class="content-glass-card" style="grid-column: 1 / -1;"><p class="text-muted">Nenhum livro favorito.</p></div>
+                        <div class="content-glass-card" style="grid-column: 1 / -1;">
+                            <p class="text-muted">Nenhum livro favorito.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- TAB COMUNIDADES -->
+             <div id="comunidades" class="tab-content">
+                <div class="favoritos-grid full">
+                    {% for comunidade in minhas_comunidades %}
+                        <div class="favorito-card content-glass-card" style="padding: 0; overflow: hidden;">
+                            
+                            <div class="favorito-capa" style="height: 140px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.15); border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <i class="fa-solid fa-users" style="font-size: 3.5rem; color: #8b5cf6;"></i>
+                            </div>
+                            
+                            <div class="favorito-info" style="padding: 20px;">
+                                <h4>{{ comunidade.nome }}</h4>
+                                <p style="margin-bottom: 15px; min-height: 40px;">{{ comunidade.descricao|truncatechars:60 }}</p>
+                                
+                                <a href="{% url 'conteudo_comunidade' comunidade.id %}" class="btn-outline" style="width: 100%; justify-content: center; text-align: center;">
+                                    Acessar Comunidade
+                                </a>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="content-glass-card" style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
+                            <i class="fa-solid fa-comments text-muted" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                            <p class="text-muted">Você ainda não participa de nenhuma comunidade.</p>
+                            <a href="{% url 'comunidades' %}" class="btn-primary-action" style="margin-top: 15px;">
+                                Explorar Comunidades
+                            </a>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
@@ -276,7 +327,7 @@
 
 <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{% static 'js/perfil.js' %}?v=1.5"></script>
+    <script src="{% static 'js/perfil.js' %}?v=1.6"></script>
 
     <script>
         function confirmarExclusao() {

@@ -25,6 +25,32 @@ function inicializarEventos() {
     document.getElementById("btn-inverter")?.addEventListener("click", toggleInverterCores);
     document.getElementById("btn-expandir")?.addEventListener("click", toggleLarguraTotal);
 
+    // Função que valida a leitura como lida
+    const btnMarcarLido = document.getElementById("btn-marcar-lido");
+    if (btnMarcarLido) {
+        btnMarcarLido.addEventListener("click", () => {
+            Swal.fire({
+                title: 'Concluir Livro?',
+                text: "Deseja marcar este livro como concluído em sua estante?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sim, concluído!',
+                cancelButtonText: 'Ainda não',
+                background: '#1e293b',
+                color: '#f8fafc'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    marcarLivroComoLido(); 
+                    btnMarcarLido.innerHTML = '<i class="fa-solid fa-check-double"></i> Concluído!';
+                    btnMarcarLido.disabled = true;
+                    btnMarcarLido.style.backgroundColor = '#059669';
+                }
+            });
+        });
+    }
+
     // Acessibilidade: Navegação nativa por teclado usando setas laterais (Esquerda / Direita)
     document.addEventListener("keydown", (e) => {
         if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -35,6 +61,96 @@ function inicializarEventos() {
             proximaPagina();
         }
     });
+
+    // --- BOTÃO AVALIAR (Usando input select do SweetAlert2) ---
+    const btnAvaliar = document.getElementById("btn-avaliar");
+    if (btnAvaliar) {
+        btnAvaliar.addEventListener("click", () => {
+            Swal.fire({
+                title: '⭐ Avalie este Livro', // Estrela colocada direto no texto
+                text: 'Que nota você dá para esta obra?',
+                icon: 'question', // Ícone nativo válido corrigido
+                input: 'select',
+                inputOptions: {
+                    '5': '⭐⭐⭐⭐⭐ (5) - Obra Prima',
+                    '4': '⭐⭐⭐⭐ (4) - Muito Bom',
+                    '3': '⭐⭐⭐ (3) - Bom',
+                    '2': '⭐⭐ (2) - Regular',
+                    '1': '⭐ (1) - Ruim'
+                },
+                inputPlaceholder: 'Selecione uma nota...',
+                showCancelButton: true,
+                confirmButtonText: 'Enviar Avaliação',
+                cancelButtonText: 'Cancelar',
+                background: '#1e293b', 
+                color: '#f8fafc',
+                // Impede enviar vazio
+                inputValidator: (value) => {
+                    return new Promise((resolve) => {
+                        if (value) { resolve() } 
+                        else { resolve('Você precisa selecionar uma nota!') }
+                    })
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    const urlAvaliar = document.getElementById("dados-livro").getAttribute("data-url-avaliar");
+                    enviarRequisicao(
+                        urlAvaliar,
+                        { nota: result.value },
+                        "Avaliação Salva!",
+                        "Sua nota foi registrada com sucesso."
+                    );
+                }
+            });
+        });
+    }
+
+    // --- BOTÃO FAVORITAR ATUALIZADO ---
+    const btnFavoritar = document.getElementById("btn-favoritar");
+    if (btnFavoritar) {
+        btnFavoritar.addEventListener("click", () => {
+            const urlFavoritar = document.getElementById("dados-livro").getAttribute("data-url-favoritar");
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || "";
+
+            fetch(urlFavoritar, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": csrfToken,
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Se o banco confirmou que agora é favorito
+                    if (data.is_favorito) {
+                        btnFavoritar.innerHTML = '<i class="fa-solid fa-heart-crack"></i> Desfavoritar';
+                        btnFavoritar.style.backgroundColor = '#db2777'; // Rosa mais escuro indicando ação de remover
+                        
+                        Swal.fire({
+                            title: 'Favoritado! ❤️',
+                            text: 'Este livro foi adicionado à sua aba de favoritos no seu Perfil.',
+                            icon: 'success',
+                            background: '#1e293b', color: '#f8fafc', timer: 2000, showConfirmButton: false
+                        });
+                    } else {
+                        // Se o banco confirmou que foi removido dos favoritos
+                        btnFavoritar.innerHTML = '<i class="fa-solid fa-heart"></i> Favoritar';
+                        btnFavoritar.style.backgroundColor = '#ec4899'; // Volta para o rosa padrão
+                        
+                        Swal.fire({
+                            title: 'Removido! 💔',
+                            text: 'O livro foi removido dos seus favoritos.',
+                            icon: 'info',
+                            background: '#1e293b', color: '#f8fafc', timer: 2000, showConfirmButton: false
+                        });
+                    }
+                }
+            })
+            .catch(error => console.error("Erro ao favoritar:", error));
+        });
+    }
 }
 
 /* =========================================
@@ -219,4 +335,104 @@ function exibirErro(msg) {
     } else {
         document.body.innerHTML = `<p style="color:#f87171; text-align:center; padding: 50px; font-weight: 600;">⚠️ ${msg}</p>`;
     }
+}
+
+/* =========================================
+NOVO: NAVEGAÇÃO RÁPIDA (IR PARA PÁGINA)
+========================================= */
+document.addEventListener("DOMContentLoaded", () => {
+    const btnIr = document.getElementById("btn-ir-pagina");
+    const inputPagina = document.getElementById("input-pagina");
+
+    if (btnIr && inputPagina) {
+        // Dispara ao clicar no botão 'Ir'
+        btnIr.addEventListener("click", () => {
+            irParaPaginaEspecifica(inputPagina.value);
+        });
+
+        // Dispara ao apertar 'Enter' dentro do input
+        inputPagina.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                irParaPaginaEspecifica(inputPagina.value);
+            }
+        });
+    }
+});
+
+
+function irParaPaginaEspecifica(numero) {
+    const num = parseInt(numero, 10);
+    if (!isNaN(num) && num >= 1 && num <= totalPaginas) {
+        renderizarPagina(num);
+        document.getElementById("input-pagina").value = ""; // Limpa o campo
+    } else {
+        alert(`Por favor, insira um número de página válido entre 1 e ${totalPaginas}.`);
+    }
+}
+
+/* =========================================
+COMUNICAÇÃO COM O BACKEND
+========================================= */
+function marcarLivroComoLido() {
+    sessionStorage.setItem(`concluido_${livroAtualId}`, "true"); 
+
+    const csrfTokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    const csrfToken = csrfTokenInput ? csrfTokenInput.value : "";
+    
+    if (!csrfToken) {
+         console.warn("CSRF Token não encontrado.");
+         return;
+    }
+
+    // NOVA LÓGICA: Pega a URL exata e blindada a falhas que o Django gerou no HTML
+    const urlConclusao = document.getElementById("dados-livro").getAttribute("data-url-concluir");
+
+    // O fetch agora usa a variável urlConclusao em vez da string fixa
+    fetch(urlConclusao, { 
+        method: "POST",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Sucesso: O servidor foi avisado que a leitura foi concluída!");
+            
+            Swal.fire({
+                title: 'Parabéns! 🎉',
+                text: 'Mais uma obra concluída. Seu progresso já foi atualizado no seu Perfil!',
+                icon: 'success',
+                confirmButtonColor: '#2563eb',
+                background: '#1e293b',
+                color: '#f8fafc'
+            });
+        }
+    })
+    .catch(error => console.error("Erro ao avisar servidor sobre conclusão:", error));
+}
+
+// Função genérica para conversar com o Django enviando dados
+function enviarRequisicao(url, corpoDados, msgSucessoTitulo, msgSucessoTexto) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || "";
+    
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(corpoDados)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                title: msgSucessoTitulo, text: msgSucessoTexto, icon: 'success',
+                background: '#1e293b', color: '#f8fafc', timer: 2000, showConfirmButton: false
+            });
+        }
+    });
 }

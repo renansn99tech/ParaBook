@@ -484,7 +484,35 @@ button[name="btn_deletar_livro"]:hover{
     opacity:1;
     transform:translateY(0);
 }
+.btn-modo-apresentacao {
+    display: block;
+    width: 100%;                  /* Ocupa a mesma largura total dos outros botões */
+    box-sizing: border-box;       
+    padding: 14px 20px;          /* Altura e espaçamento idênticos ao botão Sair */
+    font-size: 14px;              /* Tamanho de fonte limpo e legível */
+    font-weight: 500;             /* Peso de fonte equilibrado, sem exagero */
+    font-family: inherit;         /* Mantém a mesma fonte padrão do seu sistema */
+    text-align: center;
+    color: #ffffff !important;
+    background-color: #0d6efd;    /* Tom azul sólido e elegante que combina com dark mode */
+    border: none;
+    border-radius: 16px;          /* Bordas idênticas às do botão "Sair" e "Meu Perfil" */
+    cursor: pointer;
+    text-decoration: none !important;
+    transition: all 0.25s ease;
+    margin: 12px 0;               /* Margem equilibrada para não colar nos outros elementos */
+}
 
+/* Microinteração sutil ao passar o mouse */
+.btn-modo-apresentacao:hover {
+    background-color: #0b5ed7;    /* Escurece levemente o azul de forma suave */
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3); /* Brilho neon sutil, ideal para o tema escuro */
+}
+
+/* Efeito de clique */
+.btn-modo-apresentacao:active {
+    transform: scale(0.98);       /* Efeito físico leve de pressionar para dentro */
+}
 /* Responsivo */
 
 @media(max-width:1024px){

@@ -26,7 +26,7 @@ def clean_arquivo(self):
 
     if arquivo and arquivo.size > settings.MAX_BOOK_UPLOAD_SIZE:
         raise forms.ValidationError(
-            "Arquivo muito grande (máx 80MB)."
+            "Arquivo muito grande (máx 5MB)."
         )
 
     return arquivo

@@ -9,35 +9,75 @@
 
 {% block content %}
 <main class="guidelines-main">
-    <section class="hero-guidelines">
-        <h1 class="gradient-text">Diretrizes da Comunidade</h1>
-        <p>Normas e valores que sustentam o ecossistema do ParaBook.</p>
-    </section>
+    
+    <!-- Hero Section -->
+    <div class="hero-guidelines">
+        <h1 class="gradient-text">Termos e Políticas</h1>
+        <p style="color: #94a3b8; max-width: 650px; margin: 0 auto; font-size: 1.1rem; line-height: 1.5;">
+            Governança, privacidade e regras comunitárias da plataforma ParaBook. Conheça seus direitos e deveres antes de criar sua conta.
+        </p>
+        <small style="color: #64748b; display: block; margin-top: 15px;">Última atualização: 8 de julho de 2026</small>
+    </div>
 
+    <!-- Container dos Cards -->
     <div class="guidelines-container">
-        <article class="glass-rule-card">
+        
+        <!-- CARD 01: PRIVACIDADE -->
+        <div class="glass-rule-card">
             <div class="rule-number">01</div>
-            <h3>Respeito Literário</h3>
-            <p>O ParaBook é um espaço de descoberta. Promovemos debates saudáveis sobre obras clássicas e contemporâneas, onde o contraditório é bem-vindo, mas o ataque pessoal nunca é tolerado.</p>
-        </article>
+            <div class="card-legal-content">
+                <h3>Política de Privacidade e Proteção de Dados (LGPD)</h3>
+                <p>O ParaBook valoriza a sua privacidade. Esta política explica de forma transparente como lidamos com as suas informações na nossa plataforma de redes sociais e gerenciamento de leituras.</p>
+                
+                <h4>Coleta e Uso das Informações</h4>
+                <p>Coletamos dados fornecidos diretamente por você no momento do cadastro (nome completo, e-mail, nome de usuário e senha criptografada). Também registramos dados de interação com a plataforma, tais como histórico de leitura, livros adicionados às estantes, resenhas, notas e comentários, utilizados exclusivamente para personalizar sua experiência e manter a integridade do sistema.</p>
+                
+                <h4>Direitos do Usuário sobre seus Dados</h4>
+                <p>Em total conformidade com a Lei Geral de Proteção de Dados (LGPD), garantimos que você possui controle total sobre suas informações. A qualquer momento, você pode acessar, retificar ou atualizar seus dados através das configurações do seu perfil, bem como solicitar a exclusão permanente de sua conta e a eliminação de todos os seus registros de dados pessoais da nossa base de dados relacional.</p>
+            </div>
+        </div>
 
-        <article class="glass-rule-card">
+        <!-- CARD 02: TERMOS DE USO -->
+        <div class="glass-rule-card">
             <div class="rule-number">02</div>
-            <h3>Autenticidade</h3>
-            <p>Valorizamos o conteúdo original. Ao publicar ou avaliar obras, certifique-se de que sua contribuição reflita sua própria análise, respeitando a propriedade intelectual e as normas de direitos autorais.</p>
-        </article>
+            <div class="card-legal-content">
+                <h3>Termos de Uso e Propriedade Intelectual</h3>
+                <p>Ao se cadastrar e utilizar o ParaBook, você concorda explicitamente com as regras operacionais vigentes para a preservação de um ambiente saudável e seguro.</p>
+                
+                <h4>Regras de Utilização da Plataforma</h4>
+                <p>Cada conta é pessoal, individual e intransferível. O usuário compromete-se a fornecer informações verídicas no ato do cadastro e assume total responsabilidade por todas as ações executadas sob suas credenciais de acesso.</p>
+                
+                <h4>Publicação de Livros, Comentários e Avaliações</h4>
+                <p>A plataforma permite a catalogação de obras, inserção de resenhas literárias e notas textuais. Você retém a propriedade intelectual e direitos autorais dos textos originais das suas resenhas, mas concede ao ParaBook uma licença não exclusiva, mundial e gratuita para hospedar, exibir e processar esse conteúdo estritamente dentro da plataforma.</p>
+                
+                <h4>Direitos Autorais e Pirataria</h4>
+                <p>O ParaBook respeita estritamente a propriedade intelectual de autores, tradutores e editoras. É expressamente proibido o upload ou compartilhamento de links direcionando a downloads ilegais de livros protegidos (PDFs, EPUBs, audiolivros piratas). Qualquer conteúdo que infrinja direitos autorais será removido imediatamente após denúncia fundamentada.</p>
+            </div>
+        </div>
 
-        <article class="glass-rule-card">
+        <!-- CARD 03: DIRETRIZES DA COMUNIDADE -->
+        <div class="glass-rule-card">
             <div class="rule-number">03</div>
-            <h3>Colaboração Ativa</h3>
-            <p>Nosso objetivo é a construção coletiva. Usuários que apoiam outros autores e participam de comunidades ativas ajudam a fortalecer nossa rede literária global.</p>
-        </article>
+            <div class="card-legal-content">
+                <h3>Diretrizes da Comunidade e Responsabilidades</h3>
+                <p>Nossa comunidade visa conectar leitores de forma harmoniosa. Comportamentos inadequados que prejudiquem a experiência coletiva sofrerão sanções administrativas e moderação ativa.</p>
+                
+                <h4>Condutas Proibidas</h4>
+                <ul>
+                    <li><strong>Plágio:</strong> Copiar de forma integral ou parcial resenhas, críticas ou sinopses literárias de terceiros sem a devida atribuição de crédito.</li>
+                    <li><strong>Spam e Publicidade:</strong> Publicar anúncios não autorizados, links de afiliados repetitivos ou mensagens em massa nos comentários de livros ou perfis.</li>
+                    <li><strong>Discurso de Ódio e Assédio:</strong> Ofensas, discriminação de qualquer natureza, linchamento virtual de autores ou perseguição a membros da plataforma.</li>
+                    <li><strong>Conteúdo Ilegal:</strong> Divulgar material ilícito, pornográfico, abusivo ou manifestamente inadequado sob a legislação brasileira.</li>
+                </ul>
+                
+                <h4>Responsabilidades do Usuário e do ParaBook</h4>
+                <p>O usuário é juridicamente responsável pelo conteúdo de suas publicações e opiniões emitidas. O ParaBook atua como provedor de aplicação de internet, eximindo-se de responsabilidade direta pelas opiniões pessoais dos usuários, mas comprometendo-se a manter ferramentas eficientes de moderação, segurança tecnológica e estabilidade do sistema.</p>
+                
+                <h4>Atualizações desta Política</h4>
+                <p>Reservamo-nos o direito de atualizar este documento periodicamente para adequações legais. Mudanças materiais significativas serão notificadas aos usuários via e-mail cadastrado ou alertas visíveis na interface do sistema.</p>
+            </div>
+        </div>
 
-        <article class="glass-rule-card">
-            <div class="rule-number">04</div>
-            <h3>Foco na Qualidade</h3>
-            <p>Mantenha as interações dentro da temática literária. Evite spam ou publicidade não autorizada, focando na qualidade do conhecimento compartilhado.</p>
-        </article>
     </div>
 </main>
 {% endblock %}

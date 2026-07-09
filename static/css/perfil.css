@@ -437,13 +437,93 @@
 
 /* ================= RESPONSIVO ================= */
 @media (max-width: 992px) {
-    .perfil-content-wrapper { flex-direction: column; align-items: center; text-align: center; margin-top: -60px; }
-    .perfil-main-info { width: 100%; }
-    .perfil-nome { justify-content: center; flex-wrap: wrap; }
-    .info-body { align-items: center; }
-    .perfil-meta { display: flex; justify-content: center; }
-    .form-grid, .perfil-info-grid { grid-template-columns: 1fr; }
-    .special-panel { flex-direction: column; text-align: center; gap: 20px; }
+    /* =======================================================
+       EFEITO DARK GLASSMORPHISM LAYERED (MOBILE)
+    ======================================================= */
+    
+    /* 1. CONTAINER PAI (Determina o tamanho da área) */
+    .perfil-header-container {
+        position: relative;
+        margin-top: 30px; /* Dá um respiro para o topo do avatar */
+    }
+
+    /* 2. O RETÂNGULO ROXO DE FUNDO (O Segredo do Efeito) */
+    .perfil-cover {
+        position: absolute !important;
+        /* Aqui criamos o ângulo de 35 graus para esquerda e para cima: */
+        top: 30px !important;    /* Deslocado para cima em relação ao card frontal */
+        left: -15px !important;  /* Deslocado para a esquerda */
+        right: 15px !important;  /* Recua a direita para manter a proporção */
+        bottom: 15px !important; /* Recua embaixo para reforçar que subiu */
+        
+        height: auto !important; 
+        width: auto !important;
+        margin: 0 !important;
+        z-index: 1; /* Joga ele para o fundo */
+        border-radius: 24px;
+        
+        /* Restaura as cores originais da capa do Desktop */
+        background: linear-gradient(135deg, rgba(88,28,135,.45), rgba(5,8,22,.9)) !important;
+        border: 1px solid rgba(139,92,246,.25) !important;
+        box-shadow: 0 10px 30px rgba(139,92,246,0.15) !important;
+        transform: none !important;
+    }
+
+    /* 3. WRAPPER DO CONTEÚDO FRONTAL (Onde ficam Vidro + Avatar) */
+    .perfil-content-wrapper {
+        position: relative;
+        z-index: 5; /* Fica acima do card roxo */
+        margin-top: 0 !important;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* 4. AVATAR (No topo de tudo) */
+    .perfil-sidebar {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .perfil-avatar-box {
+        position: relative;
+        z-index: 10; /* Protege para não ser coberto por nada */
+        margin-bottom: -55px !important; /* Puxa o card de vidro para debaixo do avatar */
+    }
+
+    /* 5. CARD DE VIDRO FRONTAL */
+    .perfil-main-info {
+        position: relative;
+        z-index: 5;
+        width: 100% !important;
+        margin-top: 0 !important;
+        padding-top: 75px !important; /* Espaço para o avatar não cobrir os textos do nome */
+        border-radius: 24px !important;
+        
+        /* Removemos a gambiarra de sombra dura e voltamos com o vidro premium */
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
+        transform: none !important;
+        backdrop-filter: blur(12px) !important;
+        background: rgba(16,25,45,0.7) !important; /* Mais transparência para ver o fundo roxo */
+    }
+
+    /* =======================================================
+       6. MANTER O GRID 2x2 DAS ESTATÍSTICAS
+    ======================================================= */
+    .perfil-stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+    }
+    .stat-glass-card {
+        padding: 20px 10px !important;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .stat-number { font-size: 1.8rem !important; }
 }
 
 @media (max-width: 768px) {

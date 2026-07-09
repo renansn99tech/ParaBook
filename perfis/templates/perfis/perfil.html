@@ -63,7 +63,14 @@
 
                     <div class="info-body">
                         <p class="perfil-descricao"><i class="fa-solid fa-quote-left"></i> {{ perfil.descricao_perfil }}</p>
-                        <p class="perfil-historico"><i class="fa-solid fa-clock-rotate-left"></i> {{ perfil.historico|default:"Nenhum livro lido."}}</p>
+                        <p class="perfil-historico">
+                            <i class="fa-solid fa-clock-rotate-left"></i> 
+                            {% if ultimo_lido %}
+                                Último lido: <strong>{{ ultimo_lido.livro.nome|truncatechars:35 }}</strong>
+                            {% else %}
+                                Nenhum livro lido ainda.
+                            {% endif %}
+                        </p>
                         
                         <div class="perfil-meta">
                             <div class="meta-item">
@@ -115,7 +122,7 @@
         <section class="perfil-tabs-section">
             <div class="tabs-nav">
                 <button class="tab-btn active" data-tab="info"><i class="fa-solid fa-circle-info"></i> Informações</button>
-                <button class="tab-btn" data-tab="historico"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
+                <button class="tab-btn" data-tab="historico" style="display: none;"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
                 <button class="tab-btn" data-tab="favoritos"><i class="fa-solid fa-heart"></i> Favoritos</button>
                 <button class="tab-btn" data-tab="comunidades"><i class="fa-solid fa-users"></i> Comunidades</button>
                 <button class="tab-btn" data-tab="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</button>

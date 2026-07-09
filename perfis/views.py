@@ -86,6 +86,9 @@ def perfil(request):
 
     livros_favoritos = meus_livros.filter(favorito=True)
 
+    # --- NOVA LÓGICA: Busca o último livro lido para exibir no perfil ---
+    ultimo_lido = meus_livros.filter(status='lido').order_by('-id').first()
+
     contexto = {
         'usuario_custom': dados_usuario, 
         'perfil': perfil_do_usuario,     
@@ -97,6 +100,7 @@ def perfil(request):
         'generos_favoritos': lista_generos_favoritos,
         'autores_favoritos': lista_autores_favoritos,
         'favoritos': livros_favoritos,
+        'ultimo_lido': ultimo_lido,
     }
     return render(request, 'perfis/perfil.html', contexto)
 
@@ -163,6 +167,9 @@ def perfil_publico(request, username_alvo):
 
     livros_favoritos = meus_livros.filter(favorito=True)
 
+    # --- NOVA LÓGICA: Busca o último livro lido do usuário visitado ---
+    ultimo_lido = meus_livros.filter(status='lido').order_by('-id').first()
+
     contexto = {
         'usuario_custom': dados_usuario, 
         'perfil': perfil_do_usuario,     
@@ -174,6 +181,7 @@ def perfil_publico(request, username_alvo):
         'generos_favoritos': lista_generos_favoritos,
         'autores_favoritos': lista_autores_favoritos,
         'favoritos': livros_favoritos,
+        'ultimo_lido': ultimo_lido,
         'is_perfil_publico': True,
     }
     return render(request, 'perfis/perfil_publico.html', contexto)

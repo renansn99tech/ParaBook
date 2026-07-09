@@ -287,11 +287,9 @@ select:focus{
         overflow-x: hidden; /* Impede rolagem horizontal indesejada */
     }
     
-    /* Força os Grids a virarem 1 coluna no celular */
+    /* Força APENAS a Home a virar 1 coluna no celular, deixando o Perfil livre */
     .hero, 
     .novidades-grid, 
-    .grid, 
-    .perfil-page,
     .footer-content {
         grid-template-columns: 1fr !important;
         display: flex !important;

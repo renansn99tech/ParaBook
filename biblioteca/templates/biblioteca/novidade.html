@@ -1,147 +1,70 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-Novidades | ParaBook
-{% endblock %}
+{% block title %}Novidades Literárias | ParaBook{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/novidade.css' %}?v=3.0">
+    <link rel="stylesheet" href="{% static 'css/biblioteca.css' %}">
+    <link rel="stylesheet" href="{% static 'css/novidade.css' %}?v=1.0">
 {% endblock %}
 
 {% block content %}
-
-<main class="news-page-main" id="topo">
-
-    <section class="news-hero-section">
+<main class="news-marketing-page" id="topo">
+    
+    <section class="news-hero-section" style="margin-bottom: 40px;">
         <div class="scroll-ticker-container">
             <span class="ticker-item">
-                NOVIDADES • ROADMAP • CHANGELOG •
-                NOVIDADES • ROADMAP • CHANGELOG •
+                🔥 NOVAS OBRAS INDEPENDENTES • 📚 LANÇAMENTOS NO ACERVO • 🚀 CONECTANDO ESCRITORES • 
+                🔥 NOVAS OBRAS INDEPENDENTES • 📚 LANÇAMENTOS NO ACERVO • 🚀 CONECTANDO ESCRITORES • 
             </span>
         </div>
 
-        <div class="news-intro-content">
-            <h1 class="gradient-text">A Evolução do ParaBook</h1>
-            <p>Acompanhe a nossa jornada: de um projeto acadêmico a uma plataforma literária moderna e escalável.</p>
+        <div class="news-intro-content" style="text-align: center; margin-top: 40px;">
+            <h1 class="display-5 fw-bold mb-3" style="color: white;">Novidades da Plataforma</h1>
+            <p class="lead" style="color: var(--text-secondary); max-width: 700px; margin: 0 auto;">
+                Fique por dentro das últimas joias literárias adicionadas ao ParaBook e descubra novos autores antes de todo mundo.
+            </p>
         </div>
     </section>
 
-    <section class="timeline-container">
-        <div class="timeline-vertical-bar"></div>
+    <div class="container py-4">
+        <div class="row g-4 justify-content-center">
+            {% for livro in livros_recentes %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <article class="book-card h-100 d-flex flex-column" style="background: rgba(16, 25, 45, 0.6); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 20px; overflow: hidden; transition: 0.3s;">
+                        
+                        <div class="book-capa-wrapper" style="position: relative; height: 320px; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;">
+                            {% if livro.capa %}
+                                <img src="{{ livro.capa }}" alt="Capa de {{ livro.nome }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <div class="capa-placeholder" style="font-size: 4rem; color: rgba(255,255,255,0.1);"><i class="fa-solid fa-book"></i></div>
+                            {% endif %}
+                            <span class="badge-novidade" style="position: absolute; top: 15px; left: 15px; background: #8b5cf6; color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">Estreia</span>
+                        </div>
 
-        <article class="timeline-entry inverse">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Mar 2026</span>
-                    <span class="status-badge">SENAC / GitHub</span>
+                        <div class="book-info p-4 d-flex flex-column flex-grow-1 justify-content-between">
+                            <div>
+                                <h3 style="font-size: 1.25rem; color: white; margin-bottom: 5px; font-weight: 700;">{{ livro.nome }}</h3>
+                                <p style="color: #60a5fa; font-size: 0.9rem; margin-bottom: 12px; font-weight: 500;">By {{ livro.autor }}</p>
+                                <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin-bottom: 20px;">
+                                    Gênero: <strong>{{ livro.genero|title }}</strong> <br>
+                                    ISBN: {{ livro.isbn|default:"Independente" }}
+                                </p>
+                            </div>
+
+                            <a href="{% url 'biblioteca' %}#{{ livro.genero|lower }}" class="btn-primary-action" style="width: 100%; justify-content: center; text-align: center; background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-radius: 12px; padding: 12px; font-weight: 600; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-bookmark"></i> Acessar na Biblioteca
+                            </a>
+                        </div>
+                    </article>
                 </div>
-                <h3>Kick-off e Repositório</h3>
-                <p>Primeira reunião de brainstorming, definição do nicho do projeto integrador e primeiro push oficial no GitHub.</p>
-            </div>
-        </article>
-
-        <article class="timeline-entry">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Abr 2026</span>
-                    <span class="status-badge">Design</span>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted fst-italic">Nenhum lançamento catalogado nas últimas horas.</p>
                 </div>
-                <h3>Identidade Visual Inicial</h3>
-                <p>Definição da primeira paleta de cores futurista e concepção do layout original da biblioteca digital.</p>
-            </div>
-        </article>
+            {% endfor %}
+        </div>
+    </div>
 
-        <article class="timeline-entry inverse">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Abr 2026</span>
-                    <span class="status-badge">Backend</span>
-                </div>
-                <h3>Estrutura de Dados</h3>
-                <p>Finalização da modelagem inicial de banco de dados relacional e integração das primeiras estruturas em Django.</p>
-            </div>
-        </article>
-
-        <article class="timeline-entry">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Mai 2026</span>
-                    <span class="status-badge">Deploy</span>
-                </div>
-                <h3>Publicação no GitHub Pages</h3>
-                <p>Primeiro deploy público do protótipo estático para testes e demonstração estrutural inicial.</p>
-            </div>
-        </article>
-
-        <article class="timeline-entry inverse">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Mai 2026</span>
-                    <span class="status-badge">UI/UX</span>
-                </div>
-                <h3>Modernização Visual</h3>
-                <p>Implementação do novo sistema visual focado em experiência de usuário (UX), responsividade inicial e performance de front-end.</p>
-            </div>
-        </article>
-
-        <article class="timeline-entry">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Jun 2026</span>
-                    <span class="status-badge">Admin</span>
-                </div>
-                <h3>Dashboard SPA & Permissões</h3>
-                <p>Criação do painel de controle em Single Page Application, com gráficos dinâmicos e aprovação modular de obras e autores.</p>
-            </div>
-        </article>
-
-        <article class="timeline-entry inverse">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Jun 2026</span>
-                    <span class="status-badge">Features</span>
-                </div>
-                <h3>Perfis Dinâmicos e Autores</h3>
-                <p>Refatoração do sistema de contas. Usuários agora atualizam imagens de perfil, gerenciam configurações e solicitam status de "Autor Independente".</p>
-            </div>
-        </article>
-
-        <article class="timeline-entry">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Jun 2026</span>
-                    <span class="status-badge">Rebranding</span>
-                </div>
-                <h3>A Nova Face do ParaBook</h3>
-                <p>Transição de nível Sênior para a arquitetura "Neon Glassmorphism". Adoção de tons de azul profundo e interfaces de vidro para criar imersão focada e madura.</p>
-            </div>
-        </article>
-
-        <article class="timeline-entry inverse current-milestone">
-            <div class="timeline-pointer"></div>
-            <div class="glass-card-news">
-                <div class="card-header">
-                    <span class="date-tag">Jun 2026</span>
-                    <span class="status-badge">SecOps</span>
-                </div>
-                <h3>Segurança Avançada e UX</h3>
-                <p>Implementação do fluxo nativo de Recuperação de Senha, eixos de sincronização assíncrona e notificações não obstrusivas via SweetAlert.</p>
-            </div>
-        </article>
-
-    </section>
 </main>
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'js/index.js' %}"></script>
 {% endblock %}

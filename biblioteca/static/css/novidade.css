@@ -1,244 +1,40 @@
-/* ==========================================================================
-   NOVIDADES / TIMELINE - DEEP BLUE & CRIMSON PULSE
-========================================================================== */
+/* ==========================================================
+   NOVIDADES LITERÁRIAS - MARKETING & DISCOVERY
+========================================================== */
 
-.news-page-main {
-    min-height: 100vh;
-    overflow-x: hidden;
+.news-marketing-page {
+    min-height: calc(100vh - 260px);
     padding-bottom: 80px;
 }
 
-/* ================= HERO SECTION E LETREIRO (TICKER) ================= */
-.news-hero-section {
-    position: relative;
-    height: 35vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    /* Fundo num azul muito escuro com um brilho azul royal no topo */
-    background: radial-gradient(circle at top, rgba(37, 99, 235, 0.15), transparent 60%);
+/* Efeito Glow nos Cards de Lançamento */
+.news-marketing-page .book-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(139, 92, 246, 0.45) !important;
+    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
 }
 
+/* Animação do Ticker Literário */
 .scroll-ticker-container {
-    position: absolute;
+    width: 100%;
+    overflow: hidden;
+    background: rgba(139, 92, 246, 0.08);
+    border-y: 1px solid rgba(139, 92, 246, 0.2);
+    padding: 12px 0;
     white-space: nowrap;
-    display: flex;
-    opacity: 0.15;
-    z-index: 1;
 }
 
 .ticker-item {
     display: inline-block;
-    font-size: 7rem;
-    font-weight: 900;
-    color: transparent;
-    -webkit-text-stroke: 2px rgba(59, 130, 246, 0.4);
-    text-transform: uppercase;
-    animation: marquee-news 35s linear infinite;
-    letter-spacing: 5px;
-}
-
-@keyframes marquee-news {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-.news-intro-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    color: white;
-}
-
-.gradient-text {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 15px;
-    background: linear-gradient(90deg, #93c5fd, #3b82f6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.news-intro-content p {
-    color: #94a3b8;
-    font-size: 1.1rem;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* ================= ESTRUTURA DA LINHA DO TEMPO ================= */
-.timeline-container {
-    position: relative;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 60px 20px;
-}
-
-/* A linha central em tons de azul */
-.timeline-vertical-bar {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent, #3b82f6, #1e3a8a, transparent);
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-}
-
-.timeline-entry {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    margin-bottom: 60px;
-    position: relative;
-}
-
-.timeline-entry.inverse {
-    justify-content: flex-end;
-}
-
-/* Ponto Padrão (Passado) */
-.timeline-pointer {
-    position: absolute;
-    left: 50%;
-    top: 30px;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 20px;
-    background: #60a5fa;
-    border-radius: 50%;
-    border: 4px solid #0a0f1c;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
-    z-index: 3;
-    transition: all 0.4s ease;
-}
-
-/* ================= CARDS GLASSMORPHISM (AZUL) ================= */
-.glass-card-news {
-    width: 45%;
-    /* Gradiente em nuances de azul escuro */
-    background: linear-gradient(145deg, rgba(16, 28, 54, 0.95), rgba(8, 14, 28, 0.85));
-    border: 1px solid rgba(59, 130, 246, 0.25);
-    padding: 30px;
-    border-radius: 22px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    transition: all 0.4s ease;
-}
-
-.glass-card-news:hover {
-    transform: translateY(-8px);
-    border-color: rgba(96, 165, 250, 0.6);
-    box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 0 35px rgba(59, 130, 246, 0.15);
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding-bottom: 10px;
-}
-
-.date-tag {
-    color: #93c5fd;
+    padding-left: 100%;
+    animation: tickerAnimation 25s linear infinite;
+    color: #c4b5fd;
     font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 1px;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
 }
 
-.status-badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 6px 12px;
-    background: rgba(59, 130, 246, 0.15);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 8px;
-    color: #e2e8f0;
-    text-transform: uppercase;
-}
-
-.glass-card-news h3 {
-    color: white;
-    font-size: 1.3rem;
-    margin-bottom: 12px;
-}
-
-.glass-card-news p {
-    color: #94a3b8;
-    line-height: 1.6;
-    font-size: 0.95rem;
-}
-
-/* ================= O MOMENTO ATUAL (CRIMSON PULSE) ================= */
-
-@keyframes pulse-crimson {
-    0% {
-        box-shadow: 0 0 0 0 rgba(220, 20, 60, 0.7), 0 0 15px rgba(220, 20, 60, 0.8);
-    }
-    70% {
-        box-shadow: 0 0 0 15px rgba(220, 20, 60, 0), 0 0 15px rgba(220, 20, 60, 0.8);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(220, 20, 60, 0), 0 0 15px rgba(220, 20, 60, 0.8);
-    }
-}
-
-/* Aplica o estilo ao Card Atual */
-.current-milestone .glass-card-news {
-    border-color: rgba(220, 20, 60, 0.5);
-    background: linear-gradient(145deg, rgba(26, 12, 18, 0.95), rgba(8, 14, 28, 0.85));
-}
-
-.current-milestone .glass-card-news:hover {
-    border-color: rgba(220, 20, 60, 0.8);
-    box-shadow: 0 20px 45px rgba(0,0,0,0.5), 0 0 40px rgba(220, 20, 60, 0.2);
-}
-
-/* Animação do Ponto Atual */
-.current-milestone .timeline-pointer {
-    background: #DC143C; /* Vermelho Carmesim */
-    border: 4px solid #3b0510;
-    animation: pulse-crimson 2s infinite;
-}
-
-/* Tags e Badges do momento Atual */
-.current-milestone .date-tag {
-    color: #fca5a5;
-}
-
-.current-milestone .status-badge {
-    background: rgba(220, 20, 60, 0.15);
-    border: 1px solid rgba(220, 20, 60, 0.4);
-    color: #ffe4e6;
-}
-
-/* ================= RESPONSIVIDADE (MOBILE) ================= */
-@media (max-width: 768px) {
-    .ticker-item { font-size: 4rem; }
-    .gradient-text { font-size: 2.5rem; }
-    
-    .timeline-vertical-bar { 
-        left: 30px; 
-        transform: none; 
-    }
-    
-    .timeline-pointer { 
-        left: 30px; 
-        transform: translateX(-50%); 
-    }
-    
-    .timeline-entry, .timeline-entry.inverse { 
-        justify-content: flex-end; 
-    }
-    
-    .glass-card-news { 
-        width: 85%; 
-        padding: 25px;
-    }
+@keyframes tickerAnimation {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
 }

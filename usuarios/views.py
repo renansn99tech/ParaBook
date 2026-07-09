@@ -6,12 +6,23 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import Usuario
+from comunidades.models import Comunidade
+from biblioteca.models import Livro
 from perfis.models import Perfil # Importa a classe Perfil das models do app perfis
 from .forms import RegistroUsuarioForm  # <-- Importa o novo formulário customizado
 
 
 def index(request):
-    return render(request, 'index.html')
+    # Busca os 3 últimos livros adicionados
+    livros_recentes = Livro.objects.all().order_by('-id_livro')[:3]
+    
+    # Busca até 3 Comunidades Oficiais do Sistema
+    comunidades_oficiais = Comunidade.objects.filter(criada_por_sistema=True)[:3]
+    
+    return render(request, 'index.html', {
+        'livros_recentes': livros_recentes,
+        'comunidades_oficiais': comunidades_oficiais
+    })
 
 def mobile_navbar(request):
     return render(request, 'mobile-navbar.html')
@@ -21,6 +32,9 @@ def sobre(request):
 
 def diretrizes(request):
     return render(request, 'diretrizes.html')
+
+def backlog(request):
+    return render(request, 'backlog.html')
 
 def tela_login(request):
     if request.method == 'POST':

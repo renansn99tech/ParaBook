@@ -536,7 +536,7 @@ body{
 .books, .communities{
     max-width: 1400px;
     margin: 0 auto;
-    padding: 60px 60px;
+    padding: 30px 30px;
 }
 
 .books-grid{

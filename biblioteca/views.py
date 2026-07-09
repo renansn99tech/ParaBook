@@ -22,8 +22,9 @@ from django.db.models import Count
 from django.core.exceptions import PermissionDenied
 
 def novidade(request):
-    return render(request, 'biblioteca/novidade.html')
-
+    # Puxa as últimas 6 obras adicionadas para preencher o grid de novidades
+    livros_recentes = Livro.objects.all().order_by('-id_livro')[:6]
+    return render(request, 'biblioteca/novidade.html', {'livros_recentes': livros_recentes})
 
 def biblioteca(request):
     categorias = [

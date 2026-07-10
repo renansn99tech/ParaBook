@@ -271,6 +271,25 @@ main{
     background:rgba(139,92,246,.1);
 }
 
+.btn-danger-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.05);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-danger-outline:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+}
+
 /* EMPTY STATE */
 .empty-state,
 .grid > p{

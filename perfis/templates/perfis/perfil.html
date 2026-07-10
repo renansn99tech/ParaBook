@@ -63,7 +63,14 @@
 
                     <div class="info-body">
                         <p class="perfil-descricao"><i class="fa-solid fa-quote-left"></i> {{ perfil.descricao_perfil }}</p>
-                        <p class="perfil-historico"><i class="fa-solid fa-clock-rotate-left"></i> {{ perfil.historico|default:"Nenhum livro lido."}}</p>
+                        <p class="perfil-historico">
+                            <i class="fa-solid fa-clock-rotate-left"></i> 
+                            {% if ultimo_lido %}
+                                Último lido: <strong>{{ ultimo_lido.livro.nome|truncatechars:35 }}</strong>
+                            {% else %}
+                                Nenhum livro lido ainda.
+                            {% endif %}
+                        </p>
                         
                         <div class="perfil-meta">
                             <div class="meta-item">
@@ -115,7 +122,7 @@
         <section class="perfil-tabs-section">
             <div class="tabs-nav">
                 <button class="tab-btn active" data-tab="info"><i class="fa-solid fa-circle-info"></i> Informações</button>
-                <button class="tab-btn" data-tab="historico"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
+                <button class="tab-btn" data-tab="historico" style="display: none;"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</button>
                 <button class="tab-btn" data-tab="favoritos"><i class="fa-solid fa-heart"></i> Favoritos</button>
                 <button class="tab-btn" data-tab="comunidades"><i class="fa-solid fa-users"></i> Comunidades</button>
                 <button class="tab-btn" data-tab="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</button>
@@ -155,23 +162,23 @@
             <div id="favoritos" class="tab-content">
                 <div class="perfil-info-grid" style="margin-bottom: 24px;">
                     <div class="content-glass-card">
-                        <h3>Gêneros Favoritos</h3>
+                        <h3>Gêneros acessados recentemente</h3>
                         <ul class="genres-list">
                             {% for genero in generos_favoritos %}
                                 <li class="genre-tag">{{ genero }}</li>
                             {% empty %}
-                                <p class="text-muted">Nenhum gênero favoritado ainda.</p>
+                                <p class="text-muted">Nenhum gênero recente ainda.</p>
                             {% endfor %}
                         </ul>
                     </div>
 
                     <div class="content-glass-card">
-                        <h3>Autores Favoritos</h3>
+                        <h3>Autores acessados recentemente</h3>
                         <ul class="authors-list">
                             {% for autor in autores_favoritos %}
                                 <li><i class="fa-solid fa-pen-nib"></i> {{ autor }}</li>
                             {% empty %}
-                                <p class="text-muted">Nenhum autor favoritado ainda.</p>
+                                <p class="text-muted">Nenhum autor recente ainda.</p>
                             {% endfor %}
                         </ul>
                     </div>
@@ -241,13 +248,25 @@
                     <form action="{% url 'perfis:perfil_pessoal' %}" method="POST" class="config-form">
                         {% csrf_token %} 
                         <div class="form-grid">
+                            {% if usuario_custom.tipo != 'admin' %}
+                                <div class="perfil-form-group full-width" style="grid-column: 1 / -1; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 14px; border: 1px dashed rgba(139,92,246,0.2); display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <div>
+                                        <h4 style="margin: 0 0 5px 0; color: white;"><i class="fa-solid fa-user-shield" style="color: #8b5cf6; margin-right: 8px;"></i> Modo de Privacidade da Conta</h4>
+                                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Ao ativar, seu perfil ficará oculto para leitores e autores comuns do ParaBook.</p>
+                                    </div>
+                                    <label class="switch-ui" style="position: relative; display: inline-block; width: 50px; height: 26px; cursor: pointer;">
+                                        <input type="checkbox" name="perfil_privado" style="opacity: 0; width: 0; height: 0;" {% if perfil.perfil_privado %}checked{% endif %}>
+                                        <span class="slider-ui" style="position: absolute; inset: 0; background-color: #374151; border-radius: 34px; transition: .4s;"></span>
+                                    </label>
+                                </div>
+                            {% endif %}
                             <div class="perfil-form-group">
                                 <label for="input-nome">Nome de Exibição</label>
                                 <input type="text" id="input-nome" name="nome" class="form-input" value="{{ usuario_custom.nome }}">
                             </div>
                             <div class="perfil-form-group">
                                 <label for="input-username">Nome de Usuário (Username)</label>
-                                <input type="text" id="input-username" name="username" class="form-input" value="{{ perfil.username|default:'' }}" placeholder="Ex: renan_santos">
+                                <input type="text" id="input-username" name="username" class="form-input" value="{{ usuario_custom.user_auth.username|default:'usuario' }}" placeholder="Ex: renan_santos">
                             </div>
                             <div class="perfil-form-group">
                                 <label for="input-descricao">Frase de Status (Curta)</label>

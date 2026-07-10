@@ -97,7 +97,6 @@ Painel Administrativo - ParaBook
                 </div>
 
                 <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px;">
-                    <input type="number" name="num_paginas" id="inputPaginas" placeholder="Número de Páginas" style="flex: 1;">
                     <input type="text" name="data_publicacao" id="inputDataPublicacao" placeholder="Ano de Publicação (Ex: 2026)" style="flex: 1;">
                 </div>
 
@@ -284,11 +283,12 @@ Painel Administrativo - ParaBook
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <form method="POST" style="margin:0; padding:0; background:transparent; border:none;">
-                                {% csrf_token %}\n                                <input type="hidden" name="comunidade_id" value="{{ c.id }}">
-                                <button type="submit" name="btn_toggle_manutencao" style="background: #eab308; padding: 6px 12px;">
+                                {% csrf_token %}                                
+                                <input type="hidden" name="comunidade_id" value="{{ c.id }}">
+                                <button type="submit" name="btn_toggle_manutencao" style="background: #eabf3f; color: black; font-weight: bold; padding: 6px 12px; gap: 0.5rem;">
                                     {% if c.em_manutencao %}🔧 Ativar{% else %}⚙️ Manutenção{% endif %}
                                 </button>
-                                <button type="submit" name="btn_deletar_comunidade" class="danger" style="padding: 6px 12px;">❌</button>
+                                <button type="submit" name="btn_deletar_comunidade" class="danger" style="background: #820000; color: black; font-weight: bold; padding: 6px 12px; gap: 0.5rem;">❌ Excluir</button>
                             </form>
                         </div>
                     </li>

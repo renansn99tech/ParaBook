@@ -13,148 +13,95 @@ from django.urls import reverse_lazy
 
 @login_required
 def perfil(request):
-    # 1. Buscamos ou criamos o usuário em uma única variável (Resolve o aviso do VS Code)
     try:
         dados_usuario = Usuario.objects.get(user_auth=request.user)
     except Usuario.DoesNotExist:
-        
-        # 2. Proteção Sênior: Verifica se é o Super User real do Django
         is_admin = request.user.is_superuser
-        
-        novo_perfil = Perfil.objects.create(
-            descricao_perfil="Administrador do Sistema" if is_admin else "Novo Leitor"
-        )
-        
-        dados_usuario = Usuario.objects.create(
-            user_auth=request.user,
-            nome="Super User" if is_admin else request.user.username,
-            email=request.user.email,
-            tipo='admin' if is_admin else 'leitor',
-            perfil=novo_perfil
-        )
-        pass
-    # 3. A partir daqui, usamos apenas a variável dados_usuario
+        novo_perfil = Perfil.objects.create(descricao_perfil="Administrador do Sistema" if is_admin else "Novo Leitor")
+        dados_usuario = Usuario.objects.create(user_auth=request.user, nome="Super User" if is_admin else request.user.username, email=request.user.email, tipo='admin' if is_admin else 'leitor', perfil=novo_perfil)
+
     perfil_do_usuario = dados_usuario.perfil
 
-    # ==========================================================
-    # SISTEMA DE NOTIFICAÇÃO ASSÍNCRONA (Mensagem de Confirmação de Solicitação para Autor)
-    # ==========================================================
     if dados_usuario.notificacao_autor:
         dados_usuario.notificacao_autor = False
         dados_usuario.save()
         messages.success(request, "🎉 Parabéns! Sua solicitação foi aprovada e você agora é um Autor Independente no ParaBook!")
 
-    # ==========================================================
-    # TRATAMENTO DE FORMULÁRIOS
-    # ==========================================================
     if request.method == 'POST':
-        # Captura os dados do POST
+        # Salva o estado de privacidade do switch
+        perfil_privado_post = request.POST.get('perfil_privado') == 'on'
+        perfil_do_usuario.perfil_privado = perfil_privado_post
+
         username = request.POST.get('username')
         descricao_perfil = request.POST.get('descricao_perfil')
         localizacao = request.POST.get('localizacao')
         bio = request.POST.get('bio')
         historico = request.POST.get('historico')
-        foto = request.POST.get('foto')
         nome = request.POST.get('nome')
 
-        # NOVO: LÓGICA DE EXCLUSÃO DA FOTO
-        # ==========================================
         if request.POST.get('remover_foto') == 'true':
             if perfil_do_usuario.foto:
-                perfil_do_usuario.foto.delete() # Apaga o arquivo da pasta media e limpa a coluna no banco
+                perfil_do_usuario.foto.delete() 
 
-        # Só atualiza se o campo foi enviado e não é None
-        if username is not None:
-            perfil_do_usuario.username = username
-            # Sincroniza com o user de autenticação se foi alterado
+        # ==========================================================
+        # PROTEÇÃO CONTRA CAMPOS VAZIOS: Só salva se houver texto real
+        # ==========================================================
+        if username and username.strip(): 
             user_auth = request.user
-            user_auth.username = username
+            user_auth.username = username.strip()
             user_auth.save()
             
-        if descricao_perfil is not None:
-            perfil_do_usuario.descricao_perfil = descricao_perfil
-            
-        if localizacao is not None:
-            perfil_do_usuario.localizacao = localizacao
-            
-        if bio is not None:
-            perfil_do_usuario.bio = bio
-            
-        if historico is not None:
-            perfil_do_usuario.historico = historico
-            
-        if 'foto' in request.FILES:
-            perfil_do_usuario.foto = request.FILES['foto']
+        if descricao_perfil is not None: perfil_do_usuario.descricao_perfil = descricao_perfil
+        if localizacao is not None: perfil_do_usuario.localizacao = localizacao
+        if bio is not None: perfil_do_usuario.bio = bio
+        if historico is not None: perfil_do_usuario.historico = historico
+        if 'foto' in request.FILES: perfil_do_usuario.foto = request.FILES['foto']
             
         perfil_do_usuario.save()
         
-        # Só atualiza o nome de exibição se ele veio no formulário
-        if nome is not None:
-            # 1. Atualiza na sua model customizada
-            dados_usuario.nome = nome
+        # Proteção idêntica para o nome de exibição
+        if nome and nome.strip():
+            dados_usuario.nome = nome.strip()
             dados_usuario.save()
-            
-            # 2. Sincroniza com o first_name do User nativo do Django
-            request.user.first_name = nome
+            request.user.first_name = nome.strip()
             request.user.save()
                 
-        # Garante o redirecionamento correto se for o formulário tradicional
         if not request.headers.get('x-requested-with') == 'XMLHttpRequest' and 'fetch' not in request.path:
             messages.success(request, "Alterações salvas com sucesso!")
             return redirect('perfis:perfil_pessoal')
         
-        
-    # 1. Buscando os livros do usuário na tabela intermediária da Biblioteca
     meus_livros = Biblioteca.objects.filter(user=request.user)
-    
-    # Armazenando as contagens reais nas variáveis (Ajuste os valores 'lendo' e 'lido' conforme seu models.py)
     qnt_lendo_agora = meus_livros.filter(status='lendo').count()
     qnt_livros_lidos = meus_livros.filter(status='lido').count()
     qnt_avaliados = meus_livros.filter(nota__isnull=False).count()
 
-    # 2. Buscando a quantidade de comunidades usando a model de forma explícita
     minhas_comunidades = Comunidade.objects.filter(membros=request.user)
-    qnt_comunidades = minhas_comunidades.count() # Mantemos a contagem para o card superior
+    qnt_comunidades = minhas_comunidades.count()
 
-    # 3. LÓGICA DE FAVORITOS AUTOMÁTICOS (Top 3)
-    # Agrupa os livros da biblioteca pelo nome da categoria e conta qual aparece mais
-    top_generos = meus_livros.values('livro__categoria__nome') \
-        .annotate(total=Count('livro__categoria__nome')) \
-        .order_by('-total')[:3]
-    
-    # Extrai apenas os nomes para uma lista limpa, ignorando valores nulos
+    top_generos = meus_livros.values('livro__categoria__nome').annotate(total=Count('livro__categoria__nome')).order_by('-total')[:3]
     lista_generos_favoritos = [item['livro__categoria__nome'] for item in top_generos if item['livro__categoria__nome']]
 
-    # Faz o mesmo processo para descobrir os autores mais lidos/adicionados
-    top_autores = meus_livros.values('livro__autor') \
-        .annotate(total=Count('livro__autor')) \
-        .order_by('-total')[:3]
-        
+    top_autores = meus_livros.values('livro__autor').annotate(total=Count('livro__autor')).order_by('-total')[:3]
     lista_autores_favoritos = [item['livro__autor'] for item in top_autores if item['livro__autor']]
 
-    # Filtra apenas os livros marcados como favoritos pelo usuário
     livros_favoritos = meus_livros.filter(favorito=True)
 
-    # 4. O SEU CONTEXTO ATUALIZADO
+    # --- NOVA LÓGICA: Busca o último livro lido para exibir no perfil ---
+    ultimo_lido = meus_livros.filter(status='lido').order_by('-id').first()
+
     contexto = {
         'usuario_custom': dados_usuario, 
         'perfil': perfil_do_usuario,     
-        
         'total_lidos': qnt_livros_lidos,
         'lendo_agora': qnt_lendo_agora,
         'total_avaliados': qnt_avaliados,
         'total_comunidades': qnt_comunidades,
-        'minhas_comunidades': minhas_comunidades, # <-- A NOVA VARIÁVEL CONTADORA DE COMUNIDADES AQUI
-        
-        # Injetando os dados reais calculados
+        'minhas_comunidades': minhas_comunidades,
         'generos_favoritos': lista_generos_favoritos,
         'autores_favoritos': lista_autores_favoritos,
-        
-        # Histórico e favoritos fixos ficam para depois
-        'historico': [],
-        'favoritos': livros_favoritos, # Lista vazia substituída por esta variável
+        'favoritos': livros_favoritos,
+        'ultimo_lido': ultimo_lido,
     }
-
     return render(request, 'perfis/perfil.html', contexto)
 
 ############################################ FUNÇÃO QUE ENVIA MENSAGEM DE SUCESSO NA ALTERAÇÃO DA SENHA ############################################
@@ -179,22 +126,37 @@ def virar_autor(request):
     return redirect('perfis:perfil_pessoal')
 
 def perfil_publico(request, username_alvo):
-    # Busca o usuário desejado através do username passado na URL
-    user_objeto = get_object_or_404(Usuario, username=username_alvo)
+    dados_usuario = get_object_or_404(Usuario, user_auth__username=username_alvo)
+    user_auth_obj = dados_usuario.user_auth
     
-    # Se o usuário clicado for o próprio usuário logado, redireciona para o perfil pessoal estável dele
-    if request.user.is_authenticated and user_objeto == request.user:
+    if request.user.is_authenticated and user_auth_obj == request.user:
         return redirect('perfis:perfil_pessoal')
 
-    dados_usuario = get_object_or_404(Usuario, user_auth=user_objeto)
     perfil_do_usuario = dados_usuario.perfil
 
-    meus_livros = Biblioteca.objects.filter(user=user_objeto)
+    # ==========================================================
+    # SISTEMA DE TRAVA SEGURO (REGRAS 2 E 3)
+    # ==========================================================
+    if not request.user.is_superuser:
+        # REGRA 3: Bloqueia acesso a perfis administrativos
+        if dados_usuario.tipo == 'admin' or user_auth_obj.is_superuser:
+            url_origem = request.META.get('HTTP_REFERER', '/comunidades/')
+            divisor = '&' if '?' in url_origem else '?'
+            return redirect(f"{url_origem}{divisor}status_block=admin")
+
+        # REGRA 3: Bloqueia acesso a contas privadas
+        if perfil_do_usuario.perfil_privado:
+            url_origem = request.META.get('HTTP_REFERER', '/comunidades/')
+            divisor = '&' if '?' in url_origem else '?'
+            return redirect(f"{url_origem}{divisor}status_block=privado")
+
+    # Se passou nas travas ou for Admin (Regra 2), renderiza normalmente:
+    meus_livros = Biblioteca.objects.filter(user=user_auth_obj)
     qnt_lendo_agora = meus_livros.filter(status='lendo').count()
     qnt_livros_lidos = meus_livros.filter(status='lido').count()
     qnt_avaliados = meus_livros.filter(nota__isnull=False).count()
 
-    minhas_comunidades = Comunidade.objects.filter(membros=user_objeto)
+    minhas_comunidades = Comunidade.objects.filter(membros=user_auth_obj)
     qnt_comunidades = minhas_comunidades.count()
 
     top_generos = meus_livros.values('livro__categoria__nome').annotate(total=Count('livro__categoria__nome')).order_by('-total')[:3]
@@ -204,6 +166,9 @@ def perfil_publico(request, username_alvo):
     lista_autores_favoritos = [item['livro__autor'] for item in top_autores if item['livro__autor']]
 
     livros_favoritos = meus_livros.filter(favorito=True)
+
+    # --- NOVA LÓGICA: Busca o último livro lido do usuário visitado ---
+    ultimo_lido = meus_livros.filter(status='lido').order_by('-id').first()
 
     contexto = {
         'usuario_custom': dados_usuario, 
@@ -216,7 +181,7 @@ def perfil_publico(request, username_alvo):
         'generos_favoritos': lista_generos_favoritos,
         'autores_favoritos': lista_autores_favoritos,
         'favoritos': livros_favoritos,
-        'is_perfil_publico': True, # Variável sinalizadora que usaremos no HTML!
+        'ultimo_lido': ultimo_lido,
+        'is_perfil_publico': True,
     }
-
-    return render(request, 'perfis/perfil.html', contexto)
+    return render(request, 'perfis/perfil_publico.html', contexto)

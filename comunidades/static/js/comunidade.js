@@ -195,3 +195,24 @@ function toggleFormPost() {
         btnIcon.classList.replace('fa-minus', 'fa-plus');
     }
 }
+
+// FUNÇÃO PARA ALERTA DE EXCLUSÃO PADRÃO DE POSTAGENS COM SWEETALERT2
+function alertaExclusaoPadrao(botao, titulo, texto) {
+        Swal.fire({
+            title: titulo,
+            text: texto,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444', /* O vermelho exato do projeto */
+            cancelButtonColor: '#374151',  /* O cinza escuro dos botões voltar */
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar',
+            background: '#0f172a', /* Fundo Dark Mode */
+            color: '#f8fafc'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Se confirmado, ele busca o form do botão e faz o envio (submit)
+                botao.closest('form').submit();
+            }
+        });
+    }

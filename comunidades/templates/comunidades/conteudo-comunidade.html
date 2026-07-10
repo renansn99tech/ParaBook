@@ -49,14 +49,27 @@
     <section class="posts-section">
 
         <!-- ACESSO POSTAGENS -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 15px;">
             <h3 style="margin-bottom: 0;">Postagens</h3>
             
-            {% if pode_postar %}
-                <button id="btn-toggle-post" class="btn-primary-action" onclick="toggleFormPost()">
-                    <i class="fa-solid fa-plus"></i> Nova Postagem
-                </button>
-            {% endif %}
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                
+                {% if request.user == comunidade.criador or request.user.is_superuser %}
+                    <a href="{% url 'editar_comunidade' comunidade.id %}" class="btn-outline" style="border-color: #f59e0b; color: #fcd34d; padding: 10px 20px; gap: 0.5rem; border-radius: 12px; font-weight: 600; font-size: 0.95rem;" title="Editar Comunidade">
+                        <i class="fa-solid fa-pen"></i> Editar Sala
+                    </a>
+                    <a href="{% url 'excluir_comunidade' comunidade.id %}" class="btn-danger-outline" style="padding: 10px 20px; gap: 0.5rem; border-radius: 12px; font-weight: 600; font-size: 0.95rem;" title="Excluir Comunidade">
+                        <i class="fa-solid fa-trash"></i> Excluir Sala
+                    </a>
+                {% endif %}
+
+                {% if pode_postar %}
+                    <button id="btn-toggle-post" class="btn-primary-action" onclick="toggleFormPost()">
+                        <i class="fa-solid fa-plus"></i> Nova Postagem
+                    </button>
+                {% endif %}
+                
+            </div>
         </div>
 
         <!-- BUSCA -->
@@ -95,9 +108,9 @@
                     {% endif %}
                     
                     {% if request.user == post.autor or request.user.is_superuser or request.user.is_staff %}
-                        <form action="{% url 'excluir_postagem' post.id %}" method="POST" onsubmit="return confirm('Apagar esta postagem definitivamente?');" style="margin:0; padding:0; background:transparent; border:none;">
+                        <form action="{% url 'excluir_postagem' post.id %}" method="POST" style="margin:0; padding:0; background:transparent; border:none;">
                             {% csrf_token %}
-                            <button type="submit" class="btn-danger-outline" style="padding: 6px 12px; font-size: 0.8rem;" title="Remover postagem">
+                            <button type="button" class="btn-danger-outline" style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px;" title="Remover postagem" onclick="alertaExclusaoPadrao(this, 'Apagar postagem?', 'Essa ação não poderá ser desfeita e a publicação sumirá do feed.')">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>

@@ -278,3 +278,69 @@ select:focus{
 
     background:#8B5CF6;
 }
+
+/* ==========================================================
+   PATCH DE RESPONSIVIDADE GLOBAL (iPhones e Androids)
+========================================================== */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden; /* Impede rolagem horizontal indesejada */
+    }
+    
+    /* Força APENAS a Home a virar 1 coluna no celular, deixando o Perfil livre */
+    .hero, 
+    .novidades-grid, 
+    .footer-content {
+        grid-template-columns: 1fr !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 25px !important;
+    }
+
+    /* Ajustes da Landing Page */
+    .hero {
+        padding: 40px 24px !important;
+        text-align: center;
+    }
+    .hero-content h1 {
+        font-size: 2.2rem !important;
+        line-height: 1.2 !important;
+    }
+    .hero-buttons {
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+    }
+    .hero-buttons .btn-primary, .hero-buttons .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    .hero-image {
+        margin-top: 30px;
+        transform: scale(0.9); /* Reduz um pouco os cards flutuantes para caber na tela */
+    }
+
+    /* Ajustes de Container Gerais (Biblioteca, Comunidades) */
+    .container, .pagina-comunidade {
+        padding: 30px 20px 80px !important;
+    }
+    
+    .section-title {
+        font-size: 1.8rem !important;
+        text-align: center;
+    }
+
+    /* Ajustes do Footer */
+    .footer {
+        padding: 40px 20px 20px !important;
+        text-align: center;
+    }
+    .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .footer-column {
+        padding-left: 0;
+        align-items: center;
+    }
+}

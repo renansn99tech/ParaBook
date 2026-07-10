@@ -48,26 +48,35 @@
                 <div class="timeline-item done">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <span class="date">MARÇO 2026</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="date" style="margin-bottom: 0;">MARÇO 2026</span>
+                            <span class="badge-roadmap badge-done">Concluído</span>
+                        </div>
                         <h3>Arquitetura Base</h3>
                         <p>Definição do modelo relacional, fundação estética e versionamento no repositório GitHub.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item done">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="date" style="margin-bottom: 0;">JUNHO 2026</span>
+                            <span class="badge-roadmap badge-done">Concluído</span>
+                        </div>
+                        <h3>Ecossistema Integrado</h3>
+                        <p>Lançamento do Dashboard Administrativo e fluxo completo de aprovação de contas para Autores Independentes.</p>
                     </div>
                 </div>
                 
                 <div class="timeline-item active">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <span class="date">JUNHO 2026</span>
-                        <h3>Ecossistema Integrado</h3>
-                        <p>Lançamento do Dashboard Administrativo e fluxo completo de aprovação de contas para Autores Independentes.</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item future">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <span class="date">JULHO 2026</span>
-                        <h3>APIs e Inovações</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="date" style="margin-bottom: 0; color: #d8b4fe;">JULHO 2026</span>
+                            <span class="badge-roadmap badge-active"><i class="fa-solid fa-spinner fa-spin-pulse"></i> Em Andamento</span>
+                        </div>
+                        <h3 style="color: #c4b5fd;">APIs e Inovações</h3>
                         <p>Implementação de APIs externas e funcionalidades diferenciais para enriquecer a experiência literária na plataforma.</p>
                     </div>
                 </div>
@@ -75,7 +84,10 @@
                 <div class="timeline-item future">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <span class="date">AGOSTO 2026</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="date" style="margin-bottom: 0;">AGOSTO 2026</span>
+                            <span class="badge-roadmap badge-future">Em Breve</span>
+                        </div>
                         <h3>Comunidades Interconectadas</h3>
                         <p>Fóruns e espaços de debate dinâmicos integrados de forma nativa aos tipos de usuários (Leitores e Autores).</p>
                     </div>
@@ -84,7 +96,10 @@
                 <div class="timeline-item future">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <span class="date">SETEMBRO 2026</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="date" style="margin-bottom: 0;">SETEMBRO 2026</span>
+                            <span class="badge-roadmap badge-future">Em Breve</span>
+                        </div>
                         <h3>Feira do Livro & Expansão</h3>
                         <p>Foco total em presença digital, integrações com redes sociais e marketing para a apresentação oficial do projeto na Feira do Livro.</p>
                     </div>
@@ -92,5 +107,11 @@
 
             </div>
         </article>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{% url 'backlog' %}" class="btn-outline" style="padding: 12px 24px; border-radius: 12px; color: #c4b5fd; border-color: rgba(139,92,246,0.3); text-decoration: none;">
+                <i class="fa-solid fa-code-branch"></i> Ver Backlog Técnico do Projeto
+            </a>
+        </div>
     </section>
 {% endblock %}

@@ -156,40 +156,55 @@ def is_approved_author(user):
 
 @login_required
 def obras_autores(request):
-    # TRAVA DE SEGURANÇA: Se não for autor aprovado ou admin, impede o carregamento do GET/POST
-    if not is_approved_author(request.user):
-        messages.error(
-            request, 
-            "Acesso restrito. Esta página está disponível apenas para autores aprovados e administradores."
-        )
-        return redirect('biblioteca')  # Redireciona o leitor comum para um local seguro
+    # Obtém o perfil customizado do usuário logado de forma segura
+    perfil_customizado = getattr(request.user, 'perfil_customizado', None)
+    
+    # Identifica se o usuário já é um autor homologado ou administrador
+    is_author_approved = False
+    if perfil_customizado and perfil_customizado.tipo in ['autor', 'admin']:
+        is_author_approved = True
 
-    # A partir daqui, o usuário é garantidamente um autor aprovado ou administrador
     categorias = Categoria.objects.all()
-    is_author_approved = True 
 
     if request.method == 'POST':
         form = ObraAutorForm(request.POST, request.FILES)
 
         if form.is_valid():
+            # Cria a obra associando os metadados enviados no formulário HTML
             obra = ObraAutor.objects.create(
                 nome=form.cleaned_data['nome'],
                 email=form.cleaned_data['email'],
                 titulo=form.cleaned_data['titulo'],
                 descricao=form.cleaned_data['descricao'],
                 arquivo=form.cleaned_data['arquivo'],
-                autor=form.cleaned_data['autor'],
+                autor=form.cleaned_data['autor'], # Checkbox "Sou autor"
                 categoria=form.cleaned_data['categoria'],
             )
-
-            # CORREÇÃO: Removido a atribuição forçada de status='aprovado'
-            # Agora a obra será salva com o status padrão 'pendente' do model.
+            
+            # Garante que ela entra no banco com o status correto para auditoria do Admin
+            obra.status = 'pendente'
             obra.save()
 
-            messages.success(request, 'Sua obra foi enviada com sucesso! Ela passará por uma avaliação antes de ser publicada.')
+            # REGRA DE NEGÓCIO: Ativa o alerta no perfil do usuário dizendo que há uma solicitação de autor pendente
+            if perfil_customizado:
+                perfil_customizado.notificacao_autor = True
+                perfil_customizado.save()
+
+            messages.success(
+                request, 
+                'Sua obra e sua solicitação de autor foram enviadas com sucesso! Nosso administrador irá avaliar o conteúdo.'
+            )
             return redirect('obras_autores')
+    else:
+        # Passa os dados iniciais do usuário logado para facilitar o preenchimento no GET
+        initial_data = {
+            'nome': request.user.get_full_name() or request.user.username,
+            'email': request.user.email
+        }
+        form = ObraAutorForm(initial=initial_data)
 
     return render(request, 'biblioteca/obras-autores.html', {
+        'form': form,
         'categorias': categorias,
         'is_author_approved': is_author_approved
     })

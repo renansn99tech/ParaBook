@@ -15,7 +15,7 @@ class Usuario(models.Model):
     nome = models.CharField(max_length=45, blank=True, null=True)
     
     # REMOVIDO: email e senha (o Django já gerencia de forma segura em user_auth)
-    
+    email = models.EmailField(unique=True)
     tipo = models.CharField(
         max_length=20,
         choices=TIPO_USUARIO_CHOICES,

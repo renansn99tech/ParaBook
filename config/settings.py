@@ -106,20 +106,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-<<<<<<< HEAD
         "NAME": "mydb",
         "USER": "root",
         "PASSWORD": "admin",
         "HOST": "127.0.0.1",
         "PORT": "3306",
-=======
-        "NAME": config("DB_NAME", default="mydb"),
-        "USER": config("DB_USER", default="root"),
-        "PASSWORD": config("DB_PASSWORD", default="Renann13."),
-        "HOST": config("DB_HOST", default="127.0.0.1"),
-        "PORT": config("DB_PORT", default="3306"),
-        "OPTIONS": {"ssl": {"ssl_mode": "REQUIRED"}},
->>>>>>> origin/develop
     }
 }
 

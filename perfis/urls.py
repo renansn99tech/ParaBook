@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import perfil, perfil_publico, virar_autor, CustomPasswordChangeView
+from .views import perfil, perfil_publico, virar_autor, onboarding_autor, CustomPasswordChangeView
 
 # Namespace do app (boa prática)
 app_name = 'perfis'
@@ -16,4 +16,7 @@ urlpatterns = [
 
     # === NOVA ROTA DO PERFIL COLETIVO ===
     path('perfil/<str:username_alvo>/', perfil_publico, name='perfil_publico'),
+
+    # NOVA ROTA: Página de informações vitais antes de virar autor
+    path('autor/onboarding/', onboarding_autor, name='onboarding_autor'),
 ]

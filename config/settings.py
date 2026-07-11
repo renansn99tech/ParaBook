@@ -15,6 +15,8 @@ from decouple import config
 import dj_database_url 
 import os
 
+import usuarios
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -74,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'usuarios.middleware.ForcarAceiteTermosMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -103,11 +106,20 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
+<<<<<<< HEAD
         "NAME": "mydb",
         "USER": "root",
         "PASSWORD": "admin",
         "HOST": "127.0.0.1",
         "PORT": "3306",
+=======
+        "NAME": config("DB_NAME", default="mydb"),
+        "USER": config("DB_USER", default="root"),
+        "PASSWORD": config("DB_PASSWORD", default="Renann13."),
+        "HOST": config("DB_HOST", default="127.0.0.1"),
+        "PORT": config("DB_PORT", default="3306"),
+        "OPTIONS": {"ssl": {"ssl_mode": "REQUIRED"}},
+>>>>>>> origin/develop
     }
 }
 

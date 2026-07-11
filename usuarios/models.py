@@ -28,6 +28,18 @@ class Usuario(models.Model):
     descricao = models.CharField(max_length=45, blank=True, null=True)
     conquistas = models.CharField(max_length=45, blank=True, null=True)
 
+<<<<<<< HEAD
+=======
+    # NOVOS CAMPOS DE AUDITORIA (LGPD)
+    termos_aceitos = models.BooleanField(default=False)
+    data_aceite_termos = models.DateTimeField(null=True, blank=True)
+
+    # Novo campo CPF para atender a LGPD, com validação de formato
+    cpf = models.CharField(max_length=14, blank=True, null=True, unique=True)
+
+    # Tornando o perfil opcional na criação física para evitar o erro de quem nasce primeiro (usuário > perfil || perfil > usuario)
+    # Alterado: adicionado related_name para evitar o conflito com perfis.Perfil.usuario
+>>>>>>> origin/develop
     perfil = models.ForeignKey(
         Perfil, 
         on_delete=models.CASCADE, 

@@ -14,10 +14,17 @@ class RegistroUsuarioForm(UserCreationForm):
     )
     email = forms.EmailField(required=True, label="E-mail")
 
+    # NOVO CAMPO: Validação obrigatória do Django
+    termos_aceitos = forms.BooleanField(
+        required=True,
+        label="Termos de Uso",
+        error_messages={'required': 'Você deve ler e aceitar as Diretrizes da plataforma para criar uma conta.'}
+    )
+
     class Meta(UserCreationForm.Meta):
         model = User
         # Definimos a ordem exata de exibição no HTML automático
-        fields = ('username', 'nome_completo', 'email')
+        fields = ('username', 'nome_completo', 'email', 'termos_aceitos')
 
     def clean_username(self):
         username = self.cleaned_data.get('username')

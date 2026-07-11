@@ -5,6 +5,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.utils import timezone
 from .models import Usuario
 from comunidades.models import Comunidade
 from biblioteca.models import Livro
@@ -38,62 +39,55 @@ def backlog(request):
 
 def tela_login(request):
     if request.method == 'POST':
-        # Captura o que foi digitado nos inputs com name="username" e name="password"
+        # Recebe apenas usuário e senha limpos
         usuario_digitado = request.POST.get('username')
         senha_digitada = request.POST.get('password')
 
-        # O Django valida se as credenciais batem com o banco de dados
         user = authenticate(request, username=usuario_digitado, password=senha_digitada)
 
         if user is not None:
-            login(request, user) # Cria a sessão ativa do usuário
+            login(request, user)
+            
+            # Aqui a mágica acontece: o login é feito com sucesso, 
+            # mas se ele não tiver os termos aceitos no banco, 
+            # o Middleware vai "sequestrar" esse redirect e mandar para a tela de Aceite!
             messages.success(request, f'Bem-vindo de volta, {user.username}!')
-            return redirect('perfis:perfil_pessoal') # Redireciona para o perfil que refatoramos
+            return redirect('perfis:perfil_pessoal')
         else:
             messages.error(request, 'Usuário ou senha incorretos.')
             return redirect('usuarios:login')
 
-    # Se for método GET (apenas acessando a página), renderiza a tela limpa
     return render(request, 'usuarios/tela-login.html')
 
 #####################################################################################
+# 2. ATUALIZAÇÃO DA VIEW DE REGISTRO
 def register(request):
-    if request.user.is_authenticated:
-        return redirect('perfis:perfil_pessoal')
-
     if request.method == 'POST':
         form = RegistroUsuarioForm(request.POST)
         if form.is_valid():
-            # 1. Instancia o usuário sem salvar imediatamente no banco para injetar dados extras
             auth_user = form.save(commit=False)
             auth_user.email = form.cleaned_data.get('email').lower()
-            
-            # Guardamos o nome completo no first_name do Django por consistência de mercado
             nome_completo = form.cleaned_data.get('nome_completo')
             auth_user.first_name = nome_completo
-            auth_user.save() # Salva definitivamente no auth_user
+            auth_user.save()
             
-            # 2. Cria o Perfil injetando o username
-            novo_perfil = Perfil.objects.create(
-                descricao_perfil="Olá! Sou um novo leitor do ParaBook.",
-                historico="Nenhum livro lido ainda."
-            )
+            novo_perfil = Perfil.objects.create(descricao_perfil="Olá! Sou um novo leitor do ParaBook.", historico="Nenhum livro lido ainda.")
             
-            # 3. Cria o Usuário vinculando os dados limpos e o nome real vindo do formulário
+            # ATUALIZAÇÃO AQUI: Registrando o aceite e o timestamp exato da criação
             Usuario.objects.create(
                 user_auth=auth_user,
-                nome=nome_completo, # <-- Agora o perfil não fica mais com o username feio!
+                nome=nome_completo,
                 email=auth_user.email,
-                perfil=novo_perfil
+                perfil=novo_perfil,
+                termos_aceitos=True,
+                data_aceite_termos=timezone.now()
             )
 
-            # Efetua o login automático da sessão
             login(request, auth_user)
             messages.success(request, 'Conta criada com sucesso! Bem-vindo ao ParaBook.')
             return redirect('perfis:perfil_pessoal')
     else:
         form = RegistroUsuarioForm()
-    
     return render(request, 'usuarios/register.html', {'form': form})
 #####################################################################################
 
@@ -127,3 +121,15 @@ def excluir_conta(request):
     
     # Substitua 'home' pela rota que desejar
     return redirect('home')  # Redireciona para a página inicial do ParaBook
+
+@login_required
+def aceitar_termos(request):
+    if request.method == 'POST':
+        usuario_custom = request.user.perfil_customizado
+        usuario_custom.termos_aceitos = True
+        usuario_custom.data_aceite_termos = timezone.now()
+        usuario_custom.save()
+        messages.success(request, 'Obrigado por aceitar nossos termos. Bem-vindo de volta!')
+        return redirect('perfis:perfil_pessoal')
+        
+    return render(request, 'usuarios/aceitar_termos.html')

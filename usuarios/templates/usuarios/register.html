@@ -56,24 +56,42 @@
                     {% endif %}
 
                     {% for field in form %}
-                        <div class="auth-input-group">
-                            <input type="{{ field.field.widget.input_type }}" 
-                                   name="{{ field.html_name }}" 
-                                   id="{{ field.id_for_label }}"
-                                   required 
-                                   placeholder=" "
-                                   {% if field.value %}value="{{ field.value }}"{% endif %}>
-                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            
-                            {% if field.errors %}
-                                {% for error in field.errors %}
-                                    <span class="field-error-message" style="color: #ef4444; font-size: 12px; display: block; margin-top: -4px; margin-bottom: 12px; padding-left: 4px;">
-                                        <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
-                                    </span>
-                                {% endfor %}
+                        <!-- Renderiza todos os inputs, EXCETO o checkbox de termos -->
+                        {% if field.name != 'termos_aceitos' %}
+                            <div class="auth-input-group">
+                                <input type="{{ field.field.widget.input_type }}" 
+                                       name="{{ field.html_name }}" 
+                                       id="{{ field.id_for_label }}"
+                                       required 
+                                       placeholder=" "
+                                       {% if field.value %}value="{{ field.value }}"{% endif %}>
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <span class="field-error-message" style="color: #ef4444; font-size: 12px; display: block; margin-top: -4px; margin-bottom: 12px; padding-left: 4px;">
+                                            <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Renderiza o Checkbox explicitamente no final, colado no botão Cadastrar -->
+                    <div class="auth-checkbox-group" style="display: flex; align-items: flex-start; gap: 10px; margin: 15px 0 25px 0; text-align: left;">
+                        <input type="checkbox" name="{{ form.termos_aceitos.html_name }}" id="{{ form.termos_aceitos.id_for_label }}" required style="width: 18px; height: 18px; accent-color: #8b5cf6; margin-top: 3px; cursor: pointer;">
+                        <div>
+                            <label for="{{ form.termos_aceitos.id_for_label }}" style="font-size: 0.85rem; color: #aeb3c7; line-height: 1.5; cursor: pointer; display: block;">
+                                Li, compreendo e concordo com a <a href="{% url 'diretrizes' %}" target="_blank" style="color: #c084fc; text-decoration: underline; font-weight: 600;">Política de Privacidade e Termos de Uso</a>.
+                            </label>
+                            {% if form.termos_aceitos.errors %}
+                                <span class="field-error-message" style="color: #ef4444; font-size: 12px; display: block; margin-top: 6px;">
+                                    <i class="fa-solid fa-circle-exclamation"></i> {{ form.termos_aceitos.errors.0 }}
+                                </span>
                             {% endif %}
                         </div>
-                    {% endfor %}
+                    </div>
 
                     <button type="submit" class="auth-btn-submit">Cadastrar</button>
 

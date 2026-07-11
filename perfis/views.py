@@ -185,3 +185,22 @@ def perfil_publico(request, username_alvo):
         'is_perfil_publico': True,
     }
     return render(request, 'perfis/perfil_publico.html', contexto)
+
+@login_required
+def onboarding_autor(request):
+    usuario_custom = request.user.perfil_customizado
+    
+    # Prevenção: Se ele já for autor ou admin, não tem porquê fazer onboarding
+    if usuario_custom.tipo in ['autor', 'admin', 'aguardando_aprovacao']:
+        messages.info(request, "Você já possui uma solicitação em andamento ou privilégios de publicação.")
+        return redirect('perfis:perfil_pessoal')
+        
+    if request.method == 'POST':
+        # O usuário clicou em "Compreendi e quero ser Autor"
+        usuario_custom.tipo = 'aguardando_aprovacao'
+        usuario_custom.save()
+        
+        messages.success(request, 'Sucesso! Sua solicitação para Autor Independente está em análise pela nossa equipe.')
+        return redirect('perfis:perfil_pessoal')
+        
+    return render(request, 'perfis/onboarding_autor.html')

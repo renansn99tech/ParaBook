@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Atualização de Termos | ParaBook{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/tela-login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="auth-container" style="justify-content: center; padding: 100px 20px; display: flex;">
+    <div class="auth-box login-box" style="max-width: 600px; width: 100%; display: flex; flex-direction: column; align-items: center; margin: auto;">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <i class="fa-solid fa-file-shield" style="font-size: 3rem; color: #8b5cf6; margin-bottom: 20px;"></i>
+            <h2>Atualização de Privacidade</h2>
+            <p class="auth-subtitle" style="color: #94a3b8;">Para continuar usando o ParaBook, precisamos que você revise nossos termos.</p>
+        </div>
+
+        <form method="POST" action="{% url 'usuarios:aceitar_termos' %}" class="pure-form">
+            {% csrf_token %}
+            
+            <div class="content-glass-card" style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.05);">
+                <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 0;">
+                    Em conformidade com a LGPD, atualizamos nossas políticas de retenção de dados e segurança de direitos autorais. 
+                    Por favor, leia a <a href="{% url 'diretrizes' %}" target="_blank" style="color: #c084fc; text-decoration: underline; font-weight: 600;">Política de Privacidade e Termos de Uso</a> completa.
+                </p>
+            </div>
+
+            <button type="submit" class="auth-btn-submit" style="width: 100%; display: flex; justify-content: center; gap: 10px;">
+                <i class="fa-solid fa-check"></i> Li e concordo com os Termos
+            </button>
+        </form>
+    </div>
+</main>
+{% endblock %}

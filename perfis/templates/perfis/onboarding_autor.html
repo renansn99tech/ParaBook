@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Onboarding de Autor | ParaBook{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="perfil-page" style="align-items: center; justify-content: center; min-height: 75vh; display: flex;">
+    
+    <div class="content-glass-card" style="max-width: 750px; width: 100%; padding: 45px;">
+        
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 35px;">
+            <i class="fa-solid fa-feather-pointed" style="font-size: 3.5rem; color: #8b5cf6; margin-bottom: 20px;"></i>
+            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">Programa de Autores Independentes</h2>
+            <p style="color: #94a3b8; font-size: 1.1rem;">Antes de habilitarmos seu painel de publicação, você precisa conhecer suas responsabilidades legais.</p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.25); padding: 30px; border-radius: 16px; margin-bottom: 35px; border: 1px solid rgba(139,92,246,0.15);">
+            <h4 style="color: #c4b5fd; margin-bottom: 20px; font-size: 1.2rem;"><i class="fa-solid fa-scale-balanced"></i> Termos de Responsabilidade Autoral</h4>
+            
+            <ul style="color: #cbd5e1; font-size: 1rem; line-height: 1.7; padding-left: 20px; margin-bottom: 0;">
+                <li style="margin-bottom: 15px;"><strong>Propriedade Intelectual:</strong> Você só pode publicar obras das quais é o autor original ou possui os direitos legais expressos de distribuição.</li>
+                <li style="margin-bottom: 15px;"><strong>Tolerância Zero à Pirataria:</strong> O upload de PDFs ou livros protegidos por direitos autorais (de terceiros) resultará no banimento imediato da sua conta.</li>
+                <li style="margin-bottom: 15px;"><strong>Identificação Legal:</strong> Para proteção jurídica da plataforma, será obrigatório fornecer o seu <strong>CPF</strong> válido no momento do envio de cada obra.</li>
+                <li><strong>Direitos Retidos:</strong> Você não cede seus direitos autorais ao ParaBook; apenas concede a licença gratuita para exibirmos a obra na nossa biblioteca digital.</li>
+            </ul>
+        </div>
+
+        <form method="POST" action="{% url 'perfis:onboarding_autor' %}">
+            {% csrf_token %}
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'perfis:perfil_pessoal' %}" class="btn-secondary" style="padding: 14px 24px; border-radius: 14px;">
+                    Cancelar
+                </a>
+                
+                <button type="submit" class="btn-primary" style="padding: 14px 24px;">
+                    <i class="fa-solid fa-check-double"></i> Compreendi as regras e Quero ser Autor
+                </button>
+            </div>
+        </form>
+        
+    </div>
+
+</main>
+{% endblock %}

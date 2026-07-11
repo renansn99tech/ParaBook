@@ -333,10 +333,10 @@
                     <h3>Escreve ou deseja publicar suas próprias obras?</h3>
                     <p>Mude sua conta para Autor Independente e comece a compartilhar suas histórias.</p>
                 </div>
-                <form action="{% url 'perfis:virar_autor' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn_gerenciar_solicitacao"><i class="fa-solid fa-feather"></i> Quero ser um Autor</button>
-                </form>
+                <!-- NOVO BOTÃO: Aponta para a tela de Onboarding -->
+                <a href="{% url 'perfis:onboarding_autor' %}" class="btn-primary-action">
+                    <i class="fa-solid fa-feather"></i> Quero ser um Autor
+                </a>
             </section>
         {% endif %}
     </main>

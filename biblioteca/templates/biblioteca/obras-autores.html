@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/obras-autores.css' %}?v=2.0">
+<link rel="stylesheet" href="{% static 'css/obras-autores.css' %}?v=3.0">
 {% endblock %}
 
 {% block content %}
@@ -12,81 +12,218 @@
 <section class="form-container">
     <div class="form-box">
 
-        <h1>Envie sua obra</h1>
-        <p>Compartilhe seu livro com a comunidade ParaBook</p>
+        <h1>Envie sua Obra</h1>
+        <p>
+            Compartilhe sua obra com a comunidade ParaBook. Caso possua ISBN ou
+            registro oficial, você poderá informá-los durante o envio.
+        </p>
 
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-success" style="background-color: #d1e7dd; color: #0f5132; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #badbcc; text-align: center; font-weight: bold;">
+                <div class="alert alert-success"
+                    style="background:#d1e7dd;color:#0f5132;padding:12px;border-radius:6px;margin-bottom:20px;">
                     {{ message }}
                 </div>
             {% endfor %}
         {% endif %}
 
-        {% if errors %}
-            <div class="form-errors" style="color: red; margin-bottom: 15px;">
-                <p>Por favor, corrija os erros abaixo:</p>
-                <ul>
-                    {% for field, field_errors in errors.items %}
-                        <li><strong>{{ field }}:</strong> {{ field_errors|striptags }}</li>
-                    {% endfor %}
-                </ul>
+        {% if form.errors %}
+            <div class="form-errors">
+                {{ form.errors }}
             </div>
         {% endif %}
 
         <form method="POST" enctype="multipart/form-data" id="formObra">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label>Nome</label>
-                <input type="text" name="nome" value="{{ livro.nome|default:'' }}">
-            </div>
+            <h3>📚 Dados da Obra</h3>
 
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" value="{{ livro.email|default:'' }}">
-            </div>
+    <label for="titulo">Título *</label>
+
+    <input
+        type="text"
+        id="titulo"
+        name="titulo"
+        value="{{ form.titulo.value|default:'' }}"
+        required>
+</div>
 
             <div class="form-group">
-                <label>Título</label>
-                <input type="text" name="titulo" value="{{ livro.titulo|default:'' }}">
-            </div>
+                <label for="tipo_registro">Tipo de Registro</label>
+
+<input
+    type="text"
+    id="tipo_registro"
+    name="tipo_registro"
+    value="{{ form.tipo_registro.value|default:'' }}"
+    placeholder="Ex.: Biblioteca Nacional, ISBN, outro">
+
+</div>
 
             <div class="form-group">
-                <label for="id_categoria">Categoria</label>
-                <select name="categoria" id="id_categoria">
+                <label for="id_categoria">Categoria *</label>
+                <select name="categoria" id="id_categoria" required>
+
                     <option value="">Selecione uma categoria</option>
+
                     {% for cat in categorias %}
-                        <option value="{{ cat.id_categoria }}">
+                        <option
+                            value="{{ cat.id_categoria }}"
+                            {% if form.categoria.value == cat.id_categoria %}
+                                selected
+                            {% endif %}
+                        >
                             {{ cat.nome }}
                         </option>
                     {% endfor %}
+
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Descrição</label>
-                <textarea name="descricao">{{ livro.descricao|default:'' }}</textarea>
+                <label for="descricao">Descrição</label>
+                <textarea
+                    id="descricao"
+                    name="descricao">{{ form.descricao.value|default:'' }}</textarea>
             </div>
 
             <div class="form-group">
-                <label>Arquivo</label>
-                <input type="file" name="arquivo" id="fileInput">
+                <label for="fileInput">Arquivo PDF *</label>
+                <input
+                    type="file"
+                    id="fileInput"
+                    name="arquivo"
+                    accept=".pdf"
+                    required>
+
                 <p id="fileName"></p>
             </div>
 
+            <hr>
+
+            <h3>👤 Informações do Autor</h3>
+
             <div class="form-group">
-                <label for="cpf_autor">CPF do Titular da Obra</label>
-                <input type="text" name="cpf_autor" id="cpf_autor" required placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)">
+                <label>Nome</label>
+                <input
+                    type="text"
+                    name="nome"
+                    value="{{ form.nome.value }}"
+                    readonly>
             </div>
 
-            <div class="form-group checkbox" style="margin-top: 10px; margin-bottom: 25px;">
-                <input type="checkbox" id="sou_autor" name="sou_autor" required>
-                <label for="sou_autor" style="line-height: 1.5;">Sou o autor original e assumo responsabilidade legal por esta publicação.</label>
+            <div class="form-group">
+                <label>Email</label>
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ form.email.value }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="cpf_autor">CPF do Titular da Obra *</label>
+                <input
+                    type="text"
+                    id="cpf_autor"
+                    name="cpf_autor"
+                    value="{{ form.cpf_autor.value|default:'' }}"
+                    maxlength="14"
+                    placeholder="000.000.000-00"
+                    oninput="mascaraCPF(this)"
+                    required>
+            </div>
+
+            <hr>
+
+            <h3>📄 Registro da Obra (Opcional)</h3>
+
+            <p style="font-size:14px; margin-bottom:15px;">
+    Caso sua obra possua ISBN ou algum registro oficial de direitos autorais,
+    informe os dados abaixo. O preenchimento é opcional e auxilia na
+    identificação da autoria durante a análise da publicação.
+            </p>
+
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                <input
+                    type="text"
+                    id="isbn"
+                    name="isbn"
+                    value="{{ form.isbn.value|default:'' }}">
+            </div>
+
+<div class="form-group">
+    <label for="registro_autoral">
+        Registro Autoral (Opcional)
+    </label>
+
+    <input
+        type="text"
+        id="registro_autoral"
+        name="registro_autoral"
+        value="{{ form.registro_autoral.value|default:'' }}"
+        placeholder="Ex.: Registro na Biblioteca Nacional ou outro órgão">
+</div>
+
+            <div class="form-group">
+                <label for="numero_registro">Número do Registro</label>
+
+                <input
+                    type="text"
+                    id="numero_registro"
+                    name="numero_registro"
+                    value="{{ form.numero_registro.value|default:'' }}">
+            </div>
+
+            <hr>
+
+            <h3>⚖ Declarações</h3>
+
+            <div class="form-group checkbox">
+
+                <input
+                    type="checkbox"
+                    id="declaracao_autoria"
+                    name="declaracao_autoria"
+                    required>
+
+                <label for="declaracao_autoria">
+                    Declaro ser o autor desta obra ou possuir autorização legal
+                    para publicá-la.
+                </label>
+
+            </div>
+
+            <div class="form-group checkbox">
+
+                <input
+                    type="checkbox"
+                    id="aceitou_termos"
+                    name="aceitou_termos"
+                    required>
+
+                <label for="aceitou_termos">
+                    Li e aceito os Termos de Publicação do ParaBook.
+                </label>
+
+            </div>
+
+            <div class="alert alert-info"
+                style="margin-top:20px;padding:15px;border-radius:8px;background:#eef6ff;border:1px solid #c8defa;">
+
+                <strong>Importante</strong><br>
+
+                O ParaBook não substitui o registro oficial de direitos autorais.
+                Caso sua obra possua registro na Biblioteca Nacional ou outro
+                órgão competente, informe-o acima. Essas informações auxiliam
+                na identificação da autoria durante a análise da publicação.
+
             </div>
 
             <button type="submit" class="submit-btn">
-                Enviar obra
+                Enviar Obra
             </button>
 
         </form>
@@ -97,7 +234,6 @@
 </main>
 
 {% endblock %}
-
 
 {% block extra_js %}
 <script src="{% static 'js/obras-autores.js' %}"></script>

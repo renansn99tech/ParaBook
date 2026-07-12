@@ -79,6 +79,30 @@ class ObraAutor(models.Model):
     )
 
     data_envio = models.DateTimeField(auto_now_add=True)
+    
+    cpf_autor = models.CharField(
+        max_length=14,
+        blank=True
+    )
+
+    isbn = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    registro_autoral = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Número do registro na Biblioteca Nacional ou outro órgão."
+    )
+
+    declaracao_autoria = models.BooleanField(
+        default=False
+    )
+
+    aceitou_termos = models.BooleanField(
+        default=False
+    )
 
     class Meta:
         db_table = 'obras_autores'

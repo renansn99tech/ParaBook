@@ -172,18 +172,30 @@ def obras_autores(request):
         if form.is_valid():
             # Cria a obra associando os metadados enviados no formulário HTML
             obra = ObraAutor.objects.create(
-                nome=form.cleaned_data['nome'],
-                email=form.cleaned_data['email'],
+                nome=request.user.get_full_name() or request.user.username,
+                email=request.user.email,
                 titulo=form.cleaned_data['titulo'],
                 descricao=form.cleaned_data['descricao'],
                 arquivo=form.cleaned_data['arquivo'],
-                autor=form.cleaned_data['autor'], # Checkbox "Sou autor"
                 categoria=form.cleaned_data['categoria'],
+
+                cpf_autor=form.cleaned_data['cpf_autor'],
+                isbn=form.cleaned_data['isbn'],
+                registro_autoral=form.cleaned_data['registro_autoral'],
+
+                declaracao_autoria=form.cleaned_data['declaracao_autoria'],
+                aceitou_termos=form.cleaned_data['aceitou_termos'],
+
+                status='pendente'
             )
             
             # Garante que ela entra no banco com o status correto para auditoria do Admin
-            obra.status = 'pendente'
-            obra.save()
+            # obra.status = 'pendente'
+            # obra.save()
+            if request.method == 'POST':
+                print("POST RECEBIDO:")
+                print(request.POST)
+                form = ObraAutorForm(request.POST, request.FILES)
 
             # REGRA DE NEGÓCIO: Ativa o alerta no perfil do usuário dizendo que há uma solicitação de autor pendente
             if perfil_customizado:
@@ -192,7 +204,7 @@ def obras_autores(request):
 
             messages.success(
                 request, 
-                'Sua obra e sua solicitação de autor foram enviadas com sucesso! Nosso administrador irá avaliar o conteúdo.'
+                'Sua obra foi enviada com sucesso e agora será analisada pelo administrador do ParaBook.'
             )
             return redirect('obras_autores')
     else:

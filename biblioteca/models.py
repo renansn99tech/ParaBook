@@ -18,7 +18,8 @@ class Livro(models.Model):
     # ... Seus campos existentes permanecem idênticos ...
     id_livro = models.AutoField(db_column='Id_Livros', primary_key=True)
     nome = models.CharField(max_length=45, db_column='Nome')
-    autor = models.CharField(max_length=45, db_column='Autor')
+    autor = models.CharField(max_length=150,db_column="Autor")
+    autor_nome = models.CharField(max_length=150,blank=True,default="")
     data_publicacao = models.CharField(max_length=45, db_column='Data_Publicacao')
     genero = models.CharField(max_length=45, db_column='Genero')
     avaliacao = models.CharField(max_length=45, db_column='Avaliacao')
@@ -29,19 +30,29 @@ class Livro(models.Model):
     capa = models.CharField(max_length=255, null=True, blank=True)
     pdf = models.CharField(max_length=255, db_column='Caminho_PDF', null=True, blank=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING, db_column='Categorias_Id_Categorias')
-
-    class Meta:
+    ORIGEM_CHOICES = [
+    ("dominio_publico", "Domínio Público"),
+    ("autor_independente", "Autor Independente"),
+]     
+STATUS_CHOICES = [
+    ("pendente", "Pendente"),
+    ("publicado", "Publicado"),
+    ("rejeitado", "Rejeitado"),
+]
+origem = models.CharField(max_length=25,choices=ORIGEM_CHOICES,default="dominio_publico")
+status = models.CharField(max_length=20,choices=STATUS_CHOICES,default="publicado")
+class Meta:
         db_table = 'livros'
 
-    @property
-    def url_pdf_estatico(self):
+@property
+def url_pdf_estatico(self):
         nome_limpo = slugify(self.nome)
         categoria_limpa = slugify(self.categoria.nome)
         return f"livros/{categoria_limpa}/{nome_limpo}.pdf"
 
     # --- NOVA PROPERTY DE CORREÇÃO PARA A CAPA ---
-    @property
-    def capa_url(self):
+@property
+def capa_url(self):
         """
         Retorna o caminho correto da imagem de capa. Se for uma string de caminho relativo, 
         insere o prefixo /media/. Se for nulo ou vazio, retorna None para acionar o fallback do template.
@@ -57,62 +68,38 @@ class Livro(models.Model):
         return f"/media/{self.capa}"
 
 
-class ObraAutor(models.Model):
-    nome = models.CharField(max_length=100)
-    email = models.EmailField()
-    titulo = models.CharField(max_length=150)
-    descricao = models.TextField(blank=True)
-    arquivo = models.FileField(upload_to='obras/', null=True, blank=True)
-    autor = models.BooleanField(default=False)
-
-    categoria = models.ForeignKey(
-        Categoria,
+class SolicitacaoPublicacao(models.Model):
+    usuario = models.ForeignKey(
+        Usuario,
         on_delete=models.CASCADE,
-        db_column='categoria_id'
+        related_name="solicitacoes_publicacao"
+    )
+
+    livro = models.ForeignKey(
+        Livro,
+        on_delete=models.CASCADE,
+        related_name="solicitacoes"
     )
 
     status = models.CharField(
         max_length=20,
         choices=[
-            ('pendente', 'Pendente'),
-            ('aprovado', 'Aprovado'),
-            ('rejeitado', 'Rejeitado')
+            ("pendente", "Pendente"),
+            ("aprovado", "Aprovado"),
+            ("rejeitado", "Rejeitado"),
         ],
-        default='pendente'
+        default="pendente"
     )
+
+    observacao_admin = models.TextField(blank=True)
 
     data_envio = models.DateTimeField(auto_now_add=True)
-    
-    cpf_autor = models.CharField(
-        max_length=14,
-        blank=True
-    )
-
-    isbn = models.CharField(
-        max_length=20,
-        blank=True
-    )
-
-    registro_autoral = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Número do registro na Biblioteca Nacional ou outro órgão."
-    )
-
-    declaracao_autoria = models.BooleanField(
-        default=False
-    )
-
-    aceitou_termos = models.BooleanField(
-        default=False
-    )
 
     class Meta:
-        db_table = 'obras_autores'
+        db_table = "solicitacoes_publicacao"
 
     def __str__(self):
-        return self.titulo
-
+        return self.livro.nome
 
 class Biblioteca(models.Model):
     STATUS_CHOICES = [

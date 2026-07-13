@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.utils import timezone
-from .models import Usuario
+from django.http import JsonResponse
+from .models import Usuario, Notificacao
 from comunidades.models import Comunidade
 from biblioteca.models import Livro
 from perfis.models import Perfil # Importa a classe Perfil das models do app perfis
@@ -133,3 +134,21 @@ def aceitar_termos(request):
         return redirect('perfis:perfil_pessoal')
         
     return render(request, 'usuarios/aceitar_termos.html')
+
+@login_required
+def checar_notificacoes(request):
+    # Pega a primeira notificação não lida do usuário
+    notificacao = Notificacao.objects.filter(usuario=request.user, lida=False).first()
+    if notificacao:
+        return JsonResponse({
+            'tem_notificacao': True,
+            'id': notificacao.id,
+            'titulo': notificacao.titulo,
+            'mensagem': notificacao.mensagem
+        })
+    return JsonResponse({'tem_notificacao': False})
+
+@login_required
+def marcar_lida(request, id_notificacao):
+    Notificacao.objects.filter(id=id_notificacao, usuario=request.user).update(lida=True)
+    return JsonResponse({'success': True})

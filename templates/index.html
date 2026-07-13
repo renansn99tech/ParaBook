@@ -198,6 +198,9 @@
     <div class="novidades-grid">
       {% for livro in livros_recentes|slice:":3" %}
         <article class="book-card card-novidade-evolved">
+          <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
+              <i class="fa-solid fa-info"></i>
+          </a>
           <div class="book-capa-wrapper">
             {% if livro.capa_url %}
               <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" loading="lazy" />

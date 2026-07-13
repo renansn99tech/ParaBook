@@ -25,5 +25,9 @@ urlpatterns = [
     path('concluir-leitura/<int:livro_id>/', views.concluir_leitura, name='concluir_leitura'), # Esta é a rota que o fetch do JavaScript vai bater
     path('avaliar-livro/<int:livro_id>/', views.avaliar_livro, name='avaliar_livro'),
     path('favoritar-livro/<int:livro_id>/', views.favoritar_livro, name='favoritar_livro'),
+    path('livro/<int:id_livro>/', views.livro_info, name='livro_info'),
+    path('livro/<int:id_livro>/denunciar/', views.registrar_denuncia, name='registrar_denuncia'),
+    path('moderacao/', views.painel_moderacao, name='painel_moderacao'),
+    path('moderacao/resolver/<int:id_denuncia>/', views.resolver_denuncia, name='resolver_denuncia'),
     path('autores/', views.lista_autores, name='lista_autores'),
 ]

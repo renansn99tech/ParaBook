@@ -148,7 +148,11 @@ function renderGraficos() {
             },
             options: { 
                 responsive: true,
-                plugins: { legend: { labels: { color: '#e5e7eb' } } }
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+                }
             }
         });
     }
@@ -189,7 +193,17 @@ function renderGraficos() {
                     fill: false 
                 }]
             },
-            options: { responsive: true }
+            options: { 
+                responsive: true,
+                plugins: { legend: { display: false } },
+                elements: {
+                    line: { tension: 0.4 } // Deixa a linha curvada e elegante
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+                }
+            }
         });
     }
 }

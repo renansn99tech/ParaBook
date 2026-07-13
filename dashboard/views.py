@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.models import User
-from usuarios.models import Usuario
-from biblioteca.models import Livro, Categoria, ObraAutor
+from usuarios.models import Usuario, Notificacao
+from biblioteca.models import Livro, Categoria, ObraAutor, Denuncia
 from comunidades.models import Comunidade
 from django.core.files.storage import FileSystemStorage
 
@@ -224,6 +224,45 @@ def painel_admin(request):
             messages.error(request, "Erro: ID do livro não foi enviado pelo formulário.")
             
         return redirect('dashboard:painel_admin')
+    
+    # ==========================================================
+    # NOVO: GERENCIAMENTO DE DENÚNCIAS (MODERAÇÃO)
+    # ==========================================================
+    elif request.method == 'POST' and 'btn_resolver_denuncia' in request.POST:
+        denuncia_id = request.POST.get('denuncia_id')
+        acao = request.POST.get('acao')
+        denuncia = get_object_or_404(Denuncia, id=denuncia_id)
+        
+        if acao == 'remover_obra':
+            livro_nome = denuncia.livro.nome
+            denunciante = denuncia.usuario # Salva quem denunciou antes do banco apagar tudo
+            
+            # 1. Cria a notificação para o usuário que denunciou
+            if denunciante:
+                Notificacao.objects.create(
+                    usuario=denunciante,
+                    titulo="Denúncia Aceita 🛡️",
+                    mensagem=f"Sua denúncia sobre '{livro_nome}' foi procedente e a obra foi removida. Obrigado por manter a comunidade segura!"
+                )
+                
+            # 2. Apaga o livro de fato
+            denuncia.livro.delete() 
+            messages.success(request, f"A obra '{livro_nome}' foi removida com sucesso.")
+            
+        elif acao == 'falso_positivo':
+            denuncia.status = 'analisado'
+            denuncia.save()
+            
+            # Notifica que não havia nada de errado
+            if denuncia.usuario:
+                Notificacao.objects.create(
+                    usuario=denuncia.usuario,
+                    titulo="Análise Concluída 🔍",
+                    mensagem=f"Avaliamos sua denúncia sobre '{denuncia.livro.nome}', mas não constatamos violações das diretrizes. A denúncia foi arquivada."
+                )
+            messages.info(request, "Denúncia arquivada como falso positivo.")
+            
+        return redirect('dashboard:painel_admin')
     # ==========================================================
     # 4. QUERYS E MÉTRICAS PARA O DASHBOARD (CORREÇÃO AQUI)
     # ==========================================================
@@ -237,6 +276,9 @@ def painel_admin(request):
     # BUSCA 2: Usuários que pediram pelo perfil (A CORREÇÃO DA QUERY)
     usuarios_pendentes = Usuario.objects.filter(tipo='aguardando_aprovacao')
 
+    # BUSCA 3: Denúncias pendentes
+    denuncias_pendentes = Denuncia.objects.filter(status='pendente').select_related('livro', 'usuario').order_by('-data_denuncia')
+
     # ATUALIZAÇÃO DO CONTEXTO DO DASHBOARD: Carrega as listas separadas para as abas
     todas_comunidades = Comunidade.objects.all()
     comunidades_sistema = todas_comunidades.filter(criada_por_sistema=True)
@@ -248,6 +290,7 @@ def painel_admin(request):
         'usuarios': todos_usuarios,
         'solicitacoes': solicitacoes_pendentes,
         'usuarios_pendentes': usuarios_pendentes,
+        'denuncias_pendentes': denuncias_pendentes,
         
         'total_usuarios': todos_usuarios.count(),
         'total_livros': todos_livros.count(),

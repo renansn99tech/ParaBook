@@ -33,7 +33,10 @@ Biblioteca | ParaBook
         <div class="row g-4">
             {% for livro in livros_filosofia %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico">
+                    <article class="card h-100 card-livro-publico" style="position: relative;">
+                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
+                            <i class="fa-solid fa-info"></i>
+                        </a>
                         <div class="container-capa">
                             {% if livro.capa_url %}
                                 <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
@@ -68,7 +71,10 @@ Biblioteca | ParaBook
         <div class="row g-4">
             {% for livro in livros_literatura %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico">
+                    <article class="card h-100 card-livro-publico" style="position: relative;">
+                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
+                            <i class="fa-solid fa-info"></i>
+                        </a>
                         <div class="container-capa">
                             {% if livro.capa_url %}
                                 <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
@@ -103,7 +109,10 @@ Biblioteca | ParaBook
         <div class="row g-4">
             {% for livro in livros_religiosos %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico">
+                    <article class="card h-100 card-livro-publico" style="position: relative;">
+                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
+                            <i class="fa-solid fa-info"></i>
+                        </a>
                         <div class="container-capa">
                             {% if livro.capa_url %}
                                 <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
@@ -138,7 +147,10 @@ Biblioteca | ParaBook
         <div class="row g-4">
             {% for livro in livros_exatas %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico">
+                    <article class="card h-100 card-livro-publico" style="position: relative;">
+                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
+                            <i class="fa-solid fa-info"></i>
+                        </a>
                         <div class="container-capa">
                             {% if livro.capa_url %}
                                 <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
@@ -173,7 +185,10 @@ Biblioteca | ParaBook
         <div class="row g-4">
             {% for livro in livros_infantis %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico">
+                    <article class="card h-100 card-livro-publico" style="position: relative;">
+                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
+                            <i class="fa-solid fa-info"></i>
+                        </a>
                         <div class="container-capa">
                             {% if livro.capa_url %}
                                 <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
@@ -208,7 +223,10 @@ Biblioteca | ParaBook
         <div class="row g-4">
             {% for obra in livros_independentes %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico">
+                    <article class="card h-100 card-livro-publico" style="position: relative;">
+                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
+                            <i class="fa-solid fa-info"></i>
+                        </a>
                         <div class="container-capa">
                             <img src="{% static 'img/capa-padrao.png' %}" alt="{{ obra.titulo }}" class="img-capa-ajustada">
                         </div>

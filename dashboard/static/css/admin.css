@@ -28,6 +28,7 @@ body{
 /* Sidebar */
 
 .admin-sidebar{
+    color: var(--purple);
     width:260px;
     min-height:100vh;
 
@@ -144,62 +145,40 @@ body{
 
 /* Cards */
 
-.card{
-    position:relative;
-    overflow:hidden;
-
-    padding:24px;
-
-    border-radius:22px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(16,25,45,.95),
-            rgba(16,25,45,.72)
-        );
-
-    border:1px solid var(--border);
-
-    color:white;
-
-    box-shadow:
-        0 18px 45px rgba(0,0,0,.28);
-
-    transition:.35s;
+.card {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    border-radius: 20px;
+    
+    /* DARK GLASSMORPHISM MODERNO */
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    
+    color: white;
+    transition: 0.4s ease;
 }
 
-.card::before{
-    content:"";
-
-    position:absolute;
-
-    width:150px;
-    height:150px;
-
-    right:-65px;
-    top:-65px;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(139,92,246,.22),
-            transparent 70%
-        );
-
-    opacity:0;
-
-    transition:.35s;
+.card::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    right: -100px;
+    top: -100px;
+    background: radial-gradient(circle, rgba(139,92,246,0.3), transparent 70%);
+    opacity: 0;
+    transition: 0.5s;
+    border-radius: 50%;
 }
 
-.card:hover{
-    transform:translateY(-5px);
-
-    border-color:rgba(139,92,246,.45);
-
-    box-shadow:
-        0 22px 55px rgba(0,0,0,.38),
-        0 0 35px rgba(139,92,246,.12);
+.card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(139, 92, 246, 0.15);
 }
 
 .card:hover::before{
@@ -226,6 +205,14 @@ body{
 
     font-size:2rem;
     font-weight:800;
+}
+
+.metricas-grid .card i {
+    font-size: 2rem;
+    color: rgba(255,255,255,0.1);
+    position: absolute;
+    right: 20px;
+    top: 20px;
 }
 
 /* Gráficos */

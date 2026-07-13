@@ -9,14 +9,13 @@ from django.http import JsonResponse
 from config.settings import AUTH_PASSWORD_VALIDATORS
 
 from .services import livros_por_categoria
-from .models import Categoria, Livro, ObraAutor, Biblioteca
-from usuarios.models import Usuario
+from .models import Categoria, Livro, ObraAutor, Biblioteca, Denuncia
+from usuarios.models import Usuario, Notificacao
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
 from .constants import StatusBiblioteca
 from comunidades.models import Comunidade
 
-from comunidades.models import Comunidade
 from django.core.paginator import Paginator
 from django.db.models import Count
 from django.core.exceptions import PermissionDenied
@@ -159,11 +158,13 @@ def obras_autores(request):
     # Obtém o perfil customizado do usuário logado de forma segura
     perfil_customizado = getattr(request.user, 'perfil_customizado', None)
     
-    # Identifica se o usuário já é um autor homologado ou administrador
-    is_author_approved = False
-    if perfil_customizado and perfil_customizado.tipo in ['autor', 'admin']:
-        is_author_approved = True
+    # BARREIRA DE SEGURANÇA: RBAC (Role-Based Access Control)
+    # Se o perfil não existir OU o tipo não for autor/admin, ele é expulso da página
+    if not perfil_customizado or perfil_customizado.tipo not in ['autor', 'admin']:
+        messages.warning(request, "Acesso negado. Apenas Autores Independentes podem acessar a área de publicação.")
+        return redirect('perfis:onboarding_autor') # Manda ele direto para conhecer as regras!
 
+    # Como agora só autores e admins chegam aqui, não precisamos mais daquela flag 'is_author_approved'
     categorias = Categoria.objects.all()
 
     if request.method == 'POST':
@@ -217,8 +218,7 @@ def obras_autores(request):
 
     return render(request, 'biblioteca/obras-autores.html', {
         'form': form,
-        'categorias': categorias,
-        'is_author_approved': is_author_approved
+        'categorias': categorias
     })
 
 def listar_obras(request):
@@ -383,3 +383,59 @@ def favoritar_livro(request, livro_id):
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=400)
     return JsonResponse({"success": False}, status=400)
+
+def livro_info(request, id_livro):
+    # Busca o livro ou retorna erro 404 se não existir
+    livro = get_object_or_404(Livro, id_livro=id_livro)
+    
+    return render(request, 'biblioteca/livro_info.html', {
+        'livro': livro
+    })
+
+@login_required
+@require_POST
+def registrar_denuncia(request, id_livro):
+    try:
+        data = json.loads(request.body)
+        motivo = data.get('motivo')
+        livro = get_object_or_404(Livro, id_livro=id_livro)
+
+        Denuncia.objects.create(
+            livro=livro,
+            usuario=request.user,
+            motivo=motivo
+        )
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+@login_required
+@user_passes_test(is_admin)
+def painel_moderacao(request):
+    # Busca apenas as denúncias que ainda não foram resolvidas
+    denuncias_pendentes = Denuncia.objects.filter(status='pendente').select_related('livro', 'usuario').order_by('-data_denuncia')
+    
+    return render(request, 'biblioteca/painel_moderacao.html', {
+        'denuncias': denuncias_pendentes
+    })
+
+@login_required
+@user_passes_test(is_admin)
+@require_POST
+def resolver_denuncia(request, id_denuncia):
+    denuncia = get_object_or_404(Denuncia, id=id_denuncia)
+    acao = request.POST.get('acao')
+    
+    if acao == 'remover_obra':
+        # Deleta o livro (O banco MySQL fará o CASCADE e apagará a denúncia automaticamente)
+        livro_nome = denuncia.livro.nome
+        denuncia.livro.delete() 
+        messages.success(request, f"A obra '{livro_nome}' foi removida por violação de diretrizes.")
+        
+    elif acao == 'falso_positivo':
+        # Mantém a obra, mas arquiva a denúncia
+        denuncia.status = 'analisado'
+        denuncia.save()
+        messages.info(request, "Denúncia arquivada como falso positivo.")
+        
+    return redirect('painel_moderacao')

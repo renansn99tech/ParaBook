@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ livro.nome }} | ParaBook{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Trava o select do SweetAlert para não vazar a caixa */
+    .swal2-select {
+        width: 90% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 1em auto !important;
+        font-size: 0.95rem !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="container">
+    <div class="livro-info-container glass-card" style="padding: 40px; margin-top: 40px;">
+        
+        <div class="livro-capa-col">
+            {% if livro.capa %}
+                <img src="{{ livro.capa_url }}" alt="{{ livro.nome }}" class="livro-capa-img">
+            {% else %}
+                <div class="livro-capa-img" style="height: 450px; display: flex; align-items: center; justify-content: center; background: #1e293b;">
+                    <i class="fa-solid fa-book" style="font-size: 5rem; color: #475569;"></i>
+                </div>
+            {% endif %}
+
+            <a href="{% url 'leitura' %}?id={{ livro.id_livro }}" class="btn-primary" style="width: 100%;">
+                <i class="fa-solid fa-book-open-reader"></i> Ver Prévia
+            </a>
+        </div>
+
+        <div class="livro-dados-col">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1>{{ livro.nome }}</h1>
+                    <p class="autor-destaque"><i class="fa-solid fa-pen-nib"></i> {{ livro.autor }}</p>
+                </div>
+                <button onclick="abrirDenuncia()" class="btn-outline" style="border-color: rgba(239,68,68,0.3); color: #fca5a5; padding: 8px 16px; border-radius: 8px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-flag"></i> Relatar Problema
+                </button>
+            </div>
+
+            <div class="metadata-grid">
+                <div class="metadata-item">
+                    <span class="meta-titulo">Gênero / Categoria</span>
+                    <span class="meta-valor"><i class="fa-solid fa-bookmark" style="color: #8b5cf6;"></i> {{ livro.genero|default:livro.categoria.nome }}</span>
+                </div>
+                
+                <div class="metadata-item">
+                    <span class="meta-titulo">Ano / Data de Publicação</span>
+                    <span class="meta-valor"><i class="fa-regular fa-calendar-days" style="color: #8b5cf6;"></i> {{ livro.data_publicacao|default:"Não informado" }}</span>
+                </div>
+
+                <div class="metadata-item">
+                    <span class="meta-titulo">ISBN</span>
+                    <span class="meta-valor"><i class="fa-solid fa-barcode" style="color: #8b5cf6;"></i> {{ livro.isbn|default:"Não cadastrado" }}</span>
+                </div>
+
+                <div class="metadata-item">
+                    <span class="meta-titulo">Edição / Organização</span>
+                    <span class="meta-valor"><i class="fa-solid fa-layer-group" style="color: #8b5cf6;"></i> {{ livro.edicao|default:"1ª Edição" }}</span>
+                </div>
+
+                <div class="metadata-item">
+                    <span class="meta-titulo">Páginas (Aprox.)</span>
+                    <span class="meta-valor"><i class="fa-solid fa-file-lines" style="color: #8b5cf6;"></i> {{ livro.paginas|default:"---" }}</span>
+                </div>
+
+                <div class="metadata-item">
+                    <span class="meta-titulo">Avaliação Média</span>
+                    <span class="meta-valor"><i class="fa-solid fa-star" style="color: #fbbf24;"></i> {{ livro.avaliacao|default:"S/N" }} / 5</span>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1.2rem; color: #e2e8f0; margin-bottom: 10px;">Sinopse / Descrição</h3>
+            <p style="color: #94a3b8; line-height: 1.8; text-align: justify;">
+                A obra "{{ livro.nome }}" de {{ livro.autor }} está disponível para leitura em nosso acervo digital. Acesse a prévia para começar sua experiência literária imersiva e sem distrações.
+            </p>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function abrirDenuncia() {
+        Swal.fire({
+            title: 'Relatar Problema',
+            text: 'Selecione o motivo da denúncia para a obra "{{ livro.nome }}":',
+            input: 'select',
+            inputOptions: {
+                'Pirataria': 'Violação de Direitos Autorais',
+                'Plagio': 'Plágio / Cópia Ilegal',
+                'Ofensivo': 'Conteúdo Ofensivo / Ilegal',
+                'Erro': 'Arquivo corrompido / Outro erro'
+            },
+            inputPlaceholder: 'Selecione um motivo...',
+            showCancelButton: true,
+            confirmButtonText: 'Enviar Denúncia',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#374151',
+            background: '#0f172a',
+            color: '#f8fafc',
+            inputValidator: (value) => {
+                return new Promise((resolve) => {
+                    if (value) { resolve(); } 
+                    else { resolve('Você precisa selecionar um motivo.'); }
+                });
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Envia os dados para o Django
+                fetch("{% url 'registrar_denuncia' livro.id_livro %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ motivo: result.value })
+                }).then(response => response.json())
+                  .then(data => {
+                      if(data.success) {
+                          Swal.fire({
+                              title: 'Denúncia Recebida!',
+                              text: 'Nossa equipe de moderação analisará o caso em até 48 horas.',
+                              icon: 'success',
+                              background: '#0f172a',
+                              color: '#f8fafc',
+                              confirmButtonColor: '#8b5cf6'
+                          });
+                      }
+                  });
+            }
+        });
+    }
+</script>
+{% endblock %}

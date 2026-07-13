@@ -23,6 +23,9 @@ class Livro(models.Model):
     genero = models.CharField(max_length=45, db_column='Genero')
     avaliacao = models.CharField(max_length=45, db_column='Avaliacao')
     isbn = models.CharField(max_length=45, db_column='ISBN')
+    # NOVOS CAMPOS PARA A PÁGINA DE INFO
+    paginas = models.IntegerField(null=True, blank=True)
+    edicao = models.CharField(max_length=100, null=True, blank=True, help_text="Ex: 1ª Edição, Traduzido por...")
     capa = models.CharField(max_length=255, null=True, blank=True)
     pdf = models.CharField(max_length=255, db_column='Caminho_PDF', null=True, blank=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING, db_column='Categorias_Id_Categorias')
@@ -164,3 +167,20 @@ class Perfil(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+class Denuncia(models.Model):
+    livro = models.ForeignKey(Livro, on_delete=models.CASCADE, related_name='denuncias')
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) # Quem denunciou
+    motivo = models.CharField(max_length=100)
+    data_denuncia = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20, 
+        choices=[('pendente', 'Pendente'), ('analisado', 'Analisado'), ('removido', 'Obra Removida')],
+        default='pendente'
+    )
+
+    class Meta:
+        db_table = 'denuncias'
+
+    def __str__(self):
+        return f"Denúncia: {self.livro.nome} ({self.motivo})"

@@ -103,6 +103,31 @@
     });
 </script>
 
+{% if user.is_authenticated %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/usuarios/notificacoes/checar/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.tem_notificacao) {
+                        Swal.fire({
+                            title: data.titulo,
+                            text: data.mensagem,
+                            icon: 'info',
+                            background: '#0f172a',
+                            color: '#f8fafc',
+                            confirmButtonColor: '#8b5cf6',
+                            confirmButtonText: 'Ciente'
+                        }).then(() => {
+                            // Marca como lida no banco silenciosamente
+                            fetch(`/usuarios/notificacoes/lida/${data.id}/`);
+                        });
+                    }
+                });
+        });
+    </script>
+{% endif %}
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>

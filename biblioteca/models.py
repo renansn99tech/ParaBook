@@ -132,6 +132,7 @@ class Biblioteca(models.Model):
 
     favorito = models.BooleanField(default=False)
     nota = models.IntegerField(null=True, blank=True)
+    resenha = models.CharField(max_length=200, null=True, blank=True) # NOVO CAMPO: Texto da avaliação
     data_adicao = models.DateTimeField(auto_now_add=True)
 
     class Meta:

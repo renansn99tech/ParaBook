@@ -328,17 +328,18 @@ Painel Administrativo - ParaBook
                         <div>
                             <strong>{{ c.nome }}</strong>
                             {% if c.total_denuncias >= 100 %}
-                                <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; margin-left: 8px;" title="Elegível para Exclusão por Denúncias"></i>
+                                <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; margin-left: 8px;" title="Alto Volume de Denúncias"></i>
                             {% endif %}
-                            <br><small style="color: var(--text-muted);">Denúncias Recebidas: <strong>{{ c.total_denuncias }}</strong></small>
+                            <br><small style="color: var(--text-muted);">Denúncias Recebidas: <strong {% if c.total_denuncias >= 100 %}style="color: #ef4444;"{% endif %}>{{ c.total_denuncias }}</strong></small>
                         </div>
-                        {% if c.total_denuncias >= 100 %}
-                        <form method="POST" style="margin:0; padding:0; background:transparent; border:none;">
+                        
+                        <form id="form-banir-comunidade-{{ c.id }}" method="POST" style="margin:0; padding:0; background:transparent; border:none;">
                             {% csrf_token %}
                             <input type="hidden" name="comunidade_id" value="{{ c.id }}">
-                            <button type="submit" name="btn_deletar_comunidade" class="danger" style="padding: 6px 12px;">Banir Sala 🗑️</button>
+                            <input type="hidden" name="btn_deletar_comunidade" value="1"> 
+                            
+                            <button type="button" class="danger" style="padding: 6px 12px;" onclick="confirmarBanimentoComunidade('{{ c.id }}')">Banir Sala 🗑️</button>
                         </form>
-                        {% endif %}
                     </li>
                     {% empty %}
                     <li style="color: var(--text-muted); font-style: italic;">Nenhuma comunidade criada por usuários encontrada.</li>
@@ -429,6 +430,28 @@ Painel Administrativo - ParaBook
                 // Alimenta o formulário secretamente e submete
                 document.getElementById('acao-' + id).value = acao;
                 document.getElementById('form-denuncia-' + id).submit();
+            }
+        });
+    }
+</script>
+
+<script>
+function confirmarBanimentoComunidade(id) {
+        Swal.fire({
+            title: 'Banir Comunidade?',
+            text: 'Tem certeza? Isso apagará a comunidade inteira e removerá todos os membros.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#374151',
+            confirmButtonText: 'Sim, banir',
+            cancelButtonText: 'Cancelar',
+            background: '#0f172a',
+            color: '#f8fafc'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submete o formulário silenciosamente
+                document.getElementById('form-banir-comunidade-' + id).submit();
             }
         });
     }

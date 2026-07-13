@@ -17,7 +17,7 @@ from .constants import StatusBiblioteca
 from comunidades.models import Comunidade
 
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, Avg
 from django.core.exceptions import PermissionDenied
 
 def novidade(request):
@@ -385,11 +385,49 @@ def favoritar_livro(request, livro_id):
     return JsonResponse({"success": False}, status=400)
 
 def livro_info(request, id_livro):
-    # Busca o livro ou retorna erro 404 se não existir
     livro = get_object_or_404(Livro, id_livro=id_livro)
     
+    # PROCESSAMENTO DE FORMULÁRIOS (Criar ou Remover Avaliação)
+    if request.method == 'POST' and request.user.is_authenticated:
+        if 'btn_avaliar' in request.POST:
+            nota = request.POST.get('nota')
+            resenha = request.POST.get('resenha')
+            
+            # Atualiza ou cria o registro de leitura do usuário
+            registro, created = Biblioteca.objects.get_or_create(user=request.user, livro=livro)
+            registro.nota = nota
+            registro.resenha = resenha
+            registro.save()
+            messages.success(request, "Sua avaliação foi publicada!")
+            
+        elif 'btn_remover_avaliacao' in request.POST:
+            registro = Biblioteca.objects.filter(user=request.user, livro=livro).first()
+            if registro:
+                registro.nota = None
+                registro.resenha = None
+                registro.save()
+                messages.info(request, "Sua avaliação foi removida.")
+        
+        # BÔNUS TECH LEAD: Recalcula a média matemática exata do livro e salva na model Livro
+        media = Biblioteca.objects.filter(livro=livro, nota__isnull=False).aggregate(Avg('nota'))['nota__avg']
+        livro.avaliacao = str(round(media, 1)) if media else '0'
+        livro.save()
+        
+        return redirect('livro_info', id_livro=livro.id_livro)
+
+    # DADOS PARA EXIBIR NA TELA
+    # Busca todas as avaliações que tenham nota para montar a lista (ordenadas das mais recentes)
+    avaliacoes = Biblioteca.objects.filter(livro=livro, nota__isnull=False).select_related('user').order_by('-data_adicao')
+    
+    # Verifica se o usuário logado já avaliou para esconder o formulário e mostrar o botão "Remover"
+    minha_avaliacao = None
+    if request.user.is_authenticated:
+        minha_avaliacao = Biblioteca.objects.filter(livro=livro, user=request.user, nota__isnull=False).first()
+
     return render(request, 'biblioteca/livro_info.html', {
-        'livro': livro
+        'livro': livro,
+        'avaliacoes': avaliacoes,
+        'minha_avaliacao': minha_avaliacao
     })
 
 @login_required

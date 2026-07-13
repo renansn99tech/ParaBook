@@ -1,5 +1,8 @@
+import json
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Comunidade, PostagemComunidade
+from .models import Comunidade, PostagemComunidade, DenunciaComunidade
 from usuarios.models import Usuario
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -205,3 +208,28 @@ def editar_postagem(request, id):
         return redirect('conteudo_comunidade', id=post.comunidade.id)
         
     return render(request, 'comunidades/editar-postagem.html', {'post': post})
+
+@login_required
+@require_POST
+def registrar_denuncia_comunidade(request, id_comunidade):
+    try:
+        data = json.loads(request.body)
+        motivo = data.get('motivo')
+        comunidade = get_object_or_404(Comunidade, id=id_comunidade)
+
+        # Regra de Negócio: Evita que o mesmo usuário denuncie a mesma sala 50 vezes
+        if not DenunciaComunidade.objects.filter(comunidade=comunidade, usuario=request.user).exists():
+            # 1. Salva o registro da denúncia
+            DenunciaComunidade.objects.create(
+                comunidade=comunidade,
+                usuario=request.user,
+                motivo=motivo
+            )
+            
+            # 2. Incrementa o contador na model da Comunidade e salva
+            comunidade.total_denuncias += 1
+            comunidade.save()
+
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)

@@ -18,7 +18,7 @@
 
 {% block content %}
 <main class="container">
-    <div class="livro-info-container glass-card" style="padding: 40px; margin-top: 40px;">
+    <section class="livro-info-container glass-card" style="padding: 40px; margin-top: 40px;">
         
         <div class="livro-capa-col">
             {% if livro.capa %}
@@ -82,7 +82,80 @@
                 A obra "{{ livro.nome }}" de {{ livro.autor }} está disponível para leitura em nosso acervo digital. Acesse a prévia para começar sua experiência literária imersiva e sem distrações.
             </p>
         </div>
-    </div>
+    </section>
+
+    <section class="avaliacoes-section" style="margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px;">
+        <h2 style="color: white; margin-bottom: 30px; font-size: 1.8rem;"><i class="fa-solid fa-comments" style="color: #8b5cf6;"></i> Avaliações da Comunidade</h2>
+        
+        {% if user.is_authenticated %}
+            <div class="glass-card" style="padding: 25px; margin-bottom: 40px; border: 1px solid rgba(139,92,246,0.3); background: rgba(16,25,45,0.6); border-radius: 16px;">
+                {% if minha_avaliacao %}
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <h4 style="color: #c4b5fd; margin-bottom: 10px;">Sua Avaliação</h4>
+                            <div style="color: #fbbf24; margin-bottom: 10px; font-size: 1.2rem;">
+                                {% for i in "12345"|make_list %}
+                                    <i class="fa-{% if forloop.counter <= minha_avaliacao.nota %}solid{% else %}regular{% endif %} fa-star"></i>
+                                {% endfor %}
+                            </div>
+                            <p style="color: #cbd5e1; font-style: italic; margin: 0;">"{{ minha_avaliacao.resenha }}"</p>
+                        </div>
+                        <form id="form-remover-avaliacao" method="POST" style="margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="btn_remover_avaliacao" value="1">
+                                
+                                <button type="button" class="btn-outline" style="border-color: rgba(239,68,68,0.5); color: #fca5a5; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem;" onclick="confirmarRemocaoAvaliacao()">
+                                    <i class="fa-solid fa-trash"></i> Remover
+                                </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <h4 style="color: white; margin-bottom: 20px;">O que você achou desta obra?</h4>
+                    <form method="POST" style="display: flex; flex-direction: column; gap: 15px; margin: 0;">
+                        {% csrf_token %}
+                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                            <label style="color: #cbd5e1; font-weight: bold;">Sua Nota:</label>
+                            <select name="nota" required style="background: #0f172a; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; outline: none; cursor: pointer;">
+                                <option value="" disabled selected>Escolha de 1 a 5 estrelas...</option>
+                                <option value="5">⭐⭐⭐⭐⭐ (5/5) - Excelente, obra-prima</option>
+                                <option value="4">⭐⭐⭐⭐ (4/5) - Muito Bom</option>
+                                <option value="3">⭐⭐⭐ (3/5) - Bom</option>
+                                <option value="2">⭐⭐ (2/5) - Regular</option>
+                                <option value="1">⭐ (1/5) - Ruim</option>
+                            </select>
+                        </div>
+                        <textarea name="resenha" maxlength="240" required placeholder="Escreva um breve comentário (máximo 240 caracteres)..." style="width: 100%; background: #0f172a; color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 15px; resize: none; height: 100px; font-family: inherit;"></textarea>
+                        
+                        <button type="submit" name="btn_avaliar" class="btn-primary" style="align-self: flex-end; padding: 12px 24px; border-radius: 10px;">
+                            <i class="fa-solid fa-paper-plane"></i> Publicar Avaliação
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="avaliacoes-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+            {% for avaliacao in avaliacoes %}
+                <div class="glass-card" style="padding: 20px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); border-radius: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <strong style="color: #e2e8f0;"><i class="fa-solid fa-user-circle" style="color: #94a3b8; font-size: 1.2rem; vertical-align: middle;"></i> @{{ avaliacao.user.username|default:"Visitante" }}</strong>
+                        <span style="color: #fbbf24; font-size: 0.9rem;">
+                            {% for i in "12345"|make_list %}
+                                <i class="fa-{% if forloop.counter <= avaliacao.nota %}solid{% else %}regular{% endif %} fa-star"></i>
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin: 0; word-break: break-word;">"{{ avaliacao.resenha }}"</p>
+                    <small style="color: #475569; display: block; margin-top: 15px; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">{{ avaliacao.data_adicao|date:"d M Y" }}</small>
+                </div>
+            {% empty %}
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1); margin-bottom: 2rem;">
+                    <i class="fa-solid fa-star-half-stroke" style="font-size: 2.5rem; color: #475569; margin-bottom: 15px;"></i>
+                    <p style="color: #64748b; font-size: 1.1rem; margin: 0;">Nenhuma avaliação para esta obra ainda. Seja o primeiro a avaliar!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
 </main>
 {% endblock %}
 
@@ -136,6 +209,29 @@
                           });
                       }
                   });
+            }
+        });
+    }
+</script>
+
+<script>
+    // SweetAlert para confirmar a remoção da avaliação
+    function confirmarRemocaoAvaliacao() {
+        Swal.fire({
+            title: 'Remover Avaliação?',
+            text: 'Tem certeza de que deseja apagar sua nota e comentário desta obra?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#374151',
+            confirmButtonText: 'Sim, remover',
+            cancelButtonText: 'Cancelar',
+            background: '#0f172a',
+            color: '#f8fafc'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Se confirmado, submete o formulário via JavaScript
+                document.getElementById('form-remover-avaliacao').submit();
             }
         });
     }

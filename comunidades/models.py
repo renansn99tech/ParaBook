@@ -70,3 +70,15 @@ class PostagemComunidade(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+class DenunciaComunidade(models.Model):
+    comunidade = models.ForeignKey(Comunidade, on_delete=models.CASCADE, related_name='denuncias_registradas')
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    motivo = models.CharField(max_length=100)
+    data_denuncia = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'denuncias_comunidades'
+
+    def __str__(self):
+        return f"Denúncia: {self.comunidade.nome} ({self.motivo})"

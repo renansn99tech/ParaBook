@@ -1,3 +1,5 @@
+import PyPDF2
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -44,12 +46,8 @@ def painel_admin(request):
         com_id = request.POST.get('comunidade_id')
         comunidade = get_object_or_404(Comunidade, id=com_id)
         
-        # REQUISITO 7: Se for de usuário, só apaga se tiver denúncias suficientes (Ex: 100 ou o critério definido)
-        if not comunidade.criada_por_sistema and comunidade.total_denuncias < 100:
-            messages.error(request, "Erro: Esta comunidade pertence a um usuário e não atingiu os critérios de denúncias para exclusão forçada.")
-        else:
-            comunidade.delete()
-            messages.success(request, "Comunidade removida definitivamente!")
+        comunidade.delete()
+        messages.success(request, "A comunidade foi removida definitivamente pelo administrador.")
         return redirect('dashboard:painel_admin')
     
     # ==========================================================
@@ -146,8 +144,20 @@ def painel_admin(request):
 
         try:
             cat_instancia = get_object_or_404(Categoria, id_categoria=categoria_id)
-            fs = FileSystemStorage()
             
+            # --- NOVO: MOTOR DE LEITURA SILENCIOSA DE PDF ---
+            total_paginas = None
+            if arquivo_pdf:
+                try:
+                    leitor_pdf = PyPDF2.PdfReader(arquivo_pdf)
+                    total_paginas = len(leitor_pdf.pages)
+                    # REBOBINAR: Volta o cursor do arquivo para o início para o Django conseguir salvar a mídia corretamente
+                    arquivo_pdf.seek(0)
+                except Exception as e:
+                    print(f"Aviso: Não foi possível ler as páginas do PDF silenciosamente. Erro: {e}")
+            # ------------------------------------------------
+            
+            fs = FileSystemStorage()
             nome_arquivo_capa = fs.save(f"capas/{arquivo_capa.name}", arquivo_capa)
             nome_arquivo_pdf = fs.save(f"livros/{arquivo_pdf.name}", arquivo_pdf)
             
@@ -163,9 +173,10 @@ def painel_admin(request):
                 pdf=url_pdf,           
                 data_publicacao=data_pub_livro,
                 avaliacao='0',
-                isbn=isbn_livro
+                isbn=isbn_livro,
+                paginas=total_paginas # Salvando a leitura exata no banco de dados!
             )
-            messages.success(request, "Livro cadastrado com sucesso!")
+            messages.success(request, "Livro cadastrado com sucesso e metadados extraídos!")
         except Exception as e:
             messages.error(request, f"Erro interno ao processar o upload: {str(e)}")
             

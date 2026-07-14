@@ -20,7 +20,6 @@ function bindEvents() {
         });
     });
 
-    // Gatilhos para o botão editar ✏️
 // Gatilhos para o botão editar ✏️
     document.querySelectorAll(".btn-editar-trigger").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -30,8 +29,9 @@ function bindEvents() {
                 btn.dataset.categoria, 
                 btn.dataset.autor, 
                 btn.dataset.isbn,
-                btn.dataset.ano,      // <-- Adicionado
-                btn.dataset.edicao     // <-- Adicionado
+                btn.dataset.ano,      
+                btn.dataset.edicao,
+                btn.dataset.paginas // ADICIONADO
             );
         });
     });
@@ -61,22 +61,24 @@ function buscarLivro(e) {
 }
 
 // --- FUNÇÕES DE UPDATE (INTERAÇÃO DO VISUAL) ---
-function prepararEdicao(id, titulo, categoriaId, autor, isbn, ano, edicao) {
+function prepararEdicao(id, titulo, categoriaId, autor, isbn, ano, edicao, paginas) {
     document.getElementById("tituloSecaoLivros")?.scrollIntoView({ behavior: 'smooth' });
 
     document.getElementById("inputLivroId").value = id;
     document.getElementById("inputTitulo").value = titulo;
     document.getElementById("inputAutor").value = autor || "";
     
-    // Tratamento para não exibir a string "None" caso venha vazia do HTML
     document.getElementById("inputIsbn").value = (isbn && isbn !== "None") ? isbn : "";
 
-    // ADICIONE ESTAS DUAS LINHAS (Verifique se os IDs dos inputs correspondem aos do seu HTML):
     const inputAno = document.getElementById("inputAno") || document.querySelector("input[name='ano_publicacao']");
     if (inputAno) inputAno.value = (ano && ano !== "None") ? ano : "";
 
     const inputEdicao = document.getElementById("inputEdicao") || document.querySelector("input[name='edicao']");
     if (inputEdicao) inputEdicao.value = (edicao && edicao !== "None") ? edicao : "";
+
+    // ADICIONADO: Preenchimento automático do campo de páginas
+    const inputPaginas = document.getElementById("inputPaginas") || document.querySelector("input[name='paginas']");
+    if (inputPaginas) inputPaginas.value = (paginas && paginas !== "None") ? paginas : "";
 
     document.getElementById("inputCapa").required = false;
     document.getElementById("inputPdf").required = false;

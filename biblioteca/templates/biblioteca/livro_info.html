@@ -39,7 +39,7 @@
       {% endif %}
 
       <a
-        href="{% url 'leitura' %}?id={{ livro.id_livro }}"
+        href="{% url 'leitura' %}?id={{ livro.id }}"
         class="btn-primary"
         style="width: 100%"
       >
@@ -79,50 +79,44 @@
       <div class="metadata-grid">
         <div class="metadata-item">
           <span class="meta-titulo">Gênero / Categoria</span>
-          <span class="meta-valor"
-            ><i class="fa-solid fa-bookmark" style="color: #8b5cf6"></i> {{
-            livro.categoria.nome|default:livro.categoria.nome }}</span
-          >
+          <span class="meta-valor">
+            <i class="fa-solid fa-bookmark" style="color: #8b5cf6"></i> {{ livro.categoria.nome|default:"Não informado" }}
+          </span>
         </div>
 
         <div class="metadata-item">
           <span class="meta-titulo">Ano / Data de Publicação</span>
-          <span class="meta-valor"
-            ><i class="fa-regular fa-calendar-days" style="color: #8b5cf6"></i>
-            {{ livro.data_publicacao|default:"Não informado" }}</span
-          >
+          <span class="meta-valor">
+            <i class="fa-regular fa-calendar-days" style="color: #8b5cf6"></i> {{ livro.ano_publicacao|default:"Não informado" }}
+          </span>
         </div>
 
         <div class="metadata-item">
           <span class="meta-titulo">ISBN</span>
-          <span class="meta-valor"
-            ><i class="fa-solid fa-barcode" style="color: #8b5cf6"></i> {{
-            livro.isbn|default:"Não cadastrado" }}</span
-          >
+          <span class="meta-valor">
+            <i class="fa-solid fa-barcode" style="color: #8b5cf6"></i> {{ livro.isbn|default:"Não cadastrado" }}
+          </span>
         </div>
 
         <div class="metadata-item">
           <span class="meta-titulo">Edição / Organização</span>
-          <span class="meta-valor"
-            ><i class="fa-solid fa-layer-group" style="color: #8b5cf6"></i> {{
-            livro.edicao|default:"1ª Edição" }}</span
-          >
+          <span class="meta-valor">
+            <i class="fa-solid fa-layer-group" style="color: #8b5cf6"></i> {{ livro.edicao|default:"1ª Edição" }}
+          </span>
         </div>
 
         <div class="metadata-item">
           <span class="meta-titulo">Páginas (Aprox.)</span>
-          <span class="meta-valor"
-            ><i class="fa-solid fa-file-lines" style="color: #8b5cf6"></i> {{
-            livro.paginas|default:"---" }}</span
-          >
+          <span class="meta-valor">
+            <i class="fa-solid fa-file-lines" style="color: #8b5cf6"></i> {{ livro.paginas|default:"---" }}
+          </span>
         </div>
 
         <div class="metadata-item">
           <span class="meta-titulo">Avaliação Média</span>
-          <span class="meta-valor"
-            ><i class="fa-solid fa-star" style="color: #fbbf24"></i> {{
-            livro.avaliacao|default:"S/N" }} / 5</span
-          >
+          <span class="meta-valor">
+            <i class="fa-solid fa-star" style="color: #fbbf24"></i> {{ livro.avaliacao|default:"S/N" }} / 5
+          </span>
         </div>
       </div>
 

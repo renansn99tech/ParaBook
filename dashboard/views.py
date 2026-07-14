@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.models import User
 from usuarios.models import Usuario, Notificacao
-from biblioteca.models import Livro, Categoria, ObraAutor, Denuncia
+from biblioteca.models import Livro, Categoria, SolicitacaoPublicacao, Denuncia
 from comunidades.models import Comunidade
 
 def apenas_superuser(user):
@@ -74,14 +74,13 @@ def painel_admin(request):
         obra_pendente = get_object_or_404(ObraAutor, id=solicitacao_id)
         
         if acao == 'aprovar':
-            # Cria o livro na biblioteca com base na submissão do autor
             novo_livro = Livro.objects.create(
                 titulo=obra_pendente.titulo,
                 categoria=obra_pendente.categoria,
                 autor=obra_pendente.nome,
                 capa=obra_pendente.capa if hasattr(obra_pendente, 'capa') else None,
                 pdf=obra_pendente.pdf if hasattr(obra_pendente, 'pdf') else None,
-                ano_publicacao=2026 # Ano atual padrão do sistema
+                ano_publicacao=2026 
             )
             obra_pendente.delete()
             messages.success(request, f"Obra '{novo_livro.titulo}' aprovada e publicada com sucesso!")
@@ -95,9 +94,6 @@ def painel_admin(request):
     # ==========================================================
     # 3. CRUD DE LIVROS (ADICIONAR / EDITAR)
     # ==========================================================
-    # ==========================================================
-    # 3. CRUD DE LIVROS (ADICIONAR / EDITAR) - AJUSTADO
-    # ==========================================================
     elif request.method == 'POST' and ('btn_add_livro' in request.POST or 'btn_editar_livro' in request.POST):
         livro_id = limpar_id_seguro(request.POST.get('livro_id'))
         titulo = request.POST.get('titulo')
@@ -107,10 +103,14 @@ def painel_admin(request):
         capa = request.FILES.get('capa')
         pdf = request.FILES.get('pdf')
 
-        # Os campos abaixo foram enviados pelo formulário, mas o modelo Livro
-        # não possui o campo 'editora' (e possivelmente nem 'isbn').
-        isbn = request.POST.get('isbn')
-        editora = request.POST.get('editora')
+        isbn_raw = request.POST.get('isbn')
+        isbn = isbn_raw.strip() if isbn_raw and isbn_raw.strip() else None
+
+        edicao_raw = request.POST.get('edicao')
+        edicao = edicao_raw.strip() if edicao_raw and edicao_raw.strip() else None
+
+        paginas_raw = request.POST.get('paginas')
+        paginas = int(paginas_raw) if paginas_raw and paginas_raw.strip().isdigit() else None
 
         categoria = get_object_or_404(Categoria, id=categoria_id)
 
@@ -120,12 +120,13 @@ def painel_admin(request):
             livro.titulo = titulo
             livro.categoria = categoria
             livro.autor = autor
+            livro.isbn = isbn
+            livro.edicao = edicao
+            livro.paginas = paginas
             
-            # Atualiza ano de publicação apenas se o seu modelo possuir o campo
             if hasattr(livro, 'ano_publicacao'):
-                livro.ano_publicacao = ano_publicacao
+                livro.ano_publicacao = ano_publicacao if ano_publicacao else None
             
-            # Salva os arquivos caso tenham sido enviados
             if capa:
                 livro.capa = capa
             if pdf:
@@ -134,24 +135,26 @@ def painel_admin(request):
             livro.save()
             messages.success(request, f"Livro '{titulo}' atualizado com sucesso!")
         else:
-            # Fluxo de Criação seguro (com os campos estritamente existentes)
+            # Fluxo de Criação seguro
             dados_criacao = {
                 'titulo': titulo,
                 'categoria': categoria,
                 'autor': autor,
                 'capa': capa,
                 'pdf': pdf,
+                'isbn': isbn,
+                'edicao': edicao,
+                'paginas': paginas,
             }
             
-            # Validação defensiva: só envia 'ano_publicacao' se o modelo possuir o campo
             if hasattr(Livro, 'ano_publicacao'):
-                dados_criacao['ano_publicacao'] = ano_publicacao
+                dados_criacao['ano_publicacao'] = ano_publicacao if ano_publicacao else None
 
-            # Criação do objeto no banco
             novo_livro = Livro.objects.create(**dados_criacao)
-            messages.success(request, f"Livro '{novo_livro.titulo}' cadastrado com sucesso!")
+            messages.success(request, f"Livro '{titulo}' cadastrado com sucesso!")
 
         return redirect('dashboard:painel_admin')
+
     # ==========================================================
     # 4. EXCLUSÃO DE LIVROS
     # ==========================================================
@@ -174,12 +177,9 @@ def painel_admin(request):
         if acao == 'remover_obra':
             livro = denuncia.livro
             titulo_livro = livro.titulo
-            # Remove o livro do sistema (resolvendo a infração do Marco Civil/Pirataria)
             livro.delete()
-            # Todas as denúncias associadas a este livro serão deletadas em cascata ou limpas manualmente
             messages.success(request, f"Obra '{titulo_livro}' removida e denúncia resolvida.")
         elif acao == 'falso_positivo':
-            # Apenas arquiva ou exclui o registro da denúncia, mantendo a obra intacta
             denuncia.delete()
             messages.success(request, "Denúncia arquivada como Falso Positivo.")
 
@@ -188,33 +188,28 @@ def painel_admin(request):
     # ==========================================================
     # GET: RENDERIZAÇÃO DO PAINEL E COLETA DE MÉTRICAS
     # ==========================================================
-    
-    # Listagens de Dados
     livros = Livro.objects.all().select_related('categoria')
     categorias = Categoria.objects.all()
     usuarios = Usuario.objects.all().select_related('user_auth')
     denuncias_pendentes = Denuncia.objects.all().select_related('livro', 'usuario')
     
-    # Listas de aprovações pendentes
-    usuarios_pendentes = Usuario.objects.filter(tipo='leitor_solicitou_upgrade') # Altere para o seu campo/status real se diferente
-    solicitacoes = ObraAutor.objects.all().select_related('categoria') # Obras pendentes de aprovação
+    usuarios_pendentes = Usuario.objects.filter(tipo='leitor_solicitou_upgrade') 
+    solicitacoes = ObraAutor.objects.all().select_related('categoria') 
 
-    # Divisão de Comunidades solicitada pelo HTML
     comunidades = Comunidade.objects.all()
     comunidades_sistema = Comunidade.objects.filter(criada_por_sistema=True)
     comunidades_usuarios = Comunidade.objects.filter(criada_por_sistema=False)
 
-    # Métricas para os Cards do Dashboard
     total_usuarios = Usuario.objects.count()
     total_livros = livros.count()
     total_autores = Usuario.objects.filter(tipo='autor').count()
     
-    # Ajuste estes filtros de acordo com seus status de aprovação de livros reais
     obras_aprovadas = total_livros 
     obras_pendentes = solicitacoes.count()
 
     context = {
         'livros': livros,
+        'categorias': categories,  # Mantendo compatibilidade de contexto histórico se necessário
         'categorias': categorias,
         'usuarios': usuarios,
         'denuncias_pendentes': denuncias_pendentes,

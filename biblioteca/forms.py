@@ -1,38 +1,67 @@
+# forms.py
 from django import forms
-from .models import Categoria
 from django.conf import settings
+from .models import Livro, Categoria
 
-class ObraAutorForm(forms.Form):
-    nome = forms.CharField(max_length=100)
-    email = forms.EmailField()
-    titulo = forms.CharField(max_length=150)
-    descricao = forms.CharField(required=False)
-    arquivo = forms.FileField(required=True)
-    autor = forms.BooleanField(required=False)
-    categoria = forms.IntegerField()
-    cpf_autor = forms.CharField(max_length=14, required=False)
-    isbn = forms.CharField(max_length=20, required=False)
-    registro_autoral = forms.CharField(max_length=100,required=False)
-    numero_registro = forms.CharField(max_length=20)
-    declaracao_autoria = forms.BooleanField(required=False)
-    aceitou_termos = forms.BooleanField(required=False)
 
-    def clean_categoria(self):
-        categoria_id = self.cleaned_data['categoria']
+class ObraAutorForm(forms.ModelForm):
+    # Campos que não pertencem ao model Livro, mas são necessários para o fluxo de termos/autoria
+    nome = forms.CharField(
+        max_length=100, 
+        required=True, 
+        label="Nome do Autor",
+        widget=forms.TextInput(attrs={'readonly': 'readonly'})
+    )
+    email = forms.EmailField(
+        required=True, 
+        label="E-mail",
+        widget=forms.EmailInput(attrs={'readonly': 'readonly'})
+    )
+    cpf_autor = forms.CharField(max_length=14, required=False, label="CPF do Autor")
+    registro_autoral = forms.CharField(max_length=100, required=False, label="Registro Autoral")
+    numero_registro = forms.CharField(max_length=20, required=False, label="Número do Registro")
+    declaracao_autoria = forms.BooleanField(required=True, label="Declaro que sou o autor da obra")
+    aceitou_termos = forms.BooleanField(required=True, label="Aceito os termos de uso")
 
-        try:
-            categoria = Categoria.objects.get(pk=categoria_id)
-        except Categoria.DoesNotExist:
-            raise forms.ValidationError("Categoria inválida")
+    class Meta:
+        model = Livro
+        # Campos bibliográficos do Livro que o autor deve preencher
+        fields = [
+            'titulo',
+            'categoria',
+            'paginas',
+            'ano_publicacao',
+            'isbn',
+            'edicao',
+            'capa',
+            'pdf',
+        ]
+        # Customização dos campos herdados do model
+        widgets = {
+            'titulo': forms.TextInput(attrs={'placeholder': 'Digite o título da obra'}),
+            'isbn': forms.TextInput(attrs={'placeholder': 'Opcional'}),
+            'paginas': forms.NumberInput(attrs={'placeholder': 'Ex: 120'}),
+            'ano_publicacao': forms.NumberInput(attrs={'placeholder': 'Ex: 2026'}),
+            'edicao': forms.TextInput(attrs={'placeholder': 'Ex: 1ª Edição'}),
+        }
 
-        return categoria
+    def clean_pdf(self):
+        # Validação do arquivo PDF enviado, mantendo a regra de tamanho máximo
+        pdf = self.cleaned_data.get('pdf')
 
-def clean_arquivo(self):
-    arquivo = self.cleaned_data.get('arquivo')
+        if not pdf:
+            raise forms.ValidationError("O arquivo PDF do livro é obrigatório.")
 
-    if arquivo and arquivo.size > settings.MAX_BOOK_UPLOAD_SIZE:
-        raise forms.ValidationError(
-            "Arquivo muito grande (máx 5MB)."
-        )
+        if pdf.size > settings.MAX_BOOK_UPLOAD_SIZE:
+            # Converte bytes para MB para uma mensagem mais amigável
+            max_mb = settings.MAX_BOOK_UPLOAD_SIZE / (1024 * 1024)
+            raise forms.ValidationError(
+                f"O arquivo enviado é muito grande. O tamanho máximo permitido é de {max_mb:.1f}MB."
+            )
 
-    return arquivo
+        return pdf
+
+    def clean_capa(self):
+        # Opcional: Garante que se houver capa, ela seja uma imagem válida
+        capa = self.cleaned_data.get('capa')
+        return capa

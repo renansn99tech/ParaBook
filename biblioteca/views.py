@@ -1,26 +1,29 @@
-from django.contrib import messages
+# views.py
 import json
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.db.models import Count, Avg
-
+from django.db import transaction
+from django.core.paginator import Paginator
+from django.http import Http404 # Garanta que Http404 está importado no topo, se necessário
 from comunidades.models import Comunidade
-
-from .models import Categoria, Livro, ObraAutor, Biblioteca, Denuncia
 from usuarios.models import Usuario, Notificacao
+
+from .models import Categoria, Livro, Biblioteca, Denuncia, SolicitacaoPublicacao
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
 from .constants import StatusBiblioteca
 
-from django.core.paginator import Paginator
 
 def novidade(request):
-    # Alterado para order_by('-id') acompanhando o padrão do framework
-    livros_recentes = Livro.objects.all().order_by('-id')[:6]
+    # Garante que apenas livros aprovados/publicados apareçam na seção de novidades
+    livros_recentes = Livro.objects.filter(status='publicado').order_by('-id')[:6]
     return render(request, 'biblioteca/novidade.html', {'livros_recentes': livros_recentes})
+
 
 def biblioteca(request):
     categorias = ['filosofia', 'literatura', 'religiosos', 'exatas', 'infantis']
@@ -39,10 +42,12 @@ def biblioteca(request):
         'livros_independentes': livros_independentes(),
     })
 
+
 @login_required
 def adicionar_a_biblioteca(request, livro_id):
     if request.method == 'POST':
-        livro = get_object_or_404(Livro, pk=livro_id)
+        # Leitores só devem conseguir adicionar livros que estejam publicados
+        livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
         obj, criado = Biblioteca.objects.get_or_create(user=request.user, livro=livro)
 
         if criado:
@@ -50,6 +55,7 @@ def adicionar_a_biblioteca(request, livro_id):
         else:
             messages.info(request, "Este livro já está na sua biblioteca.")
     return redirect('acesso_biblioteca')
+
 
 @login_required
 @require_POST
@@ -65,6 +71,7 @@ def remover_da_biblioteca(request, livro_id):
             return JsonResponse({'success': False, 'error': 'Livro não encontrado.'}, status=404)
         return redirect('acesso_biblioteca')
 
+
 @login_required
 def leitura(request):
     livro_id = request.GET.get('id')
@@ -78,9 +85,11 @@ def leitura(request):
         messages.error(request, "ID inválido.")
         return redirect('biblioteca')
 
-    livro = get_object_or_404(Livro, pk=livro_id)
+    # Leitores só podem acessar o leitor PDF se o livro estiver publicado
+    livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
     return render(request, 'biblioteca/leitura.html', {'livro': livro})
-    
+
+
 @login_required
 def iniciar_leitura(request, livro_id):
     registro_biblioteca = get_object_or_404(Biblioteca, user=request.user, livro_id=livro_id)
@@ -88,6 +97,7 @@ def iniciar_leitura(request, livro_id):
     registro_biblioteca.save()
     url_leitura = reverse('leitura')
     return redirect(f"{url_leitura}?id={livro_id}")
+
 
 def concluir_leitura(request, livro_id):
     if request.method == "POST" and request.user.is_authenticated:
@@ -100,6 +110,7 @@ def concluir_leitura(request, livro_id):
             return JsonResponse({"success": False, "error": "Livro não encontrado."}, status=404)
     return JsonResponse({"success": False, "error": "Requisição inválida."}, status=400)
 
+
 def is_approved_author(user):
     if user.is_anonymous:
         return False
@@ -109,8 +120,9 @@ def is_approved_author(user):
         return user.perfil_customizado.tipo in ['autor', 'admin']
     return hasattr(user, 'perfil') and user.perfil.status == 'aprovado'
 
+
 @login_required
-def obras_autores(request):
+def solicitacoes_publicacao(request):
     perfil_customizado = getattr(request.user, 'perfil_customizado', None)
     if not perfil_customizado or perfil_customizado.tipo not in ['autor', 'admin']:
         messages.warning(request, "Acesso negado. Apenas Autores Independentes podem acessar.")
@@ -121,26 +133,28 @@ def obras_autores(request):
     if request.method == 'POST':
         form = ObraAutorForm(request.POST, request.FILES)
         if form.is_valid():
-            ObraAutor.objects.create(
-                nome=request.user.get_full_name() or request.user.username,
-                email=request.user.email,
-                titulo=form.cleaned_data['titulo'],
-                descricao=form.cleaned_data['descricao'],
-                arquivo=form.cleaned_data['arquivo'],
-                categoria=form.cleaned_data['categoria'],
-                cpf_autor=form.cleaned_data['cpf_autor'],
-                isbn=form.cleaned_data['isbn'],
-                registro_autoral=form.cleaned_data['registro_autoral'],
-                declaracao_autoria=form.cleaned_data['declaracao_autoria'],
-                aceitou_termos=form.cleaned_data['aceitou_termos'],
-                status='pendente'
-            )
-            if perfil_customizado:
-                perfil_customizado.notificacao_autor = True
-                perfil_customizado.save()
+            # Executamos a criação de forma atômica para garantir consistência
+            with transaction.atomic():
+                # 1. Cria o registro de Livro com dados do formulário
+                livro = form.save(commit=False)
+                livro.autor = request.user.get_full_name() or request.user.username
+                livro.origem = "autor_independente"
+                livro.status = "pendente"  # Inicializa pendente de aprovação
+                livro.save()
 
-            messages.success(request, 'Sua obra foi enviada com sucesso!')
-            return redirect('obras_autores')
+                # 2. Cria o registro associado da Solicitação de Publicação
+                SolicitacaoPublicacao.objects.create(
+                    usuario=request.user,
+                    livro=livro,
+                    status="pendente"
+                )
+
+                if perfil_customizado:
+                    perfil_customizado.notificacao_autor = True
+                    perfil_customizado.save()
+
+            messages.success(request, 'Sua obra foi enviada com sucesso para aprovação!')
+            return redirect('solicitacoes_publicacao')
     else:
         initial_data = {
             'nome': request.user.get_full_name() or request.user.username,
@@ -150,12 +164,16 @@ def obras_autores(request):
 
     return render(request, 'biblioteca/obras-autores.html', {'form': form, 'categorias': categorias})
 
+
 def listar_obras(request):
-    obras = ObraAutor.objects.filter(status='aprovado')
+    """Lista todos os livros criados por autores independentes que já foram aprovados."""
+    obras = Livro.objects.filter(origem='autor_independente', status='publicado')
     return render(request, 'biblioteca/lista_obras.html', {'obras': obras})
+
 
 def is_admin(user):
     return user.is_superuser or user.is_staff
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -166,17 +184,21 @@ def deletar_livro(request, id):
         messages.success(request, "Livro removido com sucesso.")
     return redirect('biblioteca')
 
+
 @login_required
 def acesso_biblioteca(request):
     livros = Biblioteca.objects.filter(user=request.user).select_related('livro')
     return render(request, 'biblioteca/acesso-biblioteca.html', {'livros': livros})
 
+
 def mais_acessados(request):
     return render(request, 'biblioteca/mais-acessados.html')
 
+
 def home(request):
-    livros_em_alta = Livro.objects.all().order_by('-avaliacao')[:6]
-    livros_recentes = Livro.objects.all().order_by('-id')[:6]
+    # Apenas livros publicados devem figurar na home (recente e alta)
+    livros_em_alta = Livro.objects.filter(status='publicado').order_by('-avaliacao')[:6]
+    livros_recentes = Livro.objects.filter(status='publicado').order_by('-id')[:6]
     comunidades = Comunidade.objects.all()[:6]
 
     livro_atual = None
@@ -200,12 +222,14 @@ def home(request):
         'total_leituras': total_leituras,
     })
 
+
 def lista_autores(request):
     termo_busca = request.GET.get('busca', '').strip()
     
-    # Contagem agrupada adaptada para o ID padrão
+    # Agrupa autores apenas considerando livros que estejam de fato publicados no catálogo
     autores_query = (
-        Livro.objects.values('autor')
+        Livro.objects.filter(status='published' if False else 'publicado')
+        .values('autor')
         .annotate(total_obras=Count('id'))
         .order_by('autor')
     )
@@ -245,6 +269,7 @@ def lista_autores(request):
     
     return render(request, 'biblioteca/autores.html', {'page_obj': page_obj, 'termo_busca': termo_busca})
 
+
 @login_required
 def avaliar_livro(request, livro_id):
     if request.method == "POST" and request.user.is_authenticated:
@@ -259,6 +284,7 @@ def avaliar_livro(request, livro_id):
             return JsonResponse({"success": False, "error": str(e)}, status=400)
     return JsonResponse({"success": False}, status=400)
 
+
 @login_required
 def favoritar_livro(request, livro_id):
     if request.method == "POST" and request.user.is_authenticated:
@@ -271,8 +297,10 @@ def favoritar_livro(request, livro_id):
             return JsonResponse({"success": False, "error": str(e)}, status=400)
     return JsonResponse({"success": False}, status=400)
 
+
 def livro_info(request, id):
-    livro = get_object_or_404(Livro, id=id)
+    # Apenas exibe a página do livro se ele estiver publicado
+    livro = get_object_or_404(Livro, id=id, status='publicado')
     
     if request.method == 'POST' and request.user.is_authenticated:
         if 'btn_avaliar' in request.POST:
@@ -310,6 +338,7 @@ def livro_info(request, id):
         'minha_avaliacao': minha_avaliacao
     })
 
+
 @login_required
 @require_POST
 def registrar_denuncia(request, id):
@@ -323,11 +352,13 @@ def registrar_denuncia(request, id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
     
+
 @login_required
 @user_passes_test(is_admin)
 def painel_moderacao(request):
     denuncias_pendentes = Denuncia.objects.filter(status='pendente').select_related('livro', 'usuario').order_by('-data_denuncia')
     return render(request, 'biblioteca/painel_moderacao.html', {'denuncias': denuncias_pendentes})
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -346,3 +377,19 @@ def resolver_denuncia(request, id_denuncia):
         messages.info(request, "Denúncia arquivada como falso positivo.")
         
     return redirect('painel_moderacao')
+
+@login_required
+def criar_livro(request):
+    """
+    Assinatura temporária para permitir inicialização do servidor.
+    Implementar a lógica de criação de livros posteriormente.
+    """
+    raise Http404("Funcionalidade em desenvolvimento.")
+
+@login_required
+def editar_livro(request, pk):
+    """
+    Assinatura temporária para permitir inicialização do servidor.
+    Implementar a lógica de edição de livros posteriormente.
+    """
+    raise Http404("Funcionalidade em desenvolvimento.")

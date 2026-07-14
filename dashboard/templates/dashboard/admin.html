@@ -1,17 +1,14 @@
-{% extends 'base.html' %} {% load static %} {% block title %} Painel
-Administrativo - ParaBook {% endblock %} {% block extra_css %}
+{% extends 'base.html' %} {% load static %} {% block title %} Painel Administrativo - ParaBook {% endblock %} 
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=2.0" />
-{% endblock %} {% block content %}
+{% endblock %} 
+
+{% block content %}
 <div id="app" class="admin-container" style="display: flex">
+  <!-- SIDEBAR NAV -->
   <aside class="admin-sidebar">
-    <div
-      class="brand-logo-admin"
-      style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px"
-    >
-      <i
-        class="fa-solid fa-book-open-reader"
-        style="font-size: 1.8rem; color: #8b5cf6"
-      ></i>
+    <div class="brand-logo-admin" style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px">
+      <i class="fa-solid fa-book-open-reader" style="font-size: 1.8rem; color: #8b5cf6"></i>
       <h2 style="margin: 0">Para<span>Book</span></h2>
     </div>
 
@@ -31,118 +28,59 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
       <i class="fa-solid fa-clipboard-check" style="width: 25px"></i> Aprovações
     </button>
 
-    <button
-      data-nav="denuncias"
-      style="display: flex; justify-content: space-between; align-items: center"
-    >
-      <span
-        ><i class="fa-solid fa-flag" style="width: 25px; color: #ef4444"></i>
-        Denúncias</span
-      >
+    <button data-nav="denuncias" style="display: flex; justify-content: space-between; align-items: center">
+      <span><i class="fa-solid fa-flag" style="width: 25px; color: #ef4444"></i> Denúncias</span>
       {% if denuncias_pendentes %}
-      <span
-        style="
-          background: #ef4444;
-          color: white;
-          border-radius: 50%;
-          padding: 2px 8px;
-          font-size: 0.75rem;
-          font-weight: bold;
-        "
-        >{{ denuncias_pendentes.count }}</span
-      >
+      <span style="background: #ef4444; color: white; border-radius: 50%; padding: 2px 8px; font-size: 0.75rem; font-weight: bold;">
+        {{ denuncias_pendentes.count }}
+      </span>
       {% endif %}
     </button>
 
-    <div
-      style="
-        margin-top: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-      "
-    >
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
       <a href="{% url 'perfis:perfil_pessoal' %}" style="text-decoration: none">
-        <button
-          style="
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
-            background: rgba(59, 130, 246, 0.15);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #60a5fa;
-            padding: 12px 16px;
-          "
-        >
-          <i
-            class="fa-solid fa-user-astronaut"
-            style="width: 20px; text-align: center"
-          ></i>
-          Meu Perfil
+        <button style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; padding: 12px 16px;">
+          <i class="fa-solid fa-user-astronaut" style="width: 20px; text-align: center"></i> Meu Perfil
         </button>
       </a>
 
       <a href="{% url 'dashboard:leitor' %}" style="text-decoration: none">
-        <button
-          style="
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #4ade80;
-            padding: 12px 16px;
-          "
-        >
-          <i
-            class="fa-solid fa-desktop"
-            style="width: 20px; text-align: center"
-          ></i>
-          Visão Leitor
+        <button style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 12px; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; padding: 12px 16px;">
+          <i class="fa-solid fa-desktop" style="width: 20px; text-align: center"></i> Visão Leitor
         </button>
       </a>
 
       <a href="{% url 'logout' %}" style="text-decoration: none">
-        <button
-          class="danger"
-          style="
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
-            padding: 12px 16px;
-          "
-        >
-          <i
-            class="fa-solid fa-right-from-bracket"
-            style="width: 20px; text-align: center"
-          ></i>
-          Sair
+        <button class="danger" style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 12px; padding: 12px 16px;">
+          <i class="fa-solid fa-right-from-bracket" style="width: 20px; text-align: center"></i> Sair
         </button>
       </a>
     </div>
   </aside>
 
+  <!-- MAIN INTERFACE -->
   <main class="admin-main">
-    {% if messages %} {% for message in messages %}
-    <div
-      class="card {% if message.tags == 'error' %}danger{% endif %}"
-      style="margin-bottom: 15px; border-left: 5px solid {% if message.tags == 'success' %}#22c55e{% else %}#ef4444{% endif %};"
-    >
-      {{ message }}
-    </div>
-    {% endfor %} {% endif %}
+    {% if messages %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        {% for message in messages %}
+          Swal.fire({
+            title: "{% if message.tags == 'success' %}Sucesso!{% else %}Atenção!{% endif %}",
+            text: "{{ message|escapejs }}",
+            icon: "{% if message.tags == 'success' %}success{% else %}error{% endif %}",
+            background: "#0f172a",
+            color: "#f8fafc",
+            confirmButtonColor: "#8b5cf6"
+          });
+        {% endfor %}
+      });
+    </script>
+    {% endif %}
 
+    <!-- SEÇÃO: DASHBOARD -->
     <section id="dashboard" class="secao">
       <h1>Dashboard</h1>
-
       <div class="metricas-grid">
         <div class="card">
           <h3>Total de Usuários</h3>
@@ -157,12 +95,12 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
           <p>{{ total_autores }}</p>
         </div>
         <div class="card">
-          <h3>Obras Aprovadas</h3>
-          <p style="color: #22c55e">{{ obras_aprovadas }}</p>
+          <h3>Livros Publicados</h3>
+          <p style="color: #22c55e">{{ total_livros }}</p>
         </div>
         <div class="card">
-          <h3>Obras Pendentes</h3>
-          <p style="color: #eab308">{{ obras_pendentes }}</p>
+          <h3>Solicitações Pendentes</h3>
+          <p style="color: #eab308">{{ solicitacoes_pendentes_count }}</p>
         </div>
       </div>
 
@@ -173,127 +111,48 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
       </div>
     </section>
 
+    <!-- SEÇÃO: LIVROS -->
     <section id="livros" class="secao" style="display: none">
       <h1 id="tituloSecaoLivros">Gerenciar Livros</h1>
-      <input
-        type="text"
-        id="busca"
-        placeholder="Buscar livro..."
-        style="margin-bottom: 15px; width: 100%"
-      />
+      <input type="text" id="busca" placeholder="Buscar livro..." style="margin-bottom: 15px; width: 100%" />
 
-      <form
-        method="POST"
-        enctype="multipart/form-data"
-        class="form"
-        id="formLivro"
-      >
+      <form method="POST" enctype="multipart/form-data" class="form" id="formLivro">
         {% csrf_token %}
         <input type="hidden" name="livro_id" id="inputLivroId" />
 
-        <input
-          type="text"
-          name="titulo"
-          id="inputTitulo"
-          placeholder="Título"
-          required
-        />
+        <input type="text" name="titulo" id="inputTitulo" placeholder="Título" required />
 
-        <!-- CORREÇÃO: Alterado name de 'categoria' para 'categoria_id' -->
         <select name="categoria_id" id="selectCategoria" required>
           <option value="">Selecione Categoria</option>
           {% for cat in categorias %}
-          <!-- CORREÇÃO: Alterado cat.id_categoria para cat.id -->
           <option value="{{ cat.id }}">{{ cat.nome }}</option>
           {% endfor %}
         </select>
 
-        <input
-          type="text"
-          name="autor"
-          id="inputAutor"
-          placeholder="Nome do Autor"
-          required
-          style="margin-top: 5px"
-        />
+        <input type="text" name="autor" id="inputAutor" placeholder="Nome do Autor" required style="margin-top: 5px" />
 
         <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px">
-          <input
-            type="text"
-            name="isbn"
-            id="inputIsbn"
-            placeholder="ISBN (Ex: 978-3-16-148410-0)"
-            style="flex: 1"
-          />
-          <input
-            type="text"
-            name="editora"
-            id="inputEditora"
-            placeholder="Editora"
-            style="flex: 1"
-          />
+          <input type="text" name="isbn" id="inputIsbn" placeholder="ISBN (Ex: 978-3-16-148410-0)" style="flex: 1" />
+          <input type="text" name="edicao" id="inputEdicao" placeholder="Edição (Ex: 1ª Edição)" style="flex: 1" />
         </div>
 
         <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px">
-          <!-- CORREÇÃO: Alterado name de 'data_publicacao' para 'ano_publicacao' -->
-          <input
-            type="text"
-            name="ano_publicacao"
-            id="inputDataPublicacao"
-            placeholder="Ano de Publicação (Ex: 2026)"
-            style="flex: 1"
-          />
+          <input type="text" name="ano_publicacao" id="inputDataPublicacao" placeholder="Ano de Publicação (Ex: 2026)" style="flex: 1" />
+          <input type="number" name="paginas" id="inputPaginas" placeholder="Quantidade de Páginas" style="flex: 1" />
         </div>
 
-        <div
-          style="
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            width: 100%;
-            margin-top: 5px;
-          "
-        >
-          <label style="font-size: 13px; color: var(--text-muted)"
-            >Capa (Imagem):
-            <input
-              type="file"
-              name="capa"
-              id="inputCapa"
-              accept="image/*"
-              required
-              style="margin-top: 5px"
-            />
+        <div style="display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 5px;">
+          <label style="font-size: 13px; color: var(--text-muted)">Capa (Imagem):
+            <input type="file" name="capa" id="inputCapa" accept="image/*" style="margin-top: 5px" />
           </label>
 
-          <label style="font-size: 13px; color: var(--text-muted)"
-            >Obra (PDF):
-            <input
-              type="file"
-              name="pdf"
-              id="inputPdf"
-              accept=".pdf"
-              required
-              style="margin-top: 5px"
-            />
+          <label style="font-size: 13px; color: var(--text-muted)">Arquivo (PDF):
+            <input type="file" name="pdf" id="inputPdf" accept=".pdf" style="margin-top: 5px" />
           </label>
         </div>
 
-        <button
-          type="submit"
-          name="btn_add_livro"
-          id="btnSubmeterForm"
-          style="margin-top: 10px"
-        >
-          Adicionar
-        </button>
-        <button
-          type="button"
-          id="btnCancelarEdicao"
-          style="display: none; background: #6b7280; margin-top: 10px"
-        >
-          Cancelar
-        </button>
+        <button type="submit" name="btn_add_livro" id="btnSubmeterForm" style="margin-top: 10px">Adicionar</button>
+        <button type="button" id="btnCancelarEdicao" style="display: none; background: #6b7280; margin-top: 10px">Cancelar</button>
       </form>
 
       <ul id="listaLivros">
@@ -301,48 +160,17 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
         <li data-titulo="{{ livro.titulo|lower }}">
           <div>
             <strong>{{ livro.titulo }}</strong><br />
-            <small style="color: var(--text-muted)"
-              >Autor: {{ livro.autor }} | Gênero: {{ livro.categoria.nome }}</small
-            >
+            <small style="color: var(--text-muted)">Autor: {{ livro.autor }} | Gênero: {{ livro.categoria.nome }}</small>
           </div>
           <div style="display: flex; gap: 8px">
-<button type="button" 
-        class="btn-editar-trigger" 
-        data-id="{{ livro.id }}" 
-        data-titulo="{{ livro.titulo }}" 
-        data-categoria="{{ livro.categoria.id }}" 
-        data-autor="{{ livro.autor }}" 
-        data-ano="{{ livro.ano_publicacao }}"
-        data-isbn="{{ livro.isbn|default:'' }}" 
-        data-edicao="{{ livro.edicao|default:'' }}"
-        style="background: #3b82f6; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; color: white;">
-    ✏️
-</button>
+            <button type="button" class="btn-editar-trigger" data-id="{{ livro.id }}" data-titulo="{{ livro.titulo }}" data-categoria="{{ livro.categoria.id }}" data-autor="{{ livro.autor }}" data-ano="{{ livro.ano_publicacao }}" data-isbn="{{ livro.isbn|default:'' }}" data-edicao="{{ livro.edicao|default:'' }}" data-paginas="{{ livro.paginas|default:'' }}" style="background: #3b82f6; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; color: white;">
+              ✏️
+            </button>
 
-            <form
-              method="POST"
-              style="
-                margin: 0;
-                padding: 0;
-                background: transparent;
-                border: none;
-              "
-            >
+            <form method="POST" style="margin: 0; padding: 0; background: transparent; border: none;">
               {% csrf_token %}
-              <!-- CORREÇÃO: Alterado livro.id_livro para livro.id -->
-              <input
-                type="hidden"
-                name="livro_id"
-                value="{{ livro.id }}"
-              />
-              <button
-                type="submit"
-                name="btn_deletar_livro"
-                class="danger"
-                style="padding: 5px 10px"
-              >
-                ❌
-              </button>
+              <input type="hidden" name="livro_id" value="{{ livro.id }}" />
+              <button type="submit" name="btn_deletar_livro" class="danger" style="padding: 5px 10px">❌</button>
             </form>
           </div>
         </li>
@@ -352,25 +180,20 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
       </ul>
     </section>
 
+    <!-- SEÇÃO: USUÁRIOS -->
     <section id="usuarios" class="secao" style="display: none">
       <h1>Gerenciar Usuários</h1>
-      <p style="color: var(--text-muted); margin-bottom: 15px">
-        Lista de usuários cadastrados no ParaBook:
-      </p>
+      <p style="color: var(--text-muted); margin-bottom: 15px">Lista de usuários cadastrados no ParaBook:</p>
       <ul id="listaUsuarios">
         {% for u in usuarios %}
         <li>
           {% if u.user_auth %}
-          <span
-            ><strong>{{ u.nome|default:u.user_auth.username }}</strong> (@{{
-            u.user_auth.username }})</span
-          >
+          <span><strong>{{ u.nome|default:u.user_auth.username }}</strong> (@{{ u.user_auth.username }})</span>
           {% else %}
-          <span
-            ><strong>{{ u.nome|default:"Usuário Sem Nome" }}</strong>
-            <em style="color: red">(Sem conta de login vinculada)</em></span
-          >
-          {% endif %} {% if u.user_auth.is_superuser %}
+          <span><strong>{{ u.nome|default:"Usuário Sem Nome" }}</strong> <em style="color: red">(Sem conta de login vinculada)</em></span>
+          {% endif %}
+          
+          {% if u.user_auth.is_superuser %}
           <span class="badge admin">Admin</span>
           {% elif u.tipo == 'autor' %}
           <span class="badge autor">Autor</span>
@@ -384,21 +207,12 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
       </ul>
     </section>
 
+    <!-- SEÇÃO: APROVAÇÕES -->
     <section id="permissoes" class="secao" style="display: none">
       <h1>Central de Aprovações</h1>
-      <p style="color: var(--text-muted); margin-bottom: 30px">
-        Gerencie as submissões de novas obras e solicitações de contas de
-        Autores.
-      </p>
+      <p style="color: var(--text-muted); margin-bottom: 30px">Gerencie as submissões de novas publicações e solicitações de contas de Autores.</p>
 
-      <h3
-        style="
-          color: #c4b5fd;
-          margin-bottom: 15px;
-          border-bottom: 1px solid var(--border);
-          padding-bottom: 10px;
-        "
-      >
+      <h3 style="color: #c4b5fd; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
         <i class="fa-solid fa-user-clock"></i> Solicitações de Perfil (Autores)
       </h3>
       <ul id="listaSolicitacoesUsuarios" style="margin-bottom: 40px">
@@ -406,189 +220,66 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
         <li style="border-left: 4px solid #a855f7; padding: 20px">
           <div>
             <strong>{{ u.nome }}</strong>
-            <small style="color: var(--text-muted)"
-              >(@{{ u.user_auth.username }})</small
-            >
-            <p
-              style="font-size: 13px; color: var(--text-muted); margin-top: 5px"
-            >
-              Solicitou upgrade para conta de Autor Independente.
-            </p>
+            <small style="color: var(--text-muted)">(@{{ u.user_auth.username }})</small>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px">Solicitou upgrade para conta de Autor Independente.</p>
           </div>
 
-          <form
-            method="POST"
-            style="
-              display: flex;
-              gap: 8px;
-              background: transparent;
-              border: none;
-              padding: 0;
-              margin: 0;
-            "
-          >
+          <form method="POST" style="display: flex; gap: 8px; background: transparent; border: none; padding: 0; margin: 0;">
             {% csrf_token %}
             <input type="hidden" name="usuario_id" value="{{ u.id }}" />
-
-            <button
-              type="submit"
-              name="btn_gerenciar_usuario"
-              value="aprovar"
-              style="background: #22c55e; padding: 8px 12px"
-            >
-              ✓ Aprovar
-            </button>
-            <button
-              type="submit"
-              name="btn_gerenciar_usuario"
-              value="rejeitar"
-              class="danger"
-              style="padding: 8px 12px"
-            >
-              ✕ Recusar
-            </button>
+            <button type="submit" name="btn_gerenciar_usuario" value="aprovar" style="background: #22c55e; padding: 8px 12px">✓ Approvar</button>
+            <button type="submit" name="btn_gerenciar_usuario" value="rejeitar" class="danger" style="padding: 8px 12px">✕ Recusar</button>
           </form>
         </li>
         {% empty %}
-        <li style="color: var(--text-muted); font-style: italic">
-          Nenhum usuário aguardando aprovação no momento.
-        </li>
+        <li style="color: var(--text-muted); font-style: italic">Nenhum usuário aguardando aprovação no momento.</li>
         {% endfor %}
       </ul>
 
-      <h3
-        style="
-          color: #fcd34d;
-          margin-bottom: 15px;
-          border-bottom: 1px solid var(--border);
-          padding-bottom: 10px;
-        "
-      >
-        <i class="fa-solid fa-book-medical"></i> Submissão de Novas Obras
+      <h3 style="color: #fcd34d; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        <i class="fa-solid fa-book-medical"></i> Solicitações de Publicação Pendentes
       </h3>
       <ul id="listaSolicitacoesObras">
         {% for s in solicitacoes %}
         <li style="border-left: 4px solid #eab308; padding: 20px">
           <div>
-            <strong>{{ s.titulo }}</strong>
-            <small style="color: var(--text-muted)">por {{ s.nome }}</small>
-            <p
-              style="font-size: 13px; color: var(--text-muted); margin-top: 5px"
-            >
-              E-mail do remetente: {{ s.email }}
-            </p>
-            <p style="font-size: 13px; color: var(--text-muted)">
-              Gênero sugerido: {{ s.categoria.nome }}
-            </p>
+            <strong>{{ s.titulo }}</strong> <small style="color: var(--text-muted)">por {{ s.nome }}</small>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px">E-mail do remetente: {{ s.email }}</p>
+            <p style="font-size: 13px; color: var(--text-muted)">Gênero sugerido: {{ s.categoria.nome }}</p>
           </div>
 
-          <form
-            method="POST"
-            style="
-              display: flex;
-              gap: 8px;
-              background: transparent;
-              border: none;
-              padding: 0;
-              margin: 0;
-            "
-          >
+          <form method="POST" style="display: flex; gap: 8px; background: transparent; border: none; padding: 0; margin: 0;">
             {% csrf_token %}
-            <input type="hidden" name="obra_id" value="{{ s.id }}" />
-
-            <button
-              type="submit"
-              name="btn_gerenciar_solicitacao"
-              value="aprovar"
-              style="background: #22c55e; padding: 8px 12px"
-            >
-              ✓ Aprovar
-            </button>
-            <button
-              type="submit"
-              name="btn_gerenciar_solicitacao"
-              value="rejeitar"
-              class="danger"
-              style="padding: 8px 12px"
-            >
-              ✕ Recusar
-            </button>
+            <input type="hidden" name="solicitacao_id" value="{{ s.id }}" />
+            <button type="submit" name="btn_gerenciar_solicitacao" value="aprovar" style="background: #22c55e; padding: 8px 12px">✓ Aprovar</button>
+            <button type="submit" name="btn_gerenciar_solicitacao" value="rejeitar" class="danger" style="padding: 8px 12px">✕ Recusar</button>
           </form>
         </li>
         {% empty %}
-        <li style="color: var(--text-muted); font-style: italic">
-          Não há nenhuma nova obra pendente no momento.
-        </li>
+        <li style="color: var(--text-muted); font-style: italic">Não há nenhuma solicitação de publicação pendente no momento.</li>
         {% endfor %}
       </ul>
     </section>
 
+    <!-- SEÇÃO: COMUNIDADES -->
     <section id="comunidades" class="secao" style="display: none">
-      <header
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-        "
-      >
+      <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div class="panel-title">
           <h1 style="margin-bottom: 5px">Gerenciar Comunidades</h1>
-          <p style="color: var(--text-muted); margin: 0">
-            Controle de ecossistemas literários e moderação de salas.
-          </p>
+          <p style="color: var(--text-muted); margin: 0">Controle de ecossistemas literários e moderação de salas.</p>
         </div>
-        <form
-          method="POST"
-          style="
-            display: flex;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 15px;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-          "
-        >
+        <form method="POST" style="display: flex; gap: 10px; background: rgba(255, 255, 255, 0.02); padding: 15px; border-radius: 14px; border: 1px solid var(--border);">
           {% csrf_token %}
-          <input
-            type="text"
-            name="nome"
-            placeholder="Nome da Comunidade Oficial"
-            required
-            style="width: 220px"
-          />
-          <input
-            type="text"
-            name="descricao"
-            placeholder="Descrição Curta"
-            required
-            style="width: 300px"
-          />
-          <button type="submit" name="btn_add_comunidade_sistema">
-            + Criar Oficial
-          </button>
+          <input type="text" name="nome" placeholder="Nome da Comunidade Oficial" required style="width: 220px" />
+          <input type="text" name="descricao" placeholder="Descrição Curta" required style="width: 300px" />
+          <button type="submit" name="btn_add_comunidade_sistema">+ Criar Oficial</button>
         </form>
       </header>
 
       <div style="display: flex; gap: 10px; margin-bottom: 20px">
-        <button
-          onclick="alternarSubAbaComunidade('sub-todas')"
-          style="background: rgba(139, 92, 246, 0.2)"
-        >
-          Todas ({{ comunidades.count }})
-        </button>
-        <button
-          onclick="alternarSubAbaComunidade('sub-sistema')"
-          style="background: rgba(34, 197, 94, 0.15); color: #22c55e"
-        >
-          Do Sistema ({{ comunidades_sistema.count }})
-        </button>
-        <button
-          onclick="alternarSubAbaComunidade('sub-usuarios')"
-          style="background: rgba(59, 130, 246, 0.15); color: #60a5fa"
-        >
-          Dos Usuários ({{ comunidades_usuarios.count }})
-        </button>
+        <button type="button" onclick="alternarSubAbaComunidade('sub-todas')" style="background: rgba(139, 92, 246, 0.2)">Todas ({{ comunidades.count }})</button>
+        <button type="button" onclick="alternarSubAbaComunidade('sub-sistema')" style="background: rgba(34, 197, 94, 0.15); color: #22c55e">Do Sistema ({{ comunidades_sistema.count }})</button>
+        <button type="button" onclick="alternarSubAbaComunidade('sub-usuarios')" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa">Dos Usuários ({{ comunidades_usuarios.count }})</button>
       </div>
 
       <div id="sub-todas" class="sub-aba-content">
@@ -598,30 +289,11 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
             <div>
               <strong>{{ c.nome }}</strong>
               {% if c.criada_por_sistema %}
-              <span
-                class="badge"
-                style="
-                  background: rgba(34, 197, 94, 0.15);
-                  color: #22c55e;
-                  margin-left: 10px;
-                "
-                >Sistema</span
-              >
+              <span class="badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e; margin-left: 10px;">Sistema</span>
               {% else %}
-              <span
-                class="badge"
-                style="
-                  background: rgba(59, 130, 246, 0.15);
-                  color: #60a5fa;
-                  margin-left: 10px;
-                "
-                >Usuário</span
-              >
+              <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; margin-left: 10px;">Usuário</span>
               {% endif %}
-              <br /><small style="color: var(--text-muted)"
-                >{{ c.membros.count }}/{{ c.max_participantes }} participantes |
-                Denúncias: {{ c.total_denuncias }}</small
-              >
+              <br /><small style="color: var(--text-muted)">{{ c.membros.count }}/{{ c.max_participantes }} participantes | Denúncias: {{ c.total_denuncias }}</small>
             </div>
           </li>
           {% endfor %}
@@ -635,55 +307,20 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
             <div>
               <strong>{{ c.nome }}</strong>
               {% if c.em_manutencao %}
-              <span
-                class="badge"
-                style="background: rgba(245, 158, 11, 0.2); color: #fbbf24"
-                >Em Manutenção</span
-              >
+              <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24">Em Manutenção</span>
               {% endif %}
-              <br /><small style="color: var(--text-muted)"
-                >{{ c.descricao }}</small
-              >
+              <br /><small style="color: var(--text-muted)">{{ c.descricao }}</small>
             </div>
             <div style="display: flex; gap: 10px">
-              <form
-                method="POST"
-                style="
-                  margin: 0;
-                  padding: 0;
-                  background: transparent;
-                  border: none;
-                "
-              >
+              <form method="POST" style="margin: 0; padding: 0; background: transparent; border: none;">
                 {% csrf_token %}
                 <input type="hidden" name="comunidade_id" value="{{ c.id }}" />
-                <button
-                  type="submit"
-                  name="btn_toggle_manutencao"
-                  style="
-                    background: #eabf3f;
-                    color: black;
-                    font-weight: bold;
-                    padding: 6px 12px;
-                    gap: 0.5rem;
-                  "
-                >
-                  {% if c.em_manutencao %}🔧 Ativar{% else %}⚙️ Manutenção{% endif %}
-                </button>
-                <button
-                  type="submit"
-                  name="btn_deletar_comunidade"
-                  class="danger"
-                  style="
-                    background: #820000;
-                    color: black;
-                    font-weight: bold;
-                    padding: 6px 12px;
-                    gap: 0.5rem;
-                  "
-                >
-                  ❌ Excluir
-                </button>
+                <button type="submit" name="btn_toggle_manutencao" style="background: #fbbf24; color: #0f172a; padding: 5px 10px;">🔧 Alternar Manutenção</button>
+              </form>
+              <form method="POST" style="margin: 0; padding: 0; background: transparent; border: none;">
+                {% csrf_token %}
+                <input type="hidden" name="comunidade_id" value="{{ c.id }}" />
+                <button type="submit" name="btn_deletar_comunidade" class="danger" style="padding: 5px 10px;">❌ Deletar</button>
               </form>
             </div>
           </li>
@@ -694,259 +331,147 @@ Administrativo - ParaBook {% endblock %} {% block extra_css %}
       <div id="sub-usuarios" class="sub-aba-content" style="display: none">
         <ul>
           {% for c in comunidades_usuarios %}
-          <li {% if c.total_denuncias >= 100 %} style="border-left: 5px solid #ef4444;"{% endif %}>
+          <li>
             <div>
-              <strong>{{ c.nome }}</strong>
-              {% if c.total_denuncias >= 100 %}
-              <i
-                class="fa-solid fa-triangle-exclamation"
-                style="color: #ef4444; margin-left: 8px"
-                title="Alto Volume de Denúncias"
-              ></i>
-              {% endif %}
-              <br /><small style="color: var(--text-muted)"
-                >Denúncias Recebidas:
-                <strong {% if c.total_denuncias >= 100 %}style="color: #ef4444;"{% endif %}>{{ c.total_denuncias }}</strong></small
-              >
+              <strong>{{ c.nome }}</strong> <br /><small style="color: var(--text-muted)">{{ c.descricao }}</small>
             </div>
-
-            <form
-              id="form-banir-comunidade-{{ c.id }}"
-              method="POST"
-              style="
-                margin: 0;
-                padding: 0;
-                background: transparent;
-                border: none;
-              "
-            >
+            <form method="POST" style="margin: 0; padding: 0; background: transparent; border: none;">
               {% csrf_token %}
               <input type="hidden" name="comunidade_id" value="{{ c.id }}" />
-              <input type="hidden" name="btn_deletar_comunidade" value="1" />
-
-              <button
-                type="button"
-                class="danger"
-                style="padding: 6px 12px"
-                onclick="confirmarBanimentoComunidade('{{ c.id }}')"
-              >
-                Banir Sala 🗑️
-              </button>
+              <button type="submit" name="btn_deletar_comunidade" class="danger" style="padding: 5px 10px;">Excluir Sala</button>
             </form>
-          </li>
-          {% empty %}
-          <li style="color: var(--text-muted); font-style: italic">
-            Nenhuma comunidade criada por usuários encontrada.
           </li>
           {% endfor %}
         </ul>
       </div>
     </section>
 
+    <!-- SEÇÃO: DENÚNCIAS -->
     <section id="denuncias" class="secao" style="display: none">
-      <h1>
-        <i
-          class="fa-solid fa-shield-halved"
-          style="color: #ef4444; margin-right: 10px"
-        ></i>
-        Moderação de Conteúdo
-      </h1>
-      <p style="color: var(--text-muted); margin-bottom: 30px">
-        Fila de denúncias aguardando análise da equipe (Marco Civil e
-        Pirataria).
-      </p>
-
-      <div
-        class="denuncias-lista"
-        style="display: flex; flex-direction: column; gap: 15px"
-      >
-        {% for denuncia in denuncias_pendentes %}
-        <div
-          class="card"
-          style="
-            border-left: 4px solid #ef4444;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 20px;
-          "
-        >
+      <h1>Denúncias Recebidas</h1>
+      <p style="color: var(--text-muted); margin-bottom: 20px">Moderação active de conteúdo violador de direitos autorais ou termos de uso.</p>
+      <ul>
+        {% for d in denuncias_pendentes %}
+        <li style="border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02)">
           <div>
-            <span
-              class="badge"
-              style="
-                background: rgba(239, 68, 68, 0.2);
-                color: #fca5a5;
-                margin-bottom: 8px;
-              "
-              >Motivo: {{ denuncia.motivo }}</span
-            >
-            <h3 style="margin: 0; font-size: 1.2rem; color: white">
-              {{ denuncia.livro.titulo }}
-            </h3>
-            <small style="color: var(--text-muted)"
-              >Denunciante: {{ denuncia.usuario.username|default:"Visitante" }}
-              | Data: {{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</small
-            >
+            <strong>Livro Denunciado: {{ d.livro.titulo }}</strong> <br />
+            <small style="color: var(--text-muted)">Motivo: {{ d.motivo }} | Por: @{{ d.usuario.user_auth.username }}</small>
           </div>
-
-          <div style="display: flex; gap: 10px">
-            <a
-              href="{% url 'livro_info' denuncia.livro.id_livro %}"
-              target="_blank"
-              class="btn-outline"
-              style="
-                padding: 8px 12px;
-                border: 1px solid #64748b;
-                color: #cbd5e1;
-                border-radius: 8px;
-                text-decoration: none;
-              "
-              >Ver Obra <i class="fa-solid fa-external-link-alt"></i
-            ></a>
-
-            <form
-              id="form-denuncia-{{ denuncia.id }}"
-              method="POST"
-              style="margin: 0; display: flex; gap: 8px"
-            >
-              {% csrf_token %}
-              <input type="hidden" name="btn_resolver_denuncia" value="1" />
-              <input
-                type="hidden"
-                name="denuncia_id"
-                value="{{ denuncia.id }}"
-              />
-              <input
-                type="hidden"
-                name="acao"
-                id="acao-{{ denuncia.id }}"
-                value=""
-              />
-
-              <button
-                type="button"
-                onclick="confirmarResolucao('{{ denuncia.id }}', 'falso_positivo')"
-                style="
-                  background: rgba(59, 130, 246, 0.2);
-                  border: 1px solid #3b82f6;
-                  color: #60a5fa;
-                  padding: 8px 12px;
-                  border-radius: 8px;
-                  cursor: pointer;
-                "
-              >
-                <i class="fa-solid fa-check"></i> Falso Positivo
-              </button>
-
-              <button
-                type="button"
-                onclick="confirmarResolucao('{{ denuncia.id }}', 'remover_obra')"
-                style="
-                  background: rgba(239, 68, 68, 0.2);
-                  border: 1px solid #ef4444;
-                  color: #fca5a5;
-                  padding: 8px 12px;
-                  border-radius: 8px;
-                  cursor: pointer;
-                "
-              >
-                <i class="fa-solid fa-trash"></i> Excluir Obra
-              </button>
-            </form>
-          </div>
-        </div>
+          <form method="POST" style="display: flex; gap: 8px; margin: 0; padding: 0; border: none; background: transparent;">
+            {% csrf_token %}
+            <input type="hidden" name="denuncia_id" value="{{ d.id }}" />
+            <button type="submit" name="btn_resolver_denuncia" value="remover_obra" class="danger" style="padding: 6px 12px">Remover Livro</button>
+            <button type="submit" name="btn_resolver_denuncia" value="falso_positivo" style="background: #6b7280; padding: 6px 12px">Arquivar</button>
+          </form>
+        </li>
         {% empty %}
-        <div
-          style="
-            text-align: center;
-            padding: 40px;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-          "
-        >
-          <i
-            class="fa-solid fa-mug-hot"
-            style="font-size: 2.5rem; color: #475569; margin-bottom: 15px"
-          ></i>
-          <p style="color: #cbd5e1">
-            Nenhuma denúncia pendente. A plataforma está segura!
-          </p>
-        </div>
+        <li style="color: var(--text-muted); font-style: italic">Nenhuma denúncia pendente. Sistema limpo!</li>
         {% endfor %}
-      </div>
+      </ul>
     </section>
   </main>
 </div>
-{% endblock %} {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script id="dados-graficos" type="application/json">
-  [
-      {% for livro in livros %}
-      {
-          "titulo": "{{ livro.titulo|escapejs }}",
-          "categoria": "{{ livro.categoria.nome|escapejs }}",
-          "criadoEm": "2026-01-01"
-      }{% if not forloop.last %},{% endif %}
-      {% endfor %}
-  ]
-</script>
-
+<!-- LÓGICA JAVASCRIPT INTEGRADA -->
 <script>
-  function confirmarResolucao(id, acao) {
-    let titulo =
-      acao === "remover_obra" ? "Excluir Obra?" : "Marcar como Falso Positivo?";
-    let texto =
-      acao === "remover_obra"
-        ? "A obra será apagada e o denunciante notificado."
-        : "A denúncia será arquivada e a obra mantida.";
-    let cor = acao === "remover_obra" ? "#ef4444" : "#3b82f6";
+  document.addEventListener("DOMContentLoaded", function () {
+    // 1. Alternância de Abas Principais
+    const botoesNav = document.querySelectorAll(".admin-sidebar button[data-nav]");
+    const secoes = document.querySelectorAll(".secao");
 
-    Swal.fire({
-      title: titulo,
-      text: texto,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: cor,
-      cancelButtonColor: "#374151",
-      confirmButtonText: "Sim, prosseguir",
-      cancelButtonText: "Cancelar",
-      background: "#0f172a",
-      color: "#f8fafc",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Alimenta o formulário secretamente e submete
-        document.getElementById("acao-" + id).value = acao;
-        document.getElementById("form-denuncia-" + id).submit();
-      }
+    botoesNav.forEach(btn => {
+      btn.addEventListener("click", function () {
+        botoesNav.forEach(b => b.classList.remove("active"));
+        secoes.forEach(s => s.style.display = "none");
+
+        this.classList.add("active");
+        const destino = this.getAttribute("data-nav");
+        document.getElementById(destino).style.display = "block";
+      });
     });
+
+    // 2. Manipulação do Formulário de Edição de Livros
+    const triggersEdicao = document.querySelectorAll(".btn-editar-trigger");
+    const formLivro = document.getElementById("formLivro");
+    const inputLivroId = document.getElementById("inputLivroId");
+    const inputTitulo = document.getElementById("inputTitulo");
+    const selectCategoria = document.getElementById("selectCategoria");
+    const inputAutor = document.getElementById("inputAutor");
+    const inputIsbn = document.getElementById("inputIsbn");
+    const inputEdicao = document.getElementById("inputEdicao");
+    const inputDataPublicacao = document.getElementById("inputDataPublicacao");
+    const inputPaginas = document.getElementById("inputPaginas");
+    const btnSubmeterForm = document.getElementById("btnSubmeterForm");
+    const btnCancelarEdicao = document.getElementById("btnCancelarEdicao");
+    const tituloSecaoLivros = document.getElementById("tituloSecaoLivros");
+    
+    const inputCapa = document.getElementById("inputCapa");
+    const inputPdf = document.getElementById("inputPdf");
+
+    if (!inputLivroId.value) {
+      inputCapa.setAttribute("required", "required");
+      inputPdf.setAttribute("required", "required");
+    }
+
+    triggersEdicao.forEach(trigger => {
+      trigger.addEventListener("click", function () {
+        inputLivroId.value = this.getAttribute("data-id");
+        inputTitulo.value = this.getAttribute("data-titulo");
+        selectCategoria.value = this.getAttribute("data-categoria");
+        inputAutor.value = this.getAttribute("data-autor");
+        inputIsbn.value = this.getAttribute("data-isbn");
+        inputEdicao.value = this.getAttribute("data-edicao");
+        inputDataPublicacao.value = this.getAttribute("data-ano");
+        inputPaginas.value = this.getAttribute("data-paginas");
+
+        inputCapa.removeAttribute("required");
+        inputPdf.removeAttribute("required");
+
+        tituloSecaoLivros.innerText = "Editar Livro";
+        btnSubmeterForm.innerText = "Salvar Alterações";
+        btnSubmeterForm.name = "btn_editar_livro";
+        btnCancelarEdicao.style.display = "inline-block";
+        
+        window.scrollTo({ top: formLivro.offsetTop - 20, behavior: 'smooth' });
+      });
+    });
+
+    btnCancelarEdicao.addEventListener("click", function () {
+      formLivro.reset();
+      inputLivroId.value = "";
+      
+      inputCapa.setAttribute("required", "required");
+      inputPdf.setAttribute("required", "required");
+
+      tituloSecaoLivros.innerText = "Gerenciar Livros";
+      btnSubmeterForm.innerText = "Adicionar";
+      btnSubmeterForm.name = "btn_add_livro";
+      this.style.display = "none";
+    });
+
+    // 3. Sistema de Filtro de Busca de Livros em tempo real
+    const inputBusca = document.getElementById("busca");
+    if(inputBusca) {
+      inputBusca.addEventListener("input", function () {
+        const termo = this.value.toLowerCase().trim();
+        const itensLivro = document.querySelectorAll("#listaLivros li");
+
+        itensLivro.forEach(item => {
+          const txt = item.getAttribute("data-titulo");
+          if(txt) {
+            item.style.display = txt.includes(termo) ? "flex" : "none";
+          }
+        });
+      });
+    }
+  });
+
+  // 4. Alternância de Sub-Abas de Comunidades
+  function alternarSubAbaComunidade(idSubAba) {
+    document.querySelectorAll(".sub-aba-content").forEach(sub => {
+      sub.style.display = "none";
+    });
+    document.getElementById(idSubAba).style.display = "block";
   }
 </script>
-
-<script>
-  function confirmarBanimentoComunidade(id) {
-    Swal.fire({
-      title: "Banir Comunidade?",
-      text: "Tem certeza? Isso apagará a comunidade inteira e removerá todos os membros.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#374151",
-      confirmButtonText: "Sim, banir",
-      cancelButtonText: "Cancelar",
-      background: "#0f172a",
-      color: "#f8fafc",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Submete o formulário silenciosamente
-        document.getElementById("form-banir-comunidade-" + id).submit();
-      }
-    });
-  }
-</script>
-
-<script src="{% static 'js/admin.js' %}"></script>
 {% endblock %}

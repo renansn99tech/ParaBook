@@ -1,3 +1,4 @@
+# models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
@@ -66,42 +67,6 @@ class Livro(models.Model):
         if not self.capa:
             return None
         return self.capa.url
-
-
-class SolicitacaoPublicacao(models.Model):
-    usuario = models.ForeignKey(
-        'usuarios.Usuario',
-        on_delete=models.CASCADE,
-        related_name="solicitacoes_publicacao",
-        verbose_name="Usuário Solicitante"
-    )
-    livro = models.ForeignKey(
-        Livro,
-        on_delete=models.CASCADE,
-        related_name="solicitacoes",
-        verbose_name="Livro"
-    )
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ("pendente", "Pendente"),
-            ("aprovado", "Aprovado"),
-            ("rejeitado", "Rejeitado"),
-        ],
-        default="pendente",
-        verbose_name="Status"
-    )
-    observacao_admin = models.TextField(blank=True, verbose_name="Observações do Administrador")
-    data_envio = models.DateTimeField(auto_now_add=True, verbose_name="Data de Envio")
-
-    class Meta:
-        db_table = "solicitacoes_publicacao"
-        verbose_name = "Solicitação de Publicação"
-        verbose_name_plural = "Solicitações de Publicação"
-        ordering = ['-data_envio']
-
-    def __str__(self):
-        return f"{self.livro.titulo} - {self.status}"
 
 
 class Biblioteca(models.Model):
@@ -186,33 +151,55 @@ class Denuncia(models.Model):
 
     def __str__(self):
         return f"Denúncia: {self.livro.titulo} ({self.motivo})"
-    
-class ObraAutor(models.Model):
+
+
+class SolicitacaoPublicacao(models.Model):
     STATUS_CHOICES = [
         ("pendente", "Pendente"),
         ("aprovado", "Aprovado"),
         ("rejeitado", "Rejeitado"),
     ]
 
-    nome = models.CharField(max_length=150, verbose_name="Nome do Autor")
-    email = models.EmailField(verbose_name="E-mail")
-    titulo = models.CharField(max_length=150, verbose_name="Título da Obra", default="Sem título")
-    descricao = models.TextField(blank=True, null=True, verbose_name="Descrição")
-    arquivo = models.FileField(upload_to='obras_independentes/', verbose_name="Arquivo da Obra", blank=True, null=True)
-    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='obras_independentes', verbose_name="Categoria")
-    cpf_autor = models.CharField(max_length=14, blank=True, null=True, verbose_name="CPF do Autor")
-    isbn = models.CharField(max_length=20, blank=True, null=True, verbose_name="ISBN")
-    registro_autoral = models.CharField(max_length=100, blank=True, null=True, verbose_name="Registro Autoral")
-    declaracao_autoria = models.BooleanField(default=False, verbose_name="Declaração de Autoria")
-    aceitou_termos = models.BooleanField(default=False, verbose_name="Aceitou os Termos")
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pendente", verbose_name="Status")
-    data_envio = models.DateTimeField(auto_now_add=True, verbose_name="Data de Envio")
+    # Alterado de 'usuarios.Usuario' para o modelo padrão do Django 'User'
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='solicitacoes_publicacao',
+        verbose_name='Autor Solicitante'
+    )
+
+    livro = models.OneToOneField(
+        Livro,
+        on_delete=models.CASCADE,
+        related_name='solicitacao_publicacao',
+        verbose_name='Livro'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pendente'
+    )
+
+    observacao_admin = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    data_envio = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    data_analise = models.DateTimeField(
+        blank=True,
+        null=True
+    )
 
     class Meta:
-        db_table = 'obras_autores'
-        verbose_name = "Obra de Autor Independente"
-        verbose_name_plural = "Obras de Autores Independentes"
-        ordering = ['-data_envio']
+        db_table = "solicitacoes_publicacao"
+        ordering = ["-data_envio"]
+        verbose_name = "Solicitação de Publicação"
+        verbose_name_plural = "Solicitações de Publicação"
 
     def __str__(self):
-        return f"{self.titulo} - {self.nome}"
+        return f"{self.livro.titulo} ({self.status})"

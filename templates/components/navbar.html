@@ -19,14 +19,15 @@
 
         <div class="collapse navbar-collapse" id="parabookNavbar">
             
-            <ul class="menu">
-                <!-- 2. ROTEAMENTO: Botão Explorar agora leva ao acervo principal -->
-                <li><a href="{% url 'biblioteca' %}">Explorar</a></li>
-                <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
-                <li><a href="{% url 'lista_autores' %}">Autores</a></li>
-                <li><a href="{% url 'obras_autores' %}">Publicar Livro</a></li>
-                <li><a href="{% url 'sobre' %}">Sobre</a></li>
-            </ul>
+<ul class="menu">
+    <!-- 2. ROTEAMENTO: Botão Explorar agora leva ao acervo principal -->
+    <li><a href="{% url 'biblioteca' %}">Explorar</a></li>
+    <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
+    <li><a href="{% url 'lista_autores' %}">Autores</a></li>
+    <!-- CORREÇÃO AQUI: Atualizado para refletir a nova nomenclatura arquitetural -->
+    <li><a href="{% url 'solicitacoes_publicacao' %}">Publicar Livro</a></li>
+    <li><a href="{% url 'sobre' %}">Sobre</a></li>
+</ul>
 
             <div class="nav-actions">
                 <button class="search-btn">

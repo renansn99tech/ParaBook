@@ -18,7 +18,7 @@ def perfil(request):
     except Usuario.DoesNotExist:
         is_admin = request.user.is_superuser
         novo_perfil = Perfil.objects.create(descricao_perfil="Administrador do Sistema" if is_admin else "Novo Leitor")
-        dados_usuario = Usuario.objects.create(user_auth=request.user, nome="Super User" if is_admin else request.user.username, email=request.user.email, tipo='admin' if is_admin else 'leitor', perfil=novo_perfil)
+        dados_usuario = Usuario.objects.create(user_auth=request.user, nome="Super User" if is_admin else request.user.username, tipo='admin' if is_admin else 'leitor', perfil=novo_perfil)
 
     perfil_do_usuario = dados_usuario.perfil
 

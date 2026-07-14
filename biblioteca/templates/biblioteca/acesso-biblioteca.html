@@ -130,7 +130,7 @@
             
     <div class="capa-container">
         {% if item.livro.capa_url %}
-            <img src="{{ item.livro.capa_url }}" alt="Capa do livro {{ item.livro.nome }}" class="capa-img">
+            <img src="{{ item.livro.capa_url }}" alt="Capa do livro {{ item.livro.titulo }}" class="capa-img">
         {% else %}
             <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="capa-img">
         {% endif %}
@@ -145,7 +145,7 @@
                     {% if item.favorito %}
                         <i class="fa-solid fa-heart" style="color: #ec4899; margin-right: 5px;" title="Livro Favoritado"></i>
                     {% endif %}
-                    {{ item.livro.nome }}
+                    {{ item.livro.titulo }}
                 </h2>
                 <p class="book-author">Por {{ item.livro.autor }}</p>
                 

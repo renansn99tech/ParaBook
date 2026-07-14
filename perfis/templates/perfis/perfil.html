@@ -66,7 +66,7 @@
                         <p class="perfil-historico">
                             <i class="fa-solid fa-clock-rotate-left"></i> 
                             {% if ultimo_lido %}
-                                Último lido: <strong>{{ ultimo_lido.livro.nome|truncatechars:35 }}</strong>
+                                Último lido: <strong>{{ ultimo_lido.livro.titulo|truncatechars:35 }}</strong>
                             {% else %}
                                 Nenhum livro lido ainda.
                             {% endif %}
@@ -195,7 +195,7 @@
                                 {% endif %}
                             </div>
                             <div class="favorito-info">
-                                <h4>{{ livro.livro.nome }}</h4>
+                                <h4>{{ livro.livro.titulo }}</h4>
                                 <p>{{ livro.livro.autor }}</p>
                                 <button class="btn-danger-outline btn-remover-favorito" onclick="removerFavoritoDoPerfil(this, '{% url 'favoritar_livro' livro.livro.id_livro %}')">
                                     <i class="fa-solid fa-xmark"></i> Remover

@@ -1,265 +1,345 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} {% load static %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}" />
 
-{% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+{% endblock %} {% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <h1>Descubra, leia e publique <span>histórias</span></h1>
 
-{% endblock %}
+    <p>
+      Conectamos leitores, autores e comunidades em um único espaço para
+      compartilhar conhecimento e incentivar a leitura.
+    </p>
 
-{% block content %}
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Descubra, leia e publique <span>histórias</span></h1>
+    <div class="hero-buttons">
+      <a href="{% url 'biblioteca' %}" class="btn-primary">
+        <i class="fa-solid fa-book-open"></i>
+        Explorar livros
+      </a>
 
-      <p>Conectamos leitores, autores e comunidades em um único espaço para compartilhar conhecimento e incentivar a leitura.</p>
-
-      <div class="hero-buttons">
-        <a href="{% url 'biblioteca' %}" class="btn-primary">
-          <i class="fa-solid fa-book-open"></i>
-          Explorar livros
-        </a>
-
-        <a href="{% url 'obras_autores' %}" class="btn-secondary">
-          <i class="fa-solid fa-feather"></i>
-          Publicar meu livro
-        </a>
-      </div>
+      <a href="{% url 'obras_autores' %}" class="btn-secondary">
+        <i class="fa-solid fa-feather"></i>
+        Publicar meu livro
+      </a>
     </div>
+  </div>
 
-    <div class="hero-image">
-      <div class="floating-card author-card">
-    <div class="floating-user">
+  <div class="hero-image">
+    <div class="floating-card author-card">
+      <div class="floating-user">
         <div class="floating-avatar">👩</div>
 
         <div>
-            <h4>
-  {% if user.is_authenticated %}
-    {{ user.username }}
-  {% else %}
-    Visitante
-  {% endif %}
-</h4>
+          <h4>
+            {% if user.is_authenticated %} {{ user.username }} {% else %} Visitante {% endif %}
+          </h4>
 
-<span>
-  {% if user.is_authenticated %}
-    {{ user.email }}
-  {% else %}
-    Leitor
-  {% endif %}
-</span>
+          <span>
+            <!-- CORRIGIDO: Tag endif unificada na mesma linha -->
+            {% if user.is_authenticated %} {{ user.email }} {% else %} Leitor {% endif %}
+          </span>
         </div>
-    </div>
+      </div>
 
-    <div class="mini-chart">
+      <div class="mini-chart">
         <span></span>
+      </div>
     </div>
-</div>
 
-<div class="floating-card story-card">
-    {% if livro_atual %}
-  {% if livro_atual.livro.capa_url %}
-    <img src="{{ livro_atual.livro.capa_url }}" alt="{{ livro_atual.livro.nome }}">
-  {% else %}
-    <div class="floating-book-placeholder">
-      <i class="fa-solid fa-book"></i>
+    <div class="floating-card story-card">
+      {% if livro_atual %} {% if livro_atual.livro.capa_url %}
+      <img
+        src="{{ livro_atual.livro.capa_url }}"
+        alt="{{ livro_atual.livro.titulo }}"
+      />
+      {% else %}
+      <div class="floating-book-placeholder">
+        <i class="fa-solid fa-book"></i>
+      </div>
+      {% endif %}
+
+      <div class="story-info">
+        <h4>{{ livro_atual.livro.titulo }}</h4>
+        <span>{{ livro_atual.livro.genero }}</span>
+      </div>
+      {% else %}
+      <div class="floating-book-placeholder">
+        <i class="fa-solid fa-book"></i>
+      </div>
+
+      <div class="story-info">
+        <h4>Nenhuma leitura</h4>
+        <span>Comece um livro</span>
+      </div>
+      {% endif %}
+
+      <i class="fa-solid fa-star"></i>
     </div>
-  {% endif %}
 
-  <div class="story-info">
-    <h4>{{ livro_atual.livro.nome }}</h4>
-    <span>{{ livro_atual.livro.genero }}</span>
-  </div>
-{% else %}
-  <div class="floating-book-placeholder">
-    <i class="fa-solid fa-book"></i>
-  </div>
+    <div class="floating-card stats-card">
+      <h4>Estatísticas</h4>
+      <span>Leituras</span>
 
-  <div class="story-info">
-    <h4>Nenhuma leitura</h4>
-    <span>Comece um livro</span>
-  </div>
-{% endif %}
+      <strong>{{ total_leituras }}</strong>
 
-
-    <i class="fa-solid fa-star"></i>
-</div>
-
-<div class="floating-card stats-card">
-    <h4>Estatísticas</h4>
-    <span>Leituras</span>
-
-    <strong>{{ total_leituras }}</strong>
-
-    <div class="mini-chart chart-large">
+      <div class="mini-chart chart-large">
         <span></span>
-    </div>
-</div>
-
-      <img src="{% static 'img/open-book.png' %}" alt="Livro Aberto" />
-    </div>
-  </section>
-
-  <section class="features">
-    <div class="feature-card">
-      <div class="feature-content">
-        <div class="feature-icon">📚</div>
-
-        <h2>Para Leitores</h2>
-
-        <p>Explore milhares de livros, descubra novos autores e participe de comunidades literárias.</p>
-
-        <ul>
-          <li>✔ Biblioteca Digital</li>
-          <li>✔ Livros Gratuitos</li>
-          <li>✔ Comunidades</li>
-          <li>✔ Favoritos</li>
-        </ul>
-      </div>
-
-      <div class="feature-photo">
-        <img src="{% static 'img/leitora.png' %}" alt="" />
       </div>
     </div>
 
-    <div class="feature-card">
-      <div class="feature-content">
-        <div class="feature-icon">
-          <i class="fa-solid fa-feather"></i>
+    <img src="{% static 'img/open-book.png' %}" alt="Livro Aberto" />
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature-card">
+    <div class="feature-content">
+      <div class="feature-icon">📚</div>
+
+      <h2>Para Leitores</h2>
+
+      <p>
+        Explore milhares de livros, descubra novos autores e participe de
+        comunidades literárias.
+      </p>
+
+      <ul>
+        <li>✔ Biblioteca Digital</li>
+        <li>✔ Livros Gratuitos</li>
+        <li>✔ Comunidades</li>
+        <li>✔ Favoritos</li>
+      </ul>
+    </div>
+
+    <div class="feature-photo">
+      <img src="{% static 'img/leitora.png' %}" alt="" />
+    </div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-content">
+      <div class="feature-icon">
+        <i class="fa-solid fa-feather"></i>
+      </div>
+
+      <h2>Para Autores</h2>
+
+      <p>
+        Compartilhe suas obras, alcance novos leitores e faça parte da
+        comunidade ParaBook.
+      </p>
+
+      <ul>
+        <li>✔ Publicação Gratuita</li>
+        <li>✔ Divulgação</li>
+        <li>✔ Feedback</li>
+        <li>✔ Comunidade</li>
+      </ul>
+    </div>
+
+    <div class="feature-photo">
+      <img src="{% static 'img/autor.png' %}" alt="" />
+    </div>
+  </div>
+</section>
+
+<section>
+  {% comment %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="section-title m-0">Em Alta</h2>
+    <a
+      href="{% url 'mais_acessados' %}"
+      class="btn-ver-todos text-decoration-none"
+    >
+      Ver todos <i class="fa-solid fa-arrow-right-long ms-1"></i>
+    </a>
+  </div>
+  {% endcomment %}
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    {% for livro in livros %}
+    <div class="col">
+      <div class="card h-100 book-card-modern border-0 shadow-sm">
+        <div class="book-cover-wrapper position-relative">
+          {% if livro.capa_url %}
+          <img
+            src="{{ livro.capa_url }}"
+            class="card-img-top book-cover-img"
+            alt="Capa do livro {{ livro.titulo }}"
+            loading="lazy"
+          />
+          {% else %}
+          <div
+            class="capa-placeholder-modern d-flex flex-column align-items-center justify-content-center"
+          >
+            <i class="fa-solid fa-book fa-3x text-muted mb-2"></i>
+            <small class="text-muted text-uppercase">Sem Capa</small>
+          </div>
+          {% endif %}
+          <div
+            class="book-badge-rating position-absolute top-0 end-0 m-2 bg-dark text-warning px-2 py-1 rounded shadow-sm"
+          >
+            <!-- CORRIGIDO: Variável unificada na mesma linha -->
+            <i class="fa-solid fa-star me-1"></i>{{ livro.avaliacao|default:"4.8" }}
+          </div>
         </div>
 
-        <h2>Para Autores</h2>
+        <div class="card-body d-flex flex-column p-3">
+          <h3
+            class="card-title h6 text-truncate mb-1"
+            title="{{ livro.titulo }}"
+          >
+            {{ livro.titulo }}
+          </h3>
+          <p class="card-text small text-muted text-truncate mb-3">
+            {{ livro.autor }}
+          </p>
 
-        <p>Compartilhe suas obras, alcance novos leitores e faça parte da comunidade ParaBook.</p>
-
-        <ul>
-          <li>✔ Publicação Gratuita</li>
-          <li>✔ Divulgação</li>
-          <li>✔ Feedback</li>
-          <li>✔ Comunidade</li>
-        </ul>
-      </div>
-
-      <div class="feature-photo">
-        <img src="{% static 'img/autor.png' %}" alt="" />
+          <div class="mt-auto">
+            <span
+              class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 rounded-pill small"
+            >
+              {{ livro.genero }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+    {% endfor %}
+  </div>
+</section>
 
-  <section>
-    {% comment %} <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="section-title m-0">Em Alta</h2>
-      <a href="{% url 'mais_acessados' %}" class="btn-ver-todos text-decoration-none">
-        Ver todos <i class="fa-solid fa-arrow-right-long ms-1"></i>
+<section class="communities container my-5">
+  <div class="section-header">
+    <h2>Novidades</h2>
+    <a href="{% url 'novidade' %}" class="btn-ver-mais-news">
+      Ver mais <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="novidades-grid">
+    {% for livro in livros_recentes|slice:":3" %}
+    <article class="book-card card-novidade-evolved">
+      <a
+        href="{% url 'livro_info' livro.id %}"
+        class="btn-info-livro"
+        title="Ver Informações"
+        style="z-index: 20"
+      >
+        <i class="fa-solid fa-info"></i>
       </a>
-    </div> {% endcomment %}
-
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-      {% for livro in livros %}
-        <div class="col">
-          <div class="card h-100 book-card-modern border-0 shadow-sm">
-            <div class="book-cover-wrapper position-relative">
-              {% if livro.capa_url %}
-                <img src="{{ livro.capa_url }}" class="card-img-top book-cover-img" alt="Capa do livro {{ livro.nome }}" loading="lazy" />
-              {% else %}
-                <div class="capa-placeholder-modern d-flex flex-column align-items-center justify-content-center">
-                  <i class="fa-solid fa-book fa-3x text-muted mb-2"></i>
-                  <small class="text-muted text-uppercase">Sem Capa</small>
-                </div>
-              {% endif %}
-              <div class="book-badge-rating position-absolute top-0 end-0 m-2 bg-dark text-warning px-2 py-1 rounded shadow-sm">
-                <i class="fa-solid fa-star me-1"></i>{{ livro.avaliacao|default:"4.8" }}
-              </div>
-            </div>
-            
-            <div class="card-body d-flex flex-column p-3">
-              <h3 class="card-title h6 text-truncate mb-1" title="{{ livro.nome }}">{{ livro.nome }}</h3>
-              <p class="card-text small text-muted text-truncate mb-3">{{ livro.autor }}</p>
-              
-              <div class="mt-auto">
-                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 rounded-pill small">
-                  {{ livro.genero }}
-                </span>
-              </div>
-            </div>
-          </div>
+      <div class="book-capa-wrapper">
+        {% if livro.capa_url %}
+        <img
+          src="{{ livro.capa_url }}"
+          alt="Capa do livro {{ livro.titulo }}"
+          loading="lazy"
+        />
+        {% else %}
+        <div class="capa-placeholder">
+          <i class="fa-solid fa-book"></i>
         </div>
-      {% endfor %}
-    </div>
-  </section>
+        {% endif %}
+        <span class="badge-novidade">Novo</span>
+      </div>
 
-<section class="communities container my-5">    
-    <div class="section-header">
-      <h2>Novidades</h2>
-      <a href="{% url 'novidade' %}" class="btn-ver-mais-news">
-        Ver mais <i class="fa-solid fa-arrow-right"></i>
+      <div class="book-info">
+        <h3>{{ livro.titulo }}</h3>
+        <p class="book-author">{{ livro.autor }}</p>
+        <div class="book-rating"><i class="fa-solid fa-star"></i> 5.0</div>
+      </div>
+    </article>
+    {% empty %}
+    <div class="col-fallback">
+      <p>Nenhuma obra recente adicionada no momento.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="section-title-wrapper" style="margin-top: 80px">
+    <h2 class="section-title">Comunidades Oficiais</h2>
+    <p class="section-subtitle">
+      Participe dos nossos espaços exclusivos de debate literário.
+    </p>
+  </div>
+
+  <div class="novidades-grid" style="margin-bottom: 60px">
+    {% for comunidad in comunidades_oficiais %}
+    <article
+      class="book-card card-novidade-evolved"
+      style="
+        padding: 30px 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+      "
+    >
+      <div
+        style="
+          background: rgba(139, 92, 246, 0.15);
+          width: 70px;
+          height: 70px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 20px;
+          border: 1px solid rgba(139, 92, 246, 0.3);
+        "
+      >
+        <i
+          class="fa-solid fa-users"
+          style="color: #8b5cf6; font-size: 1.8rem"
+        ></i>
+      </div>
+      <h3 style="font-size: 1.3rem; margin-bottom: 10px; color: white">
+        {{ comunidade.nome }}
+      </h3>
+      <p
+        style="
+          font-size: 0.95rem;
+          color: var(--text-secondary);
+          margin-bottom: 25px;
+          line-height: 1.5;
+        "
+      >
+        {{ comunidade.descricao|truncatechars:90 }}
+      </p>
+
+      <a
+        href="{% url 'comunidades' %}"
+        class="btn-outline"
+        style="
+          width: 100%;
+          border-radius: 12px;
+          padding: 10px;
+          text-align: center;
+          color: #c4b5fd;
+          border-color: rgba(139, 92, 246, 0.4);
+        "
+      >
+        Explorar Sala
       </a>
+    </article>
+    {% empty %}
+    <div class="col-fallback">
+      <p>Nenhuma comunidade oficial configurada no momento.</p>
     </div>
+    {% endfor %}
+  </div>
 
-    <div class="novidades-grid">
-      {% for livro in livros_recentes|slice:":3" %}
-        <article class="book-card card-novidade-evolved">
-          <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
-              <i class="fa-solid fa-info"></i>
-          </a>
-          <div class="book-capa-wrapper">
-            {% if livro.capa_url %}
-              <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" loading="lazy" />
-            {% else %}
-              <div class="capa-placeholder">
-                <i class="fa-solid fa-book"></i>
-              </div>
-            {% endif %}
-            <span class="badge-novidade">Novo</span>
-          </div>
-
-          <div class="book-info">
-            <h3>{{ livro.nome }}</h3>
-            <p class="book-author">{{ livro.autor }}</p>
-            <div class="book-rating">
-              <i class="fa-solid fa-star"></i> 5.0
-            </div>
-          </div>
-        </article>
-      {% empty %}
-        <div class="col-fallback">
-          <p>Nenhuma obra recente adicionada no momento.</p>
-        </div>
-      {% endfor %}
-    </div>
-
-    <div class="section-title-wrapper" style="margin-top: 80px;">
-      <h2 class="section-title">Comunidades Oficiais</h2>
-      <p class="section-subtitle">Participe dos nossos espaços exclusivos de debate literário.</p>
-    </div>
-
-    <div class="novidades-grid" style="margin-bottom: 60px;">
-      {% for comunidade in comunidades_oficiais %}
-        <article class="book-card card-novidade-evolved" style="padding: 30px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-            <div style="background: rgba(139, 92, 246, 0.15); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border: 1px solid rgba(139, 92, 246, 0.3);">
-                <i class="fa-solid fa-users" style="color: #8b5cf6; font-size: 1.8rem;"></i>
-            </div>
-            <h3 style="font-size: 1.3rem; margin-bottom: 10px; color: white;">{{ comunidade.nome }}</h3>
-            <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.5;">{{ comunidade.descricao|truncatechars:90 }}</p>
-            
-            <a href="{% url 'comunidades' %}" class="btn-outline" style="width: 100%; border-radius: 12px; padding: 10px; text-align: center; color: #c4b5fd; border-color: rgba(139, 92, 246, 0.4);">
-                Explorar Sala
-            </a>
-        </article>
-      {% empty %}
-        <div class="col-fallback">
-          <p>Nenhuma comunidade oficial configurada no momento.</p>
-        </div>
-      {% endfor %}
-    </div>
-
-    <div class="cta">
-      <h2>Tem uma história para contar?</h2>
-      <p>Compartilhe sua obra gratuitamente e alcance novos leitores através da comunidade ParaBook.</p>
-      <a href="{% url 'obras_autores' %}" class="btn-primary">Publicar Minha Obra</a>
-    </div>
-  </section>
-
-  <!--<section class="books novidades-home"> </section>-->
-  
+  <div class="cta">
+    <h2>Tem uma história para contar?</h2>
+    <p>
+      Compartilhe sua obra gratuitamente e alcance novos leitores através da
+      comunidade ParaBook.
+    </p>
+    <a href="{% url 'obras_autores' %}" class="btn-primary"
+      >Publicar Minha Obra</a
+    >
+  </div>
+</section>
 
 {% endblock %}

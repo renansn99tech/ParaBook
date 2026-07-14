@@ -1,121 +1,181 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Leitura | ParaBook{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/leitura.css' %}?v=2.0">
-{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}Leitura |
+ParaBook{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/leitura.css' %}?v=2.0" />
+{% endblock %} {% block content %}
 <main id="conteudo-principal" tabindex="-1">
-    {% csrf_token %} <section class="container leitura-container">
-        
-        <header class="leitura-acessivel-header">
-            <h1 class="sr-only">Lendo: {{ livro.nome }}</h1>
-            <p class="sr-only">Autor: {{ livro.autor }}</p>
-        </header>
-        
-        <nav class="barra-ferramentas-leitura" aria-label="Ferramentas de customização da leitura">
-            <div class="grupo-controle">
-                <span class="label-controle" id="label-zoom">Zoom Canvas:</span>
-                <button class="btn-tool" id="btn-zoom-in" title="Aumentar tamanho do livro" aria-describedby="label-zoom">
-                    <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
-                    <span class="sr-only">Aumentar Zoom</span>
-                </button>
-                <button class="btn-tool" id="btn-zoom-out" title="Diminuir tamanho do livro" aria-describedby="label-zoom">
-                    <i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i>
-                    <span class="sr-only">Diminuir Zoom</span>
-                </button>
-            </div>
+  {% csrf_token %}
+  <section class="container leitura-container">
+    <header class="leitura-acessivel-header">
+      <h1 class="sr-only">Lendo: {{ livro.titulo }}</h1>
+      <p class="sr-only">Autor: {{ livro.autor }}</p>
+    </header>
 
-            <div class="grupo-controle">
-                <span class="label-controle" id="label-acessibilidade">Acessibilidade Visual:</span>
-                <button class="btn-tool" id="btn-contraste" title="Alternar Alto Contraste" aria-describedby="label-acessibilidade">
-                    <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i> Contraste
-                </button>
-                <button class="btn-tool" id="btn-inverter" title="Inverter cores da página" aria-describedby="label-acessibilidade">
-                    <i class="fa-solid fa-eye-dropper" aria-hidden="true"></i> Inverter Cores
-                </button>
-            </div>
+    <nav
+      class="barra-ferramentas-leitura"
+      aria-label="Ferramentas de customização da leitura"
+    >
+      <div class="grupo-controle">
+        <span class="label-controle" id="label-zoom">Zoom Canvas:</span>
+        <button
+          class="btn-tool"
+          id="btn-zoom-in"
+          title="Aumentar tamanho do livro"
+          aria-describedby="label-zoom"
+        >
+          <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
+          <span class="sr-only">Aumentar Zoom</span>
+        </button>
+        <button
+          class="btn-tool"
+          id="btn-zoom-out"
+          title="Diminuir tamanho do livro"
+          aria-describedby="label-zoom"
+        >
+          <i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i>
+          <span class="sr-only">Diminuir Zoom</span>
+        </button>
+      </div>
 
-            <div class="grupo-controle">
-                <span class="label-controle" id="label-layout">Layout do Leitor:</span>
-                <button class="btn-tool" id="btn-expandir" title="Alternar largura expandida" aria-describedby="label-layout">
-                    <i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i> Expandir Tela
-                </button>
-            </div>
-        </nav>
+      <div class="grupo-controle">
+        <span class="label-controle" id="label-acessibilidade"
+          >Acessibilidade Visual:</span
+        >
+        <button
+          class="btn-tool"
+          id="btn-contraste"
+          title="Alternar Alto Contraste"
+          aria-describedby="label-acessibilidade"
+        >
+          <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+          Contraste
+        </button>
+        <button
+          class="btn-tool"
+          id="btn-inverter"
+          title="Inverter cores da página"
+          aria-describedby="label-acessibilidade"
+        >
+          <i class="fa-solid fa-eye-dropper" aria-hidden="true"></i> Inverter
+          Cores
+        </button>
+      </div>
 
-        {% if livro.pdf|slice:":4" == "http" or livro.pdf|slice:":1" == "/" %}
-        <div
-            class="livro-info"
-            id="dados-livro"
-            data-id="{{ livro.id_livro }}"
-            data-url-concluir="{% url 'concluir_leitura' livro.id_livro %}"
-            data-url-avaliar="{% url 'avaliar_livro' livro.id_livro %}"
-            data-url-favoritar="{% url 'favoritar_livro' livro.id_livro %}"
-            data-caminho="{{ livro.pdf }}">
-        </div>
-        {% else %}
-        <div
-            class="livro-info"
-            id="dados-livro"
-            data-id="{{ livro.id_livro }}"
-            data-url-concluir="{% url 'concluir_leitura' livro.id_livro %}"
-            data-url-avaliar="{% url 'avaliar_livro' livro.id_livro %}"
-            data-url-favoritar="{% url 'favoritar_livro' livro.id_livro %}"
-            data-caminho="{% static livro.url_pdf_estatico %}">
-        </div>
-        {% endif %}
-        
-        <div id="loading" class="loading-state" aria-live="polite"></div>
+      <div class="grupo-controle">
+        <span class="label-controle" id="label-layout">Layout do Leitor:</span>
+        <button
+          class="btn-tool"
+          id="btn-expandir"
+          title="Alternar largura expandida"
+          aria-describedby="label-layout"
+        >
+          <i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i>
+          Expandir Tela
+        </button>
+      </div>
+    </nav>
 
-        <article class="leitor-pdf" id="leitor-pdf-container">
-            <canvas id="pdf-canvas" role="document" aria-label="Visualizador do livro contendo a página atual"></canvas>
-        </article>
+<div
+  class="livro-info"
+  id="dados-livro"
+  data-id="{{ livro.id }}"
+  data-url-concluir="{% url 'concluir_leitura' livro.id %}"
+  data-url-avaliar="{% url 'avaliar_livro' livro.id %}"
+  data-url-favoritar="{% url 'favoritar_livro' livro.id %}"
+  data-caminho="{% if livro.pdf %}{{ livro.pdf.url }}{% else %}{% static livro.url_pdf_estatico %}{% endif %}"
+></div>
+  <div
+  class="livro-info"
+  id="dados-livro"
+  data-id="{{ livro.id }}"
+  data-url-concluir="{% url 'concluir_leitura' livro.id %}"
+  data-url-avaliar="{% url 'avaliar_livro' livro.id %}"
+  data-url-favoritar="{% url 'favoritar_livro' livro.id %}"
+  data-caminho="{% static livro.url_pdf_estatico %}"
+></div>
 
-        <div class="progresso-container" role="progressbar" aria-valuemin="1" aria-valuemax="100" aria-valuenow="1" id="progresso-acessivel" aria-label="Progresso de leitura do livro">
-            <div id="barra-progresso"></div>
-        </div>
 
-        <nav class="controles-leitura" aria-label="Controles de paginação">
-            <button id="btn-anterior" class="btn">
-                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Anterior
-            </button>
-            <span id="pagina-info" aria-live="assertive" role="status">Página 1</span>
+    <div id="loading" class="loading-state" aria-live="polite"></div>
 
-            <div class="navegacao-rapida">
-                <label for="input-pagina" class="sr-only">Ir para página:</label>
-                <input type="number" id="input-pagina" min="1" placeholder="Ir para...">
-                <button id="btn-ir-pagina" class="btn secondary" style="padding: 8px 18px; margin-left: 5px;">Ir</button>
-            </div>
+    <article class="leitor-pdf" id="leitor-pdf-container">
+      <canvas
+        id="pdf-canvas"
+        role="document"
+        aria-label="Visualizador do livro contendo a página atual"
+      ></canvas>
+    </article>
 
-            <button id="btn-proxima" class="btn">
-                Próxima <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-            </button>
-        </nav>
+    <div
+      class="progresso-container"
+      role="progressbar"
+      aria-valuemin="1"
+      aria-valuemax="100"
+      aria-valuenow="1"
+      id="progresso-acessivel"
+      aria-label="Progresso de leitura do livro"
+    >
+      <div id="barra-progresso"></div>
+    </div>
 
-        <div class="acoes">
-            <a href="{% url 'acesso_biblioteca' %}" class="btn secondary">Voltar à Biblioteca</a>
+    <nav class="controles-leitura" aria-label="Controles de paginação">
+      <button id="btn-anterior" class="btn">
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Anterior
+      </button>
+      <span id="pagina-info" aria-live="assertive" role="status">Página 1</span>
 
-            <button id="btn-marcar-lido" class="btn btn-success" style="background-color: #10b981; color: white; margin-left: 10px;">
-                <i class="fa-solid fa-check-double"></i> Marcar como Lido
-            </button>
+      <div class="navegacao-rapida">
+        <label for="input-pagina" class="sr-only">Ir para página:</label>
+        <input
+          type="number"
+          id="input-pagina"
+          min="1"
+          placeholder="Ir para..."
+        />
+        <button
+          id="btn-ir-pagina"
+          class="btn secondary"
+          style="padding: 8px 18px; margin-left: 5px"
+        >
+          Ir
+        </button>
+      </div>
 
-            <button id="btn-favoritar" class="btn" style="background-color: #ec4899; color: white;">
-                <i class="fa-solid fa-heart"></i> Favoritar
-            </button>
+      <button id="btn-proxima" class="btn">
+        Próxima <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </button>
+    </nav>
 
-            <button id="btn-avaliar" class="btn" style="background-color: #f59e0b; color: white;">
-                <i class="fa-solid fa-star"></i> Avaliar
-            </button>
-        </div>
-    </section>
+    <div class="acoes">
+      <a href="{% url 'acesso_biblioteca' %}" class="btn secondary"
+        >Voltar à Biblioteca</a
+      >
+
+      <button
+        id="btn-marcar-lido"
+        class="btn btn-success"
+        style="background-color: #10b981; color: white; margin-left: 10px"
+      >
+        <i class="fa-solid fa-check-double"></i> Marcar como Lido
+      </button>
+
+      <button
+        id="btn-favoritar"
+        class="btn"
+        style="background-color: #ec4899; color: white"
+      >
+        <i class="fa-solid fa-heart"></i> Favoritar
+      </button>
+
+      <button
+        id="btn-avaliar"
+        class="btn"
+        style="background-color: #f59e0b; color: white"
+      >
+        <i class="fa-solid fa-star"></i> Avaliar
+      </button>
+    </div>
+  </section>
 </main>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="{% static 'js/biblioteca.js' %}"></script>
 <script src="{% static 'js/leitura.js' %}"></script>

@@ -69,8 +69,8 @@
 
                     {% for cat in categorias %}
                         <option
-                            value="{{ cat.id_categoria }}"
-                            {% if form.categoria.value == cat.id_categoria %}
+                            value="{{ cat.id }}"
+                            {% if form.categoria.value == cat.id %}
                                 selected
                             {% endif %}
                         >

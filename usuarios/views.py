@@ -16,7 +16,7 @@ from .forms import RegistroUsuarioForm  # <-- Importa o novo formulário customi
 
 def index(request):
     # Busca os 3 últimos livros adicionados
-    livros_recentes = Livro.objects.all().order_by('-id_livro')[:3]
+    livros_recentes = Livro.objects.all().order_by('-id')[:3]
     
     # Busca até 3 Comunidades Oficiais do Sistema
     comunidades_oficiais = Comunidade.objects.filter(criada_por_sistema=True)[:3]

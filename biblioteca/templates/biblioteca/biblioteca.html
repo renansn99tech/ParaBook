@@ -1,260 +1,473 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}
-Biblioteca | ParaBook
-{% endblock %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/biblioteca.css' %}?v=2.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %} Biblioteca |
+ParaBook {% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/biblioteca.css' %}?v=2.0" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+/>
+{% endblock %} {% block content %}
 <div class="container py-4" id="topo">
+  <header class="banner-biblioteca-publica p-5 mb-5 text-center text-md-start">
+    <div class="row align-items-center">
+      <div class="col-12 col-md-8">
+        <h1 class="display-5 fw-bold mb-3">Todos os Títulos</h1>
+        <p class="lead mb-2">
+          Aqui você encontrará uma ampla seleção de livros, desde os clássicos
+          aos atuais.
+        </p>
+        <p class="mb-0 opacity-75">
+          Explore nosso acervo e descubra novos títulos em diferentes
+          categorias.
+        </p>
+      </div>
+      <div class="col-12 col-md-4 text-center text-md-end mt-4 mt-md-0">
+        <a
+          href="{% url 'acesso_biblioteca' %}"
+          class="btn btn-light btn-lg fw-semibold shadow-sm"
+        >
+          <i class="fa-solid fa-bookmark me-2 text-primary"></i>Minha Estante
+        </a>
+      </div>
+    </div>
+  </header>
 
-    <header class="banner-biblioteca-publica p-5 mb-5 text-center text-md-start">
-        <div class="row align-items-center">
-            <div class="col-12 col-md-8">
-                <h1 class="display-5 fw-bold mb-3">Todos os Títulos</h1>
-                <p class="lead mb-2">Aqui você encontrará uma ampla seleção de livros, desde os clássicos aos atuais.</p>
-                <p class="mb-0 opacity-75">Explore nosso acervo e descubra novos títulos em diferentes categorias.</p>
-            </div>
-            <div class="col-12 col-md-4 text-center text-md-end mt-4 mt-md-0">
-                <a href="{% url 'acesso_biblioteca' %}" class="btn btn-light btn-lg fw-semibold shadow-sm">
-                    <i class="fa-solid fa-bookmark me-2 text-primary"></i>Minha Estante
-                </a>
-            </div>
-        </div>
-    </header>
+  <section class="secao-genero">
+    <h2 class="titulo-genero-linha">
+      <i class="fa-solid fa-brain me-2 text-primary"></i>Filosofia
+    </h2>
+    <div class="row g-4">
+      {% for livro in livros_filosofia %}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <article
+          class="card h-100 card-livro-publico"
+          style="position: relative"
+        >
+          <a
+            href="{% url 'livro_info' livro.id %}"
+            class="btn-info-livro"
+            title="Ver Informações"
+            style="z-index: 20"
+          >
+            <i class="fa-solid fa-info"></i>
+          </a>
+          <div class="container-capa">
+            {% if livro.capa_url %}
+            <img
+              src="{{ livro.capa_url }}"
+              alt="Capa do livro {{ livro.titulo }}"
+              class="img-capa-ajustada"
+            />
+            {% else %}
+            <img
+              src="{% static 'img/capa-padrao.png' %}"
+              alt="Capa padrão"
+              class="img-capa-ajustada"
+            />
+            {% endif %}
+          </div>
+          <div class="card-body d-flex flex-column p-3">
+            <h5
+              class="card-title text-truncate mb-1 fw-bold"
+              title="{{ livro.titulo }}"
+            >
+              {{ livro.titulo }}
+            </h5>
+            <p class="card-text small text-muted mb-2">
+              Por: {{ livro.autor }}
+            </p>
+            <p class="card-text small mb-3">
+              <span class="badge bg-secondary">{{ livro.categoria.nome }}</span>
+            </p>
 
-<section class="secao-genero">
-        <h2 class="titulo-genero-linha"><i class="fa-solid fa-brain me-2 text-primary"></i>Filosofia</h2>
-        <div class="row g-4">
-            {% for livro in livros_filosofia %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico" style="position: relative;">
-                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
-                            <i class="fa-solid fa-info"></i>
-                        </a>
-                        <div class="container-capa">
-                            {% if livro.capa_url %}
-                                <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
-                            {% else %}
-                                <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="img-capa-ajustada">
-                            {% endif %}
-                        </div>
-                        <div class="card-body d-flex flex-column p-3">
-                            <h5 class="card-title text-truncate mb-1 fw-bold" title="{{ livro.nome }}">{{ livro.nome }}</h5>
-                            <p class="card-text small text-muted mb-2">Por: {{ livro.autor }}</p>
-                            <p class="card-text small mb-3"><span class="badge bg-secondary">{{ livro.categoria.nome }}</span></p>
-                            
-                            <form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}" class="mt-auto w-100">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium">
-                                    <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
-                                </button>
-                            </form>
-                        </div>
-                    </article>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <p class="text-muted fst-italic"><i class="fa-solid fa-circle-info me-2"></i>Nenhum livro de filosofia encontrado.</p>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+            <form
+              method="POST"
+              action="{% url 'adicionar_biblioteca' livro.id %}"
+              class="mt-auto w-100"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium"
+              >
+                <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
+              </button>
+            </form>
+          </div>
+        </article>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <p class="text-muted fst-italic">
+          <i class="fa-solid fa-circle-info me-2"></i>Nenhum livro de filosofia
+          encontrado.
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
 
-    <section class="secao-genero">
-        <h2 class="titulo-genero-linha"><i class="fa-solid fa-book-open me-2 text-primary"></i>Literatura</h2>
-        <div class="row g-4">
-            {% for livro in livros_literatura %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico" style="position: relative;">
-                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
-                            <i class="fa-solid fa-info"></i>
-                        </a>
-                        <div class="container-capa">
-                            {% if livro.capa_url %}
-                                <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
-                            {% else %}
-                                <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="img-capa-ajustada">
-                            {% endif %}
-                        </div>
-                        <div class="card-body d-flex flex-column p-3">
-                            <h5 class="card-title text-truncate mb-1 fw-bold" title="{{ livro.nome }}">{{ livro.nome }}</h5>
-                            <p class="card-text small text-muted mb-2">Por: {{ livro.autor }}</p>
-                            <p class="card-text small mb-3"><span class="badge bg-secondary">{{ livro.categoria.nome }}</span></p>
-                            
-                            <form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}" class="mt-auto w-100">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium">
-                                    <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
-                                </button>
-                            </form>
-                        </div>
-                    </article>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <p class="text-muted fst-italic"><i class="fa-solid fa-circle-info me-2"></i>Nenhum livro de literatura encontrado.</p>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+  <section class="secao-genero">
+    <h2 class="titulo-genero-linha">
+      <i class="fa-solid fa-book-open me-2 text-primary"></i>Literatura
+    </h2>
+    <div class="row g-4">
+      {% for livro in livros_literatura %}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <article
+          class="card h-100 card-livro-publico"
+          style="position: relative"
+        >
+          <a
+            href="{% url 'livro_info' livro.id %}"
+            class="btn-info-livro"
+            title="Ver Informações"
+            style="z-index: 20"
+          >
+            <i class="fa-solid fa-info"></i>
+          </a>
+          <div class="container-capa">
+            {% if livro.capa_url %}
+            <img
+              src="{{ livro.capa_url }}"
+              alt="Capa do livro {{ livro.titulo }}"
+              class="img-capa-ajustada"
+            />
+            {% else %}
+            <img
+              src="{% static 'img/capa-padrao.png' %}"
+              alt="Capa padrão"
+              class="img-capa-ajustada"
+            />
+            {% endif %}
+          </div>
+          <div class="card-body d-flex flex-column p-3">
+            <h5
+              class="card-title text-truncate mb-1 fw-bold"
+              title="{{ livro.titulo }}"
+            >
+              {{ livro.titulo }}
+            </h5>
+            <p class="card-text small text-muted mb-2">
+              Por: {{ livro.autor }}
+            </p>
+            <p class="card-text small mb-3">
+              <span class="badge bg-secondary">{{ livro.categoria.nome }}</span>
+            </p>
 
-    <section class="secao-genero">
-        <h2 class="titulo-genero-linha"><i class="fa-solid fa-dove me-2 text-primary"></i>Religiosos</h2>
-        <div class="row g-4">
-            {% for livro in livros_religiosos %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico" style="position: relative;">
-                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
-                            <i class="fa-solid fa-info"></i>
-                        </a>
-                        <div class="container-capa">
-                            {% if livro.capa_url %}
-                                <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
-                            {% else %}
-                                <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="img-capa-ajustada">
-                            {% endif %}
-                        </div>
-                        <div class="card-body d-flex flex-column p-3">
-                            <h5 class="card-title text-truncate mb-1 fw-bold" title="{{ livro.nome }}">{{ livro.nome }}</h5>
-                            <p class="card-text small text-muted mb-2">Por: {{ livro.autor }}</p>
-                            <p class="card-text small mb-3"><span class="badge bg-secondary">{{ livro.categoria.nome }}</span></p>
-                            
-                            <form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}" class="mt-auto w-100">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium">
-                                    <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
-                                </button>
-                            </form>
-                        </div>
-                    </article>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <p class="text-muted fst-italic"><i class="fa-solid fa-circle-info me-2"></i>Nenhum livro religioso encontrado.</p>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+            <form
+              method="POST"
+              action="{% url 'adicionar_biblioteca' livro.id %}"
+              class="mt-auto w-100"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium"
+              >
+                <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
+              </button>
+            </form>
+          </div>
+        </article>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <p class="text-muted fst-italic">
+          <i class="fa-solid fa-circle-info me-2"></i>Nenhum livro de literatura
+          encontrado.
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
 
-    <section class="secao-genero">
-        <h2 class="titulo-genero-linha"><i class="fa-solid fa-calculator me-2 text-primary"></i>Ciências Exatas</h2>
-        <div class="row g-4">
-            {% for livro in livros_exatas %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico" style="position: relative;">
-                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
-                            <i class="fa-solid fa-info"></i>
-                        </a>
-                        <div class="container-capa">
-                            {% if livro.capa_url %}
-                                <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
-                            {% else %}
-                                <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="img-capa-ajustada">
-                            {% endif %}
-                        </div>
-                        <div class="card-body d-flex flex-column p-3">
-                            <h5 class="card-title text-truncate mb-1 fw-bold" title="{{ livro.nome }}">{{ livro.nome }}</h5>
-                            <p class="card-text small text-muted mb-2">Por: {{ livro.autor }}</p>
-                            <p class="card-text small mb-3"><span class="badge bg-secondary">{{ livro.categoria.nome }}</span></p>
-                            
-                            <form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}" class="mt-auto w-100">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium">
-                                    <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
-                                </button>
-                            </form>
-                        </div>
-                    </article>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <p class="text-muted fst-italic"><i class="fa-solid fa-circle-info me-2"></i>Nenhum livro de exatas encontrado.</p>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+  <section class="secao-genero">
+    <h2 class="titulo-genero-linha">
+      <i class="fa-solid fa-dove me-2 text-primary"></i>Religiosos
+    </h2>
+    <div class="row g-4">
+      {% for livro in livros_religiosos %}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <article
+          class="card h-100 card-livro-publico"
+          style="position: relative"
+        >
+          <a
+            href="{% url 'livro_info' livro.id %}"
+            class="btn-info-livro"
+            title="Ver Informações"
+            style="z-index: 20"
+          >
+            <i class="fa-solid fa-info"></i>
+          </a>
+          <div class="container-capa">
+            {% if livro.capa_url %}
+            <img
+              src="{{ livro.capa_url }}"
+              alt="Capa do livro {{ livro.titulo }}"
+              class="img-capa-ajustada"
+            />
+            {% else %}
+            <img
+              src="{% static 'img/capa-padrao.png' %}"
+              alt="Capa padrão"
+              class="img-capa-ajustada"
+            />
+            {% endif %}
+          </div>
+          <div class="card-body d-flex flex-column p-3">
+            <h5
+              class="card-title text-truncate mb-1 fw-bold"
+              title="{{ livro.titulo }}"
+            >
+              {{ livro.titulo }}
+            </h5>
+            <p class="card-text small text-muted mb-2">
+              Por: {{ livro.autor }}
+            </p>
+            <p class="card-text small mb-3">
+              <span class="badge bg-secondary">{{ livro.categoria.nome }}</span>
+            </p>
 
-    <section class="secao-genero">
-        <h2 class="titulo-genero-linha"><i class="fa-solid fa-child-reaching me-2 text-primary"></i>Infantis</h2>
-        <div class="row g-4">
-            {% for livro in livros_infantis %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico" style="position: relative;">
-                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
-                            <i class="fa-solid fa-info"></i>
-                        </a>
-                        <div class="container-capa">
-                            {% if livro.capa_url %}
-                                <img src="{{ livro.capa_url }}" alt="Capa do livro {{ livro.nome }}" class="img-capa-ajustada">
-                            {% else %}
-                                <img src="{% static 'img/capa-padrao.png' %}" alt="Capa padrão" class="img-capa-ajustada">
-                            {% endif %}
-                        </div>
-                        <div class="card-body d-flex flex-column p-3">
-                            <h5 class="card-title text-truncate mb-1 fw-bold" title="{{ livro.nome }}">{{ livro.nome }}</h5>
-                            <p class="card-text small text-muted mb-2">Por: {{ livro.autor }}</p>
-                            <p class="card-text small mb-3"><span class="badge bg-secondary">{{ livro.categoria.nome }}</span></p>
-                            
-                            <form method="POST" action="{% url 'adicionar_biblioteca' livro.id_livro %}" class="mt-auto w-100">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium">
-                                    <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
-                                </button>
-                            </form>
-                        </div>
-                    </article>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <p class="text-muted fst-italic"><i class="fa-solid fa-circle-info me-2"></i>Nenhum livro infantil encontrado.</p>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+            <form
+              method="POST"
+              action="{% url 'adicionar_biblioteca' livro.id %}"
+              class="mt-auto w-100"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium"
+              >
+                <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
+              </button>
+            </form>
+          </div>
+        </article>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <p class="text-muted fst-italic">
+          <i class="fa-solid fa-circle-info me-2"></i>Nenhum livro religioso
+          encontrado.
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
 
-    <section class="secao-genero" id="secao-independentes">
-        <h2 class="titulo-genero-linha"><i class="fa-solid fa-pen-nib me-2 text-primary"></i>Autores Independentes</h2>
-        <div class="row g-4">
-            {% for obra in livros_independentes %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <article class="card h-100 card-livro-publico" style="position: relative;">
-                        <a href="{% url 'livro_info' livro.id_livro %}" class="btn-info-livro" title="Ver Informações" style="z-index: 20;">
-                            <i class="fa-solid fa-info"></i>
-                        </a>
-                        <div class="container-capa">
-                            <img src="{% static 'img/capa-padrao.png' %}" alt="{{ obra.titulo }}" class="img-capa-ajustada">
-                        </div>
-                        <div class="card-body d-flex flex-column p-3">
-                            <h5 class="card-title text-truncate mb-1 fw-bold" title="{{ obra.titulo }}">{{ obra.titulo }}</h5>
-                            <p class="card-text small text-muted mb-2">Por: {{ obra.nome }}</p>
-                            <p class="card-text small mb-3"><span class="badge bg-success">Independente</span></p>
-                            
-                            {% if obra.arquivo %}
-                                <a href="{{ obra.arquivo.url }}" target="_blank" class="btn btn-outline-success btn-sm w-100 mt-auto py-2 fw-medium d-flex align-items-center justify-content-center gap-2">
-                                    <i class="fa-solid fa-book-open"></i> Ler Obra
-                                </a>
-                            {% endif %}
-                        </div>
-                    </article>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <p class="text-muted fst-italic"><i class="fa-solid fa-circle-info me-2"></i>Nenhuma obra independente aprovada encontrada.</p>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+  <section class="secao-genero">
+    <h2 class="titulo-genero-linha">
+      <i class="fa-solid fa-calculator me-2 text-primary"></i>Ciências Exatas
+    </h2>
+    <div class="row g-4">
+      {% for livro in livros_exatas %}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <article
+          class="card h-100 card-livro-publico"
+          style="position: relative"
+        >
+          <a
+            href="{% url 'livro_info' livro.id %}"
+            class="btn-info-livro"
+            title="Ver Informações"
+            style="z-index: 20"
+          >
+            <i class="fa-solid fa-info"></i>
+          </a>
+          <div class="container-capa">
+            {% if livro.capa_url %}
+            <img
+              src="{{ livro.capa_url }}"
+              alt="Capa do livro {{ livro.titulo }}"
+              class="img-capa-ajustada"
+            />
+            {% else %}
+            <img
+              src="{% static 'img/capa-padrao.png' %}"
+              alt="Capa padrão"
+              class="img-capa-ajustada"
+            />
+            {% endif %}
+          </div>
+          <div class="card-body d-flex flex-column p-3">
+            <h5
+              class="card-title text-truncate mb-1 fw-bold"
+              title="{{ livro.titulo }}"
+            >
+              {{ livro.titulo }}
+            </h5>
+            <p class="card-text small text-muted mb-2">
+              Por: {{ livro.autor }}
+            </p>
+            <p class="card-text small mb-3">
+              <span class="badge bg-secondary">{{ livro.categoria.nome }}</span>
+            </p>
 
+            <form
+              method="POST"
+              action="{% url 'adicionar_biblioteca' livro.id %}"
+              class="mt-auto w-100"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium"
+              >
+                <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
+              </button>
+            </form>
+          </div>
+        </article>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <p class="text-muted fst-italic">
+          <i class="fa-solid fa-circle-info me-2"></i>Nenhum livro de exatas
+          encontrado.
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="secao-genero">
+    <h2 class="titulo-genero-linha">
+      <i class="fa-solid fa-child-reaching me-2 text-primary"></i>Infantis
+    </h2>
+    <div class="row g-4">
+      {% for livro in livros_infantis %}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <article
+          class="card h-100 card-livro-publico"
+          style="position: relative"
+        >
+          <a
+            href="{% url 'livro_info' livro.id %}"
+            class="btn-info-livro"
+            title="Ver Informações"
+            style="z-index: 20"
+          >
+            <i class="fa-solid fa-info"></i>
+          </a>
+          <div class="container-capa">
+            {% if livro.capa_url %}
+            <img
+              src="{{ livro.capa_url }}"
+              alt="Capa do livro {{ livro.titulo }}"
+              class="img-capa-ajustada"
+            />
+            {% else %}
+            <img
+              src="{% static 'img/capa-padrao.png' %}"
+              alt="Capa padrão"
+              class="img-capa-ajustada"
+            />
+            {% endif %}
+          </div>
+          <div class="card-body d-flex flex-column p-3">
+            <h5
+              class="card-title text-truncate mb-1 fw-bold"
+              title="{{ livro.titulo }}"
+            >
+              {{ livro.titulo }}
+            </h5>
+            <p class="card-text small text-muted mb-2">
+              Por: {{ livro.autor }}
+            </p>
+            <p class="card-text small mb-3">
+              <span class="badge bg-secondary">{{ livro.categoria.nome }}</span>
+            </p>
+
+            <form
+              method="POST"
+              action="{% url 'adicionar_biblioteca' livro.id %}"
+              class="mt-auto w-100"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 py-2 fw-medium"
+              >
+                <i class="fa-solid fa-plus small"></i> Adicionar à biblioteca
+              </button>
+            </form>
+          </div>
+        </article>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <p class="text-muted fst-italic">
+          <i class="fa-solid fa-circle-info me-2"></i>Nenhum livro infantil
+          encontrado.
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="secao-genero" id="secao-independentes">
+    <h2 class="titulo-genero-linha">
+      <i class="fa-solid fa-pen-nib me-2 text-primary"></i>Autores Independentes
+    </h2>
+    <div class="row g-4">
+      {% for obra in livros_independentes %}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <article
+          class="card h-100 card-livro-publico"
+          style="position: relative"
+        >
+          <a
+            href="{% url 'livro_info' obra.id %}"
+            class="btn-info-livro"
+            title="Ver Informações"
+            style="z-index: 20"
+          >
+            <i class="fa-solid fa-info"></i>
+          </a>
+          <div class="container-capa">
+            <img
+              src="{% static 'img/capa-padrao.png' %}"
+              alt="{{ obra.titulo }}"
+              class="img-capa-ajustada"
+            />
+          </div>
+          <div class="card-body d-flex flex-column p-3">
+            <h5
+              class="card-title text-truncate mb-1 fw-bold"
+              title="{{ obra.titulo }}"
+            >
+              {{ obra.titulo }}
+            </h5>
+            <p class="card-text small text-muted mb-2">Por: {{ obra.nome }}</p>
+            <p class="card-text small mb-3">
+              <span class="badge bg-success">Independente</span>
+            </p>
+
+            {% if obra.arquivo %}
+            <a
+              href="{{ obra.arquivo.url }}"
+              target="_blank"
+              class="btn btn-outline-success btn-sm w-100 mt-auto py-2 fw-medium d-flex align-items-center justify-content-center gap-2"
+            >
+              <i class="fa-solid fa-book-open"></i> Ler Obra
+            </a>
+            {% endif %}
+          </div>
+        </article>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <p class="text-muted fst-italic">
+          <i class="fa-solid fa-circle-info me-2"></i>Nenhuma obra independente
+          aprovada encontrada.
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
 </div>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script src="{% static 'js/biblioteca.js' %}"></script>
 <script src="{% static 'js/index.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

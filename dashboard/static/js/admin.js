@@ -21,17 +21,20 @@ function bindEvents() {
     });
 
     // Gatilhos para o botão editar ✏️
-document.querySelectorAll(".btn-editar-trigger").forEach(btn => {
-    btn.addEventListener("click", () => {
-        prepararEdicao(
-            btn.dataset.id, 
-            btn.dataset.titulo, 
-            btn.dataset.categoria, 
-            btn.dataset.autor, 
-            btn.dataset.isbn
-        );
+// Gatilhos para o botão editar ✏️
+    document.querySelectorAll(".btn-editar-trigger").forEach(btn => {
+        btn.addEventListener("click", () => {
+            prepararEdicao(
+                btn.dataset.id, 
+                btn.dataset.titulo, 
+                btn.dataset.categoria, 
+                btn.dataset.autor, 
+                btn.dataset.isbn,
+                btn.dataset.ano,      // <-- Adicionado
+                btn.dataset.edicao     // <-- Adicionado
+            );
+        });
     });
-});
 
     // Botão cancelar edição
     document.getElementById("btnCancelarEdicao")?.addEventListener("click", cancelarEdicao);
@@ -58,13 +61,22 @@ function buscarLivro(e) {
 }
 
 // --- FUNÇÕES DE UPDATE (INTERAÇÃO DO VISUAL) ---
-function prepararEdicao(id, titulo, categoriaId, autor, isbn) {
+function prepararEdicao(id, titulo, categoriaId, autor, isbn, ano, edicao) {
     document.getElementById("tituloSecaoLivros")?.scrollIntoView({ behavior: 'smooth' });
 
     document.getElementById("inputLivroId").value = id;
     document.getElementById("inputTitulo").value = titulo;
     document.getElementById("inputAutor").value = autor || "";
-    document.getElementById("inputIsbn").value = isbn || "";
+    
+    // Tratamento para não exibir a string "None" caso venha vazia do HTML
+    document.getElementById("inputIsbn").value = (isbn && isbn !== "None") ? isbn : "";
+
+    // ADICIONE ESTAS DUAS LINHAS (Verifique se os IDs dos inputs correspondem aos do seu HTML):
+    const inputAno = document.getElementById("inputAno") || document.querySelector("input[name='ano_publicacao']");
+    if (inputAno) inputAno.value = (ano && ano !== "None") ? ano : "";
+
+    const inputEdicao = document.getElementById("inputEdicao") || document.querySelector("input[name='edicao']");
+    if (inputEdicao) inputEdicao.value = (edicao && edicao !== "None") ? edicao : "";
 
     document.getElementById("inputCapa").required = false;
     document.getElementById("inputPdf").required = false;

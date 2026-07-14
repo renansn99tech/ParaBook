@@ -2,181 +2,193 @@
 {% load static %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-5">
-                    <h2 class="card-title text-center mb-4">Enviar Nova Obra</h2>
-                    <p class="text-muted text-center mb-5">Preencha os dados abaixo para enviar seu manuscrito para análise de publicação.</p>
+{# Link do CSS específico (garanta que o caminho está correto de acordo com sua estrutura static) #}
+<link rel="stylesheet" href="{% static 'css/obras-autores.css' %}">
 
-                    {# Exibição de mensagens de sucesso ou erro do Django Messages #}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+<div class="form-container">
+    <div class="form-box">
+        <h1>Enviar Nova Obra</h1>
+        <p>Preencha os dados abaixo para enviar seu manuscrito para análise de publicação.</p>
 
-                    <form method="POST" enctype="multipart/form-data" novalidate>
-                        {% csrf_token %}
+        {# Exibição de mensagens de sucesso ou erro do Django Messages #}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
 
-                        {# Exibição de erros gerais do formulário #}
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger">
-                                {% for error in form.non_field_errors %}
-                                    <p class="mb-0">{{ error }}</p>
-                                {% endfor %}
-                            </div>
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {# Exibição de erros gerais do formulário #}
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <h4 class="mb-3" style="color: var(--purple, #8b5cf6); border-bottom: 1px solid rgba(139,92,246,.25); padding-bottom: 8px;">1. Identificação do Autor</h4>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.nome.id_for_label }}">Nome do Autor</label>
+                        {{ form.nome }}
+                        {% if form.nome.errors %}
+                            <div class="text-danger small">{{ form.nome.errors }}</div>
                         {% endif %}
-
-                        <h4 class="mb-3 text-secondary border-bottom pb-2">1. Identificação do Autor</h4>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="{{ form.nome.id_for_label }}" class="form-label fw-bold">Nome do Autor</label>
-                                {{ form.nome }}
-                                {% if form.nome.errors %}
-                                    <div class="text-danger small">{{ form.nome.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6">
-                                <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">E-mail</label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="text-danger small">{{ form.email.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <label for="{{ form.cpf_autor.id_for_label }}" class="form-label">CPF (Opcional)</label>
-                                {{ form.cpf_autor }}
-                            </div>
-                            <div class="col-md-4">
-                                <label for="{{ form.registro_autoral.id_for_label }}" class="form-label">Registro Autoral (Opcional)</label>
-                                {{ form.registro_autoral }}
-                            </div>
-                            <div class="col-md-4">
-                                <label for="{{ form.numero_registro.id_for_label }}" class="form-label">Nº Registro (Opcional)</label>
-                                {{ form.numero_registro }}
-                            </div>
-                        </div>
-
-                        <h4 class="mb-3 text-secondary border-bottom pb-2">2. Informações da Obra</h4>
-
-                        <div class="mb-3">
-                            <label for="{{ form.titulo.id_for_label }}" class="form-label fw-bold">Título do Livro</label>
-                            {{ form.titulo }}
-                            {% if form.titulo.errors %}
-                                <div class="text-danger small">{{ form.titulo.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="{{ form.categoria.id_for_label }}" class="form-label fw-bold">Categoria</label>
-                                {{ form.categoria }}
-                                {% if form.categoria.errors %}
-                                    <div class="text-danger small">{{ form.categoria.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-3">
-                                <label for="{{ form.paginas.id_for_label }}" class="form-label fw-bold">Nº de Páginas</label>
-                                {{ form.paginas }}
-                                {% if form.paginas.errors %}
-                                    <div class="text-danger small">{{ form.paginas.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-3">
-                                <label for="{{ form.ano_publicacao.id_for_label }}" class="form-label fw-bold">Ano de Publicação</label>
-                                {{ form.ano_publicacao }}
-                                {% if form.ano_publicacao.errors %}
-                                    <div class="text-danger small">{{ form.ano_publicacao.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="{{ form.isbn.id_for_label }}" class="form-label">ISBN</label>
-                                {{ form.isbn }}
-                            </div>
-                            <div class="col-md-6">
-                                <label for="{{ form.edicao.id_for_label }}" class="form-label">Edição</label>
-                                {{ form.edicao }}
-                            </div>
-                        </div>
-
-                        <h4 class="mb-3 text-secondary border-bottom pb-2">3. Upload de Arquivos</h4>
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="{{ form.capa.id_for_label }}" class="form-label fw-bold">Capa do Livro (Imagem)</label>
-                                {{ form.capa }}
-                                {% if form.capa.errors %}
-                                    <div class="text-danger small">{{ form.capa.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6">
-                                <label for="{{ form.pdf.id_for_label }}" class="form-label fw-bold">Arquivo PDF da Obra</label>
-                                {{ form.pdf }}
-                                {% if form.pdf.errors %}
-                                    <div class="text-danger small">{{ form.pdf.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <h4 class="mb-3 text-secondary border-bottom pb-2">4. Termos e Declarações</h4>
-
-                        <div class="form-check mb-2">
-                            {{ form.declaracao_autoria }}
-                            <label class="form-check-label fw-bold" for="{{ form.declaracao_autoria.id_for_label }}">
-                                Declaro que sou o legítimo autor da obra intelectual enviada e assumo total responsabilidade civil e penal pelo seu conteúdo.
-                            </label>
-                            {% if form.declaracao_autoria.errors %}
-                                <div class="text-danger small">{{ form.declaracao_autoria.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="form-check mb-4">
-                            {{ form.aceitou_termos }}
-                            <label class="form-check-label fw-bold" for="{{ form.aceitou_termos.id_for_label }}">
-                                Li e aceito os termos de uso, autorizando a plataforma a disponibilizar minha obra para leitura digital gratuita dos usuários.
-                            </label>
-                            {% if form.aceitou_termos.errors %}
-                                <div class="text-danger small">{{ form.aceitou_termos.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">Enviar Obra para Moderação</button>
-                            <a href="{% url 'biblioteca' %}" class="btn btn-light">Voltar para a Biblioteca</a>
-                        </div>
-
-                    </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">E-mail</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger small">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.cpf_autor.id_for_label }}">CPF (Opcional)</label>
+                        {{ form.cpf_autor }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.registro_autoral.id_for_label }}">Registro Autoral (Opcional)</label>
+                        {{ form.registro_autoral }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.numero_registro.id_for_label }}">Nº Registro (Opcional)</label>
+                        {{ form.numero_registro }}
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mb-3" style="color: var(--purple, #8b5cf6); border-bottom: 1px solid rgba(139,92,246,.25); padding-bottom: 8px;">2. Informações da Obra</h4>
+
+            <div class="form-group">
+                <label for="{{ form.titulo.id_for_label }}">Título do Livro</label>
+                {{ form.titulo }}
+                {% if form.titulo.errors %}
+                    <div class="text-danger small">{{ form.titulo.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.categoria.id_for_label }}">Categoria</label>
+                        {{ form.categoria }}
+                        {% if form.categoria.errors %}
+                            <div class="text-danger small">{{ form.categoria.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="{{ form.paginas.id_for_label }}">Nº de Páginas</label>
+                        {{ form.paginas }}
+                        {% if form.paginas.errors %}
+                            <div class="text-danger small">{{ form.paginas.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="{{ form.ano_publicacao.id_for_label }}">Ano de Publicação</label>
+                        {{ form.ano_publicacao }}
+                        {% if form.ano_publicacao.errors %}
+                            <div class="text-danger small">{{ form.ano_publicacao.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.isbn.id_for_label }}">ISBN</label>
+                        {{ form.isbn }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.edicao.id_for_label }}">Edição</label>
+                        {{ form.edicao }}
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mb-3" style="color: var(--purple, #8b5cf6); border-bottom: 1px solid rgba(139,92,246,.25); padding-bottom: 8px;">3. Upload de Arquivos</h4>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.capa.id_for_label }}">Capa do Livro (Imagem)</label>
+                        {{ form.capa }}
+                        {% if form.capa.errors %}
+                            <div class="text-danger small">{{ form.capa.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.pdf.id_for_label }}">Arquivo PDF da Obra</label>
+                        {{ form.pdf }}
+                        {% if form.pdf.errors %}
+                            <div class="text-danger small">{{ form.pdf.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mb-3" style="color: var(--purple, #8b5cf6); border-bottom: 1px solid rgba(139,92,246,.25); padding-bottom: 8px;">4. Termos e Declarações</h4>
+
+            <div class="form-group checkbox">
+                {{ form.declaracao_autoria }}
+                <label for="{{ form.declaracao_autoria.id_for_label }}">
+                    Declaro que sou o legítimo autor da obra intelectual enviada e assumo total responsabilidade civil e penal pelo seu conteúdo.
+                </label>
+                {% if form.declaracao_autoria.errors %}
+                    <div class="text-danger small d-block">{{ form.declaracao_autoria.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group checkbox mb-4">
+                {{ form.aceitou_termos }}
+                <label for="{{ form.aceitou_termos.id_for_label }}">
+                    Li e aceito os termos de uso, autorizando a plataforma a disponibilizar minha obra para leitura digital gratuita dos usuários.
+                </label>
+                {% if form.aceitou_termos.errors %}
+                    <div class="text-danger small d-block">{{ form.aceitou_termos.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+                <button type="submit" class="submit-btn">Enviar Obra para Moderação</button>
+                <a href="{% url 'biblioteca' %}" class="btn btn-outline-light py-3" style="border-radius: 16px;">Voltar para a Biblioteca</a>
+            </div>
+
+        </form>
     </div>
 </div>
 
-{# Opcional: Script para injetar classes CSS do Bootstrap nos widgets padrão do Django de forma não invasiva #}
+{# Ajuste do Script para evitar injeção de classes conflitantes do Bootstrap #}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const textInputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="number"], select');
-        textInputs.forEach(input => {
-            input.classList.add('form-control');
-        });
-
-        const fileInputs = document.querySelectorAll('input[type="file"]');
-        fileInputs.forEach(input => {
-            input.classList.add('form-control');
-        });
-
+        // Removemos a adição automática do 'form-control' do Bootstrap para não sobrescrever os estilos do seu CSS customizado
         const checkInputs = document.querySelectorAll('input[type="checkbox"]');
         checkInputs.forEach(input => {
             input.classList.add('form-check-input');

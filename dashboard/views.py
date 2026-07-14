@@ -70,11 +70,14 @@ def painel_admin(request):
     # 2. GERENCIAMENTO DE OBRAS PENDENTES
     # ==========================================================
     elif request.method == 'POST' and 'btn_gerenciar_solicitacao' in request.POST:
-        solicitacao_id = limpar_id_seguro(request.POST.get('obra_id'))
+        solicitacao_id = limpar_id_seguro(request.POST.get('solicitacao_id'))
         acao = request.POST.get('btn_gerenciar_solicitacao')
         
-        # CORREÇÃO ERRO 4: Usando o model atualizado SolicitacaoPublicacao
-        solicitacao = get_object_or_404(SolicitacaoPublicacao, id=solicitacao_id)
+        # CORREÇÃO SEGURA: Tratamento robusto contra Double Submit (Evita erro 404 se a solicitação já foi processada)
+        solicitacao = SolicitacaoPublicacao.objects.filter(id=solicitacao_id).first()
+        if not solicitacao:
+            return redirect('dashboard:painel_admin')
+            
         livro = solicitacao.livro
         
         if acao == 'aprovar':
@@ -87,8 +90,9 @@ def painel_admin(request):
             
         elif acao == 'rejeitar':
             titulo_obra = livro.titulo
-            solicitacao.delete()
-            livro.delete() # Removemos o arquivo temporário rejeitado
+            # CORREÇÃO DE CASCADE: Deletar o livro primeiro acionará automaticamente a deleção em cascata (CASCADE) 
+            # da SolicitacaoPublicacao correspondente de maneira limpa, atômica e consistente no banco de dados.
+            livro.delete()
             messages.warning(request, f"Submissão da obra '{titulo_obra}' foi recusada.")
             
         return redirect('dashboard:painel_admin')

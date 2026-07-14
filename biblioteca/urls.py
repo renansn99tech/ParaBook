@@ -1,14 +1,21 @@
+# biblioteca/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
     path('', views.biblioteca, name='biblioteca'),
-    path('acesso-biblioteca/', views.acesso_biblioteca, name='acesso_telemetria'), # Mantendo compatibilidade de nomes internos
+    
+    # CORREÇÃO ERRO 1: Nome mapeado como acesso_biblioteca para resolver o NoReverseMatch
+    path('acesso-biblioteca/', views.acesso_biblioteca, name='acesso_biblioteca'),
+    
     path('mais-acessados/', views.mais_acessados, name='mais_acessados'),
     path('novidade/', views.novidade, name='novidade'),
     
     # Nova nomenclatura arquitetural substituindo obras-autores
     path('solicitacoes-publicacao/', views.solicitacoes_publicacao, name='solicitacoes_publicacao'),
+    
+    # CORREÇÃO ERRO 3: Rota espelho legada para garantir compatibilidade com templates antigos
+    path('solicitacoes-publicacao/legado/', views.solicitacoes_publicacao, name='obras_autores'),
 
     # Rotas de gerenciamento do acervo de Livros desatreladas da view legada
     path('livro/novo/', views.criar_livro, name='criar_livro'),

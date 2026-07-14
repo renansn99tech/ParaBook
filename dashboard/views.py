@@ -1,3 +1,4 @@
+# dashboard/views.py
 import PyPDF2
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -5,7 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.models import User
 from usuarios.models import Usuario, Notificacao
-from biblioteca.models import Livro, Categoria, SolicitacaoPublicacao, Denuncia
+from biblioteca.models import Livro, Categoria, SolicitacaoPublicacao, Denuncia # CORREÇÃO ERRO 4: Removido ObraAutor inexistente
 from comunidades.models import Comunidade
 
 def apenas_superuser(user):
@@ -71,22 +72,23 @@ def painel_admin(request):
     elif request.method == 'POST' and 'btn_gerenciar_solicitacao' in request.POST:
         solicitacao_id = limpar_id_seguro(request.POST.get('obra_id'))
         acao = request.POST.get('btn_gerenciar_solicitacao')
-        obra_pendente = get_object_or_404(ObraAutor, id=solicitacao_id)
+        
+        # CORREÇÃO ERRO 4: Usando o model atualizado SolicitacaoPublicacao
+        solicitacao = get_object_or_404(SolicitacaoPublicacao, id=solicitacao_id)
+        livro = solicitacao.livro
         
         if acao == 'aprovar':
-            novo_livro = Livro.objects.create(
-                titulo=obra_pendente.titulo,
-                categoria=obra_pendente.categoria,
-                autor=obra_pendente.nome,
-                capa=obra_pendente.capa if hasattr(obra_pendente, 'capa') else None,
-                pdf=obra_pendente.pdf if hasattr(obra_pendente, 'pdf') else None,
-                ano_publicacao=2026 
-            )
-            obra_pendente.delete()
-            messages.success(request, f"Obra '{novo_livro.titulo}' aprovada e publicada com sucesso!")
+            # Como o livro já existe no banco, apenas publicamos e removemos a fila pendente
+            livro.status = 'publicado'
+            livro.save()
+            
+            solicitacao.delete()
+            messages.success(request, f"Obra '{livro.titulo}' aprovada e publicada com sucesso!")
+            
         elif acao == 'rejeitar':
-            titulo_obra = obra_pendente.titulo
-            obra_pendente.delete()
+            titulo_obra = livro.titulo
+            solicitacao.delete()
+            livro.delete() # Removemos o arquivo temporário rejeitado
             messages.warning(request, f"Submissão da obra '{titulo_obra}' foi recusada.")
             
         return redirect('dashboard:painel_admin')
@@ -133,7 +135,7 @@ def painel_admin(request):
                 livro.pdf = pdf
                 
             livro.save()
-            messages.success(request, f"Livro '{titulo}' atualizado com sucesso!")
+            messages.success(request, f"Livro '{titulo}' updated successfully!")
         else:
             # Fluxo de Criação seguro
             dados_criacao = {
@@ -194,7 +196,9 @@ def painel_admin(request):
     denuncias_pendentes = Denuncia.objects.all().select_related('livro', 'usuario')
     
     usuarios_pendentes = Usuario.objects.filter(tipo='leitor_solicitou_upgrade') 
-    solicitacoes = ObraAutor.objects.all().select_related('categoria') 
+    
+    # CORREÇÃO ERRO 4: Coleta de solicitações mapeando através da relação unificada com o Livro
+    solicitacoes = SolicitacaoPublicacao.objects.all().select_related('livro__categoria') 
 
     comunidades = Comunidade.objects.all()
     comunidades_sistema = Comunidade.objects.filter(criada_por_sistema=True)
@@ -209,7 +213,6 @@ def painel_admin(request):
 
     context = {
         'livros': livros,
-        'categorias': categories,  # Mantendo compatibilidade de contexto histórico se necessário
         'categorias': categorias,
         'usuarios': usuarios,
         'denuncias_pendentes': denuncias_pendentes,

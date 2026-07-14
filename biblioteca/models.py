@@ -1,4 +1,4 @@
-# models.py
+# biblioteca/models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
@@ -54,6 +54,14 @@ class Livro(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    # =========================================================================
+    # PROPRIEDADES DE RETROCOMPATIBILIDADE (Evita quebra nos templates de lista)
+    # =========================================================================
+    @property
+    def id_livro(self):
+        """Mapeia dinamicamente o ID do livro caso o template busque pelo nome antigo"""
+        return self.id
 
     @property
     def url_pdf_estatico(self):
@@ -160,7 +168,6 @@ class SolicitacaoPublicacao(models.Model):
         ("rejeitado", "Rejeitado"),
     ]
 
-    # Alterado de 'usuarios.Usuario' para o modelo padrão do Django 'User'
     usuario = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -203,3 +210,27 @@ class SolicitacaoPublicacao(models.Model):
 
     def __str__(self):
         return f"{self.livro.titulo} ({self.status})"
+
+    # =========================================================================
+    # COMPATIBILIDADE COM O TEMPLATE DO PAINEL ADMIN (Mapeia o livro associado)
+    # =========================================================================
+    @property
+    def titulo(self):
+        return self.livro.titulo if self.livro else "Sem Título"
+
+    @property
+    def categoria(self):
+        return self.livro.categoria if self.livro else None
+
+    @property
+    def nome(self):
+        """Retorna o nome do autor do livro"""
+        return self.livro.autor if self.livro else ""
+
+    @property
+    def capa(self):
+        return self.livro.capa if self.livro else None
+
+    @property
+    def pdf(self):
+        return self.livro.pdf if self.livro else None

@@ -27,6 +27,7 @@ class Livro(models.Model):
         ("pendente", "Pendente"),
         ("publicado", "Publicado"),
         ("rejeitado", "Rejeitado"),
+        ("removido", "Removido na Lixeira"), # NOVO
     ]
 
     titulo = models.CharField(max_length=255, default="Sem Título", verbose_name="Título")
@@ -41,6 +42,7 @@ class Livro(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='livros', verbose_name="Categoria")
     origem = models.CharField(max_length=25, choices=ORIGEM_CHOICES, default="dominio_publico", verbose_name="Origem da Obra")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="publicado", verbose_name="Status de Publicação")
+    data_remocao = models.DateTimeField(null=True, blank=True, verbose_name="Data de Remoção") # NOVO
 
     class Meta:
         db_table = 'livros'
@@ -150,6 +152,9 @@ class Denuncia(models.Model):
         default='pendente',
         verbose_name="Status da Denúncia"
     )
+
+    arquivada = models.BooleanField(default=False)
+    data_arquivamento = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'denuncias'

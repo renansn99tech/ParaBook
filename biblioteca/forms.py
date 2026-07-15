@@ -17,7 +17,7 @@ class ObraAutorForm(forms.ModelForm):
         label="E-mail",
         widget=forms.EmailInput(attrs={'readonly': 'readonly'})
     )
-    cpf_autor = forms.CharField(max_length=14, required=False, label="CPF do Autor")
+    cpf_autor = forms.CharField(max_length=14, required=True, label="CPF do Autor")
     registro_autoral = forms.CharField(max_length=100, required=False, label="Registro Autoral")
     numero_registro = forms.CharField(max_length=20, required=False, label="Número do Registro")
     declaracao_autoria = forms.BooleanField(required=True, label="Declaro que sou o autor da obra")

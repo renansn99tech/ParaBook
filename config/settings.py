@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'comunidades',
     'biblioteca',
     'dashboard',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

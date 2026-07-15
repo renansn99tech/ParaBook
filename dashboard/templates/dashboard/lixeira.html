@@ -1,0 +1,111 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %} Lixeira do Sistema - ParaBook {% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}?v=2.0" />
+<style>
+  .lixeira-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+  .badge-danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; }
+  .badge-warning { background: rgba(245, 158, 11, 0.2); color: #fcd34d; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; }
+</style>
+{% endblock %} 
+
+{% block content %}
+<div class="lixeira-container">
+  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+    <a href="{% url 'dashboard:painel_admin' %}" style="color: #94a3b8; font-size: 1.5rem;"><i class="fa-solid fa-arrow-left"></i></a>
+    <h1 style="margin: 0; color: #f8fafc;"><i class="fa-solid fa-trash-can" style="color: #6b7280"></i> Lixeira do Sistema</h1>
+  </div>
+  
+  <p style="color: #94a3b8; margin-bottom: 40px;">
+    Itens nesta área aguardam a exclusão definitiva automática (<strong>7 dias</strong> para obras, <strong>30 dias</strong> para denúncias). Você pode restaurá-los ou forçar a exclusão imediata.
+  </p>
+
+  <h3 style="color: #ef4444; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+    <i class="fa-solid fa-book-skull"></i> Obras Removidas
+  </h3>
+  <ul style="list-style: none; padding: 0; margin-bottom: 50px;">
+    {% for livro in livros_removidos %}
+    <li style="border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(15, 23, 42, 0.6); padding: 20px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="font-size: 1.1rem; color: #e2e8f0;">{{ livro.titulo }}</strong> <span class="badge-danger">Exclusão Pendente</span><br />
+        <small style="color: #94a3b8; display: block; margin-top: 5px;">
+          <i class="fa-solid fa-pen-nib"></i> {{ livro.autor }} | 
+          <i class="fa-solid fa-bookmark"></i> {{ livro.categoria.nome }} | 
+          <i class="fa-solid fa-clock"></i> Removido em: {{ livro.data_remocao|date:"d/m/Y H:i" }}
+        </small>
+      </div>
+      <form method="POST" style="display: flex; gap: 10px; margin: 0; background: transparent; padding: 0; border: none;">
+        {% csrf_token %}
+        <input type="hidden" name="livro_id" value="{{ livro.id }}" />
+        
+        <button type="submit" name="acao" value="restaurar_livro" style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #4ade80; padding: 8px 16px; border-radius: 8px; cursor: pointer;">
+          <i class="fa-solid fa-rotate-left"></i> Restaurar Obra
+        </button>
+        
+        <button type="button" name="acao" value="excluir_livro_permanente" class="danger" style="padding: 8px 16px; border-radius: 8px;" onclick="confirmarExclusaoFatal(this, 'Obra')">
+          <i class="fa-solid fa-fire"></i> Excluir Permanentemente
+        </button>
+      </form>
+    </li>
+    {% empty %}
+    <li style="color: #64748b; font-style: italic; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; text-align: center;">Nenhuma obra na lixeira.</li>
+    {% endfor %}
+  </ul>
+
+  <h3 style="color: #fcd34d; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+    <i class="fa-solid fa-box-archive"></i> Denúncias Arquivadas (Falsos Positivos)
+  </h3>
+  <ul style="list-style: none; padding: 0;">
+    {% for d in denuncias_arquivadas %}
+    <li style="border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.6); padding: 15px 20px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong style="color: #e2e8f0;">Obra: {{ d.livro.titulo }}</strong> <span class="badge-warning">Arquivada</span><br />
+        <small style="color: #94a3b8; display: block; margin-top: 5px;">
+          Motivo Original: {{ d.motivo }} | Arquivada em: {{ d.data_arquivamento|date:"d/m/Y" }}
+        </small>
+      </div>
+      <form method="POST" style="margin: 0; background: transparent; padding: 0; border: none;">
+        {% csrf_token %}
+        <input type="hidden" name="denuncia_id" value="{{ d.id }}" />
+        <button type="button" name="acao" value="excluir_denuncia_permanente" style="background: rgba(107, 114, 128, 0.2); border: 1px solid #6b7280; color: #9ca3af; padding: 8px 16px; border-radius: 8px; cursor: pointer;" onclick="confirmarExclusaoFatal(this, 'Denúncia')">
+          <i class="fa-solid fa-eraser"></i> Excluir do Histórico
+        </button>
+      </form>
+    </li>
+    {% empty %}
+    <li style="color: #64748b; font-style: italic; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; text-align: center;">Nenhuma denúncia arquivada.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function confirmarExclusaoFatal(botao, tipo) {
+    Swal.fire({
+      title: 'Desintegração Total!',
+      text: `Esta ação apagará a ${tipo} DEFINITIVAMENTE do banco de dados, sem chance de recuperação. Deseja forçar a exclusão?`,
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonColor: '#000000',
+      cancelButtonColor: '#374151',
+      confirmButtonText: '☠️ Sim, Excluir',
+      cancelButtonText: 'Cancelar',
+      background: '#450a0a',
+      color: '#fecaca',
+      backdrop: 'rgba(0,0,0,0.8)'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const form = botao.closest('form');
+        const inputInvisivel = document.createElement('input');
+        inputInvisivel.type = 'hidden';
+        inputInvisivel.name = botao.name;
+        inputInvisivel.value = botao.value;
+        form.appendChild(inputInvisivel);
+        form.submit();
+      }
+    });
+  }
+</script>
+{% endblock %}

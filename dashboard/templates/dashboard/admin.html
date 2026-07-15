@@ -138,7 +138,6 @@
 
         <div style="display: flex; gap: 10px; width: 100%; margin-top: 5px">
           <input type="text" name="ano_publicacao" id="inputDataPublicacao" placeholder="Ano de Publicação (Ex: 2026)" style="flex: 1" />
-          <input type="number" name="paginas" id="inputPaginas" placeholder="Quantidade de Páginas" style="flex: 1" />
         </div>
 
         <div style="display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 5px;">
@@ -227,7 +226,7 @@
           <form method="POST" style="display: flex; gap: 8px; background: transparent; border: none; padding: 0; margin: 0;">
             {% csrf_token %}
             <input type="hidden" name="usuario_id" value="{{ u.id }}" />
-            <button type="submit" name="btn_gerenciar_usuario" value="aprovar" style="background: #22c55e; padding: 8px 12px">✓ Approvar</button>
+            <button type="submit" name="btn_gerenciar_usuario" value="aprovar" style="background: #22c55e; padding: 8px 12px">✓ Aprovar</button>
             <button type="submit" name="btn_gerenciar_usuario" value="rejeitar" class="danger" style="padding: 8px 12px">✕ Recusar</button>
           </form>
         </li>
@@ -349,23 +348,60 @@
     <!-- SEÇÃO: DENÚNCIAS -->
     <section id="denuncias" class="secao" style="display: none">
       <h1>Denúncias Recebidas</h1>
-      <p style="color: var(--text-muted); margin-bottom: 20px">Moderação active de conteúdo violador de direitos autorais ou termos de uso.</p>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
+        <p style="color: var(--text-muted); margin: 0">Moderação ativa de conteúdo violador de direitos autorais ou termos de uso.</p>
+        
+        <a href="{% url 'dashboard:lixeira' %}" class="btn-outline" style="border-color: #6b7280; color: #9ca3af; padding: 8px 16px; border-radius: 8px; text-decoration: none; display: flex; gap: 8px; align-items: center;">
+          <i class="fa-solid fa-trash-can"></i> Lixeira (7-30 dias)
+        </a>
+      </div>
+      
+      <h3 style="color: #ef4444; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        <i class="fa-solid fa-book-open"></i> Denúncias de Livros
+      </h3>
       <ul>
         {% for d in denuncias_pendentes %}
         <li style="border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02)">
           <div>
             <strong>Livro Denunciado: {{ d.livro.titulo }}</strong> <br />
-            <small style="color: var(--text-muted)">Motivo: {{ d.motivo }} | Por: @{{ d.usuario.user_auth.username }}</small>
+            <small style="color: var(--text-muted)">Motivo: {{ d.motivo }} | Por: @{{ d.usuario }}</small>
           </div>
           <form method="POST" style="display: flex; gap: 8px; margin: 0; padding: 0; border: none; background: transparent;">
             {% csrf_token %}
             <input type="hidden" name="denuncia_id" value="{{ d.id }}" />
-            <button type="submit" name="btn_resolver_denuncia" value="remover_obra" class="danger" style="padding: 6px 12px">Remover Livro</button>
+            
+            <button type="button" name="btn_resolver_denuncia" value="remover_obra" class="danger" style="padding: 6px 12px" onclick="confirmarAcaoPerigosa(this, 'livro')">Remover Livro</button>
             <button type="submit" name="btn_resolver_denuncia" value="falso_positivo" style="background: #6b7280; padding: 6px 12px">Arquivar</button>
           </form>
         </li>
         {% empty %}
-        <li style="color: var(--text-muted); font-style: italic">Nenhuma denúncia pendente. Sistema limpo!</li>
+        <li style="color: var(--text-muted); font-style: italic">Nenhuma denúncia de livro pendente.</li>
+        {% endfor %}
+      </ul>
+
+      <h3 style="color: #fcd34d; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        <i class="fa-solid fa-users-slash"></i> Denúncias de Comunidades
+      </h3>
+      <ul>
+        {% for dc in denuncias_comunidades %}
+        <li style="border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02)">
+          <div>
+            <strong>Comunidade: {{ dc.comunidade.nome }}</strong> <br />
+            <small style="color: var(--text-muted)">Motivo: {{ dc.motivo }} | Por: @{{ dc.usuario }}</small>
+          </div>
+          <form method="POST" style="display: flex; gap: 8px; margin: 0; background: transparent; padding: 0; border: none;">
+            {% csrf_token %}
+            <input type="hidden" name="comunidade_id" value="{{ dc.comunidade.id }}" />
+            <input type="hidden" name="denuncia_comunidade_id" value="{{ dc.id }}" />
+            
+            <button type="button" name="btn_deletar_comunidade" value="1" class="danger" style="padding: 6px 12px" onclick="confirmarAcaoPerigosa(this, 'comunidade')">Banir Sala</button>
+            
+            <button type="submit" name="btn_ignorar_denuncia_comunidade" value="1" style="background: #6b7280; padding: 6px 12px">Ignorar</button>
+          </form>
+        </li>
+        {% empty %}
+        <li style="color: var(--text-muted); font-style: italic">Nenhuma denúncia de comunidade no momento.</li>
         {% endfor %}
       </ul>
     </section>
@@ -472,6 +508,47 @@
       sub.style.display = "none";
     });
     document.getElementById(idSubAba).style.display = "block";
+  }
+
+  // 5. Motor Universal de SweetAlert para Ações Destrutivas
+  function confirmarAcaoPerigosa(botao, tipo) {
+    let tituloAviso = '';
+    let textoAviso = '';
+
+    if (tipo === 'livro') {
+      tituloAviso = 'Remover Livro?';
+      textoAviso = 'Tem certeza? Esta ação apagará a obra definitivamente da biblioteca.';
+    } else if (tipo === 'comunidade') {
+      tituloAviso = 'Banir Sala?';
+      textoAviso = 'Isso destruirá a comunidade e removerá todos os membros. Tem certeza?';
+    }
+
+    Swal.fire({
+      title: tituloAviso,
+      text: textoAviso,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#374151',
+      confirmButtonText: 'Sim, prosseguir',
+      cancelButtonText: 'Cancelar',
+      background: '#0f172a',
+      color: '#f8fafc'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Encontra o formulário "pai" do botão clicado
+        const form = botao.closest('form');
+        
+        // Como o botão não é mais do tipo 'submit', precisamos injetar os dados dele (nome e valor) no form via um input invisível
+        const inputInvisivel = document.createElement('input');
+        inputInvisivel.type = 'hidden';
+        inputInvisivel.name = botao.name;
+        inputInvisivel.value = botao.value;
+        
+        form.appendChild(inputInvisivel);
+        form.submit();
+      }
+    });
   }
 </script>
 {% endblock %}

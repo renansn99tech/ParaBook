@@ -66,6 +66,9 @@ INSTALLED_APPS = [
     'biblioteca',
     'dashboard',
     'django_extensions',
+    'rest_framework',
+    'drf_spectacular',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -206,3 +209,30 @@ MAX_BOOK_UPLOAD_SIZE = 5 * 1024 * 1024
 
 # Configuração para testar envio de e-mails no terminal durante o desenvolvimento
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# DRF Configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'ParaBook API',
+    'DESCRIPTION': 'Documentação oficial das APIs do ParaBook (Fase 2)',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
+}

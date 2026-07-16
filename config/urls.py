@@ -21,6 +21,7 @@ from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -49,6 +50,12 @@ urlpatterns = [
     # Urls auxiliares
     path('login/', tela_login, name='login'),
     path('logout/', logout_view, name='logout'), # Adicionada uma view "logout_view" para a função logout do app Perfis
+
+    # --- API Routes (Fase 2) ---
+    path('api/docs/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/v1/auth/', include('usuarios.api.urls')),
+    path('api/v1/biblioteca/', include('biblioteca.api.urls')),
 ]
 
 if settings.DEBUG:

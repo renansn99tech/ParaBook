@@ -114,11 +114,24 @@ def concluir_leitura(request, livro_id):
 def is_approved_author(user):
     if user.is_anonymous:
         return False
+    # Admins têm passe livre
     if user.is_superuser or user.is_staff:
         return True
-    if hasattr(user, 'perfil_customizado'):
-        return user.perfil_customizado.tipo in ['autor', 'admin']
-    return hasattr(user, 'perfil') and user.perfil.status == 'aprovado'
+        
+    # 1. Checagem principal: O usuário tem o tipo 'autor' no modelo Usuario?
+    perfil_custom = getattr(user, 'perfil_customizado', None)
+    if perfil_custom and getattr(perfil_custom, 'tipo', None) in ['autor', 'admin']:
+        return True
+            
+    # 2. Checagem de Fallback: Se o tipo não estiver setado, ele foi aprovado via app biblioteca?
+    perfil_biblioteca = getattr(user, 'perfil_da_biblioteca', None)
+    if perfil_biblioteca:
+        status_biblio = getattr(perfil_biblioteca, 'status', None)
+        # Verifica as opções exatas definidas em biblioteca.models.Perfil.STATUS_CHOICES
+        if status_biblio in ['perfil_aprovado', 'aprovado']: 
+            return True
+        
+    return False
 
 
 @login_required
@@ -250,7 +263,7 @@ def lista_autores(request):
         if autor_chave in perfis_registrados:
             perfil_novo = perfis_registrados[autor_chave]
             biografia_texto = getattr(perfil_novo, 'bio', '')
-            if perfil_novo.foto:
+            if getattr(perfil_novo, 'foto', None) and hasattr(perfil_novo.foto, 'url'):
                 try:
                     foto_url = perfil_novo.foto.url
                 except ValueError:

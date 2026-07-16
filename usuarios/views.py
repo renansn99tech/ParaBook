@@ -72,7 +72,7 @@ def register(request):
             auth_user.first_name = nome_completo
             auth_user.save()
             
-            novo_perfil = Perfil.objects.create(descricao_perfil="Olá! Sou um novo leitor do ParaBook.", historico="Nenhum livro lido ainda.")
+            novo_perfil = Perfil.objects.create(usuario=auth_user, descricao_perfil="Olá! Sou um novo leitor do ParaBook.", historico="Nenhum livro lido ainda.")
             
             # ATUALIZAÇÃO AQUI: Registrando o aceite e o timestamp exato da criação
             Usuario.objects.create(
@@ -125,11 +125,21 @@ def excluir_conta(request):
 @login_required
 def aceitar_termos(request):
     if request.method == 'POST':
-        usuario_custom = request.user.perfil_customizado
-        usuario_custom.termos_aceitos = True
-        usuario_custom.data_aceite_termos = timezone.now()
-        usuario_custom.save()
-        messages.success(request, 'Obrigado por aceitar nossos termos. Bem-vindo de volta!')
+        # Busca segura do modelo estendido Usuario
+        usuario_custom = None
+        if hasattr(request.user, 'perfil_customizado'):
+            usuario_custom = request.user.perfil_customizado
+        elif hasattr(request.user, 'usuario'):
+            usuario_custom = request.user.usuario
+            
+        if usuario_custom:
+            usuario_custom.termos_aceitos = True
+            usuario_custom.data_aceite_termos = timezone.now()
+            usuario_custom.save()
+            messages.success(request, 'Obrigado por aceitar nossos termos. Bem-vindo de volta!')
+        else:
+            messages.error(request, 'Erro ao localizar seu perfil de usuário.')
+            
         return redirect('perfis:perfil_pessoal')
         
     return render(request, 'usuarios/aceitar_termos.html')

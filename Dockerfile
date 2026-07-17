@@ -23,5 +23,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Copia o código da aplicação
 COPY . /app/
 
-# Expõe a porta 8000
+# Expõe a porta
 EXPOSE 8000
+
+# Executa as migrações e inicia o servidor (Gunicorn)
+CMD sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}"

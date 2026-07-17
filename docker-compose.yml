@@ -1,0 +1,29 @@
+
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: parabook_db
+      POSTGRES_USER: parabook_user
+      POSTGRES_PASSWORD: parabook_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgres://parabook_user:parabook_password@db:5432/parabook_db
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

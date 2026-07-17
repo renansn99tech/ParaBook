@@ -118,17 +118,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 #     }
 # }
 
-# DATABASE DO RAILWAY 
+# DATABASE CONFIGURATION (PostgreSQL / Docker)
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": config("DB_NAME", default="mydb"),
-        "USER": config("DB_USER", default="root"),
-        "PASSWORD": config("DB_PASSWORD", default="Renann13."),
-        "HOST": config("DB_HOST", default="127.0.0.1"),
-        "PORT": config("DB_PORT", default="3306"),
-        "OPTIONS": {"ssl": {"ssl_mode": "REQUIRED"}},
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='postgres://parabook_user:parabook_password@localhost:5432/parabook_db'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # Password validation

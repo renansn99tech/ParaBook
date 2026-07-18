@@ -21,6 +21,7 @@ from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+# pyrefly: ignore [missing-import]
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
@@ -56,6 +57,9 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/v1/auth/', include('usuarios.api.urls')),
     path('api/v1/biblioteca/', include('biblioteca.api.urls')),
+    path('api/v1/comunidades/', include('comunidades.api.urls')),
+    path('api/v1/perfis/', include('perfis.api.urls')),
+    path('api/v1/dashboard/', include('dashboard.api.urls')),
 ]
 
 if settings.DEBUG:

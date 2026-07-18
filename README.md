@@ -1,129 +1,80 @@
-# Projeto Integrador - Parabook
- 
-Repositório do Projeto Integrador do curso **Programador Full Stack (Senac)**.
- 
-O projeto consiste no desenvolvimento de uma aplicação web voltada para gerenciamento e visualização de um acervo de livros, com interface interativa e integração com banco de dados.
- 
+# 📚 ParaBook - Plataforma de Economia Criativa Literária
+
+> **Repositório do Projeto Integrador - Programador Full Stack (Senac)**
+
+O **ParaBook** nasceu como uma resposta à necessidade de modernizar a interação com o conhecimento. Indo muito além de um simples gerenciador de acervo, a plataforma se posiciona como um **ecossistema literário imersivo**, unindo leitores casuais, autores independentes e administradores em um ambiente seguro, responsivo e de alta performance.
+
 ---
- 
-## Sobre o Projeto
- 
-O sistema Parabook foi desenvolvido com o objetivo de criar uma plataforma onde usuários possam visualizar conteúdos literários organizados por categorias, além de interagir com funcionalidades como FAQ, cadastro e login.
- 
+
+## 🎯 Proposta de Valor: Como já atendemos nossos usuários
+
+Atualmente, o ParaBook já oferece uma experiência sólida e de alto valor agregado para seus usuários:
+- **Para Leitores:** Uma interface limpa (Dark Glassmorphism) livre de distrações, com navegação fluida pelo acervo (Filosofia, Literatura, Religiosos), controle de perfil e comunicação direta através de FAQs e comunidades.
+- **Para Autores Independentes:** Um ambiente isolado e seguro para publicação e futura monetização, fomentando a economia criativa sem intermediários.
+- **Para Administradores:** Dashboards de controle e gestão de acesso robusto (RBAC), garantindo moderação eficiente da plataforma.
+
 ---
- 
-## Como executar o projeto
- 
-1. Clone o repositório:
+
+## 🧩 Arquitetura de Apps (Modularidade Django)
+
+O backend foi arquitetado com base no princípio de responsabilidade única, dividindo o sistema em módulos (apps) independentes, o que facilita manutenções e garante a escalabilidade do sistema:
+
+- `usuarios` / `perfis`: Gestão rigorosa de autenticação, RBAC e perfis customizados.
+- `livros` / `obras`: O núcleo do acervo, com categorização inteligente e vitrines interativas.
+- `dashboard`: Painéis analíticos e métricas para gestão.
+- `mensagens` / `comunidades` / `comentarios`: Toda a camada social, conectando os usuários do ecossistema.
+
+---
+
+## 🚀 Como executar o projeto localmente
+
+**1. Clone o repositório:**
 ```bash
 git clone https://github.com/rsnproj2/ProjetoIntegrador.git
-```
----
-##  Acesse a pasta do projeto
-```bash
 cd ProjetoIntegrador
 ```
-## Execute o servidor Django:
+
+**2. Crie e ative o ambiente virtual:**
 ```bash
+python -m venv venv
+# No Windows:
+venv\Scripts\activate
+```
+
+**3. Instale as dependências e rode o servidor:**
+```bash
+pip install -r requirements.txt
 python manage.py runserver
 ```
-## Tecnologias Utilizadas
- 
-### Front-end
- 
-HTML
-CSS
-JavaScript
- 
-### Back-end
- 
-Python
-Django
- 
-### Banco de Dados
- 
-MySQL
- 
-### Funcionalidades
-### Página Inicial
- 
-Pop-up de boas-vindas após 3 segundos
-Barra de navegação principal
-Cards interativos com conteúdos do sistema
- 
-### FAQ
- 
-Lista de dúvidas frequentes
-Opção para envio de novas perguntas
- 
-### Biblioteca
- 
-Acervo de livros dividido por categorias:
- 
-Filosofia
-Literatura
-Religiosos
- 
-###  Sistema de Usuário
- 
-Cadastro
-Login
-Tela de perfil
- 
-##  Status do Projeto
-27/03
- 
-Primeira página quase finalizada
-Próximo passo: integração de login e ajustes nos cards
- 
- 
-16/04/2026
- 
-Remodelação de cores e estrutura do código
-Implementação de:
- 
-Tela de perfil
-Login e cadastro
-Carrosséis
-Footer padronizado
- 
- 
- 
- 
-14/05/2026
- 
-Identidade visual modernizada (Glassmorphism e Typography)
-Front-end finalizado
-Banco de dados modelado (conceitual, lógico e físico)
-Projeto avançado até o Pull Request #103
- 
- 
-26/05/2026 (Atual)
- 
-Integração do back-end com o front-end em andamento
-Backend em Django já conectado ao banco de dados MySQL
- 
- 
-## Próximos Passos
- 
-Finalizar integração completa entre front-end e back-end
-Implementar consumo de APIs
-Ajustar funcionalidades finais do sistema
-Preparar versão estável para deploy
- 
- 
-## Equipe
- 
-Bruno
-Rodrigo
-Arthur
-Renan
 
-### Inclusão dos livros da biblioteca
+---
 
-Foi criado um acervo de livros da biblioteca com os seguintes temas: **filosofia, literatura, religiosos**.
+## 💻 Stack Tecnológico Atual
 
+| Camada | Tecnologias |
+| :--- | :--- |
+| **Front-end** | HTML5, CSS3 (Vanilla / Flexbox / CSS Grid), JS Puro |
+| **Design System** | Dark Glassmorphism, UI/UX Mobile-First, Micro-interações |
+| **Back-end** | Python 3, Django |
+| **Banco de Dados** | MySQL (Produção/Staging), SQLite (Dev) |
 
-### Próximo passo
+---
 
-Aprender Python e trabalhar com APIs, inicializar o projeto com Django e em breve implementar as funcionalidades diferenciais e os insights adicionais.
+## 🗺️ Roadmap e Status do Projeto
+
+* **Março a Maio/2026 (Finalizado):** Modelagem do banco, interface visual modernizada, front-end finalizado e integração base.
+* **Maio a Junho/2026 (Finalizado):** Implementação completa do controle de acesso, perfis, proteção de rotas, exclusão transacional e dashboard.
+* **Julho/2026 (Atual):** Integração e consumo de APIs externas. Preparação do ecossistema.
+* **Próximos Passos (Curto/Médio Prazo):**
+  - Desacoplamento via **Django REST Framework**.
+  - Novo Front-end focado em **React/Next.js**.
+  - Criação do aplicativo nativo em **Flutter**.
+  - Implementação de Marketplace para livros físicos.
+
+---
+
+## 👥 Equipe Desenvolvedora
+
+* **Renan**
+* **Rodrigo**
+* **Arthur**

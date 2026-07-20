@@ -1,9 +1,10 @@
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { AuthContext } from '../context/AuthContext'
 import logoNova from '../assets/img/logo-nova.png'
 
 function Navbar() {
-  // Simulação de usuário logado (depois conectaremos com o Contexto de Autenticação)
-  const isAuthenticated = true;
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <nav className="navbar navbar-expand-lg">
@@ -36,12 +37,12 @@ function Navbar() {
               <i className="fa-solid fa-magnifying-glass"></i>
             </button>
 
-            {isAuthenticated ? (
+            {user ? (
               <>
                 <Link to="/perfil" className="btn-nav btn-primary-nav">
                   Meu Perfil
                 </Link>
-                <button className="btn-nav btn-outline">
+                <button className="btn-nav btn-outline" onClick={logout}>
                   Sair
                 </button>
               </>

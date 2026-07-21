@@ -6,23 +6,25 @@ function Dashboard() {
   const { user, logout } = useContext(AuthContext);
   const [abaAtiva, setAbaAtiva] = useState('dashboard');
 
-  // Mocks de Dashboard
   const metricas = {
-    usuarios: 15,
-    livros: 42,
-    autores: 5,
-    pendentes: 2
+    usuarios: 1,
+    livros: 0,
+    autores: 0,
+    livros_publicados: 0,
+    pendentes: 0
   };
 
   const menu = [
     { id: 'dashboard', icon: 'fa-chart-line', label: 'Dashboard' },
     { id: 'livros', icon: 'fa-book', label: 'Livros' },
     { id: 'comunidades', icon: 'fa-users', label: 'Comunidades' },
-    { id: 'usuarios', icon: 'fa-user-group', label: 'Usuários' }
+    { id: 'usuarios', icon: 'fa-user-group', label: 'Usuários' },
+    { id: 'aprovacoes', icon: 'fa-clipboard-check', label: 'Aprovações' },
+    { id: 'denuncias', icon: 'fa-flag', label: 'Denúncias', danger: true }
   ];
 
   return (
-    <div className="admin-container" style={{ display: 'flex', minHeight: '80vh', marginTop: '20px', borderRadius: '12px', overflow: 'hidden' }}>
+    <div className="admin-container" style={{ display: 'flex', minHeight: '100vh', margin: 0, padding: 0 }}>
       
       {/* SIDEBAR NAV */}
       <aside className="admin-sidebar">
@@ -34,15 +36,22 @@ function Dashboard() {
         {menu.map(item => (
           <button 
             key={item.id}
-            className={abaAtiva === item.id ? 'active' : ''}
+            className={`${abaAtiva === item.id ? 'active' : ''} ${item.danger ? 'danger text-danger' : ''}`}
             onClick={() => setAbaAtiva(item.id)}
+            style={item.danger && abaAtiva !== item.id ? { color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' } : {}}
           >
             <i className={`fa-solid ${item.icon}`} style={{ width: '25px' }}></i> {item.label}
           </button>
         ))}
 
         <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-          <button className="danger" onClick={logout} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px', padding: '12px 16px' }}>
+          <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px' }}>
+            <i className="fa-solid fa-user" style={{ width: '20px', textAlign: 'center' }}></i> Meu Perfil
+          </button>
+          <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px' }}>
+            <i className="fa-solid fa-desktop" style={{ width: '20px', textAlign: 'center' }}></i> Visão Leitor
+          </button>
+          <button className="danger" onClick={logout} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px' }}>
             <i className="fa-solid fa-right-from-bracket" style={{ width: '20px', textAlign: 'center' }}></i> Sair
           </button>
         </div>
@@ -55,18 +64,22 @@ function Dashboard() {
           <section className="secao" style={{ display: 'block' }}>
             <h1 style={{ color: 'white', marginBottom: '20px' }}>Visão Geral</h1>
             
-            <div className="metricas-grid">
+            <div className="metricas-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '15px' }}>
               <div className="card">
                 <h3>Total de Usuários</h3>
                 <p>{metricas.usuarios}</p>
               </div>
               <div className="card">
-                <h3>Livros Publicados</h3>
-                <p style={{ color: '#22c55e' }}>{metricas.livros}</p>
+                <h3>Total de Livros</h3>
+                <p>{metricas.livros}</p>
               </div>
               <div className="card">
                 <h3>Autores Ativos</h3>
                 <p>{metricas.autores}</p>
+              </div>
+              <div className="card">
+                <h3>Livros Publicados</h3>
+                <p style={{ color: '#22c55e' }}>{metricas.livros_publicados}</p>
               </div>
               <div className="card">
                 <h3>Solicitações Pendentes</h3>
@@ -74,9 +87,10 @@ function Dashboard() {
               </div>
             </div>
             
-            <div className="mt-5 p-4 rounded" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' }}>
-              <h3 className="text-white mb-3">Gráficos e Relatórios</h3>
-              <p className="text-muted">A integração com os gráficos de relatórios será implementada na Fase 5.</p>
+            <div className="mt-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', height: '300px' }}>
+              <div style={{ background: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}></div>
+              <div style={{ background: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}></div>
+              <div style={{ background: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}></div>
             </div>
           </section>
         )}

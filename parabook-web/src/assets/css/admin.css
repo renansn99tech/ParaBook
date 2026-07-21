@@ -57,48 +57,49 @@
 
 .admin-sidebar button{
     width:100%;
-
     padding:13px 16px;
-
-    border-radius:14px;
-
-    border:1px solid rgba(255,255,255,.08);
-
-    background:rgba(255,255,255,.03);
-
-    color:var(--text-secondary);
-
+    border-radius:12px;
+    /* Inactive: Slate super escura com vidro fosco */
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    color: #94a3b8;
     text-align:left;
-
     cursor:pointer;
-
-    transition:.3s;
+    transition: all 0.3s ease;
 }
 
-.admin-sidebar button:hover,
-.admin-sidebar button.active{
-    color:white;
+.admin-sidebar button:hover:not(.active):not(.danger) {
+    color: #f8fafc;
+    /* Hover inativo: brilho roxo sutil, sem preencher de lilás */
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+    transform: translateX(3px);
+}
 
-    border-color:rgba(139,92,246,.45);
-
-    background:rgba(139,92,246,.12);
-
-    transform:translateX(4px);
+.admin-sidebar button.active {
+    color: #ffffff;
+    /* Active: Lilás vivo */
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    transform: translateX(3px);
 }
 
 .admin-sidebar .danger{
-    margin-top:auto;
-
-    color:white;
-
-    background:rgba(239,68,68,.14);
-
-    border-color:rgba(239,68,68,.35);
+    color: #ef4444 !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    border-color: rgba(239, 68, 68, 0.2) !important;
 }
 
 .admin-sidebar .danger:hover{
-    background:#ef4444;
-    transform:translateX(0);
+    color: #fca5a5 !important;
+    background: rgba(69, 10, 10, 0.4) !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15) !important;
+    transform: translateX(3px);
 }
 
 /* Main */
@@ -349,8 +350,7 @@
 
 /* Botões gerais */
 
-.admin-main button,
-.admin-sidebar button {
+.admin-main button {
     border:none;
 
     border-radius:12px;

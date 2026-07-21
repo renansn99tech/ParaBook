@@ -1,0 +1,226 @@
+/* =========================================
+   ESTILOS: MINHA BIBLIOTECA (Acervo Pessoal)
+   Scopo: .minha-biblioteca-page
+========================================= */
+
+.minha-biblioteca-page {
+    padding-top: 100px;
+    padding-bottom: 50px;
+    min-height: calc(100vh - 120px);
+}
+
+.minha-biblioteca-page .container-biblioteca { 
+    padding: 2rem 1rem; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+}
+
+.minha-biblioteca-page .banner-biblioteca { 
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+    color: #fff; 
+    padding: 3rem 2rem; 
+    border-radius: 12px; 
+    margin-bottom: 2rem; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+}
+
+.minha-biblioteca-page .titulo-biblioteca { 
+    font-size: 2.25rem; 
+    font-weight: 700; 
+    margin-bottom: 0.5rem; 
+}
+
+/* Stats Grid */
+.minha-biblioteca-page .stats-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 1rem; 
+    margin-bottom: 2rem; 
+}
+
+.minha-biblioteca-page .stat-card { 
+    background: #1e293b; 
+    border: 1px solid #334155; 
+    color: #f8fafc;
+    border-radius: 8px; 
+    padding: 1.25rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 1rem; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+}
+
+.minha-biblioteca-page .stat-icon { 
+    font-size: 1.5rem; 
+    background: #334155; 
+    padding: 0.5rem; 
+    border-radius: 6px; 
+}
+
+.minha-biblioteca-page .stat-label { 
+    font-size: 0.875rem; 
+    color: #94a3b8; 
+    margin: 0; 
+}
+
+.minha-biblioteca-page .stat-value { 
+    font-size: 1.5rem; 
+    font-weight: 700; 
+    margin: 0; 
+}
+
+/* Filtros */
+.minha-biblioteca-page .filter-group { 
+    display: flex; 
+    gap: 1rem; 
+    margin-bottom: 2rem; 
+    flex-wrap: wrap; 
+}
+
+.minha-biblioteca-page .filter-input, 
+.minha-biblioteca-page .filter-select { 
+    padding: 0.75rem 1rem; 
+    border: 1px solid #334155; 
+    border-radius: 6px; 
+    background: #1e293b; 
+    color: #fff;
+    font-size: 0.95rem; 
+}
+
+.minha-biblioteca-page .filter-input { 
+    flex: 1; 
+    min-width: 250px; 
+}
+
+.minha-biblioteca-page .filter-select { 
+    cursor: pointer; 
+}
+
+/* Cards Grid */
+.minha-biblioteca-page .books-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    gap: 2rem; 
+}
+
+.minha-biblioteca-page .card-livro { 
+    background: #1e293b; 
+    border: 1px solid #334155; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+    position: relative; 
+}
+
+.minha-biblioteca-page .card-livro:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
+}
+
+.minha-biblioteca-page .capa-container { 
+    width: 100%; 
+    height: 280px; 
+    background: #0f172a; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    position: relative; 
+}
+
+.minha-biblioteca-page .capa-img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+
+/* Badges de Status Modernos */
+.minha-biblioteca-page .status-badge { 
+    position: absolute; 
+    top: 12px; 
+    right: 12px; 
+    padding: 0.25rem 0.75rem; 
+    border-radius: 20px; 
+    font-size: 0.75rem; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em; 
+}
+.minha-biblioteca-page .status-quero_ler { background: #e2e8f0; color: #475569; }
+.minha-biblioteca-page .status-lendo { background: #dbeafe; color: #1d4ed8; }
+.minha-biblioteca-page .status-lido { background: #dcfce7; color: #15803d; }
+
+.minha-biblioteca-page .card-info { 
+    padding: 1.25rem; 
+    display: flex; 
+    flex-direction: column; 
+    flex-grow: 1; 
+}
+
+.minha-biblioteca-page .book-title { 
+    font-size: 1.1rem; 
+    font-weight: 600; 
+    margin: 0 0 0.25rem 0; 
+    line-height: 1.4; 
+    color: #f8fafc;
+}
+
+.minha-biblioteca-page .book-author { 
+    font-size: 0.875rem; 
+    color: #94a3b8; 
+    margin: 0 0 1rem 0; 
+}
+
+/* Botões Modernos e Profissionais */
+.minha-biblioteca-page .card-actions { 
+    display: flex; 
+    gap: 0.5rem; 
+    margin-top: auto; 
+    border-top: 1px solid #334155; 
+    padding-top: 1rem; 
+}
+
+.minha-biblioteca-page .btn-ler { 
+    flex: 2; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 0.5rem; 
+    background: #2563eb; 
+    color: #fff; 
+    padding: 0.625rem; 
+    border-radius: 6px; 
+    font-weight: 500; 
+    font-size: 0.9rem; 
+    text-decoration: none; 
+    transition: background 0.2s ease; 
+    border: none; 
+    cursor: pointer; 
+}
+.minha-biblioteca-page .btn-ler:hover { background: #1d4ed8; }
+
+.minha-biblioteca-page .btn-remover { 
+    flex: 1; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    background: #ef4444; 
+    color: #fff; 
+    padding: 0.625rem; 
+    border-radius: 6px; 
+    transition: background 0.2s ease, transform 0.1s ease; 
+    border: none; 
+    cursor: pointer; 
+}
+.minha-biblioteca-page .btn-remover:hover { background: #dc2626; }
+.minha-biblioteca-page .btn-remover:active { transform: scale(0.95); }
+
+.minha-biblioteca-page .empty-state { 
+    grid-column: 1 / -1; 
+    text-align: center; 
+    padding: 4rem 2rem; 
+    color: #64748b; 
+}

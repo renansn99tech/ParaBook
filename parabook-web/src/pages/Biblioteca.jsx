@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import '../assets/css/biblioteca.css';
 
 function Biblioteca() {
@@ -33,9 +34,9 @@ function Biblioteca() {
     return livros.map(livro => (
       <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={livro.id}>
         <article className="card h-100 card-livro-publico" style={{ position: 'relative' }}>
-          <a href="#" className="btn-info-livro" title="Ver Informações" style={{ zIndex: 20 }}>
+          <Link to={`/livro/${livro.id}`} className="btn-info-livro" title="Ver Informações" style={{ zIndex: 20 }}>
             <i className="fa-solid fa-info"></i>
-          </a>
+          </Link>
           <div className="container-capa">
             <img src={livro.capa_url || 'https://via.placeholder.com/150x200?text=Sem+Capa'} alt={`Capa do livro ${livro.titulo}`} className="img-capa-ajustada" />
           </div>
@@ -73,9 +74,9 @@ function Biblioteca() {
             <p className="mb-0 opacity-75">Explore nosso acervo e descubra novos títulos em diferentes categorias.</p>
           </div>
           <div className="col-12 col-md-4 text-center text-md-end mt-4 mt-md-0">
-            <button className="btn btn-light btn-lg fw-semibold shadow-sm">
+            <Link to="/minha-biblioteca" className="btn btn-light btn-lg fw-semibold shadow-sm">
               <i className="fa-solid fa-bookmark me-2 text-primary"></i>Minha Estante
-            </button>
+            </Link>
           </div>
         </div>
       </header>

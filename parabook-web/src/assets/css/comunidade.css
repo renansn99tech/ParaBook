@@ -1,0 +1,508 @@
+/* ===============================
+   COMUNIDADES - PARABOOK
+================================ */
+
+main{
+    min-height:calc(100vh - 260px);
+}
+
+.pagina-comunidade{
+    max-width:1400px;
+    margin:0 auto;
+    padding:30px 20px;
+    text-align:center;
+}
+
+.pagina-comunidade h1,
+.pagina-comunidade h2{
+    font-size:3rem;
+    font-weight:800;
+    color:white;
+    margin-bottom:12px;
+    letter-spacing:-1px;
+}
+
+.pagina-comunidade h3{
+    color:#d8d9e6;
+    font-size:1.2rem;
+    margin-bottom:12px;
+}
+
+.pagina-comunidade p{
+    max-width:720px;
+    margin:0 auto 28px;
+    color:var(--text-secondary);
+    line-height:1.7;
+}
+
+/* REMOVIDO / ADAPTADO: ANTIGO BOTÃO CRIAR SE TORNOU CARD */
+.btn-criar-comunidade {
+    display: none; /* Ocultado caso esteja em caches antigos, substituído pelo card */
+}
+
+/* GRID RESPONSIVA (DEFAULT: DESKTOP - 4 COLUNAS) */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:24px;
+    align-items:stretch;
+}
+
+/* CARD COMUNIDADE EXISTENTE */
+.card-comunidade,
+.card{
+    position:relative;
+    overflow:hidden;
+
+    min-height:230px;
+    padding:26px;
+
+    display:flex;
+    flex-direction:column;
+
+    border-radius:22px;
+    border:1px solid var(--border);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16,25,45,.95),
+            rgba(16,25,45,.72)
+        );
+
+    box-shadow:var(--shadow);
+    transition:.35s ease-in-out;
+}
+
+.card-comunidade::before,
+.card::before{
+    content:"";
+    position:absolute;
+
+    width:160px;
+    height:160px;
+
+    right:-70px;
+    top:-70px;
+
+    background:radial-gradient(circle,rgba(139,92,246,.22),transparent 70%);
+    opacity:0;
+    transition:.35s;
+}
+
+.card-comunidade:hover,
+.card:hover{
+    transform:translateY(-7px);
+    border-color:rgba(139,92,246,.45);
+    box-shadow:0 22px 55px rgba(0,0,0,.38), 0 0 35px rgba(139,92,246,.12);
+}
+
+.card-comunidade:hover::before,
+.card:hover::before{
+    opacity:1;
+}
+
+.card-header h2,
+.card-content h3{
+    position:relative;
+    z-index:2;
+
+    color:white;
+    font-size:1.35rem;
+    margin-bottom:14px;
+}
+
+.card-body,
+.card-content{
+    position:relative;
+    z-index:2;
+    flex:1;
+}
+
+.card-body p,
+.card-content p{
+    color:var(--text-secondary);
+    line-height:1.7;
+    margin-bottom:20px;
+}
+
+.card-footer{
+    position:relative;
+    z-index:2;
+
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+
+    margin-top:auto;
+}
+
+/* CARD ESPECIAL: CRIAR COMUNIDADE */
+.card-criar-comunidade-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.card-criar-comunidade {
+    position: relative;
+    min-height: 230px;
+    padding: 26px;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    border-radius: 22px;
+    border: 2px dashed rgba(139, 92, 246, 0.4);
+    background: rgba(16, 25, 45, 0.4);
+    
+    box-shadow: var(--shadow);
+    transition: transform 0.35s ease-in-out, border-color 0.35s, background 0.35s, box-shadow 0.35s;
+    cursor: pointer;
+}
+
+.card-criar-icone {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple, #8b5cf6), var(--purple-dark, #6d28d9));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    transition: transform 0.35s;
+}
+
+.card-criar-icone i {
+    font-size: 1.6rem;
+    color: white;
+}
+
+.card-criar-content h2 {
+    color: white;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.card-criar-content p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* HOVER EFFECT: CARD CRIAR */
+.card-criar-comunidade:hover {
+    transform: translateY(-7px);
+    border-color: var(--purple);
+    background: rgba(16, 25, 45, 0.8);
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.38), 0 0 35px rgba(139, 92, 246, 0.15);
+}
+
+.card-criar-comunidade:hover .card-criar-icone {
+    transform: scale(1.1);
+}
+
+/* BOTÕES GERAIS */
+.btn,
+.btn-comunidade{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    padding:11px 18px;
+
+    border:none;
+    border-radius:13px;
+
+    color:white;
+    text-decoration:none;
+    font-weight:700;
+
+    background:linear-gradient(135deg,var(--purple),var(--purple-dark));
+
+    cursor:pointer;
+    transition:.35s;
+}
+
+.btn:hover,
+.btn-comunidade:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 28px rgba(139,92,246,.35);
+}
+
+.btn-editar{
+    background:#f59e0b;
+}
+
+.btn-excluir,
+.btn-excluir-confirmacao{
+    background:#ef4444;
+}
+
+.btn-voltar{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:12px 20px;
+
+    border-radius:13px;
+
+    color:white;
+    text-decoration:none;
+
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+
+    transition:.3s;
+}
+
+.btn-voltar:hover{
+    border-color:var(--purple);
+    background:rgba(139,92,246,.1);
+}
+
+.btn-danger-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.05);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-danger-outline:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+}
+
+/* EMPTY STATE */
+.empty-state,
+.grid > p{
+    grid-column:1/-1;
+
+    padding:44px 24px;
+
+    border-radius:22px;
+
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--border);
+
+    color:var(--text-secondary);
+}
+
+.empty-state i{
+    font-size:2.8rem;
+    color:var(--purple);
+    margin-bottom:16px;
+}
+
+/* FORM CRIAR / EDITAR */
+.form-container{
+    max-width:720px;
+    margin:70px auto;
+    padding:44px;
+
+    border-radius:28px;
+    border:1px solid rgba(139,92,246,.25);
+
+    background:
+        radial-gradient(circle at 90% 10%,rgba(139,92,246,.25),transparent 32%),
+        linear-gradient(145deg,rgba(16,25,45,.96),rgba(16,25,45,.72));
+
+    box-shadow:0 25px 70px rgba(0,0,0,.35), 0 0 60px rgba(139,92,246,.1);
+}
+
+.form-container h2{
+    color:white;
+    text-align:center;
+    font-size:2.2rem;
+    font-weight:800;
+    margin-bottom:30px;
+}
+
+.form-container h2 i{
+    color:var(--purple);
+}
+
+.form-group{
+    margin-bottom:22px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+
+    color:#d8d9e6;
+    font-weight:600;
+}
+
+.form-container input,
+.form-container textarea{
+    width:100%;
+
+    padding:14px 16px;
+
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+
+    background:#0d1427;
+    color:white;
+
+    outline:none;
+    transition:.3s;
+}
+
+.form-container textarea{
+    min-height:150px;
+    resize:vertical;
+}
+
+.form-container input:focus,
+.form-container textarea:focus{
+    border-color:var(--purple);
+    box-shadow:0 0 0 3px rgba(139,92,246,.16);
+}
+
+.form-container button{
+    width:100%;
+}
+
+/* CONFIRMAÇÃO EXCLUIR */
+.confirmacao-container{
+    min-height:calc(100vh - 260px);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:70px 24px;
+}
+
+.confirmacao-card{
+    width:100%;
+    max-width:620px;
+
+    padding:44px;
+
+    text-align:center;
+
+    border-radius:28px;
+    border:1px solid rgba(239,68,68,.28);
+
+    background:
+        radial-gradient(circle at 50% 0%,rgba(239,68,68,.16),transparent 34%),
+        linear-gradient(145deg,rgba(16,25,45,.96),rgba(16,25,45,.72));
+
+    box-shadow:var(--shadow);
+}
+
+.confirmacao-card i{
+    font-size:3.2rem;
+    color:#f59e0b;
+    margin-bottom:18px;
+}
+
+.confirmacao-card h2{
+    color:white;
+    font-size:2rem;
+    margin-bottom:14px;
+}
+
+.confirmacao-card p{
+    color:var(--text-secondary);
+    line-height:1.7;
+}
+
+.confirmacao-card strong{
+    color:white;
+}
+
+.acoes-confirmacao{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-top:28px;
+}
+
+/* ===============================
+   RESPONSIVIDADE AJUSTADA DOS CARDS
+================================ */
+
+/* TABLETS: 2 ou 3 cards por linha */
+@media(max-width:1024px){
+    .grid{
+        grid-template-columns:repeat(2, 1fr);
+    }
+}
+
+@media(min-width:769px) and (max-width:1024px){
+    .grid{
+        /* Caso queira testar explicitamente 3 em telas médias grandes de tablet */
+        grid-template-columns:repeat(3, 1fr); 
+    }
+}
+
+/* CELULAR: 1 card por linha */
+@media(max-width:768px){
+    .pagina-comunidade{
+        padding:50px 24px;
+    }
+
+    .pagina-comunidade h1,
+    .pagina-comunidade h2{
+        font-size:2.3rem;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-container{
+        margin:50px 24px;
+        padding:32px 24px;
+    }
+
+    .acoes-confirmacao{
+        flex-direction:column;
+    }
+
+    .btn-voltar,
+    .btn-excluir-confirmacao{
+        width:100%;
+    }
+}
+
+@media(max-width:480px){
+    .pagina-comunidade{
+        padding:40px 18px;
+    }
+
+    .pagina-comunidade h1,
+    .pagina-comunidade h2{
+        font-size:2rem;
+    }
+
+    .form-container{
+        margin:35px 18px;
+        padding:28px 20px;
+    }
+
+    .confirmacao-card{
+        padding:34px 22px;
+    }
+}

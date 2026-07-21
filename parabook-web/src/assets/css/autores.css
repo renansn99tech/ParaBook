@@ -1,0 +1,513 @@
+/* ===============================
+   AUTORES - PARABOOK
+================================ */
+
+.container-autores{
+    max-width:1400px;
+    margin:0 auto;
+    padding:70px 60px 90px;
+}
+
+/* HEADER */
+
+.header-autores{
+    position:relative;
+    overflow:hidden;
+
+    padding:58px;
+    margin-bottom:34px;
+
+    border-radius:28px;
+    border:1px solid rgba(139,92,246,.25);
+
+    background:
+        radial-gradient(circle at 85% 25%,rgba(139,92,246,.35),transparent 35%),
+        linear-gradient(145deg,rgba(16,25,45,.96),rgba(16,25,45,.72));
+
+    box-shadow:0 25px 70px rgba(0,0,0,.35), 0 0 60px rgba(139,92,246,.1);
+}
+
+.header-autores::after{
+    content:"✒️";
+    position:absolute;
+    right:60px;
+    bottom:20px;
+    font-size:7rem;
+    opacity:.08;
+    transform:rotate(-12deg);
+}
+
+.header-content{
+    position:relative;
+    z-index:2;
+}
+
+.header-badge{
+    display:inline-flex;
+    margin-bottom:18px;
+    padding:7px 14px;
+
+    border-radius:999px;
+
+    color:#c4b5fd;
+    background:rgba(139,92,246,.14);
+    border:1px solid rgba(139,92,246,.35);
+
+    font-size:.78rem;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+.header-autores h1{
+    color:white;
+    font-size:3.3rem;
+    font-weight:800;
+    letter-spacing:-1.5px;
+    margin-bottom:16px;
+}
+
+.header-autores p{
+    max-width:760px;
+    color:var(--text-secondary);
+    line-height:1.8;
+    font-size:1.05rem;
+}
+
+/* BARRA DE AÇÕES */
+
+.acoes-barra-container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:22px;
+    flex-wrap:wrap;
+
+    padding:22px;
+    margin-bottom:42px;
+
+    border-radius:22px;
+    border:1px solid var(--border);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16,25,45,.9),
+            rgba(16,25,45,.62)
+        );
+
+    box-shadow:var(--shadow);
+}
+
+.form-busca-autores{
+    flex:1;
+    min-width:280px;
+
+    display:flex;
+    gap:12px;
+}
+
+.input-grupo-busca{
+    position:relative;
+    flex:1;
+}
+
+.icone-busca{
+    position:absolute;
+    left:16px;
+    top:50%;
+    transform:translateY(-50%);
+
+    color:var(--text-secondary);
+}
+
+#input-busca-autores{
+    width:100%;
+
+    padding:14px 44px 14px 44px;
+
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+
+    background:#0d1427;
+    color:white;
+
+    outline:none;
+    transition:.3s;
+}
+
+#input-busca-autores:focus{
+    border-color:var(--purple);
+    box-shadow:0 0 0 3px rgba(139,92,246,.16);
+}
+
+.btn-limpar-busca{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+
+    color:var(--text-secondary);
+    transition:.3s;
+}
+
+.btn-limpar-busca:hover{
+    color:#ef4444;
+}
+
+.btn-buscar-autores,
+.btn-enviar-obra-cta,
+.btn-autor-obras,
+.btn-voltar-lista{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    padding:13px 20px;
+
+    border:none;
+    border-radius:14px;
+
+    color:white;
+    text-decoration:none;
+    font-weight:800;
+
+    background:linear-gradient(135deg,var(--purple),var(--purple-dark));
+
+    cursor:pointer;
+    transition:.35s;
+}
+
+.btn-buscar-autores:hover,
+.btn-enviar-obra-cta:hover,
+.btn-autor-obras:hover,
+.btn-voltar-lista:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 35px rgba(139,92,246,.35);
+}
+
+.cta-autor-box{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+}
+
+.cta-texto{
+    color:var(--text-secondary);
+    margin:0;
+}
+
+/* GRID */
+
+.grid-autores{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+    gap:26px;
+    margin-bottom:50px;
+}
+
+/* CARD */
+
+.card-autor{
+    position:relative;
+    overflow:hidden;
+
+    min-height:390px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+
+    border-radius:22px;
+    border:1px solid var(--border);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16,25,45,.95),
+            rgba(16,25,45,.72)
+        );
+
+    box-shadow:var(--shadow);
+
+    transition:.35s;
+}
+
+.card-autor::before{
+    content:"";
+    position:absolute;
+
+    width:160px;
+    height:160px;
+
+    right:-70px;
+    top:-70px;
+
+    background:radial-gradient(circle,rgba(139,92,246,.22),transparent 70%);
+
+    opacity:0;
+    transition:.35s;
+}
+
+.card-autor:hover{
+    transform:translateY(-7px);
+    border-color:rgba(139,92,246,.45);
+    box-shadow:0 22px 55px rgba(0,0,0,.38), 0 0 35px rgba(139,92,246,.12);
+}
+
+.card-autor:hover::before{
+    opacity:1;
+}
+
+.card-header-decoracao{
+    width:100%;
+    height:78px;
+
+    background:
+        radial-gradient(circle at center,rgba(139,92,246,.32),transparent 50%),
+        linear-gradient(135deg,rgba(139,92,246,.45),rgba(16,25,45,.2));
+}
+
+.avatar-autor-container{
+    position:relative;
+    z-index:2;
+
+    width:96px;
+    height:96px;
+
+    margin-top:-48px;
+
+    border-radius:50%;
+    overflow:hidden;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#0d1427;
+
+    border:4px solid #10192d;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.35), 0 0 24px rgba(139,92,246,.25);
+}
+
+.foto-autor{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.foto-autor-placeholder{
+    color:var(--purple-light);
+    font-size:2.2rem;
+}
+
+.info-autor-card{
+    position:relative;
+    z-index:2;
+
+    flex:1;
+
+    width:100%;
+    padding:18px 24px 24px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.nome-autor{
+    color:white;
+    font-size:1.25rem;
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.badge-obras{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+
+    margin-bottom:18px;
+    padding:7px 12px;
+
+    border-radius:999px;
+
+    color:#c4b5fd;
+    background:rgba(139,92,246,.14);
+    border:1px solid rgba(139,92,246,.35);
+
+    font-size:.82rem;
+    font-weight:700;
+}
+
+.biografia-autor-resumo{
+    flex:1;
+
+    color:var(--text-secondary);
+    line-height:1.7;
+    font-size:.92rem;
+
+    margin-bottom:20px;
+}
+
+.acoes-autor-card{
+    width:100%;
+}
+
+.btn-autor-obras{
+    width:100%;
+}
+
+/* EMPTY */
+
+.empty-state-autores{
+    grid-column:1/-1;
+
+    padding:58px 24px;
+
+    text-align:center;
+
+    border-radius:22px;
+    border:1px solid var(--border);
+
+    background:rgba(255,255,255,.03);
+
+    color:var(--text-secondary);
+}
+
+.empty-state-autores i{
+    color:var(--purple);
+    font-size:3rem;
+    margin-bottom:16px;
+}
+
+.empty-state-autores h3{
+    color:white;
+    font-size:1.5rem;
+    margin-bottom:10px;
+}
+
+/* PAGINAÇÃO */
+
+.navegacao-paginacao{
+    display:flex;
+    justify-content:center;
+}
+
+.lista-paginacao{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    list-style:none;
+    padding:0;
+}
+
+.item-paginacao{
+    min-width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:0 14px;
+
+    border-radius:13px;
+    border:1px solid var(--border);
+
+    color:var(--text-secondary);
+    text-decoration:none;
+
+    background:rgba(255,255,255,.03);
+
+    transition:.3s;
+}
+
+.item-paginacao:hover{
+    color:white;
+    border-color:rgba(139,92,246,.45);
+    background:rgba(139,92,246,.12);
+}
+
+.item-paginacao.ativo{
+    color:white;
+    border-color:var(--purple);
+    background:linear-gradient(135deg,var(--purple),var(--purple-dark));
+}
+
+/* RESPONSIVO */
+
+@media(max-width:900px){
+    .container-autores{
+        padding:55px 32px 70px;
+    }
+
+    .header-autores{
+        padding:42px;
+    }
+
+    .header-autores h1{
+        font-size:2.6rem;
+    }
+
+    .form-busca-autores{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .btn-buscar-autores{
+        width:100%;
+    }
+}
+
+@media(max-width:768px){
+    .container-autores{
+        padding:45px 24px 60px;
+    }
+
+    .header-autores{
+        padding:34px 26px;
+        border-radius:22px;
+    }
+
+    .header-autores h1{
+        font-size:2.2rem;
+    }
+
+    .acoes-barra-container{
+        padding:18px;
+    }
+
+    .cta-autor-box,
+    .btn-enviar-obra-cta{
+        width:100%;
+    }
+
+    .cta-autor-box{
+        justify-content:center;
+        text-align:center;
+    }
+}
+
+@media(max-width:480px){
+    .container-autores{
+        padding:35px 18px 50px;
+    }
+
+    .header-autores h1{
+        font-size:1.9rem;
+    }
+
+    .grid-autores{
+        grid-template-columns:1fr;
+    }
+
+    .lista-paginacao{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+}

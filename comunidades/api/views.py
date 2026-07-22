@@ -40,5 +40,12 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
     serializer_class = PostagemComunidadeSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        comunidade_id = self.request.query_params.get('comunidade')
+        if comunidade_id:
+            queryset = queryset.filter(comunidade_id=comunidade_id)
+        return queryset
+
     def perform_create(self, serializer):
         serializer.save(autor=self.request.user)

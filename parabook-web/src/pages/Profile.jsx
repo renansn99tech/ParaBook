@@ -162,7 +162,44 @@ function Profile() {
               <div className="content-glass-card full-width">
                 <h3>Sobre Você</h3>
                 <p className="sobre-texto">{user?.bio || 'Nenhuma biografia informada.'}</p>
-                <button className="btn-primary-action">
+                <button className="btn-primary-action" onClick={async () => {
+                  const { value: text } = await Swal.fire({
+                    input: 'textarea',
+                    inputLabel: 'Sua Biografia',
+                    inputPlaceholder: 'Escreva um pouco sobre você...',
+                    inputValue: user?.bio || '',
+                    showCancelButton: true,
+                    confirmButtonText: 'Salvar',
+                    cancelButtonText: 'Cancelar',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#8b5cf6',
+                    cancelButtonColor: '#ef4444'
+                  });
+
+                  if (text !== undefined) {
+                    try {
+                      await api.patch('/perfis/meu-perfil/', { bio: text });
+                      Swal.fire({
+                        icon: 'success',
+                        title: 'Atualizado!',
+                        text: 'Sua biografia foi atualizada com sucesso.',
+                        background: '#1e293b',
+                        color: '#fff',
+                        confirmButtonColor: '#8b5cf6'
+                      }).then(() => window.location.reload());
+                    } catch (err) {
+                      Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Falha ao atualizar biografia.',
+                        background: '#1e293b',
+                        color: '#fff',
+                        confirmButtonColor: '#8b5cf6'
+                      });
+                    }
+                  }
+                }}>
                   <i className="fa-solid fa-pen-to-square"></i> Trocar Biografia
                 </button>
               </div>
@@ -229,9 +266,7 @@ function Profile() {
                 const data = Object.fromEntries(formData.entries());
                 data.perfil_privado = formData.get('perfil_privado') === 'on';
                 
-                // Remover campos read_only do payload para evitar conflitos na API
-                delete data.nome;
-                delete data.username;
+                // Os dados agora vão direto, pois nome e username podem ser editados
 
                 try {
                   await api.patch('/perfis/meu-perfil/', data);
@@ -242,7 +277,7 @@ function Profile() {
                     background: '#1e293b',
                     color: '#fff',
                     confirmButtonColor: '#8b5cf6'
-                  });
+                  }).then(() => window.location.reload());
                 } catch (error) {
                   console.error(error);
                   Swal.fire({
@@ -269,12 +304,12 @@ function Profile() {
                     </div>
                   )}
                   <div className="perfil-form-group">
-                    <label htmlFor="input-nome">Nome de Exibição (Apenas visualização)</label>
-                    <input type="text" id="input-nome" name="nome" className="form-input" defaultValue={user?.nome} readOnly style={{ opacity: 0.7, cursor: 'not-allowed' }} />
+                    <label htmlFor="input-nome">Nome de Exibição</label>
+                    <input type="text" id="input-nome" name="nome" className="form-input" defaultValue={user?.nome} />
                   </div>
                   <div className="perfil-form-group">
                     <label htmlFor="input-username">Nome de Usuário (Username)</label>
-                    <input type="text" id="input-username" name="username" className="form-input" defaultValue={user?.username} readOnly style={{ opacity: 0.7, cursor: 'not-allowed' }} />
+                    <input type="text" id="input-username" name="username" className="form-input" defaultValue={user?.username} />
                   </div>
                   <div className="perfil-form-group">
                     <label htmlFor="input-descricao">Frase de Status (Curta)</label>

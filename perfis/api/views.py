@@ -42,6 +42,7 @@ class PerfilPublicoAPIView(APIView):
 
         meus_livros = Biblioteca.objects.filter(user=user_auth_obj)
         qnt_livros_lidos = meus_livros.filter(status='lido').count()
+        qnt_lendo_agora = meus_livros.filter(status='lendo').count()
         qnt_avaliados = meus_livros.filter(nota__isnull=False).count()
 
         minhas_comunidades = Comunidade.objects.filter(membros=user_auth_obj)
@@ -72,6 +73,7 @@ class PerfilPublicoAPIView(APIView):
             },
             "estatisticas": {
                 "total_lidos": qnt_livros_lidos,
+                "lendo_agora": qnt_lendo_agora,
                 "total_avaliados": qnt_avaliados,
                 "total_comunidades": qnt_comunidades
             },
@@ -89,3 +91,29 @@ class PerfilPublicoAPIView(APIView):
                 {"id": c.id, "nome": c.nome, "descricao": c.descricao} for c in minhas_comunidades
             ]
         })
+
+class AutoresListAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        autores = Usuario.objects.filter(tipo='autor').select_related('user_auth', 'perfil')
+        data = []
+        for autor in autores:
+            # Conta obras aprovadas deste autor
+            total_obras = Livro.objects.filter(
+                solicitacao_publicacao__usuario=autor.user_auth,
+                status='publicado'
+            ).count()
+            
+            perfil = autor.perfil
+            
+            data.append({
+                "id": autor.id,
+                "username": autor.user_auth.username,
+                "nome": autor.nome,
+                "foto": perfil.foto.url if perfil and perfil.foto else None,
+                "biografia": perfil.bio if perfil else "",
+                "total_obras": total_obras
+            })
+        
+        # Order by total_obras descending
+        data.sort(key=lambda x: x['total_obras'], reverse=True)
+        return Response(data)

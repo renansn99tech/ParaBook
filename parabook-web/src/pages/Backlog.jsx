@@ -2,7 +2,7 @@ import '../assets/css/backlog.css';
 
 function Backlog() {
   return (
-    <main className="backlog-page-main" id="topo" style={{ paddingTop: '80px' }}>
+    <main className="backlog-page-main" id="topo">
       <section className="news-hero-section">
         <div className="scroll-ticker-container">
           <span className="ticker-item">

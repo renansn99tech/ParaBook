@@ -31,7 +31,7 @@ function PublicarLivro() {
 
   if (!isAuthorized) {
     return (
-      <div className="form-container" style={{ paddingTop: '100px' }}>
+      <div className="publicar-container" style={{ paddingTop: '100px' }}>
         <div className="form-box text-center" style={{ maxWidth: '500px', padding: '40px' }}>
           <i className="fa-solid fa-lock mb-3" style={{ fontSize: '3rem', color: '#f87171' }}></i>
           <h2 style={{ color: 'white', marginBottom: '15px' }}>Acesso Restrito</h2>
@@ -62,7 +62,7 @@ function PublicarLivro() {
   };
 
   return (
-    <div className="form-container" style={{ paddingTop: '100px', paddingBottom: '40px' }}>
+    <div className="publicar-container" style={{ paddingTop: '100px', paddingBottom: '40px' }}>
       <div className="form-box">
         <h1>Enviar Nova Obra</h1>
         <p>Preencha os dados abaixo para enviar seu manuscrito para análise de publicação.</p>

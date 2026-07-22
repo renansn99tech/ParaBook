@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
 import '../assets/css/autores.css';
 
 function Autores() {
   const [termoBusca, setTermoBusca] = useState('');
+  const [autores, setAutores] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock de Autores
-  const mockAutores = [
-    { id: 1, nome: "Machado de Assis", foto: null, total_obras: 15, biografia: "Um dos maiores nomes da literatura brasileira, autor de Dom Casmurro." },
-    { id: 2, nome: "Clarice Lispector", foto: null, total_obras: 9, biografia: "Escritora e jornalista reconhecida mundialmente, autora de A Hora da Estrela." },
-    { id: 3, nome: "J.R.R. Tolkien", foto: null, total_obras: 22, biografia: "Criador da Terra-média, famoso por O Senhor dos Anéis e O Hobbit." },
-    { id: 4, nome: "Isaac Asimov", foto: null, total_obras: 40, biografia: "Mestre da ficção científica, criador da Fundação e Eu, Robô." }
-  ];
+  useEffect(() => {
+    api.get('/perfis/autores/')
+      .then(res => setAutores(res.data))
+      .catch(err => console.error("Erro ao carregar autores:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const autoresFiltrados = mockAutores.filter(autor => 
-    autor.nome.toLowerCase().includes(termoBusca.toLowerCase())
+  const autoresFiltrados = autores.filter(autor => 
+    autor.nome.toLowerCase().includes(termoBusca.toLowerCase()) || 
+    autor.username.toLowerCase().includes(termoBusca.toLowerCase())
   );
 
   return (

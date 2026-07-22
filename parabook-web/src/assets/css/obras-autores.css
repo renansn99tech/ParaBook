@@ -2,7 +2,7 @@
    PUBLICAR OBRA - PARABOOK
 ================================= */
 
-.form-container{
+.publicar-container{
     min-height:calc(100vh - 120px);
 
     display:flex;
@@ -285,7 +285,7 @@
 
 @media(max-width:768px){
 
-    .form-container{
+    .publicar-container{
         padding:50px 24px;
     }
 
@@ -301,7 +301,7 @@
 
 @media(max-width:480px){
 
-    .form-container{
+    .publicar-container{
         padding:35px 18px;
     }
 

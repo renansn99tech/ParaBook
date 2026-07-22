@@ -145,7 +145,7 @@ body{
 
     background:
         radial-gradient(circle at center, rgba(139,92,246,.35), transparent 45%),
-        url("/static/img/stars-bg.png") center/cover no-repeat;
+        url("../img/stars-bg.png") center/cover no-repeat;
 
     mask-image:radial-gradient(circle at center, black 35%, transparent 75%);
     -webkit-mask-image:radial-gradient(circle at center, black 35%, transparent 75%);

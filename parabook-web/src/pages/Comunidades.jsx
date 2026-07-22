@@ -1,19 +1,51 @@
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import api from '../services/api';
 import '../assets/css/comunidade.css';
 
 function Comunidades() {
   const { user } = useContext(AuthContext);
-
-  // Mocks de Comunidades
-  const comunidadesOficiais = [
-    { id: 1, nome: "Clube dos Clássicos", descricao: "Debate focado em livros clássicos.", membros: 154, max_participantes: 200 }
-  ];
   
-  const comunidadesDaGalera = [
-    { id: 2, nome: "Fãs de Sci-Fi", descricao: "Ficção Científica e Fantasia espacial", membros: 34, max_participantes: 100 }
-  ];
+  const [comunidadesOficiais, setComunidadesOficiais] = useState([]);
+  const [comunidadesDaGalera, setComunidadesDaGalera] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get('/comunidades/comunidades/')
+      .then(res => {
+        const data = res.data;
+        setComunidadesOficiais(data.filter(c => c.criada_por_sistema));
+        setComunidadesDaGalera(data.filter(c => !c.criada_por_sistema));
+      })
+      .catch(err => console.error("Erro ao carregar comunidades:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleToggleParticipacao = async (comunidadeId) => {
+    try {
+      const response = await api.post(`/comunidades/comunidades/${comunidadeId}/entrar/`);
+      
+      const updateList = (list) => list.map(c => {
+        if (c.id === comunidadeId) {
+          const isParticipating = response.data.status === 'entrou na comunidade';
+          return {
+            ...c,
+            usuario_participa: isParticipating,
+            total_membros: isParticipating ? c.total_membros + 1 : c.total_membros - 1
+          };
+        }
+        return c;
+      });
+
+      setComunidadesOficiais(updateList(comunidadesOficiais));
+      setComunidadesDaGalera(updateList(comunidadesDaGalera));
+
+    } catch (error) {
+      console.error("Erro ao alterar participação:", error);
+      // Optional: Add a SweetAlert2 notification here later
+    }
+  };
 
   const renderCard = (comunidade) => (
     <article className="card-comunidade" key={comunidade.id}>
@@ -21,18 +53,36 @@ function Comunidades() {
         <h3 className="comunidade-nome text-truncate" title={comunidade.nome}>
           {comunidade.nome}
         </h3>
-        <span className="comunidade-badge badge bg-secondary text-white">
-          <i className="fa-solid fa-users me-1"></i>
-          {comunidade.membros}/{comunidade.max_participantes}
-        </span>
+        <div>
+          <span className="comunidade-badge badge bg-secondary text-white">
+            <i className="fa-solid fa-users me-1"></i>
+            {comunidade.total_membros || 0}/{comunidade.max_participantes}
+          </span>
+          {comunidade.criada_por_sistema && (
+            <span className="badge bg-primary ms-2" style={{ fontSize: '0.7rem', verticalAlign: 'middle' }}>
+              <i className="fa-solid fa-check-circle me-1"></i>Oficial
+            </span>
+          )}
+        </div>
       </div>
       <p className="comunidade-descricao text-muted">
         {comunidade.descricao}
       </p>
-      <div className="comunidade-footer mt-auto">
-        <button className="btn btn-primary w-100 fw-medium">
-          Entrar na Comunidade
-        </button>
+      <div className="comunidade-footer mt-auto d-flex gap-2">
+        {comunidade.usuario_participa ? (
+          <>
+            <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn btn-primary flex-grow-1 fw-medium">
+              Acessar
+            </Link>
+            <button onClick={() => handleToggleParticipacao(comunidade.id)} className="btn btn-outline-danger fw-medium px-3">
+              Sair
+            </button>
+          </>
+        ) : (
+          <button onClick={() => handleToggleParticipacao(comunidade.id)} className="btn btn-primary w-100 fw-medium">
+            Entrar na Comunidade
+          </button>
+        )}
       </div>
     </article>
   );

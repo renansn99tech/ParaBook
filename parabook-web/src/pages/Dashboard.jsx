@@ -1,18 +1,34 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../services/api';
 import '../assets/css/admin.css';
+
+// Componentes das Abas
+import AdminLivros from '../components/admin/AdminLivros';
+import AdminComunidades from '../components/admin/AdminComunidades';
+import AdminUsuarios from '../components/admin/AdminUsuarios';
+import AdminAprovacoes from '../components/admin/AdminAprovacoes';
+import AdminDenuncias from '../components/admin/AdminDenuncias';
+import AdminLixeira from '../components/admin/AdminLixeira';
 
 function Dashboard() {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('dashboard');
+  const [metricas, setMetricas] = useState({
+    total_usuarios: 0,
+    total_comunidades: 0,
+    total_livros: 0,
+  });
 
-  const metricas = {
-    usuarios: 1,
-    livros: 0,
-    autores: 0,
-    livros_publicados: 0,
-    pendentes: 0
-  };
+  useEffect(() => {
+    if (abaAtiva === 'dashboard') {
+      api.get('/dashboard/estatisticas/')
+        .then(res => setMetricas(res.data.estatisticas))
+        .catch(err => console.error("Erro ao carregar estatísticas do dashboard", err));
+    }
+  }, [abaAtiva]);
 
   const menu = [
     { id: 'dashboard', icon: 'fa-chart-line', label: 'Dashboard' },
@@ -20,8 +36,14 @@ function Dashboard() {
     { id: 'comunidades', icon: 'fa-users', label: 'Comunidades' },
     { id: 'usuarios', icon: 'fa-user-group', label: 'Usuários' },
     { id: 'aprovacoes', icon: 'fa-clipboard-check', label: 'Aprovações' },
-    { id: 'denuncias', icon: 'fa-flag', label: 'Denúncias', danger: true }
+    { id: 'denuncias', icon: 'fa-flag', label: 'Denúncias', warning: true },
+    { id: 'lixeira', icon: 'fa-trash-can', label: 'Lixeira', danger: true }
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div className="admin-container" style={{ display: 'flex', minHeight: '100vh', margin: 0, padding: 0 }}>
@@ -36,22 +58,25 @@ function Dashboard() {
         {menu.map(item => (
           <button 
             key={item.id}
-            className={`${abaAtiva === item.id ? 'active' : ''} ${item.danger ? 'danger text-danger' : ''}`}
+            className={`${abaAtiva === item.id ? 'active' : ''} ${item.danger ? 'danger text-danger' : ''} ${item.warning ? 'warning text-warning' : ''}`}
             onClick={() => setAbaAtiva(item.id)}
-            style={item.danger && abaAtiva !== item.id ? { color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' } : {}}
+            style={{
+              ...(item.danger && abaAtiva !== item.id ? { color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' } : {}),
+              ...(item.warning && abaAtiva !== item.id ? { color: '#f97316', borderColor: 'rgba(249, 115, 22, 0.2)' } : {})
+            }}
           >
             <i className={`fa-solid ${item.icon}`} style={{ width: '25px' }}></i> {item.label}
           </button>
         ))}
 
         <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-          <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px' }}>
+          <Link to={`/perfil/${user?.username}`} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px', background: 'transparent', color: '#94a3b8', border: 'none', padding: '12px 15px', textDecoration: 'none', borderRadius: '8px' }} className="hover-btn">
             <i className="fa-solid fa-user" style={{ width: '20px', textAlign: 'center' }}></i> Meu Perfil
-          </button>
-          <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px' }}>
+          </Link>
+          <Link to="/" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px', background: 'transparent', color: '#94a3b8', border: 'none', padding: '12px 15px', textDecoration: 'none', borderRadius: '8px' }} className="hover-btn">
             <i className="fa-solid fa-desktop" style={{ width: '20px', textAlign: 'center' }}></i> Visão Leitor
-          </button>
-          <button className="danger" onClick={logout} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px' }}>
+          </Link>
+          <button className="danger" onClick={handleLogout} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px', padding: '12px 15px', borderRadius: '8px' }}>
             <i className="fa-solid fa-right-from-bracket" style={{ width: '20px', textAlign: 'center' }}></i> Sair
           </button>
         </div>
@@ -64,43 +89,33 @@ function Dashboard() {
           <section className="secao" style={{ display: 'block' }}>
             <h1 style={{ color: 'white', marginBottom: '20px' }}>Visão Geral</h1>
             
-            <div className="metricas-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '15px' }}>
+            <div className="metricas-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px' }}>
               <div className="card">
                 <h3>Total de Usuários</h3>
-                <p>{metricas.usuarios}</p>
+                <p>{metricas.total_usuarios}</p>
               </div>
               <div className="card">
                 <h3>Total de Livros</h3>
-                <p>{metricas.livros}</p>
+                <p>{metricas.total_livros}</p>
               </div>
               <div className="card">
-                <h3>Autores Ativos</h3>
-                <p>{metricas.autores}</p>
+                <h3>Comunidades Ativas</h3>
+                <p>{metricas.total_comunidades}</p>
               </div>
               <div className="card">
-                <h3>Livros Publicados</h3>
-                <p style={{ color: '#22c55e' }}>{metricas.livros_publicados}</p>
+                <h3>Alertas do Sistema</h3>
+                <p style={{ color: '#eab308' }}>0</p>
               </div>
-              <div className="card">
-                <h3>Solicitações Pendentes</h3>
-                <p style={{ color: '#eab308' }}>{metricas.pendentes}</p>
-              </div>
-            </div>
-            
-            <div className="mt-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', height: '300px' }}>
-              <div style={{ background: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}></div>
-              <div style={{ background: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}></div>
-              <div style={{ background: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}></div>
             </div>
           </section>
         )}
 
-        {abaAtiva !== 'dashboard' && (
-          <section className="secao" style={{ display: 'block' }}>
-            <h1 style={{ color: 'white', marginBottom: '20px', textTransform: 'capitalize' }}>Gerenciar {abaAtiva}</h1>
-            <p className="text-muted">Painel de gerenciamento de {abaAtiva} (Em desenvolvimento).</p>
-          </section>
-        )}
+        {abaAtiva === 'livros' && <AdminLivros />}
+        {abaAtiva === 'comunidades' && <AdminComunidades />}
+        {abaAtiva === 'usuarios' && <AdminUsuarios />}
+        {abaAtiva === 'aprovacoes' && <AdminAprovacoes />}
+        {abaAtiva === 'denuncias' && <AdminDenuncias setAbaAtiva={setAbaAtiva} />}
+        {abaAtiva === 'lixeira' && <AdminLixeira />}
 
       </main>
     </div>

@@ -1,6 +1,8 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import Swal from 'sweetalert2';
+import api from '../services/api';
 import userImg from '../assets/img/user.png';
 import '../assets/css/perfil.css'; // O CSS importado
 
@@ -9,36 +11,30 @@ function Profile() {
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState('info');
+  const [fullProfile, setFullProfile] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
-  // Mocks para renderização visual
-  const mockUser = {
-    nome: "Renan Santos",
-    username: user?.username || "renan_santos",
-    tipo: "admin", // Opções: 'admin', 'autor', 'aguardando_aprovacao', 'leitor'
-    foto: null,
-    descricao_perfil: "Desenvolvedor e Leitor Assíduo.",
-    localizacao: "Belém - PA",
-    bio: "Amante da tecnologia e de boas histórias. Criador do ParaBook.",
-    perfil_privado: false
+  useEffect(() => {
+    if (user?.username) {
+      api.get(`/perfis/${user.username}/`)
+        .then(res => setFullProfile(res.data))
+        .catch(err => console.error("Erro ao carregar perfil completo", err))
+        .finally(() => setLoadingProfile(false));
+    }
+  }, [user]);
+
+  // Mocks para fallback se a API não retornar
+  const stats = fullProfile?.estatisticas || {
+    total_lidos: 0,
+    lendo_agora: 0, // A ser implementado
+    total_avaliados: 0,
+    total_comunidades: 0
   };
 
-  const stats = {
-    total_lidos: 42,
-    lendo_agora: 2,
-    total_avaliados: 30,
-    total_comunidades: 5
-  };
+  const favoritosMock = fullProfile?.favoritos?.livros || [];
+  const comunidadesMock = fullProfile?.comunidades || [];
 
-  const favoritosMock = [
-    { id: 1, titulo: "O Senhor dos Anéis", autor: "J.R.R. Tolkien", capa: null },
-    { id: 2, titulo: "Duna", autor: "Frank Herbert", capa: null }
-  ];
-
-  const comunidadesMock = [
-    { id: 1, nome: "Clube do Sci-Fi", descricao: "Para amantes de ficção científica." }
-  ];
-
-  if (loading) {
+  if (loading || loadingProfile) {
     return <div className="text-center mt-5" style={{ color: 'white' }}>Carregando perfil...</div>;
   }
 
@@ -63,7 +59,7 @@ function Profile() {
         <div className="perfil-content-wrapper">
           <div className="perfil-sidebar">
             <div className="perfil-avatar-box">
-              <img src={mockUser.foto || userImg} alt="Avatar do Usuário" className="perfil-avatar" />
+              <img src={fullProfile?.perfil?.foto || user?.foto || userImg} alt="Avatar do Usuário" className="perfil-avatar" />
               <input type="file" id="inputFotoOculto" accept="image/*" style={{ display: 'none' }} />
 
               <div style={{ position: 'absolute', bottom: '5px', right: '-15px', display: 'flex', gap: '8px' }}>
@@ -77,17 +73,17 @@ function Profile() {
           <div className="perfil-main-info glass-card">
             <div className="info-header">
               <h1 className="perfil-nome"> 
-                {mockUser.nome}  
-                {mockUser.tipo === 'admin' && <span className="badge badge-admin"><i className="fa-solid fa-shield-halved"></i> Admin</span>}
-                {mockUser.tipo === 'autor' && <span className="badge badge-autor"><i className="fa-solid fa-feather-pointed"></i> Autor</span>}
-                {mockUser.tipo === 'aguardando_aprovacao' && <span className="badge badge-pendente"><i className="fa-solid fa-clock-rotate-left"></i> Em Análise</span>}
-                {mockUser.tipo === 'leitor' && <span className="badge badge-leitor"><i className="fa-solid fa-book-open"></i> Leitor</span>}
+                {user?.nome || 'Usuário'}  
+                {user?.tipo === 'admin' && <span className="badge badge-admin"><i className="fa-solid fa-shield-halved"></i> Admin</span>}
+                {user?.tipo === 'autor' && <span className="badge badge-autor"><i className="fa-solid fa-feather-pointed"></i> Autor</span>}
+                {user?.tipo === 'aguardando_aprovacao' && <span className="badge badge-pendente"><i className="fa-solid fa-clock-rotate-left"></i> Em Análise</span>}
+                {user?.tipo === 'leitor' && <span className="badge badge-leitor"><i className="fa-solid fa-book-open"></i> Leitor</span>}
               </h1>
-              <p className="perfil-username">@{mockUser.username}</p>
+              <p className="perfil-username">@{user?.username}</p>
             </div>
 
             <div className="info-body">
-              <p className="perfil-descricao"><i className="fa-solid fa-quote-left"></i> {mockUser.descricao_perfil}</p>
+              <p className="perfil-descricao"><i className="fa-solid fa-quote-left"></i> {user?.descricao_perfil || 'Sem status'}</p>
               <p className="perfil-historico">
                 <i className="fa-solid fa-clock-rotate-left"></i> 
                 Último lido: <strong>O Hobbit</strong>
@@ -98,7 +94,7 @@ function Profile() {
                   <i className="fa-solid fa-location-dot"></i>
                   <div>
                     <span className="meta-label">Localização</span>
-                    <span className="meta-value">{mockUser.localizacao}</span>
+                    <span className="meta-value">{user?.localizacao || 'Desconhecida'}</span>
                   </div>
                 </div>
               </div>
@@ -165,7 +161,7 @@ function Profile() {
             <div className="perfil-info-grid">
               <div className="content-glass-card full-width">
                 <h3>Sobre Você</h3>
-                <p className="sobre-texto">{mockUser.bio}</p>
+                <p className="sobre-texto">{user?.bio || 'Nenhuma biografia informada.'}</p>
                 <button className="btn-primary-action">
                   <i className="fa-solid fa-pen-to-square"></i> Trocar Biografia
                 </button>
@@ -227,35 +223,66 @@ function Profile() {
           <div className="tab-content active">
             <div className="config-container content-glass-card full-width">
               <h2>Configurações da Conta</h2>
-              <form className="config-form" onSubmit={(e) => e.preventDefault()}>
+              <form className="config-form" onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+                data.perfil_privado = formData.get('perfil_privado') === 'on';
+                
+                // Remover campos read_only do payload para evitar conflitos na API
+                delete data.nome;
+                delete data.username;
+
+                try {
+                  await api.patch('/perfis/meu-perfil/', data);
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso!',
+                    text: 'Configurações salvas com sucesso.',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#8b5cf6'
+                  });
+                } catch (error) {
+                  console.error(error);
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Ops...',
+                    text: 'Erro ao salvar as configurações.',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#8b5cf6'
+                  });
+                }
+              }}>
                 <div className="form-grid">
-                  {mockUser.tipo !== 'admin' && (
+                  {user?.tipo !== 'admin' && (
                     <div className="perfil-form-group full-width" style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '14px', border: '1px dashed rgba(139,92,246,0.2)', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                       <div>
                         <h4 style={{ margin: '0 0 5px 0', color: 'white' }}><i className="fa-solid fa-user-shield" style={{ color: '#8b5cf6', marginRight: '8px' }}></i> Modo de Privacidade da Conta</h4>
                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Ao ativar, seu perfil ficará oculto para leitores e autores comuns do ParaBook.</p>
                       </div>
                       <label className="switch-ui" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '26px', cursor: 'pointer' }}>
-                        <input type="checkbox" name="perfil_privado" style={{ opacity: 0, width: 0, height: 0 }} defaultChecked={mockUser.perfil_privado} />
+                        <input type="checkbox" name="perfil_privado" style={{ opacity: 0, width: 0, height: 0 }} defaultChecked={user?.perfil_privado || false} />
                         <span className="slider-ui" style={{ position: 'absolute', inset: 0, backgroundColor: '#374151', borderRadius: '34px', transition: '.4s' }}></span>
                       </label>
                     </div>
                   )}
                   <div className="perfil-form-group">
-                    <label htmlFor="input-nome">Nome de Exibição</label>
-                    <input type="text" id="input-nome" name="nome" className="form-input" defaultValue={mockUser.nome} />
+                    <label htmlFor="input-nome">Nome de Exibição (Apenas visualização)</label>
+                    <input type="text" id="input-nome" name="nome" className="form-input" defaultValue={user?.nome} readOnly style={{ opacity: 0.7, cursor: 'not-allowed' }} />
                   </div>
                   <div className="perfil-form-group">
                     <label htmlFor="input-username">Nome de Usuário (Username)</label>
-                    <input type="text" id="input-username" name="username" className="form-input" defaultValue={mockUser.username} />
+                    <input type="text" id="input-username" name="username" className="form-input" defaultValue={user?.username} readOnly style={{ opacity: 0.7, cursor: 'not-allowed' }} />
                   </div>
                   <div className="perfil-form-group">
                     <label htmlFor="input-descricao">Frase de Status (Curta)</label>
-                    <input type="text" id="input-descricao" name="descricao_perfil" className="form-input" defaultValue={mockUser.descricao_perfil} />
+                    <input type="text" id="input-descricao" name="descricao_perfil" className="form-input" defaultValue={user?.descricao_perfil || ''} />
                   </div>
                   <div className="perfil-form-group">
                     <label htmlFor="input-localizacao">Localização / Cidade</label>
-                    <input type="text" id="input-localizacao" name="localizacao" className="form-input" defaultValue={mockUser.localizacao} />
+                    <input type="text" id="input-localizacao" name="localizacao" className="form-input" defaultValue={user?.localizacao || ''} />
                   </div>
                 </div>
                 <button type="submit" className="btn-primary-action" style={{ marginTop: '20px' }}>
@@ -269,12 +296,23 @@ function Profile() {
                   <p>Gerencie sua senha ou encerre sua conta.</p>
                 </div>
                 <div className="danger-actions">
-                  <button className="btn-outline">Alterar Senha</button> 
-                  <button className="btn-danger-outline">
+                  <button className="btn-outline" onClick={() => Swal.fire({
+                    icon: 'info',
+                    title: 'Em breve',
+                    text: 'Função de Alterar Senha estará disponível na próxima atualização.',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#8b5cf6'
+                  })}>Alterar Senha</button> 
+                  <button className="btn-danger-outline" onClick={() => Swal.fire({
+                    icon: 'warning',
+                    title: 'Em breve',
+                    text: 'Função de Excluir Conta estará disponível na próxima atualização.',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#ef4444'
+                  })}>
                     <i className="fa-solid fa-trash"></i> Excluir conta
-                  </button>
-                  <button className="btn-outline ms-2" onClick={handleLogout}>
-                    <i className="fa-solid fa-right-from-bracket"></i> Sair da Conta
                   </button>
                 </div>
               </div>
@@ -284,7 +322,7 @@ function Profile() {
       </section>
 
       {/* PAINEIS ESPECÍFICOS DE TIPO DE USUÁRIO */}
-      {mockUser.tipo === 'admin' && (
+      {user?.tipo === 'admin' && (
         <section className="special-panel admin-panel content-glass-card">
           <div className="panel-info">
             <h3><i className="fa-solid fa-server"></i> Central de Comando</h3>
@@ -294,7 +332,7 @@ function Profile() {
         </section>
       )}
 
-      {mockUser.tipo === 'autor' && (
+      {user?.tipo === 'autor' && (
         <section className="special-panel autor-panel content-glass-card">
           <div className="panel-info">
             <h3><i className="fa-solid fa-wand-magic-sparkles"></i> Painel do Autor Independente</h3>
@@ -304,7 +342,7 @@ function Profile() {
         </section>
       )}
 
-      {mockUser.tipo === 'aguardando_aprovacao' && (
+      {user?.tipo === 'aguardando_aprovacao' && (
         <section className="special-panel pendente-panel content-glass-card">
           <div className="panel-info">
             <h3 style={{ color: '#fbbf24' }}><i className="fa-solid fa-hourglass-half"></i> Solicitação em Análise</h3>
@@ -313,7 +351,7 @@ function Profile() {
         </section>
       )}
 
-      {mockUser.tipo === 'leitor' && (
+      {user?.tipo === 'leitor' && (
         <section className="special-panel upgrade-panel content-glass-card">
           <div className="panel-info">
             <h3>Escreve ou deseja publicar suas próprias obras?</h3>

@@ -16,20 +16,24 @@ import PublicarLivro from './pages/PublicarLivro'
 import MinhaBiblioteca from './pages/MinhaBiblioteca'
 import LivroInfo from './pages/LivroInfo'
 import Leitura from './pages/Leitura'
+import PerfilPublico from './pages/PerfilPublico'
 
 function App() {
   const location = useLocation();
   const isDashboard = location.pathname.startsWith('/dashboard');
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const hideNavAndFooter = isDashboard || isAuthPage;
 
   return (
     <>
-      {!isDashboard && <Navbar />}
-      <div className={isDashboard ? "" : "container"}>
+      {!hideNavAndFooter && <Navbar />}
+      <div className={hideNavAndFooter ? "" : "container"}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/perfil" element={<Profile />} />
+          <Route path="/perfil/:username" element={<PerfilPublico />} />
           <Route path="/biblioteca" element={<Biblioteca />} />
           <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -45,7 +49,7 @@ function App() {
           <Route path="*" element={<div className="text-center mt-5"><h2 className="text-white">Página em Construção</h2></div>} />
         </Routes>
       </div>
-      {!isDashboard && <Footer />}
+      {!hideNavAndFooter && <Footer />}
     </>
   )
 }

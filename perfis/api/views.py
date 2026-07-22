@@ -14,3 +14,78 @@ class PerfilRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
         # O signal provavelmente cria um Perfil ao criar um User, então validamos isso.
         perfil, created = Perfil.objects.get_or_create(usuario=self.request.user)
         return perfil
+
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Count
+from usuarios.models import Usuario
+from biblioteca.models import Biblioteca
+from comunidades.models import Comunidade
+
+class PerfilPublicoAPIView(APIView):
+    def get(self, request, username, *args, **kwargs):
+        dados_usuario = get_object_or_404(Usuario, user_auth__username=username)
+        user_auth_obj = dados_usuario.user_auth
+
+        # O React vai tratar se o username é igual ao user.username logado, mas mandamos um flag caso precise:
+        is_owner = request.user.is_authenticated and request.user == user_auth_obj
+
+        perfil_do_usuario = dados_usuario.perfil
+
+        # REGRAS DE TRAVA
+        if not (request.user.is_authenticated and request.user.is_superuser):
+            if dados_usuario.tipo == 'admin' or user_auth_obj.is_superuser:
+                return Response({"erro": "Acesso negado a perfis administrativos.", "status_block": "admin"}, status=403)
+            if perfil_do_usuario.perfil_privado:
+                return Response({"erro": "Este perfil é privado.", "status_block": "privado"}, status=403)
+
+        meus_livros = Biblioteca.objects.filter(user=user_auth_obj)
+        qnt_livros_lidos = meus_livros.filter(status='lido').count()
+        qnt_avaliados = meus_livros.filter(nota__isnull=False).count()
+
+        minhas_comunidades = Comunidade.objects.filter(membros=user_auth_obj)
+        qnt_comunidades = minhas_comunidades.count()
+
+        top_generos = meus_livros.values('livro__categoria__nome').annotate(total=Count('livro__categoria__nome')).order_by('-total')[:3]
+        lista_generos_favoritos = [item['livro__categoria__nome'] for item in top_generos if item['livro__categoria__nome']]
+
+        top_autores = meus_livros.values('livro__autor').annotate(total=Count('livro__autor')).order_by('-total')[:3]
+        lista_autores_favoritos = [item['livro__autor'] for item in top_autores if item['livro__autor']]
+
+        ultimo_lido = meus_livros.filter(status='lido').order_by('-id').first()
+        historico_livros = meus_livros.filter(status='lido').order_by('-id')[:10]
+
+        return Response({
+            "is_owner": is_owner,
+            "usuario": {
+                "username": user_auth_obj.username,
+                "nome": dados_usuario.nome,
+                "tipo": dados_usuario.tipo
+            },
+            "perfil": {
+                "foto": perfil_do_usuario.foto.url if perfil_do_usuario.foto else None,
+                "bio": perfil_do_usuario.bio,
+                "descricao_perfil": perfil_do_usuario.descricao_perfil,
+                "localizacao": perfil_do_usuario.localizacao,
+                "historico_txt": perfil_do_usuario.historico
+            },
+            "estatisticas": {
+                "total_lidos": qnt_livros_lidos,
+                "total_avaliados": qnt_avaliados,
+                "total_comunidades": qnt_comunidades
+            },
+            "favoritos": {
+                "generos": lista_generos_favoritos,
+                "autores": lista_autores_favoritos
+            },
+            "ultimo_lido": {
+                "titulo": ultimo_lido.livro.titulo if ultimo_lido else None
+            },
+            "historico": [
+                {"id": h.id, "titulo": h.livro.titulo, "data": "Recente"} for h in historico_livros
+            ],
+            "comunidades": [
+                {"id": c.id, "nome": c.nome, "descricao": c.descricao} for c in minhas_comunidades
+            ]
+        })

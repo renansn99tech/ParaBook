@@ -8,46 +8,44 @@ function LivroInfo() {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
 
-  // Mocks
-  const [livro] = useState({
-    id: id || 1,
-    titulo: "O Senhor dos Anéis: A Sociedade do Anel",
-    autor: "J.R.R. Tolkien",
-    categoria: { nome: "Ficção Fantástica" },
-    ano_publicacao: "1954",
-    isbn: "978-8533613379",
-    edicao: "1ª Edição (Tradução)",
-    paginas: 432,
-    avaliacao: 4.9,
-    capa_url: null, // Será renderizado o ícone padrão
-    sinopse: "Em uma terra fantástica e única, um hobbit recebe a incumbência de destruir um anel mágico com o poder de escravizar a todos..."
-  });
-
+  const [livro, setLivro] = useState(null);
+  const [avaliacoes, setAvaliacoes] = useState([]);
   const [minhaAvaliacao, setMinhaAvaliacao] = useState(null);
   const [notaForm, setNotaForm] = useState('');
   const [resenhaForm, setResenhaForm] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const [avaliacoes, setAvaliacoes] = useState([
-    {
-      id: 1,
-      user: { username: "joao_silva" },
-      nota: 5,
-      resenha: "Obra prima irretocável! Mudou minha vida.",
-      data_adicao: "15 Jul 2026"
-    },
-    {
-      id: 2,
-      user: { username: "maria_fernandes" },
-      nota: 4,
-      resenha: "Muito detalhado, a leitura no começo é lenta, mas melhora demais.",
-      data_adicao: "18 Jul 2026"
-    }
-  ]);
+  useEffect(() => {
+    const fetchLivroInfo = async () => {
+      try {
+        const resLivro = await api.get(`/biblioteca/livros/${id}/`);
+        setLivro(resLivro.data);
+
+        const resResenhas = await api.get(`/biblioteca/livros/${id}/resenhas/`);
+        setAvaliacoes(resResenhas.data);
+
+        if (user) {
+          const resEstante = await api.get(`/biblioteca/estante/`);
+          const estanteData = resEstante.data.results || resEstante.data;
+          const userEntry = estanteData.find(item => item.livro === parseInt(id));
+          if (userEntry && userEntry.nota) {
+            setMinhaAvaliacao(userEntry);
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao buscar detalhes do livro", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLivroInfo();
+  }, [id, user]);
 
   const abrirDenuncia = () => {
     Swal.fire({
       title: "Relatar Problema",
-      text: `Selecione o motivo da denúncia para a obra "${livro.titulo}":`,
+      text: `Selecione o motivo da denúncia para a obra "${livro?.titulo}":`,
       input: "select",
       inputOptions: {
         Pirataria: "Violação de Direitos Autorais",
@@ -98,24 +96,71 @@ function LivroInfo() {
       cancelButtonText: "Cancelar",
       background: "#0f172a",
       color: "#f8fafc",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setMinhaAvaliacao(null);
+    }).then(async (result) => {
+      if (result.isConfirmed && minhaAvaliacao?.id) {
+        try {
+          await api.patch(`/biblioteca/estante/${minhaAvaliacao.id}/`, { nota: null, resenha: null });
+          Swal.fire('Removido', 'Sua avaliação foi removida.', 'success');
+          setMinhaAvaliacao(null);
+          const resResenhas = await api.get(`/biblioteca/livros/${id}/resenhas/`);
+          setAvaliacoes(resResenhas.data);
+        } catch (error) {
+          console.error("Erro ao remover avaliação", error);
+        }
       }
     });
   };
 
-  const handleAvaliar = (e) => {
+  const handleAvaliar = async (e) => {
     e.preventDefault();
-    const novaAva = {
-      nota: parseInt(notaForm),
-      resenha: resenhaForm,
-      data_adicao: "Agora mesmo"
-    };
-    setMinhaAvaliacao(novaAva);
-    setNotaForm('');
-    setResenhaForm('');
+    try {
+      if (minhaAvaliacao?.id) {
+        await api.patch(`/biblioteca/estante/${minhaAvaliacao.id}/`, { 
+          nota: parseInt(notaForm), resenha: resenhaForm 
+        });
+      } else {
+        await api.post(`/biblioteca/estante/`, {
+          livro: parseInt(id),
+          nota: parseInt(notaForm),
+          resenha: resenhaForm,
+          status: 'lido'
+        });
+      }
+      
+      Swal.fire('Sucesso!', 'Avaliação salva com sucesso.', 'success');
+      
+      const resEstante = await api.get(`/biblioteca/estante/`);
+      const estanteData = resEstante.data.results || resEstante.data;
+      const userEntry = estanteData.find(item => item.livro === parseInt(id));
+      setMinhaAvaliacao(userEntry);
+      
+      const resResenhas = await api.get(`/biblioteca/livros/${id}/resenhas/`);
+      setAvaliacoes(resResenhas.data);
+      
+      setNotaForm('');
+      setResenhaForm('');
+    } catch (error) {
+      console.error("Erro ao salvar avaliação", error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="container py-4 text-center mt-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Carregando...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!livro) {
+    return (
+      <div className="container py-4 text-center mt-5">
+        <h2 className="text-white">Livro não encontrado</h2>
+      </div>
+    );
+  }
 
   return (
     <main className="container livro-info-page">
@@ -151,7 +196,7 @@ function LivroInfo() {
             <div className="metadata-item">
               <span className="meta-titulo">Gênero / Categoria</span>
               <span className="meta-valor">
-                <i className="fa-solid fa-bookmark" style={{ color: '#8b5cf6' }}></i> {livro.categoria?.nome || "Não informado"}
+                <i className="fa-solid fa-bookmark" style={{ color: '#8b5cf6' }}></i> {livro.categoria_nome || "Não informado"}
               </span>
             </div>
 
@@ -193,7 +238,7 @@ function LivroInfo() {
 
           <h3 className="sinopse-titulo">Sinopse / Descrição</h3>
           <p className="sinopse-texto">
-            {livro.sinopse}
+            {livro.sinopse || "Nenhuma sinopse disponível."}
           </p>
         </div>
       </section>
@@ -270,8 +315,12 @@ function LivroInfo() {
               <div key={ava.id} className="avaliacao-card glass-card">
                 <div className="avaliacao-header">
                   <strong className="avaliacao-user">
-                    <i className="fa-solid fa-user-circle" style={{ color: '#94a3b8', fontSize: '1.2rem', verticalAlign: 'middle', marginRight: '5px' }}></i>
-                    @{ava.user.username}
+                    {ava.usuario_foto ? (
+                      <img src={ava.usuario_foto} alt="User Avatar" style={{ width: '24px', height: '24px', borderRadius: '50%', marginRight: '5px', verticalAlign: 'middle', objectFit: 'cover' }} />
+                    ) : (
+                      <i className="fa-solid fa-user-circle" style={{ color: '#94a3b8', fontSize: '1.2rem', verticalAlign: 'middle', marginRight: '5px' }}></i>
+                    )}
+                    @{ava.usuario_nome}
                   </strong>
                   <span className="avaliacao-nota">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -280,7 +329,7 @@ function LivroInfo() {
                   </span>
                 </div>
                 <p className="avaliacao-texto">"{ava.resenha}"</p>
-                <small className="avaliacao-data">{ava.data_adicao}</small>
+                <small className="avaliacao-data">{new Date(ava.data_adicao).toLocaleDateString('pt-BR')}</small>
               </div>
             ))
           ) : (

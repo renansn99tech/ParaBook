@@ -94,11 +94,27 @@
     border-color: rgba(239, 68, 68, 0.2) !important;
 }
 
-.admin-sidebar .danger:hover{
+.admin-sidebar .danger:hover,
+.admin-sidebar button.danger.active {
     color: #fca5a5 !important;
     background: rgba(69, 10, 10, 0.4) !important;
     border-color: rgba(239, 68, 68, 0.5) !important;
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15) !important;
+    transform: translateX(3px);
+}
+
+.admin-sidebar .warning{
+    color: #f97316 !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    border-color: rgba(249, 115, 22, 0.2) !important;
+}
+
+.admin-sidebar .warning:hover,
+.admin-sidebar button.warning.active {
+    color: #fdba74 !important;
+    background: rgba(67, 20, 7, 0.4) !important;
+    border-color: rgba(249, 115, 22, 0.5) !important;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.15) !important;
     transform: translateX(3px);
 }
 

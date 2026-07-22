@@ -1,71 +1,80 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import api from '../services/api';
 import '../assets/css/minha-biblioteca.css';
 
 function MinhaBiblioteca() {
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading: authLoading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Mocks
-  const [livros, setLivros] = useState([
-    {
-      id: 1,
-      titulo: "O Senhor dos Anéis",
-      autor: "J.R.R. Tolkien",
-      categoria: "Ficção",
-      status: "lendo", // lido, lendo, quero_ler
-      favorito: true,
-      capa_url: null
-    },
-    {
-      id: 2,
-      titulo: "Duna",
-      autor: "Frank Herbert",
-      categoria: "Sci-Fi",
-      status: "lido",
-      favorito: false,
-      capa_url: null
-    },
-    {
-      id: 3,
-      titulo: "1984",
-      autor: "George Orwell",
-      categoria: "Ficção",
-      status: "quero_ler",
-      favorito: true,
-      capa_url: null
-    }
-  ]);
+  const [livros, setLivros] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [busca, setBusca] = useState('');
   const [filtroGenero, setFiltroGenero] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('');
 
-  if (loading) {
-    return <div className="text-center mt-5" style={{ color: 'white' }}>Carregando biblioteca...</div>;
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
+    }
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchEstante = async () => {
+        try {
+          const response = await api.get('/biblioteca/estante/');
+          const estanteData = response.data.results || response.data;
+          setLivros(estanteData);
+        } catch (error) {
+          console.error("Erro ao buscar estante:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchEstante();
+    }
+  }, [user]);
+
+  if (authLoading || loading) {
+    return (
+      <div className="container py-4 text-center mt-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Carregando...</span>
+        </div>
+      </div>
+    );
   }
 
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
+  if (!user) return null;
 
   // Filtragem
-  const livrosFiltrados = livros.filter(livro => {
-    const matchBusca = livro.titulo.toLowerCase().includes(busca.toLowerCase()) || livro.autor.toLowerCase().includes(busca.toLowerCase());
-    const matchGenero = filtroGenero ? livro.categoria.toLowerCase() === filtroGenero.toLowerCase() : true;
-    const matchStatus = filtroStatus ? livro.status === filtroStatus : true;
-    return matchBusca && matchGenero && matchStatus;
+  const livrosFiltrados = livros.filter(item => {
+    const titulo = item.livro_titulo || '';
+    const autor = item.livro_autor || '';
+    const matchBusca = titulo.toLowerCase().includes(busca.toLowerCase()) || autor.toLowerCase().includes(busca.toLowerCase());
+    
+    // Na API de estante não temos o nome da categoria mapeado por padrão no EstanteSerializer, 
+    // então a busca de gênero precisaria ser adaptada. Para manter simples, omitimos ou ajustamos:
+    // const matchGenero = filtroGenero ? item.livro_categoria_nome === filtroGenero : true; 
+    
+    const matchStatus = filtroStatus ? item.status === filtroStatus : true;
+    return matchBusca && matchStatus; // Removido matchGenero temporariamente
   });
 
   // Estatísticas
   const totalLidos = livros.filter(l => l.status === 'lido').length;
   const lendoAgora = livros.filter(l => l.status === 'lendo').length;
 
-  const removerLivro = (id) => {
-    setLivros(livros.filter(l => l.id !== id));
-    // Em produção, isso faria um fetch DELETE para a API
+  const removerLivro = async (idEstante) => {
+    try {
+      await api.delete(`/biblioteca/estante/${idEstante}/`);
+      setLivros(livros.filter(l => l.id !== idEstante));
+    } catch (error) {
+      console.error("Erro ao remover da estante", error);
+    }
   };
 
   return (
@@ -142,10 +151,10 @@ function MinhaBiblioteca() {
         <section className="books-grid" aria-label="Listagem de livros da coleção">
           {livrosFiltrados.map((item) => (
             <article key={item.id} className="card-livro">
-              <Link to={`/livro/${item.id}`} style={{ textDecoration: 'none' }}>
+              <Link to={`/livro/${item.livro}`} style={{ textDecoration: 'none' }}>
                 <div className="capa-container">
-                  {item.capa_url ? (
-                    <img src={item.capa_url} alt={`Capa do livro ${item.titulo}`} className="capa-img" />
+                  {item.livro_capa ? (
+                    <img src={item.livro_capa} alt={`Capa do livro ${item.livro_titulo}`} className="capa-img" />
                   ) : (
                     <i className="fa-solid fa-book" style={{ fontSize: '5rem', color: '#334155' }}></i>
                   )}
@@ -159,12 +168,12 @@ function MinhaBiblioteca() {
               <div className="card-info">
                 <h2 className="book-title">
                   {item.favorito && <i className="fa-solid fa-heart" style={{ color: '#ec4899', marginRight: '5px' }} title="Livro Favoritado"></i>}
-                  {item.titulo}
+                  {item.livro_titulo}
                 </h2>
-                <p className="book-author">Por {item.autor}</p>
+                <p className="book-author">Por {item.livro_autor}</p>
                 
                 <div className="card-actions">
-                  <Link to={`/leitura/${item.id}`} className="btn-ler" title="Abrir leitor digital do livro">
+                  <Link to={`/leitura/${item.livro}`} className="btn-ler" title="Abrir leitor digital do livro">
                     <i className="fa-solid fa-book-open-reader"></i> Ler
                   </Link>
                   <button 

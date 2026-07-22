@@ -1,10 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import api from '../services/api';
+import { AuthContext } from '../context/AuthContext';
 import '../assets/css/leitura.css';
 
 function Leitura() {
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
   
   // PDF.js State
   const canvasRef = useRef(null);
@@ -19,29 +22,45 @@ function Leitura() {
   const [expandir, setExpandir] = useState(false);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+  
+  // Estante states
+  const [idEstante, setIdEstante] = useState(null);
   const [lido, setLido] = useState(false);
   const [favorito, setFavorito] = useState(false);
   
   const [inputPag, setInputPag] = useState('');
 
-  // Sample PDF URL
-  const pdfUrl = "https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf";
-
   // Initial load
   useEffect(() => {
+    if (!user) return; // Aguarda o user estar logado (protegido por rotas)
+
     setLoading(true);
     setErro(null);
 
-    const carregarPDF = async () => {
+    const fetchData = async () => {
       try {
         if (!window.pdfjsLib) {
           throw new Error("Biblioteca PDF.js não encontrada.");
         }
         
-        // Configurar worker do PDF.js (necessário a partir de certas versões)
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
-        const pdf = await window.pdfjsLib.getDocument(pdfUrl).promise;
+        // 1. Busca os detalhes da estante (para saber se já está lido, favorito, etc)
+        const resEstante = await api.get('/biblioteca/estante/');
+        const estanteData = resEstante.data.results || resEstante.data;
+        const entry = estanteData.find(e => e.livro === parseInt(id));
+        if (entry) {
+          setIdEstante(entry.id);
+          setLido(entry.status === 'lido');
+          setFavorito(entry.favorito);
+        }
+
+        // 2. Busca o arquivo PDF
+        const response = await api.get(`/biblioteca/livros/${id}/ler_pdf/`, {
+          responseType: 'arraybuffer'
+        });
+
+        const pdf = await window.pdfjsLib.getDocument({ data: response.data }).promise;
         setPdfDoc(pdf);
         setTotalPaginas(pdf.numPages);
         
@@ -56,13 +75,17 @@ function Leitura() {
         setLoading(false);
       } catch (err) {
         console.error(err);
-        setErro("Erro ao carregar o arquivo PDF.");
+        if (err.response?.status === 403) {
+          setErro("Acesso Negado: Você não tem permissão para ler este livro.");
+        } else {
+          setErro("Erro ao carregar o arquivo PDF. Verifique se o livro possui PDF e tente novamente.");
+        }
         setLoading(false);
       }
     };
 
-    carregarPDF();
-  }, [id, pdfUrl]);
+    fetchData();
+  }, [id, user]);
 
   // Render page when pdfDoc, page or zoom changes
   useEffect(() => {
@@ -117,6 +140,23 @@ function Leitura() {
   }, [totalPaginas]);
 
   // Actions
+  const syncEstante = async (dados) => {
+    try {
+      if (idEstante) {
+        await api.patch(`/biblioteca/estante/${idEstante}/`, dados);
+      } else {
+        const res = await api.post(`/biblioteca/estante/`, {
+          livro: parseInt(id),
+          status: 'lendo',
+          ...dados
+        });
+        setIdEstante(res.data.id);
+      }
+    } catch (error) {
+      console.error("Erro ao sincronizar estante", error);
+    }
+  };
+
   const handleMarcarLido = () => {
     Swal.fire({
       title: 'Concluir Livro?',
@@ -129,8 +169,9 @@ function Leitura() {
       cancelButtonText: 'Ainda não',
       background: '#1e293b',
       color: '#f8fafc'
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
+        await syncEstante({ status: 'lido' });
         setLido(true);
         Swal.fire({
           title: 'Parabéns! 🎉',
@@ -144,9 +185,12 @@ function Leitura() {
     });
   };
 
-  const handleFavoritar = () => {
-    setFavorito(!favorito);
-    if (!favorito) {
+  const handleFavoritar = async () => {
+    const novoStatus = !favorito;
+    await syncEstante({ favorito: novoStatus });
+    setFavorito(novoStatus);
+    
+    if (novoStatus) {
       Swal.fire({
         title: 'Favoritado! ❤️',
         text: 'Este livro foi adicionado à sua aba de favoritos.',
@@ -188,8 +232,9 @@ function Leitura() {
           else { resolve('Você precisa selecionar uma nota!'); }
         });
       }
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed && result.value) {
+        await syncEstante({ nota: parseInt(result.value) });
         Swal.fire({
           title: 'Avaliação Salva!',
           text: 'Sua nota foi registrada com sucesso.',

@@ -26,8 +26,8 @@ function PublicarLivro() {
     return <div className="text-center mt-5"><h2 style={{ color: 'white' }}>Carregando...</h2></div>;
   }
 
-  // Verifica se está logado e se tem permissão (is_staff ou status == 'aprovado')
-  const isAuthorized = user && (user.is_staff || (user.perfil && user.perfil.status === 'aprovado'));
+  // Verifica se está logado e se tem permissão (autor ou admin)
+  const isAuthorized = user && (user.tipo === 'autor' || user.tipo === 'admin');
 
   if (!isAuthorized) {
     return (

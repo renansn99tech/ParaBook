@@ -86,7 +86,7 @@ function Profile() {
               <p className="perfil-descricao"><i className="fa-solid fa-quote-left"></i> {user?.descricao_perfil || 'Sem status'}</p>
               <p className="perfil-historico">
                 <i className="fa-solid fa-clock-rotate-left"></i> 
-                Último lido: <strong>O Hobbit</strong>
+                Último lido: <strong>{stats.ultimo_lido || 'Nenhum livro lido'}</strong>
               </p>
               
               <div className="perfil-meta">
@@ -245,7 +245,7 @@ function Profile() {
                   <div className="favorito-info" style={{ padding: '20px' }}>
                     <h4>{comunidade.nome}</h4>
                     <p style={{ marginBottom: '15px', minHeight: '40px' }}>{comunidade.descricao}</p>
-                    <Link to={`/comunidades/${comunidade.id}`} className="btn-outline" style={{ width: '100%', justifyContent: 'center', textAlign: 'center' }}>
+                    <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-outline" style={{ width: '100%', justifyContent: 'center', textAlign: 'center' }}>
                       Acessar Comunidade
                     </Link>
                   </div>
@@ -331,14 +331,9 @@ function Profile() {
                   <p>Gerencie sua senha ou encerre sua conta.</p>
                 </div>
                 <div className="danger-actions">
-                  <button className="btn-outline" onClick={() => Swal.fire({
-                    icon: 'info',
-                    title: 'Em breve',
-                    text: 'Função de Alterar Senha estará disponível na próxima atualização.',
-                    background: '#1e293b',
-                    color: '#fff',
-                    confirmButtonColor: '#8b5cf6'
-                  })}>Alterar Senha</button> 
+                  <Link to="/perfil/alterar-senha" className="btn-outline" style={{ textDecoration: 'none' }}>
+                    Alterar Senha
+                  </Link> 
                   <button className="btn-danger-outline" onClick={() => Swal.fire({
                     icon: 'warning',
                     title: 'Em breve',

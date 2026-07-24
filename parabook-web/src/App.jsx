@@ -19,6 +19,7 @@ import Leitura from './pages/Leitura'
 import PerfilPublico from './pages/PerfilPublico'
 import Novidades from './pages/Novidades'
 import ConteudoComunidade from './pages/ConteudoComunidade'
+import AlterarSenha from './pages/AlterarSenha'
 
 function App() {
   const location = useLocation();
@@ -34,6 +35,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/perfil" element={<Profile />} />
+          <Route path="/perfil/alterar-senha" element={<AlterarSenha />} />
           <Route path="/perfil/:username" element={<PerfilPublico />} />
           <Route path="/biblioteca" element={<Biblioteca />} />
           <Route path="/comunidades" element={<Comunidades />} />

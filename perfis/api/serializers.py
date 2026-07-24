@@ -7,11 +7,12 @@ class PerfilSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='usuario.email', read_only=True)
     tipo = serializers.CharField(source='usuario.perfil_customizado.tipo', read_only=True)
     nome = serializers.CharField(source='usuario.perfil_customizado.nome', required=False)
+    is_superuser = serializers.BooleanField(source='usuario.is_superuser', read_only=True)
 
     class Meta:
         model = Perfil
-        fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'historico', 'descricao_perfil', 'foto', 'bio', 'localizacao', 'perfil_privado']
-        read_only_fields = ['id', 'usuario', 'tipo', 'email']
+        fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'is_superuser', 'historico', 'descricao_perfil', 'foto', 'bio', 'localizacao', 'perfil_privado']
+        read_only_fields = ['id', 'usuario', 'tipo', 'email', 'is_superuser']
 
     def update(self, instance, validated_data):
         usuario_data = validated_data.pop('usuario', {})

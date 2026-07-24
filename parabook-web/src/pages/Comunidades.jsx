@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import '../assets/css/comunidade.css';
 
 function Comunidades() {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   
   const [comunidadesOficiais, setComunidadesOficiais] = useState([]);
   const [comunidadesDaGalera, setComunidadesDaGalera] = useState([]);
@@ -23,6 +24,11 @@ function Comunidades() {
   }, []);
 
   const handleToggleParticipacao = async (comunidadeId) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     try {
       const response = await api.post(`/comunidades/comunidades/${comunidadeId}/entrar/`);
       

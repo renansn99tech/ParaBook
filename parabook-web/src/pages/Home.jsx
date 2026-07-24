@@ -66,8 +66,15 @@ function Home() {
             <div className="floating-user">
               <div className="floating-avatar">👩</div>
               <div>
-                <h4>{isAuthenticated ? user.username : 'Visitante'}</h4>
-                <span>{isAuthenticated ? user.email : 'Leitor'}</span>
+                <h4 style={{ fontSize: '0.8rem', marginBottom: '2px' }}>{isAuthenticated ? user.username : 'Visitante'}</h4>
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                  {isAuthenticated 
+                    ? (user.tipo === 'admin' ? 'Administrador' 
+                      : user.tipo === 'autor' ? 'Autor' 
+                      : user.tipo === 'aguardando_aprovacao' ? 'Em Análise' 
+                      : 'Leitor') 
+                    : 'Leitor'}
+                </span>
               </div>
             </div>
             <div className="mini-chart"><span></span></div>

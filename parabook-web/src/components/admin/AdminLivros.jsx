@@ -5,6 +5,7 @@ function AdminLivros() {
   const [livros, setLivros] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [guiaAberto, setGuiaAberto] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -74,14 +75,69 @@ function AdminLivros() {
     <section className="secao" style={{ display: 'block' }}>
       <h1 style={{ color: 'white', marginBottom: '20px', textTransform: 'capitalize' }}>Gerenciar Livros</h1>
       
+      <div style={{ marginBottom: '30px' }}>
+        <button 
+          type="button"
+          onClick={() => setGuiaAberto(!guiaAberto)}
+          style={{
+            background: 'rgba(139, 92, 246, 0.1)',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            color: '#c4b5fd',
+            padding: '10px 15px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: 'bold',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <i className="fa-solid fa-book-open"></i> Guia de Curadoria e Ferramentas 
+          {guiaAberto ? <i className="fa-solid fa-chevron-up" style={{ marginLeft: 'auto' }}></i> : <i className="fa-solid fa-chevron-down" style={{ marginLeft: 'auto' }}></i>}
+        </button>
+
+        {guiaAberto && (
+          <div style={{
+            marginTop: '15px',
+            padding: '20px',
+            background: 'rgba(30, 41, 59, 0.7)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            color: 'rgba(255, 255, 255, 0.8)',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '20px'
+          }}>
+            <div>
+              <h3 style={{ color: '#fff', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.1rem' }}>
+                <i className="fa-solid fa-magnifying-glass" style={{ color: '#8b5cf6' }}></i> Busca de ISBN e Edição
+              </h3>
+              <ul style={{ paddingLeft: '20px', lineHeight: '1.8' }}>
+                <li><a href="https://isbnsearch.org/" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'none' }}>ISBN Search</a> - Busca global de ISBN.</li>
+                <li><a href="https://books.google.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'none' }}>Google Books</a> - Ótimo para capas e edições antigas.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 style={{ color: '#fff', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.1rem' }}>
+                <i className="fa-solid fa-building-columns" style={{ color: '#8b5cf6' }}></i> Obras em Domínio Público
+              </h3>
+              <ul style={{ paddingLeft: '20px', lineHeight: '1.8' }}>
+                <li><a href="http://www.dominiopublico.gov.br/" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'none' }}>Portal Domínio Público (BR)</a></li>
+                <li><a href="https://www.gutenberg.org/" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'none' }}>Projeto Gutenberg</a></li>
+              </ul>
+            </div>
+
+            <div style={{ gridColumn: '1 / -1', background: 'rgba(139, 92, 246, 0.1)', padding: '15px', borderRadius: '8px', borderLeft: '4px solid #8b5cf6', marginTop: '10px' }}>
+              <p style={{ margin: 0, lineHeight: '1.6' }}><strong>Dica de Padronização:</strong> Certifique-se de preencher o "Ano de Publicação" com o ano da edição original ou da edição específica do arquivo PDF sendo anexado. Para capas, prefira imagens verticais de boa qualidade.</p>
+            </div>
+          </div>
+        )}
+      </div>
+      
       <div className="admin-form-container" style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', marginBottom: '30px' }}>
-        <input 
-          type="text" 
-          placeholder="Buscar livro..." 
-          className="admin-input-full" 
-          style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.1)', background: '#0f172a', color: 'white', marginBottom: '20px' }} 
-        />
-        
         <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
           <input type="text" name="titulo" placeholder="Título" value={formData.titulo} onChange={handleChange} required className="admin-input" style={{ padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.1)', background: '#0f172a', color: 'white' }} />
           

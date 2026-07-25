@@ -26,7 +26,9 @@
                             {% endif %}
                         </li>
                     </ul>
-                    <a href="#" class="btn btn-primary btn-block">Assinar Agora</a>
+                    <a href="{% url 'assinaturas:criar_sessao_checkout' plano.id %}" class="btn btn-primary btn-block">
+                    Assinar Agora
+                    </a>
                 </div>
             </div>
         </div>

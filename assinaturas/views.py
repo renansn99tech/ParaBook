@@ -1,10 +1,15 @@
+import os
 import stripe
 from django.conf import settings
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Plano
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
+from .models import Plano, Assinatura
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', os.getenv('STRIPE_SECRET_KEY'))
+User = get_user_model()
 
 @login_required
 def listar_planos(request):
@@ -40,3 +45,50 @@ def criar_sessao_checkout(request, plano_id):
         client_reference_id=str(request.user.id),
     )
     return redirect(checkout_session.url, code=330)
+
+@csrf_exempt
+def stripe_webhook(request):
+    """
+    Endpoint isento de CSRF que recebe eventos assíncronos enviados pela Stripe.
+    """
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', os.getenv('STRIPE_WEBHOOK_SECRET'))
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, webhook_secret
+        )
+    except ValueError:
+        # Payload inválido
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
+        # Assinatura do webhook inválida
+        return HttpResponse(status=400)
+
+    # Trata a confirmação de pagamento do Checkout
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        
+        user_id = session.get('client_reference_id')
+        customer_id = session.get('customer')
+        subscription_id = session.get('subscription')
+        plano_id = session.get('metadata', {}).get('plano_id')
+
+        if user_id and plano_id:
+            try:
+                usuario = User.objects.get(id=user_id)
+                plano = Plano.objects.get(id=plano_id)
+                
+                # Busca ou cria a assinatura do usuário
+                assinatura, created = Assinatura.objects.get_or_create(usuario=usuario)
+                assinatura.plano = plano
+                assinatura.ativa = True
+                assinatura.stripe_customer_id = customer_id
+                assinatura.stripe_subscription_id = subscription_id
+                assinatura.save()
+
+            except (User.DoesNotExist, Plano.DoesNotExist):
+                return HttpResponse(status=404)
+
+    return HttpResponse(status=200)

@@ -245,3 +245,10 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
 }
+
+# Configurações do Stripe (Ambiente de Teste)
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51Rxte7L2dwfzLoET6uxyX5ZeUSKd84uHajO2mV3w7RH24hLn5Z9s3zNwKZGKnnpjSQePIAva1HWE3keJ3YMbZneM00apiYOEsE'
+STRIPE_SECRET_KEY = 'sk_test_51Rxte7L2dwfzLoETxujGOlGC0YzOP6QjzymIgcslaXn61o85wOGI5LohYpgiCP92EZWLs7eIkRB0CqWIvYmgbaZ700MZbOMd5G'
+
+# Por enquanto pode deixar essa em branco, até configurarmos o webhook local
+STRIPE_WEBHOOK_SECRET = ''

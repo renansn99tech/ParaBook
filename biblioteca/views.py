@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 from django.http import Http404 # Garanta que Http404 está importado no topo, se necessário
 from comunidades.models import Comunidade
 from usuarios.models import Usuario, Notificacao
-
+from assinaturas.decorators import requer_premium
 from .models import Categoria, Livro, Biblioteca, Denuncia, SolicitacaoPublicacao
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
@@ -406,3 +406,8 @@ def editar_livro(request, pk):
     Implementar a lógica de edição de livros posteriormente.
     """
     raise Http404("Funcionalidade em desenvolvimento.")
+
+@requer_premium
+def recomendacao_ia_view(request):
+    # Lógica da funcionalidade premium
+    return render(request, 'livros/recomendacoes.html')

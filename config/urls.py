@@ -47,6 +47,9 @@ urlpatterns = [
 
     # App dashboard
     path('dashboard/', include('dashboard.urls')),
+    
+    # App assinaturas
+    path('assinaturas/', include('assinaturas.urls', namespace='assinaturas')),
 
     # Urls auxiliares
     path('login/', tela_login, name='login'),

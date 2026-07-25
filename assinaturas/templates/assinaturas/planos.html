@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Escolha o plano ideal para você</h2>
+    <div class="row">
+        {% for plano in planos %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header text-center">
+                    <h3>{{ plano.nome }}</h3>
+                </div>
+                <div class="card-body text-center">
+                    <h4 class="card-title">R$ {{ plano.preco }} <small class="text-muted">/ mês</small></h4>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        {% if plano.anuncios %}
+                            <li>Com anúncios</li>
+                        {% else %}
+                            <li><strong>Sem anúncios</strong></li>
+                        {% endif %}
+                        <li>
+                            {% if plano.limite_livros == 0 %}
+                                Biblioteca Ilimitada
+                            {% else %}
+                                Até {{ plano.limite_livros }} livros
+                            {% endif %}
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-primary btn-block">Assinar Agora</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

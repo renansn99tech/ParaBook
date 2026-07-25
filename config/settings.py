@@ -12,14 +12,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config 
+from pathlib import Path
 import dj_database_url 
 import os
 
-import usuarios
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -84,6 +82,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'usuarios.middleware.ForcarAceiteTermosMiddleware',
+    'assinaturas.middleware.PremiumRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -179,6 +178,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 SUPABASE_URL = config("SUPABASE_URL", default=None)
 SUPABASE_KEY = config("SUPABASE_KEY", default=None)
 SUPABASE_STORAGE_BUCKET_NAME = "parabook-media"
+
+# Stripe Settings
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', 'pk_test_sua_chave_publica_aqui')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', 'sk_test_sua_chave_secreta_aqui')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', 'whsec_sua_chave_webhook_aqui')
 
 # Define se o storage padrão de uploads será o Supabase ou o FileSystem local
 if not DEBUG and SUPABASE_URL and SUPABASE_KEY:

@@ -6,6 +6,7 @@ class Plano(models.Model):
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     limite_livros = models.IntegerField(default=0, help_text="0 para ilimitado ou limite do plano")
     anuncios = models.BooleanField(default=True)
+    stripe_price_id = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.nome} - R$ {self.preco}"
@@ -25,7 +26,10 @@ class Assinatura(models.Model):
     ativa = models.BooleanField(default=False)
     data_inicio = models.DateTimeField(auto_now_add=True)
     data_fim = models.DateTimeField(null=True, blank=True)
+    stripe_customer_id = models.CharField(max_length=100, blank=True, null=True)
+    stripe_subscription_id = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         status = "Ativa" if self.ativa else "Inativa"
         return f"{self.usuario} - {self.plano.nome if self.plano else 'Sem Plano'} ({status})"
+    

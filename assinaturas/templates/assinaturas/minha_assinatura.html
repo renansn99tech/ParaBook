@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Minha Assinatura - Parabook{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Minha Assinatura</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    {% if assinatura and assinatura.plano %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-title m-0">{{ assinatura.plano.nome }}</h4>
+                            {% if assinatura.ativa %}
+                                <span class="badge bg-success text-white px-3 py-2">Ativa</span>
+                            {% else %}
+                                <span class="badge bg-secondary text-white px-3 py-2">Inativa</span>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+
+                        <div class="row my-3">
+                            <div class="col-sm-6 mb-2">
+                                <small class="text-muted d-block">Valor do Plano</small>
+                                <strong>R$ {{ assinatura.plano.preco }} / mês</strong>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <small class="text-muted d-block">Membro desde</small>
+                                <strong>{{ assinatura.data_inicio|date:"d/m/Y" }}</strong>
+                            </div>
+                            {% if assinatura.data_fim %}
+                            <div class="col-sm-6 mb-2 mt-2">
+                                <small class="text-muted d-block">Validade / Renovação</small>
+                                <strong>{{ assinatura.data_fim|date:"d/m/Y" }}</strong>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item px-0">
+                                {% if assinatura.plano.anuncios %}
+                                    <span class="text-muted">Exibe anúncios na plataforma</span>
+                                {% else %}
+                                    <span class="text-success"><strong>✓ Sem anúncios</strong></span>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item px-0">
+                                {% if assinatura.plano.limite_livros == 0 %}
+                                    <span class="text-success"><strong>✓ Biblioteca ilimitada</strong></span>
+                                {% else %}
+                                    <span>Limite de até {{ assinatura.plano.limite_livros }} livros</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'assinaturas:listar_planos' %}" class="btn btn-outline-primary">
+                                Mudar de Plano
+                            </a>
+                        </div>
+
+                    {% else %}
+                        <div class="text-center py-4">
+                            <h5>Você ainda não possui um plano ativo</h5>
+                            <p class="text-muted">Assine o Parabook Premium para desbloquear recursos exclusivos como recomendação por IA e leitura sem anúncios.</p>
+                            <a href="{% url 'assinaturas:listar_planos' %}" class="btn btn-primary mt-2">
+                                Conhecer os Planos
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

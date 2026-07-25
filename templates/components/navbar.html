@@ -27,6 +27,7 @@
     <!-- CORREÇÃO AQUI: Atualizado para refletir a nova nomenclatura arquitetural -->
     <li><a href="{% url 'solicitacoes_publicacao' %}">Publicar Livro</a></li>
     <li><a href="{% url 'sobre' %}">Sobre</a></li>
+    <li><a href="{% url 'assinaturas:minha_assinatura' %}">Assinatura</a></li>
 </ul>
 
             <div class="nav-actions">
@@ -35,6 +36,9 @@
                 </button>
 
                 {% if user.is_authenticated %}
+                    <a href="{% url 'assinaturas:minha_assinatura' %}" class="btn-nav btn-outline">
+                        Minha Assinatura
+                    </a>
                     <a href="{% url 'perfis:perfil_pessoal' %}" class="btn-nav btn-primary-nav">
                         Meu Perfil
                     </a>

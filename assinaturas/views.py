@@ -2,27 +2,28 @@ import os
 import stripe
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render,redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from .models import Plano, Assinatura
 
-stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', os.getenv('STRIPE_SECRET_KEY'))
 User = get_user_model()
+
 
 @login_required
 def listar_planos(request):
     planos = Plano.objects.all().order_by('preco')
     return render(request, 'assinaturas/planos.html', {'planos': planos})
 
+
 @login_required
 def minha_assinatura(request):
     """
-    Exibe os detalhes da assinatura atual do usuário logado.
+    Exibe os detalhes da assinatura ativa do usuário logado.
     """
-    # Recupera a assinatura se existir, senão retorna None de forma segura
-    assinatura = getattr(request.user, 'assinatura', None)
+    # Busca explicitamente a assinatura ativa do usuário logado no banco de dados
+    assinatura = Assinatura.objects.filter(usuario=request.user, ativa=True).first()
     
     context = {
         'assinatura': assinatura,
@@ -33,6 +34,18 @@ def minha_assinatura(request):
 @login_required
 def criar_sessao_checkout(request, plano_id):
     plano = get_object_or_404(Plano, id=plano_id)
+
+    # Garante a leitura atualizada da chave no momento do request
+    stripe_key = getattr(settings, 'STRIPE_SECRET_KEY', None) or os.getenv('STRIPE_SECRET_KEY')
+
+    if not stripe_key:
+        return HttpResponse(
+            "Erro de Configuração: STRIPE_SECRET_KEY não foi encontrada no settings.py nem nas variáveis de ambiente.",
+            status=500
+        )
+
+    stripe.api_key = stripe_key
+
     checkout_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{
@@ -41,19 +54,28 @@ def criar_sessao_checkout(request, plano_id):
         }],
         mode='subscription',
         success_url=request.build_absolute_uri('/assinaturas/minha-assinatura/?sucesso=true'),
-        cancel_url=request.build_absolute_uri('/planos/?cancelado=true'),
+        cancel_url=request.build_absolute_uri('/assinaturas/planos/?cancelado=true'),
         client_reference_id=str(request.user.id),
+        metadata={
+            'plano_id': str(plano.id)  # Necessário para o webhook localizar o plano
+        }
     )
-    return redirect(checkout_session.url, code=330)
+    return redirect(checkout_session.url, code=303)
+
 
 @csrf_exempt
 def stripe_webhook(request):
     """
     Endpoint isento de CSRF que recebe eventos assíncronos enviados pela Stripe.
     """
+    stripe_key = getattr(settings, 'STRIPE_SECRET_KEY', None) or os.getenv('STRIPE_SECRET_KEY')
+    webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None) or os.getenv('STRIPE_WEBHOOK_SECRET')
+
+    if stripe_key:
+        stripe.api_key = stripe_key
+
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', os.getenv('STRIPE_WEBHOOK_SECRET'))
 
     try:
         event = stripe.Webhook.construct_event(
@@ -69,7 +91,7 @@ def stripe_webhook(request):
     # Trata a confirmação de pagamento do Checkout
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        
+
         user_id = session.get('client_reference_id')
         customer_id = session.get('customer')
         subscription_id = session.get('subscription')
@@ -79,7 +101,7 @@ def stripe_webhook(request):
             try:
                 usuario = User.objects.get(id=user_id)
                 plano = Plano.objects.get(id=plano_id)
-                
+
                 # Busca ou cria a assinatura do usuário
                 assinatura, created = Assinatura.objects.get_or_create(usuario=usuario)
                 assinatura.plano = plano

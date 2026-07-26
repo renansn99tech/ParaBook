@@ -179,11 +179,6 @@ SUPABASE_URL = config("SUPABASE_URL", default=None)
 SUPABASE_KEY = config("SUPABASE_KEY", default=None)
 SUPABASE_STORAGE_BUCKET_NAME = "parabook-media"
 
-# Stripe Settings
-STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', 'pk_test_sua_chave_publica_aqui')
-STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', 'sk_test_sua_chave_secreta_aqui')
-STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', 'whsec_sua_chave_webhook_aqui')
-
 # Define se o storage padrão de uploads será o Supabase ou o FileSystem local
 if not DEBUG and SUPABASE_URL and SUPABASE_KEY:
     MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET_NAME}/"
@@ -246,10 +241,7 @@ SPECTACULAR_SETTINGS = {
     'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
 }
 
-import os
-
-STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
-
-# Por enquanto pode deixar essa em branco, até configurarmos o webhook local
-STRIPE_WEBHOOK_SECRET = ''
+# Configuração da Stripe via .env
+STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET')

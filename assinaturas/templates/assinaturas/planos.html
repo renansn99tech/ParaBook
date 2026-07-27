@@ -1,34 +1,97 @@
 {% extends 'base.html' %}
 
+{% block title %}Escolha seu Plano - ParaBook{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <h2 class="text-center mb-4">Escolha o plano ideal para você</h2>
-    <div class="row">
+<div class="container py-5">
+    <!-- Cabeçalho -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-white mb-2">Escolha o plano ideal para sua jornada</h1>
+        <p class="text-white-50 fs-5">Desbloqueie todo o potencial da sua biblioteca e recursos exclusivos de leitura.</p>
+    </div>
+
+    <div class="row justify-content-center align-items-stretch g-4">
         {% for plano in planos %}
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header text-center">
-                    <h3>{{ plano.nome }}</h3>
+        <div class="col-lg-5 col-md-6">
+            <div class="card h-100 border-0 shadow-lg position-relative rounded-4 text-white
+                        {% if plano.preco > 0 %}bg-dark border border-primary border-2{% else %}bg-dark bg-opacity-75 border border-secondary border-opacity-25{% endif %}"
+                style="background: #12131C; backdrop-filter: blur(10px);">
+
+                {% if plano.preco > 0 %}
+                <!-- Badge Destaque -->
+                <div class="position-absolute top-0 end-0 m-3">
+                    <span class="badge rounded-pill bg-primary px-3 py-2 text-uppercase fw-semibold" style="letter-spacing: 0.5px; font-size: 0.75rem;">
+                        ★ Mais Popular
+                    </span>
                 </div>
-                <div class="card-body text-center">
-                    <h4 class="card-title">R$ {{ plano.preco }} <small class="text-muted">/ mês</small></h4>
-                    <ul class="list-unstyled mt-3 mb-4">
-                        {% if plano.anuncios %}
-                            <li>Com anúncios</li>
+                {% endif %}
+
+                <div class="card-body p-4 p-xl-5 d-flex flex-column">
+                    <!-- Nome do Plano -->
+                    <h3 class="fw-bold text-white mb-1">{{ plano.nome }}</h3>
+                    <p class="text-white-50 small mb-4">
+                        {% if plano.preco == 0 %}
+                            Ideal para leitores casuais iniciando na plataforma.
                         {% else %}
-                            <li><strong>Sem anúncios</strong></li>
+                            A experiência completa para leitores exigentes e autores.
                         {% endif %}
-                        <li>
-                            {% if plano.limite_livros == 0 %}
-                                Biblioteca Ilimitada
+                    </p>
+
+                    <!-- Preço -->
+                    <div class="mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                        <span class="display-5 fw-bold text-white">R$ {{ plano.preco|floatformat:2 }}</span>
+                        <span class="text-white-50 fs-6">/ mês</span>
+                    </div>
+
+                    <!-- Lista de Recursos -->
+                    <ul class="list-unstyled mb-5 flex-grow-1">
+                        <!-- Anúncios -->
+                        <li class="d-flex align-items-center mb-3">
+                            {% if plano.anuncios %}
+                                <span class="badge bg-secondary bg-opacity-25 text-white-50 rounded-circle p-2 me-3">✕</span>
+                                <span class="text-white-50">Exibição de anúncios na interface</span>
                             {% else %}
-                                Até {{ plano.limite_livros }} livros
+                                <span class="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
+                                <strong class="text-white">Navegação 100% sem anúncios</strong>
                             {% endif %}
                         </li>
+
+                        <!-- Limite de Livros -->
+                        <li class="d-flex align-items-center mb-3">
+                            <span class="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
+                            {% if plano.limite_livros == 0 %}
+                                <strong class="text-white">Biblioteca Ilimitada</strong>
+                            {% else %}
+                                <span class="text-white-50">Até <strong class="text-white">{{ plano.limite_livros }} livros</strong> na biblioteca</span>
+                            {% endif %}
+                        </li>
+
+                        <!-- Recursos Exclusivos Premium -->
+                        {% if plano.preco > 0 %}
+                        <li class="d-flex align-items-center mb-3">
+                            <span class="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
+                            <span class="text-white">Recomendações Personalizadas por <strong>IA</strong></span>
+                        </li>
+                        <li class="d-flex align-items-center mb-3">
+                            <span class="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
+                            <span class="text-white">Selo de Membro <strong>Premium</strong> no Perfil</span>
+                        </li>
+                        {% endif %}
                     </ul>
-                    <a href="{% url 'assinaturas:criar_sessao_checkout' plano.id %}" class="btn btn-primary btn-block">
-                    Assinar Agora
-                    </a>
+
+                    <!-- Botão de Ação -->
+                    <div class="mt-auto">
+                        {% if user.is_authenticated and user.assinatura and user.assinatura.ativa and user.assinatura.plano.id == plano.id %}
+                            <button class="btn btn-outline-secondary w-100 py-3 rounded-3 fw-bold disabled" disabled>
+                                Plano Atual
+                            </button>
+                        {% else %}
+                            <a href="{% url 'assinaturas:criar_sessao_checkout' plano.id %}" 
+                            class="btn {% if plano.preco > 0 %}btn-primary shadow-lg{% else %}btn-outline-light{% endif %} w-100 py-3 rounded-3 fw-bold transition-all">
+                                {% if plano.preco == 0 %}Começar Grátis{% else %}Assinar {{ plano.nome }}{% endif %}
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

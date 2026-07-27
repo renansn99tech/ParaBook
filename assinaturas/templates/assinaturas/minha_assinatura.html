@@ -1,85 +1,107 @@
 {% extends 'base.html' %}
 
-{% block title %}Minha Assinatura - Parabook{% endblock %}
+{% block title %}Minha Assinatura - ParaBook{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2 class="mb-4">Minha Assinatura</h2>
+        <div class="col-lg-8">
+            <h2 class="fw-bold text-white mb-4">Minha Assinatura</h2>
 
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3" role="alert">
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endfor %}
             {% endif %}
 
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
+            <div class="card border-0 shadow-lg rounded-4 text-white" style="background: #12131C; backdrop-filter: blur(10px);">
+                <div class="card-body p-4 p-md-5">
+                    
                     {% if assinatura and assinatura.ativa and assinatura.plano %}
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="card-title m-0 fw-bold">{{ assinatura.plano.nome }}</h4>
-                            <span class="badge bg-success text-white px-3 py-2">Ativa</span>
+                        <!-- Topo do Card de Assinatura Ativa -->
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-4 mb-4 border-bottom border-secondary border-opacity-25">
+                            <div>
+                                <small class="text-white-50 text-uppercase fw-semibold" style="letter-spacing: 1px;">Plano Contratado</small>
+                                <h3 class="fw-bold text-white m-0 mt-1">{{ assinatura.plano.nome }}</h3>
+                            </div>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 rounded-pill fs-6">
+                                ● Ativa
+                            </span>
                         </div>
 
-                        <hr>
-
-                        <div class="row my-3">
-                            <div class="col-sm-6 mb-3">
-                                <small class="text-muted d-block">Valor do Plano</small>
-                                <strong>R$ {{ assinatura.plano.preco|floatformat:2 }} / mês</strong>
+                        <!-- Métricas e Informações de Cobrança -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-sm-4">
+                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
+                                    <small class="text-white-50 d-block mb-1">Valor do Plano</small>
+                                    <strong class="fs-5 text-white">R$ {{ assinatura.plano.preco|floatformat:2 }} <span class="fs-6 text-white-50">/mês</span></strong>
+                                </div>
                             </div>
                             
                             {% if assinatura.data_inicio %}
-                            <div class="col-sm-6 mb-3">
-                                <small class="text-muted d-block">Membro desde</small>
-                                <strong>{{ assinatura.data_inicio|date:"d/m/Y" }}</strong>
+                            <div class="col-sm-4">
+                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
+                                    <small class="text-white-50 d-block mb-1">Membro desde</small>
+                                    <strong class="fs-5 text-white">{{ assinatura.data_inicio|date:"d/m/Y" }}</strong>
+                                </div>
                             </div>
                             {% endif %}
 
                             {% if assinatura.data_fim %}
-                            <div class="col-sm-6 mb-3">
-                                <small class="text-muted d-block">Validade / Renovação</small>
-                                <strong>{{ assinatura.data_fim|date:"d/m/Y" }}</strong>
+                            <div class="col-sm-4">
+                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
+                                    <small class="text-white-50 d-block mb-1">Próxima Renovação</small>
+                                    <strong class="fs-5 text-white">{{ assinatura.data_fim|date:"d/m/Y" }}</strong>
+                                </div>
                             </div>
                             {% endif %}
                         </div>
 
-                        <ul class="list-group list-group-flush mb-4">
-                            <li class="list-group-item px-0">
+                        <!-- Benefícios Ativos -->
+                        <h6 class="fw-bold text-white mb-3">Benefícios inclusos no seu plano:</h6>
+                        <ul class="list-group list-group-flush mb-4 rounded-3 overflow-hidden">
+                            <li class="list-group-item bg-dark bg-opacity-25 text-white border-secondary border-opacity-10 px-3 py-3">
                                 {% if assinatura.plano.anuncios %}
-                                    <span class="text-muted">Exibe anúncios na plataforma</span>
+                                    <span class="text-white-50">✕ Exibe anúncios na plataforma</span>
                                 {% else %}
-                                    <span class="text-success"><strong>✓ Sem anúncios</strong></span>
+                                    <span class="text-success fw-semibold">✓ Experiência total sem anúncios</span>
                                 {% endif %}
                             </li>
-                            <li class="list-group-item px-0">
+                            <li class="list-group-item bg-dark bg-opacity-25 text-white border-secondary border-opacity-10 px-3 py-3">
                                 {% if assinatura.plano.limite_livros == 0 %}
-                                    <span class="text-success"><strong>✓ Biblioteca ilimitada</strong></span>
+                                    <span class="text-success fw-semibold">✓ Biblioteca Ilimitada</span>
                                 {% else %}
-                                    <span>Limite de até {{ assinatura.plano.limite_livros }} livros</span>
+                                    <span class="text-white-50">Limite de até {{ assinatura.plano.limite_livros }} livros</span>
                                 {% endif %}
                             </li>
                         </ul>
 
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'assinaturas:listar_planos' %}" class="btn btn-outline-primary">
-                                Mudar de Plano
+                        <!-- Ações -->
+                        <div class="pt-2">
+                            <a href="{% url 'assinaturas:listar_planos' %}" class="btn btn-outline-light px-4 py-2 rounded-3">
+                                Mudar ou Cancelar Plano
                             </a>
                         </div>
 
                     {% else %}
+                        <!-- Estado Sem Plano Ativo -->
                         <div class="text-center py-4">
-                            <h5 class="fw-bold">Você ainda não possui um plano ativo</h5>
-                            <p class="text-muted">Assine o Parabook Premium para desbloquear recursos exclusivos como recomendação por IA e leitura sem anúncios.</p>
-                            <a href="{% url 'assinaturas:listar_planos' %}" class="btn btn-primary mt-2">
+                            <div class="mb-3">
+                                <span class="badge bg-primary bg-opacity-25 text-primary rounded-circle p-3 fs-3">📖</span>
+                            </div>
+                            <h4 class="fw-bold text-white mb-2">Você ainda não possui um plano ativo</h4>
+                            <p class="text-white-50 mx-auto mb-4" style="max-width: 480px;">
+                                Assine o <strong>ParaBook Premium</strong> para desbloquear recursos avançados como recomendação por inteligência artificial, biblioteca ilimitada e navegação limpa sem anúncios.
+                            </p>
+                            <a href="{% url 'assinaturas:listar_planos' %}" class="btn btn-primary btn-lg px-5 py-3 rounded-3 fw-bold shadow-lg">
                                 Conhecer os Planos
                             </a>
                         </div>
                     {% endif %}
+
                 </div>
             </div>
         </div>

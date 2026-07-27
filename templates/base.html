@@ -62,6 +62,19 @@
         });
     </script>
     {% endif %}
+    <!-- BANNER DE ANÚNCIO CONDICIONAL (Só exibe para não-premium) -->
+    {% if exibir_anuncios %}
+    <div class="container my-3">
+        <div class="p-3 text-center rounded-3 border border-secondary border-opacity-25" style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <small class="text-white-50"><i class="fa-solid fa-rectangle-ad me-1"></i> Espaço de Anúncio</small>
+                <a href="{% url 'assinaturas:listar_planos' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                    Remover anúncios com o Premium ✨
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     {% block content %}{% endblock %}
 

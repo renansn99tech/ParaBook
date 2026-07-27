@@ -43,6 +43,20 @@ class Usuario(models.Model):
         blank=True, 
         related_name='usuarios_vinculados' 
     )
+    @property
+    def is_premium(self):
+        """Retorna True se o usuário possui uma assinatura ativa de plano pago."""
+        if not hasattr(self.user_auth, 'assinatura'):
+            return False
+        assinatura = self.user_auth.assinatura
+        return bool(assinatura.ativa and assinatura.plano and assinatura.plano.preco > 0)
+
+    @property
+    def limite_livros_estante(self):
+        """Retorna o limite de livros permitido pelo plano atual do usuário."""
+        if hasattr(self.user_auth, 'assinatura') and self.user_auth.assinatura.ativa and self.user_auth.assinatura.plano:
+            return self.user_auth.assinatura.plano.limite_livros
+        return 10
 
     def __str__(self):
         return self.nome or f"Usuario {self.id}"

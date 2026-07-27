@@ -44,9 +44,35 @@ def biblioteca(request):
 
 
 @login_required
+# biblioteca/views.py
+
+@login_required
 def adicionar_a_biblioteca(request, livro_id):
     if request.method == 'POST':
-        # Leitores só devem conseguir adicionar livros que estejam publicados
+        # 1. Obter o plano e limite do usuário
+        limite_livros = 10  # Limite padrão
+        is_ilimitado = False
+
+        if hasattr(request.user, 'assinatura') and request.user.assinatura.ativa and request.user.assinatura.plano:
+            plano = request.user.assinatura.plano
+            if plano.limite_livros == 0:
+                is_ilimitado = True
+            else:
+                limite_livros = plano.limite_livros
+
+        # 2. Verificar quantidade atual de livros salvos pelo usuário na estante
+        total_atual = Biblioteca.objects.filter(user=request.user).count()
+
+        # 3. Aplicar a trava caso não seja ilimitado e já tenha alcançado o limite
+        if not is_ilimitado and total_atual >= limite_livros:
+            messages.warning(
+                request,
+                f"Você atingiu o limite de {limite_livros} livros do seu plano atual. "
+                "Assine o ParaBook Premium para ter uma biblioteca ilimitada!"
+            )
+            return redirect('assinaturas:listar_planos')
+
+        # 4. Processar a adição se estiver dentro do limite
         livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
         obj, criado = Biblioteca.objects.get_or_create(user=request.user, livro=livro)
 
@@ -54,6 +80,7 @@ def adicionar_a_biblioteca(request, livro_id):
             messages.success(request, "Livro adicionado com sucesso!")
         else:
             messages.info(request, "Este livro já está na sua biblioteca.")
+
     return redirect('acesso_biblioteca')
 
 

@@ -50,6 +50,9 @@ urlpatterns = [
     
     # App assinaturas
     path('assinaturas/', include('assinaturas.urls', namespace='assinaturas')),
+    
+    # App notificacoes
+    path('notificacoes/', include('notificacoes.urls')),
 
     # Urls auxiliares
     path('login/', tela_login, name='login'),

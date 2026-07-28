@@ -23,7 +23,6 @@
                 <li><a href="{% url 'biblioteca' %}">Explorar</a></li>
                 <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
                 <li><a href="{% url 'lista_autores' %}">Autores</a></li>
-                <!-- Atualizado para refletir a nova nomenclatura arquitetural -->
                 <li><a href="{% url 'solicitacoes_publicacao' %}">Publicar Livro</a></li>
                 <li><a href="{% url 'sobre' %}">Sobre</a></li>
                 <li><a href="{% url 'assinaturas:minha_assinatura' %}">Assinatura</a></li>
@@ -35,6 +34,16 @@
                 </button>
 
                 {% if user.is_authenticated %}
+                    <!-- Botão de Notificações com o Sino e Contador -->
+                    <a href="{% url 'notificacoes:lista' %}" class="btn-nav btn-outline position-relative" title="Notificações">
+                        <i class="fa-solid fa-bell"></i>
+                        {% if notificacoes_nao_lidas_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                {{ notificacoes_nao_lidas_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
                     <a href="{% url 'assinaturas:minha_assinatura' %}" class="btn-nav btn-outline">
                         Minha Assinatura
                     </a>

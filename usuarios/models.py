@@ -73,3 +73,37 @@ class Notificacao(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.usuario.username}"
+    
+# usuarios/models.py
+
+class Notificacao(models.Model):
+    class TipoNotificacao(models.TextChoices):
+        ASSINATURA = 'ASSINATURA', 'Assinatura & Pagamentos'
+        LIVRO = 'LIVRO', 'Novidades e Leitura'
+        SISTEMA = 'SISTEMA', 'Avisos do Sistema'
+
+    usuario = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='notificacoes_sistema'
+    )
+    titulo = models.CharField(max_length=150)
+    mensagem = models.TextField()
+    tipo = models.CharField(
+        max_length=20, 
+        choices=TipoNotificacao.choices, 
+        default=TipoNotificacao.SISTEMA
+    )
+    link_destino = models.CharField(max_length=255, blank=True, null=True) # Ex: '/assinaturas/planos/' ou URL
+    lida = models.BooleanField(default=False, db_index=True)
+    data_criacao = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'notificacoes'
+        ordering = ['-data_criacao']
+        indexes = [
+            models.Index(fields=['usuario', 'lida']), # Índice composto fundamental para velocidade
+        ]
+
+    def __str__(self):
+        return f"[{self.tipo}] {self.titulo} - {self.usuario.username}"

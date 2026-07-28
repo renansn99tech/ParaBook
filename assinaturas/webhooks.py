@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from .models import Plano, Assinatura
+from usuarios.models import Notificacao
 
 User = get_user_model()
 
@@ -25,7 +26,8 @@ def _get_val(obj, key, default=None):
 @csrf_exempt
 def stripe_webhook(request):
     """
-    Endpoint isento de CSRF que recebe eventos assíncronos enviados pela Stripe.
+    Endpoint isento de CSRF que recebe eventos assíncronos enviados pela Stripe
+    e registra notificações para o usuário.
     """
     stripe_key = getattr(settings, 'STRIPE_SECRET_KEY', None) or os.getenv('STRIPE_SECRET_KEY')
     webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None) or os.getenv('STRIPE_WEBHOOK_SECRET')
@@ -46,7 +48,7 @@ def stripe_webhook(request):
     event_type = _get_val(event, 'type')
     data_obj = _get_val(_get_val(event, 'data'), 'object')
 
-    # 1. EVENTO: Fatura Paga
+    # 1. EVENTO: Fatura Paga (Renovação ou Pagamento de Assinatura)
     if event_type == 'invoice.paid':
         customer_id = _get_val(data_obj, 'customer')
         subscription_id = _get_val(data_obj, 'subscription')
@@ -81,10 +83,20 @@ def stripe_webhook(request):
                 if data_fim_dt:
                     assinatura.data_fim = data_fim_dt
                 assinatura.save()
+
+                # Criar Notificação de Confirmação de Fatura/Renovação
+                Notificacao.objects.create(
+                    usuario=usuario,
+                    titulo="Pagamento Confirmado! 🎉",
+                    mensagem=f"Seu pagamento do plano {plano.nome} foi processado com sucesso. Aproveite a leitura!",
+                    tipo=Notificacao.TipoNotificacao.ASSINATURA,
+                    link_destino="/assinaturas/minha-assinatura/"
+                )
+
             except (User.DoesNotExist, Plano.DoesNotExist):
                 return HttpResponse(status=404)
 
-    # 2. EVENTO: Checkout Concluído
+    # 2. EVENTO: Checkout Concluído (Primeira Assinatura)
     elif event_type == 'checkout.session.completed':
         user_id = _get_val(data_obj, 'client_reference_id')
         customer_id = _get_val(data_obj, 'customer')
@@ -105,15 +117,37 @@ def stripe_webhook(request):
                 assinatura.stripe_customer_id = customer_id
                 assinatura.stripe_subscription_id = subscription_id
                 assinatura.save()
+
+                # Criar Notificação de Boas-Vindas ao Plano
+                Notificacao.objects.create(
+                    usuario=usuario,
+                    titulo="Assinatura Ativada! ✨",
+                    mensagem=f"Parabéns! Sua assinatura do plano {plano.nome} foi ativada com sucesso.",
+                    tipo=Notificacao.TipoNotificacao.ASSINATURA,
+                    link_destino="/assinaturas/minha-assinatura/"
+                )
+
             except (User.DoesNotExist, Plano.DoesNotExist):
                 return HttpResponse(status=404)
 
-    # 3. EVENTOS DE CANCELAMENTO / INADIMPLÊNCIA
+    # 3. EVENTOS DE CANCELAMENTO / INADIMPLÊNCIA / ALTERAÇÃO
     elif event_type in ['customer.subscription.deleted', 'customer.subscription.updated']:
         stripe_sub_id = _get_val(data_obj, 'id')
         status = _get_val(data_obj, 'status')
 
         if status in ['canceled', 'unpaid', 'incomplete_expired']:
-            Assinatura.objects.filter(stripe_subscription_id=stripe_sub_id).update(ativa=False)
+            assinaturas = Assinatura.objects.filter(stripe_subscription_id=stripe_sub_id)
+            for assinatura in assinaturas:
+                assinatura.ativa = False
+                assinatura.save()
+
+                # Criar Notificação de Alerta sobre o Cancelamento/Falha
+                Notificacao.objects.create(
+                    usuario=assinatura.usuario,
+                    titulo="Alerta de Assinatura ⚠️",
+                    mensagem="Sua assinatura foi cancelada ou identificamos uma falha no pagamento. Atualize suas informações para manter o acesso Premium.",
+                    tipo=Notificacao.TipoNotificacao.ASSINATURA,
+                    link_destino="/assinaturas/minha-assinatura/"
+                )
 
     return HttpResponse(status=200)

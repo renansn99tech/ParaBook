@@ -3,7 +3,7 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid navbar-container">
         
-        <!-- 1. UX UPDATE: Logo interativa redirecionando para a Home -->
+        <!-- Logo interativa redirecionando para a Home -->
         <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">
             <div class="logo-container">
                 <img src="{% static 'img/logo-nova.png' %}" alt="ParaBook" class="logo-img">
@@ -19,16 +19,15 @@
 
         <div class="collapse navbar-collapse" id="parabookNavbar">
             
-<ul class="menu">
-    <!-- 2. ROTEAMENTO: Botão Explorar agora leva ao acervo principal -->
-    <li><a href="{% url 'biblioteca' %}">Explorar</a></li>
-    <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
-    <li><a href="{% url 'lista_autores' %}">Autores</a></li>
-    <!-- CORREÇÃO AQUI: Atualizado para refletir a nova nomenclatura arquitetural -->
-    <li><a href="{% url 'solicitacoes_publicacao' %}">Publicar Livro</a></li>
-    <li><a href="{% url 'sobre' %}">Sobre</a></li>
-    <li><a href="{% url 'assinaturas:minha_assinatura' %}">Assinatura</a></li>
-</ul>
+            <ul class="menu">
+                <li><a href="{% url 'biblioteca' %}">Explorar</a></li>
+                <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
+                <li><a href="{% url 'lista_autores' %}">Autores</a></li>
+                <!-- Atualizado para refletir a nova nomenclatura arquitetural -->
+                <li><a href="{% url 'solicitacoes_publicacao' %}">Publicar Livro</a></li>
+                <li><a href="{% url 'sobre' %}">Sobre</a></li>
+                <li><a href="{% url 'assinaturas:minha_assinatura' %}">Assinatura</a></li>
+            </ul>
 
             <div class="nav-actions">
                 <button class="search-btn">

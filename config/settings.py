@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config 
-from pathlib import Path
 import dj_database_url 
 import os
 
@@ -26,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-1z+q%(deeme==owa&2+iq5jmk)3r*4-ma8+oea!a)p9$1))u=f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG =  config('DEBUG', default=True, cast=bool) 
+DEBUG = config('DEBUG', default=True, cast=bool) 
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -34,7 +33,7 @@ ALLOWED_HOSTS = config(
 ).split(",")
 
 if not DEBUG:
-    ALLOWED_HOSTS += [".railway.app"]
+    ALLOWED_HOSTS += [".railway.app", ".onrender.com", "parabook-nl8o.onrender.com"]
 
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
@@ -42,7 +41,7 @@ CSRF_TRUSTED_ORIGINS = config(
 ).split(",")
 
 if not DEBUG:
-    CSRF_TRUSTED_ORIGINS += ["https://*.railway.app"]
+    CSRF_TRUSTED_ORIGINS += ["https://*.railway.app", "https://*.onrender.com", "https://parabook-nl8o.onrender.com"]
 
 
 # Application definition
@@ -70,6 +69,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'assinaturas',
     'notificacoes',
+    'gamificacao',
 ]
 
 MIDDLEWARE = [
@@ -188,7 +188,6 @@ if not DEBUG and SUPABASE_URL and SUPABASE_KEY:
 else:
     MEDIA_URL = '/media/'
 
-import os
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configuração consolidada dos Storages (sem duplicatas)
@@ -245,6 +244,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Configuração da Stripe via .env
-STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY')
-STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
-STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET')
+STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')

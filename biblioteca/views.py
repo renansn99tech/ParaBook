@@ -61,32 +61,38 @@ def adicionar_a_biblioteca(request, livro_id):
             else:
                 limite_livros = plano.limite_livros
 
-        total_atual = Biblioteca.objects.filter(user=request.user).count()
+        with transaction.atomic():
+            Usuario.objects.select_for_update().get(pk=request.user.pk)
+            total_atual = Biblioteca.objects.filter(user=request.user).count()
 
-        if not is_ilimitado and total_atual >= limite_livros:
-            messages.warning(
-                request,
-                f"Você atingiu o limite de {limite_livros} livros do seu plano atual. "
-                "Assine o ParaBook Premium para ter uma biblioteca ilimitada!"
-            )
-            return redirect('assinaturas:listar_planos')
+            if not is_ilimitado and total_atual >= limite_livros:
+                messages.warning(
+                    request,
+                    f"Você atingiu o limite de {limite_livros} livros do seu plano atual. "
+                    "Assine o ParaBook Premium para ter uma biblioteca ilimitada!"
+                )
+                return redirect('assinaturas:listar_planos')
 
-        livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
-        obj, criado = Biblioteca.objects.get_or_create(user=request.user, livro=livro)
+            livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
+            obj, criado = Biblioteca.objects.get_or_create(user=request.user, livro=livro)
 
-        if criado:
-            # --- GATILHO DE GAMIFICAÇÃO: ADICIONAR LIVRO ---
-            try:
-                res_xp = GamificacaoService.adicionar_xp(request.user, 10, motivo=f"Adicionou '{livro.titulo}' à estante")
-                msg_extra = ""
-                if res_xp and res_xp.get('subiu_nivel'):
-                    msg_extra = f" Você subiu para o Nível {res_xp['nivel_atual']}!"
-                messages.success(request, f"Livro adicionado com sucesso! (+10 XP){msg_extra}")
-            except Exception as e:
-                logger.error(f"Erro na gamificação ao adicionar livro {livro_id} para {request.user}: {str(e)}")
+            if not obj.xp_ganho_adicao:
+                obj.xp_ganho_adicao = True
+                obj.save(update_fields=['xp_ganho_adicao'])
+                # --- GATILHO DE GAMIFICAÇÃO: ADICIONAR LIVRO ---
+                try:
+                    res_xp = GamificacaoService.adicionar_xp(request.user, 10)
+                    msg_extra = ""
+                    if res_xp and res_xp.get('subiu_nivel'):
+                        msg_extra = f" Você subiu para o Nível {res_xp['nivel_atual']}!"
+                    messages.success(request, f"Livro adicionado com sucesso! (+10 XP){msg_extra}")
+                except Exception as e:
+                    logger.error(f"Erro na gamificação ao adicionar livro {livro_id} para {request.user}: {str(e)}")
+                    messages.success(request, "Livro adicionado com sucesso!")
+            elif criado:
                 messages.success(request, "Livro adicionado com sucesso!")
-        else:
-            messages.info(request, "Este livro já está na sua biblioteca.")
+            else:
+                messages.info(request, "Este livro já está na sua biblioteca.")
 
     return redirect('acesso_biblioteca')
 
@@ -129,13 +135,12 @@ def iniciar_leitura(request, livro_id):
     status_anterior = registro_biblioteca.status
     
     registro_biblioteca.status = StatusBiblioteca.LENDO
-    registro_biblioteca.save()
+    registro_biblioteca.save(update_fields=['status'])
 
     # --- GATILHO DE GAMIFICAÇÃO: INICIAR LEITURA ---
     if status_anterior != StatusBiblioteca.LENDO:
         try:
             GamificacaoService.atualizar_streak(request.user)
-            GamificacaoService.adicionar_xp(request.user, 15, motivo="Iniciou a leitura de uma obra")
         except Exception as e:
             logger.error(f"Erro na gamificação ao iniciar leitura do livro {livro_id} para {request.user}: {str(e)}")
 
@@ -150,17 +155,19 @@ def concluir_leitura(request, livro_id):
             status_anterior = registro.status
 
             registro.status = StatusBiblioteca.LIDO
-            registro.save()
+            registro.save(update_fields=['status'])
 
             msg_adicional = ""
             subiu_nivel = False
             nivel_atual = None
 
             # --- GATILHO DE GAMIFICAÇÃO: CONCLUIR LEITURA ---
-            if status_anterior != StatusBiblioteca.LIDO:
+            if status_anterior != StatusBiblioteca.LIDO and not registro.xp_ganho_leitura:
+                registro.xp_ganho_leitura = True
+                registro.save(update_fields=['xp_ganho_leitura'])
                 try:
                     GamificacaoService.atualizar_streak(request.user)
-                    res_xp = GamificacaoService.adicionar_xp(request.user, 100, motivo="Concluiu a leitura de uma obra")
+                    res_xp = GamificacaoService.adicionar_xp(request.user, 100)
                     conquista = GamificacaoService.conceder_conquista(request.user, 'primeira_leitura_concluida')
 
                     if res_xp and res_xp.get('subiu_nivel'):
@@ -356,12 +363,14 @@ def avaliar_livro(request, livro_id):
             
             nota_anterior = registro.nota
             registro.nota = nova_nota
-            registro.save()
+            registro.save(update_fields=['nota'])
 
             # --- GATILHO DE GAMIFICAÇÃO: AVALIAR POR ESTRELAS ---
-            if nota_anterior is None:
+            if nota_anterior is None and not registro.xp_ganho_avaliacao:
+                registro.xp_ganho_avaliacao = True
+                registro.save(update_fields=['xp_ganho_avaliacao'])
                 try:
-                    GamificacaoService.adicionar_xp(request.user, 30, motivo="Avaliou uma obra com estrelas")
+                    GamificacaoService.adicionar_xp(request.user, 30)
                     GamificacaoService.conceder_conquista(request.user, 'primeira_avaliacao')
                 except Exception as e:
                     logger.error(f"Erro na gamificação ao avaliar livro {livro_id} para {request.user}: {str(e)}")
@@ -379,12 +388,14 @@ def favoritar_livro(request, livro_id):
             registro = Biblioteca.objects.get(user=request.user, livro__id=livro_id)
             estava_favoritado = registro.favorito
             registro.favorito = not registro.favorito
-            registro.save()
+            registro.save(update_fields=['favorito'])
 
             # --- GATILHO DE GAMIFICAÇÃO: FAVORITAR ---
-            if not estava_favoritado and registro.favorito:
+            if not estava_favoritado and registro.favorito and not registro.xp_ganho_favorito:
+                registro.xp_ganho_favorito = True
+                registro.save(update_fields=['xp_ganho_favorito'])
                 try:
-                    GamificacaoService.adicionar_xp(request.user, 5, motivo="Favoritou uma obra")
+                    GamificacaoService.adicionar_xp(request.user, 5)
                 except Exception as e:
                     logger.error(f"Erro na gamificação ao favoritar livro {livro_id} para {request.user}: {str(e)}")
 
@@ -411,9 +422,11 @@ def livro_info(request, id):
 
             # --- GATILHO DE GAMIFICAÇÃO: PUBLICAR RESENHA ---
             msg_extra = ""
-            if not ja_tinha_resenha and resenha:
+            if not ja_tinha_resenha and resenha and not registro.xp_ganho_resenha:
+                registro.xp_ganho_resenha = True
+                registro.save(update_fields=['xp_ganho_resenha'])
                 try:
-                    res_xp = GamificacaoService.adicionar_xp(request.user, 50, motivo="Escreveu uma resenha para a obra")
+                    res_xp = GamificacaoService.adicionar_xp(request.user, 50)
                     conquista = GamificacaoService.conceder_conquista(request.user, 'primeira_avaliacao')
 
                     if res_xp and res_xp.get('subiu_nivel'):
@@ -518,6 +531,7 @@ def editar_livro(request, pk):
 @login_required
 @requer_premium
 def recomendacao_ia_view(request):
+    import os
     user = request.user
 
     livros_estante_ids = list(
@@ -528,6 +542,7 @@ def recomendacao_ia_view(request):
     categorias_preferidas_ids = list(
         itens_estante.values_list('livro__categoria_id', flat=True).distinct()
     )
+    livros_lidos = [item.livro.titulo for item in itens_estante]
 
     queryset_base = Livro.objects.filter(status='publicado').exclude(id__in=livros_estante_ids)
 
@@ -569,6 +584,36 @@ def recomendacao_ia_view(request):
         else:
             livro.afinidade = 82
             livro.motivo_card = "Destaque do catálogo recomendado para você"
+
+    # INTEGRAÇÃO IA REAL:
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if gemini_key:
+        try:
+            import google.generativeai as genai
+            import json
+            
+            genai.configure(api_key=gemini_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            
+            nomes_recomendados = ", ".join([livro.titulo for livro in recomendacoes])
+            nomes_lidos = ", ".join(livros_lidos) if livros_lidos else "nenhum"
+            
+            prompt = f"O usuário {user.username} já leu: {nomes_lidos}. Você está recomendando os livros: {nomes_recomendados}. Retorne um JSON estrito contendo os motivos personalizados da recomendação de cada livro, com a chave sendo o ID do livro e o valor uma breve frase (máx 15 palavras) explicando de forma entusiástica por que ele vai gostar, baseado no que ele já leu."
+            prompt += f" A lista de IDs é: {', '.join([str(l.id) for l in recomendacoes])}. Exemplo: {{\"{recomendacoes[0].id}\": \"Você vai amar esse thriller que tem a mesma pegada misteriosa do seu último livro!\"}}"
+            
+            response = model.generate_content(prompt)
+            texto_json = response.text.strip().replace("```json", "").replace("```", "")
+            
+            motivos_ia = json.loads(texto_json)
+            
+            for livro in recomendacoes:
+                if str(livro.id) in motivos_ia:
+                    livro.motivo_card = motivos_ia[str(livro.id)]
+                    livro.afinidade = min(100, livro.afinidade + 5)
+                    
+            motivo_geral = "✨ Nossa IA analisou sua estante e preparou recomendações personalizadas exclusivas para você!"
+        except Exception as e:
+            logger.error(f"Erro na API Gemini: {str(e)}")
 
     context = {
         'recomendacoes': recomendacoes,

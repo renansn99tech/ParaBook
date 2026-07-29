@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
-from decouple import config 
-import dj_database_url 
 import os
+from datetime import timedelta
+from pathlib import Path
+import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-1z+q%(deeme==owa&2+iq5jmk)3r*4-ma8+oea!a)p9$1))u=f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool) 
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -115,21 +116,6 @@ CORS_ALLOWED_ORIGINS = [
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-# CONFIGURAÇÃO LOCAL (SUA MÁQUINA)
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": "mydb",
-#         "USER": "root",
-#         "PASSWORD": "admin",
-#         "HOST": "127.0.0.1",
-#         "PORT": "3306",
-#     }
-# }
-
-# DATABASE CONFIGURATION (PostgreSQL / Docker)
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL', default='postgres://parabook_user:parabook_password@localhost:5432/parabook_db'),
@@ -139,8 +125,6 @@ DATABASES = {
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -158,8 +142,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'America/Belem'
@@ -169,13 +151,11 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-STATIC_ROOT = BASE_DIR / "staticfiles" 
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Credenciais do Supabase obtidas via decouple/env
 SUPABASE_URL = config("SUPABASE_URL", default=None)
@@ -190,20 +170,15 @@ else:
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Configuração consolidada dos Storages (sem duplicatas)
+# Configuração consolidada dos Storages
 STORAGES = {
-    # Gerenciamento de arquivos estáticos com WhiteNoise
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
-    
-    # Gerenciamento dinâmico de mídia (Supabase em Produção, Local em Desenvolvimento)
     "default": {
         "BACKEND": "storages.backends.supabase.SupabaseStorage" if (not DEBUG and SUPABASE_URL and SUPABASE_KEY) else "django.core.files.storage.FileSystemStorage"
     },
 }
 
 WHITENOISE_MANIFEST_STRICT = False
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -213,7 +188,6 @@ LOGOUT_REDIRECT_URL = 'home'
 
 MAX_BOOK_UPLOAD_SIZE = 5 * 1024 * 1024
 
-# Configuração para testar envio de e-mails no terminal durante o desenvolvimento
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # DRF Configuration
@@ -227,8 +201,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
-
-from datetime import timedelta
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),

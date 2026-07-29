@@ -53,6 +53,9 @@ urlpatterns = [
     
     # App notificacoes
     path('notificacoes/', include('notificacoes.urls')),
+    
+    # App gamificacao
+    path('gamificacao/', include('gamificacao.urls', namespace='gamificacao')),
 
     # Urls auxiliares
     path('login/', tela_login, name='login'),

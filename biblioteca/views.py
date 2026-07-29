@@ -1,4 +1,3 @@
-# views.py
 import json
 from django.contrib import messages
 from django.http import JsonResponse
@@ -9,7 +8,8 @@ from django.views.decorators.http import require_POST
 from django.db.models import Count, Avg
 from django.db import transaction
 from django.core.paginator import Paginator
-from django.http import Http404 # Garanta que Http404 está importado no topo, se necessário
+from django.http import Http404
+
 from comunidades.models import Comunidade
 from usuarios.models import Usuario, Notificacao
 from assinaturas.decorators import requer_premium
@@ -18,9 +18,11 @@ from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
 from .constants import StatusBiblioteca
 
+# Importação da camada de serviço da Gamificação
+from gamificacao.services import GamificacaoService
+
 
 def novidade(request):
-    # Garante que apenas livros aprovados/publicados apareçam na seção de novidades
     livros_recentes = Livro.objects.filter(status='publicado').order_by('-id')[:6]
     return render(request, 'biblioteca/novidade.html', {'livros_recentes': livros_recentes})
 
@@ -44,13 +46,9 @@ def biblioteca(request):
 
 
 @login_required
-# biblioteca/views.py
-
-@login_required
 def adicionar_a_biblioteca(request, livro_id):
     if request.method == 'POST':
-        # 1. Obter o plano e limite do usuário
-        limite_livros = 10  # Limite padrão
+        limite_livros = 10
         is_ilimitado = False
 
         if hasattr(request.user, 'assinatura') and request.user.assinatura.ativa and request.user.assinatura.plano:
@@ -60,10 +58,8 @@ def adicionar_a_biblioteca(request, livro_id):
             else:
                 limite_livros = plano.limite_livros
 
-        # 2. Verificar quantidade atual de livros salvos pelo usuário na estante
         total_atual = Biblioteca.objects.filter(user=request.user).count()
 
-        # 3. Aplicar a trava caso não seja ilimitado e já tenha alcançado o limite
         if not is_ilimitado and total_atual >= limite_livros:
             messages.warning(
                 request,
@@ -72,7 +68,6 @@ def adicionar_a_biblioteca(request, livro_id):
             )
             return redirect('assinaturas:listar_planos')
 
-        # 4. Processar a adição se estiver dentro do limite
         livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
         obj, criado = Biblioteca.objects.get_or_create(user=request.user, livro=livro)
 
@@ -112,7 +107,6 @@ def leitura(request):
         messages.error(request, "ID inválido.")
         return redirect('biblioteca')
 
-    # Leitores só podem acessar o leitor PDF se o livro estiver publicado
     livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
     return render(request, 'biblioteca/leitura.html', {'livro': livro})
 
@@ -132,6 +126,27 @@ def concluir_leitura(request, livro_id):
             registro = Biblioteca.objects.get(user=request.user, livro__id=livro_id)
             registro.status = StatusBiblioteca.LIDO
             registro.save()
+
+            # --- GATILHO DE GAMIFICAÇÃO ---
+            try:
+                GamificacaoService.atualizar_streak(request.user)
+                res_xp = GamificacaoService.adicionar_xp(request.user, 100) # +100 XP por leitura concluída
+                conquista = GamificacaoService.conceder_conquista(request.user, 'primeira_leitura_concluida')
+                
+                msg_adicional = ""
+                if res_xp.get('subiu_nivel'):
+                    msg_adicional += f" Você subiu para o Nível {res_xp['nivel_atual']}!"
+                if conquista:
+                    msg_adicional += f" Conquista desbloqueada: {conquista.nome}!"
+
+                return JsonResponse({
+                    "success": True, 
+                    "message": f"Status atualizado para Lido!{msg_adicional}"
+                })
+            except Exception:
+                # Falha silenciosa na gamificação para não bloquear a conclusão da leitura
+                pass
+
             return JsonResponse({"success": True, "message": "Status atualizado para Lido!"})
         except Biblioteca.DoesNotExist:
             return JsonResponse({"success": False, "error": "Livro não encontrado."}, status=404)
@@ -141,20 +156,16 @@ def concluir_leitura(request, livro_id):
 def is_approved_author(user):
     if user.is_anonymous:
         return False
-    # Admins têm passe livre
     if user.is_superuser or user.is_staff:
         return True
         
-    # 1. Checagem principal: O usuário tem o tipo 'autor' no modelo Usuario?
     perfil_custom = getattr(user, 'perfil_customizado', None)
     if perfil_custom and getattr(perfil_custom, 'tipo', None) in ['autor', 'admin']:
         return True
             
-    # 2. Checagem de Fallback: Se o tipo não estiver setado, ele foi aprovado via app biblioteca?
     perfil_biblioteca = getattr(user, 'perfil_da_biblioteca', None)
     if perfil_biblioteca:
         status_biblio = getattr(perfil_biblioteca, 'status', None)
-        # Verifica as opções exatas definidas em biblioteca.models.Perfil.STATUS_CHOICES
         if status_biblio in ['perfil_aprovado', 'aprovado']: 
             return True
         
@@ -173,16 +184,13 @@ def solicitacoes_publicacao(request):
     if request.method == 'POST':
         form = ObraAutorForm(request.POST, request.FILES)
         if form.is_valid():
-            # Executamos a criação de forma atômica para garantir consistência
             with transaction.atomic():
-                # 1. Cria o registro de Livro com dados do formulário
                 livro = form.save(commit=False)
                 livro.autor = request.user.get_full_name() or request.user.username
                 livro.origem = "autor_independente"
-                livro.status = "pendente"  # Inicializa pendente de aprovação
+                livro.status = "pendente"
                 livro.save()
 
-                # 2. Cria o registro associado da Solicitação de Publicação
                 SolicitacaoPublicacao.objects.create(
                     usuario=request.user,
                     livro=livro,
@@ -206,7 +214,6 @@ def solicitacoes_publicacao(request):
 
 
 def listar_obras(request):
-    """Lista todos os livros criados por autores independentes que já foram aprovados."""
     obras = Livro.objects.filter(origem='autor_independente', status='publicado')
     return render(request, 'biblioteca/lista_obras.html', {'obras': obras})
 
@@ -236,7 +243,6 @@ def mais_acessados(request):
 
 
 def home(request):
-    # Apenas livros publicados devem figurar na home (recente e alta)
     livros_em_alta = Livro.objects.filter(status='publicado').order_by('-avaliacao')[:6]
     livros_recentes = Livro.objects.filter(status='publicado').order_by('-id')[:6]
     comunidades = Comunidade.objects.all()[:6]
@@ -266,9 +272,8 @@ def home(request):
 def lista_autores(request):
     termo_busca = request.GET.get('busca', '').strip()
     
-    # Agrupa autores apenas considerando livros que estejam de fato publicados no catálogo
     autores_query = (
-        Livro.objects.filter(status='published' if False else 'publicado')
+        Livro.objects.filter(status='publicado')
         .values('autor')
         .annotate(total_obras=Count('id'))
         .order_by('autor')
@@ -319,6 +324,14 @@ def avaliar_livro(request, livro_id):
             registro = Biblioteca.objects.get(user=request.user, livro__id=livro_id)
             registro.nota = nova_nota
             registro.save()
+
+            # --- GATILHO DE GAMIFICAÇÃO ---
+            try:
+                GamificacaoService.adicionar_xp(request.user, 30) # +30 XP por avaliação via AJAX
+                GamificacaoService.conceder_conquista(request.user, 'primeira_avaliacao')
+            except Exception:
+                pass
+
             return JsonResponse({"success": True, "message": f"Avaliado com {nova_nota} estrelas!"})
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=400)
@@ -339,7 +352,6 @@ def favoritar_livro(request, livro_id):
 
 
 def livro_info(request, id):
-    # Apenas exibe a página do livro se ele estiver publicado
     livro = get_object_or_404(Livro, id=id, status='publicado')
     
     if request.method == 'POST' and request.user.is_authenticated:
@@ -351,7 +363,21 @@ def livro_info(request, id):
             registro.nota = nota
             registro.resenha = resenha
             registro.save()
-            messages.success(request, "Sua avaliação foi publicada!")
+
+            # --- GATILHO DE GAMIFICAÇÃO ---
+            try:
+                res_xp = GamificacaoService.adicionar_xp(request.user, 50) # +50 XP por resenha publicada
+                conquista = GamificacaoService.conceder_conquista(request.user, 'primeira_avaliacao')
+                
+                msg_extra = ""
+                if res_xp.get('subiu_nivel'):
+                    msg_extra += f" Você subiu para o Nível {res_xp['nivel_atual']}!"
+                if conquista:
+                    msg_extra += f" Conquista desbloqueada: {conquista.nome}!"
+
+                messages.success(request, f"Sua avaliação foi publicada!{msg_extra}")
+            except Exception:
+                messages.success(request, "Sua avaliação foi publicada!")
             
         elif 'btn_remover_avaliacao' in request.POST:
             registro = Biblioteca.objects.filter(user=request.user, livro=livro).first()
@@ -391,7 +417,7 @@ def registrar_denuncia(request, id):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -418,23 +444,75 @@ def resolver_denuncia(request, id_denuncia):
         
     return redirect('painel_moderacao')
 
+
 @login_required
 def criar_livro(request):
-    """
-    Assinatura temporária para permitir inicialização do servidor.
-    Implementar a lógica de criação de livros posteriormente.
-    """
     raise Http404("Funcionalidade em desenvolvimento.")
+
 
 @login_required
 def editar_livro(request, pk):
-    """
-    Assinatura temporária para permitir inicialização do servidor.
-    Implementar a lógica de edição de livros posteriormente.
-    """
     raise Http404("Funcionalidade em desenvolvimento.")
 
+
+@login_required
 @requer_premium
 def recomendacao_ia_view(request):
-    # Lógica da funcionalidade premium
-    return render(request, 'livros/recomendacoes.html')
+    user = request.user
+
+    livros_estante_ids = list(
+        Biblioteca.objects.filter(user=user).values_list('livro_id', flat=True)
+    )
+
+    itens_estante = Biblioteca.objects.filter(user=user).select_related('livro__categoria')
+    categorias_preferidas_ids = list(
+        itens_estante.values_list('livro__categoria_id', flat=True).distinct()
+    )
+    
+    queryset_base = Livro.objects.filter(status='publicado').exclude(id__in=livros_estante_ids)
+
+    ids_recomendados = []
+
+    if categorias_preferidas_ids:
+        ids_recomendados = list(
+            queryset_base.filter(categoria_id__in=categorias_preferidas_ids)
+            .order_by('-avaliacao', '-id')
+            .values_list('id', flat=True)[:8]
+        )
+        motivo_geral = "Cruzamos seu histórico de leituras para encontrar estas obras perfeitamente alinhadas ao seu perfil!"
+    else:
+        motivo_geral = "Como sua estante ainda está no início, selecionamos os títulos de maior destaque da nossa comunidade!"
+
+    if len(ids_recomendados) < 8:
+        ids_complemento = list(
+            queryset_base.exclude(id__in=ids_recomendados)
+            .order_by('-avaliacao', '-id')
+            .values_list('id', flat=True)[:(12 - len(ids_recomendados))]
+        )
+        ids_recomendados.extend(ids_complemento)
+
+    livros_queryset = Livro.objects.filter(id__in=ids_recomendados).select_related('categoria')
+    
+    livros_map = {l.id: l for l in livros_queryset}
+    recomendacoes = [livros_map[lid] for lid in ids_recomendados if lid in livros_map]
+
+    for livro in recomendacoes:
+        cat_id = livro.categoria_id if livro.categoria else None
+        cat_nome = livro.categoria.nome if livro.categoria else "Geral"
+
+        if cat_id in categorias_preferidas_ids:
+            livro.afinidade = 95 if (livro.avaliacao or 0) >= 4.0 else 88
+            livro.motivo_card = f"Com base no seu interesse em {cat_nome}"
+        elif (livro.avaliacao or 0) >= 4.5:
+            livro.afinidade = 92
+            livro.motivo_card = "Aclamado pelos leitores do ParaBook"
+        else:
+            livro.afinidade = 82
+            livro.motivo_card = "Destaque do catálogo recomendado para você"
+
+    context = {
+        'recomendacoes': recomendacoes,
+        'motivo_geral': motivo_geral,
+    }
+
+    return render(request, 'biblioteca/recomendacoes.html', context)

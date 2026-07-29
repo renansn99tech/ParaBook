@@ -5,6 +5,9 @@ from . import views
 urlpatterns = [
     path('', views.biblioteca, name='biblioteca'),
     
+    # Rota de IA (Exclusiva Premium)
+    path('recomendacoes-ia/', views.recomendacao_ia_view, name='recomendacao_ia'),
+
     # CORREÇÃO ERRO 1: Nome mapeado como acesso_biblioteca para resolver o NoReverseMatch
     path('acesso-biblioteca/', views.acesso_biblioteca, name='acesso_biblioteca'),
     
@@ -23,6 +26,8 @@ urlpatterns = [
     path('livro/deletar/<int:id>/', views.deletar_livro, name='deletar_livro'),
 
     path('adicionar/<int:livro_id>/', views.adicionar_a_biblioteca, name='adicionar_biblioteca'),
+    # Alias para evitar NoReverseMatch caso algum template use 'adicionar_a_biblioteca'
+    path('adicionar-a-biblioteca/<int:livro_id>/', views.adicionar_a_biblioteca, name='adicionar_a_biblioteca'),
 
     path(
         'biblioteca/remover/<int:livro_id>/',

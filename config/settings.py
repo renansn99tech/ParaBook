@@ -22,12 +22,11 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 # Configuração de hosts permitidos
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
-    default="localhost,127.0.0.1,0.0.0.0,192.168.0.75",
+    default="localhost,127.0.0.1,0.0.0.0,192.168.1.171,*",
 ).split(",")
 
 if not DEBUG:
     ALLOWED_HOSTS += [".onrender.com", "parabook-nl8o.onrender.com", ".railway.app"]
-
 # Configuração de origens confiáveis para CSRF
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
@@ -64,6 +63,7 @@ INSTALLED_APPS = [
     'assinaturas',
     'notificacoes',
     'gamificacao',
+    'biblioteca.api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -107,15 +107,53 @@ CORS_ALLOWED_ORIGINS = config(
     default="http://localhost:5173,http://127.0.0.1:5173",
 ).split(",")
 
+# DATABASE CONFIGURATION (Dinâmico: Render/PostgreSQL se houver DATABASE_URL, MySQL se local)
+DATABASE_URL = config('DATABASE_URL', default=None)
 
-# DATABASE CONFIGURATION (PostgreSQL / Docker / Render)
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='postgres://parabook_user:parabook_password@localhost:5432/parabook_db'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'mydb',            
+            'USER': 'root',                 
+            'PASSWORD': 'admin',   
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'mydb',            
+#         'USER': 'root',                 
+#         'PASSWORD': 'admin',   
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#     }
+# }
+
+# # DATABASE CONFIGURATION (PostgreSQL / Docker / Render)
+# # DATABASES = {
+# #     'default': dj_database_url.config(
+# #         default=config('DATABASE_URL', default='postgres://parabook_user:parabook_password@localhost:5432/parabook_db'),
+# #         conn_max_age=600,
+# #         conn_health_checks=True,
+# #     )
+# # }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -192,7 +230,8 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Documentação oficial das APIs do ParaBook (Fase 2)',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
+    #'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
 }
 
 # Configuração da Stripe com tratativa para variáveis ausentes

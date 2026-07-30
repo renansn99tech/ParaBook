@@ -99,6 +99,13 @@ class Biblioteca(models.Model):
     resenha = models.TextField(null=True, blank=True, verbose_name="Resenha/Avaliação")
     data_adicao = models.DateTimeField(auto_now_add=True, verbose_name="Adicionado em")
 
+    # Flags para controle de gamificação antifraude
+    xp_ganho_adicao = models.BooleanField(default=False)
+    xp_ganho_leitura = models.BooleanField(default=False)
+    xp_ganho_avaliacao = models.BooleanField(default=False)
+    xp_ganho_favorito = models.BooleanField(default=False)
+    xp_ganho_resenha = models.BooleanField(default=False)
+
     class Meta:
         verbose_name = "Item de Biblioteca"
         verbose_name_plural = "Itens de Biblioteca"

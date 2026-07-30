@@ -387,7 +387,6 @@ function marcarLivroComoLido() {
     // NOVA LÓGICA: Pega a URL exata e blindada a falhas que o Django gerou no HTML
     const urlConclusao = document.getElementById("dados-livro").getAttribute("data-url-concluir");
 
-    // O fetch agora usa a variável urlConclusao em vez da string fixa
     fetch(urlConclusao, { 
         method: "POST",
         headers: {
@@ -396,8 +395,9 @@ function marcarLivroComoLido() {
             "Content-Type": "application/json"
         }
     })
-    .then(response => {
-        if (response.ok) {
+    .then(response => response.json())
+    .then(data => {
+        if (data.success || data.mensagem) {
             console.log("Sucesso: O servidor foi avisado que a leitura foi concluída!");
             
             Swal.fire({
@@ -407,6 +407,8 @@ function marcarLivroComoLido() {
                 confirmButtonColor: '#2563eb',
                 background: '#1e293b',
                 color: '#f8fafc'
+            }).then(() => {
+                verificarGamificacao(data);
             });
         }
     })
@@ -428,11 +430,39 @@ function enviarRequisicao(url, corpoDados, msgSucessoTitulo, msgSucessoTexto) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
+        if (data.success || data.mensagem) {
             Swal.fire({
                 title: msgSucessoTitulo, text: msgSucessoTexto, icon: 'success',
                 background: '#1e293b', color: '#f8fafc', timer: 2000, showConfirmButton: false
+            }).then(() => {
+                verificarGamificacao(data);
             });
         }
     });
+}
+
+function verificarGamificacao(data) {
+    if (data.subiu_nivel) {
+        Swal.fire({
+            title: '✨ LEVEL UP! ✨',
+            text: `Você alcançou o Nível ${data.novo_nivel}! Continue assim!`,
+            icon: 'success',
+            confirmButtonColor: '#fbbf24',
+            background: '#1e293b',
+            color: '#f8fafc',
+            backdrop: `rgba(251, 191, 36, 0.4)`
+        });
+    } else if (data.xp_ganho && data.xp_ganho > 0) {
+        Swal.fire({
+            title: `+${data.xp_ganho} XP Ganho!`,
+            text: 'Seu perfil foi atualizado com nova experiência.',
+            icon: 'info',
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false,
+            background: '#1e293b',
+            color: '#f8fafc'
+        });
+    }
 }

@@ -107,14 +107,28 @@ CORS_ALLOWED_ORIGINS = config(
 ).split(",")
 
 
-# DATABASE CONFIGURATION (PostgreSQL / Docker / Render)
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='postgres://parabook_user:parabook_password@localhost:5432/parabook_db'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mydb',            
+        'USER': 'root',                 
+        'PASSWORD': 'admin',   
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+    }
 }
+
+# DATABASE CONFIGURATION (PostgreSQL / Docker / Render)
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('DATABASE_URL', default='postgres://parabook_user:parabook_password@localhost:5432/parabook_db'),
+#         conn_max_age=600,
+#         conn_health_checks=True,
+#     )
+# }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

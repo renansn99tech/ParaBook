@@ -14,6 +14,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 const MOCK_BOOKS = [
   { id: '1', title: 'O Hobbit', author: 'J.R.R. Tolkien' },
   { id: '2', title: '1984', author: 'George Orwell' },
@@ -21,8 +23,15 @@ const MOCK_BOOKS = [
 ];
 
 export const HomeScreen = () => {
-  // Instancia a navegação para a Stack principal (RootStackParamList)
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NavigationProp>();
+
+  const navigateToStack = (screenName: 'MyLibrary' | 'BookDetail', params?: { bookId: string; title?: string }) => {
+    if (screenName === 'MyLibrary') {
+      navigation.navigate('MyLibrary');
+    } else if (params) {
+      navigation.navigate('BookDetail', params);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,7 +43,7 @@ export const HomeScreen = () => {
             <Text style={styles.greetingTitle}>Olá, Rodrigo! 👋</Text>
             <Text style={styles.greetingSubtitle}>O que você vai ler hoje?</Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('MyLibrary')}>
+          <TouchableOpacity onPress={() => navigateToStack('MyLibrary')}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>R</Text>
             </View>
@@ -49,7 +58,7 @@ export const HomeScreen = () => {
             placeholder="Buscar livros, autores, categorias..."
             placeholderTextColor={colors.textMuted}
           />
-          <TouchableOpacity onPress={() => navigation.navigate('BookDetail', { bookId: '1', title: 'O Hobbit' })}>
+          <TouchableOpacity onPress={() => navigateToStack('BookDetail', { bookId: '1', title: 'O Hobbit' })}>
             <Ionicons name="options-outline" size={20} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
@@ -57,7 +66,7 @@ export const HomeScreen = () => {
         {/* Atalho para Minha Biblioteca */}
         <TouchableOpacity
           style={styles.libraryShortcut}
-          onPress={() => navigation.navigate('MyLibrary')}
+          onPress={() => navigateToStack('MyLibrary')}
         >
           <View style={styles.libraryShortcutLeft}>
             <Ionicons name="bookmark-outline" size={22} color={colors.primary} />
@@ -73,7 +82,7 @@ export const HomeScreen = () => {
           <Text style={styles.bannerSubtitle}>Explore milhares de livros e amplie seus horizontes.</Text>
           <TouchableOpacity
             style={styles.bannerButton}
-            onPress={() => navigation.navigate('BookDetail', { bookId: '1', title: 'O Hobbit' })}
+            onPress={() => navigateToStack('BookDetail', { bookId: '1', title: 'O Hobbit' })}
           >
             <Text style={styles.bannerButtonText}>Explorar →</Text>
           </TouchableOpacity>
@@ -90,7 +99,7 @@ export const HomeScreen = () => {
         <View style={styles.categoriesGrid}>
           <TouchableOpacity
             style={styles.categoryCard}
-            onPress={() => navigation.navigate('BookDetail', { bookId: '1', title: 'Ficção' })}
+            onPress={() => navigateToStack('BookDetail', { bookId: '1', title: 'Ficção' })}
           >
             <Ionicons name="book-outline" size={24} color={colors.primary} />
             <Text style={styles.categoryTitle}>Ficção</Text>
@@ -98,7 +107,7 @@ export const HomeScreen = () => {
 
           <TouchableOpacity
             style={styles.categoryCard}
-            onPress={() => navigation.navigate('BookDetail', { bookId: '2', title: 'Filosofia' })}
+            onPress={() => navigateToStack('BookDetail', { bookId: '2', title: 'Filosofia' })}
           >
             <Ionicons name="school-outline" size={24} color="#10B981" />
             <Text style={styles.categoryTitle}>Filosofia</Text>
@@ -106,7 +115,7 @@ export const HomeScreen = () => {
 
           <TouchableOpacity
             style={styles.categoryCard}
-            onPress={() => navigation.navigate('BookDetail', { bookId: '3', title: 'Ciência' })}
+            onPress={() => navigateToStack('BookDetail', { bookId: '3', title: 'Ciência' })}
           >
             <Ionicons name="flask-outline" size={24} color="#EC4899" />
             <Text style={styles.categoryTitle}>Ciência</Text>
@@ -114,7 +123,7 @@ export const HomeScreen = () => {
 
           <TouchableOpacity
             style={styles.categoryCard}
-            onPress={() => navigation.navigate('BookDetail', { bookId: '4', title: 'História' })}
+            onPress={() => navigateToStack('BookDetail', { bookId: '4', title: 'História' })}
           >
             <Ionicons name="hourglass-outline" size={24} color="#F59E0B" />
             <Text style={styles.categoryTitle}>História</Text>
@@ -131,7 +140,7 @@ export const HomeScreen = () => {
             <TouchableOpacity
               key={book.id}
               style={styles.bookCard}
-              onPress={() => navigation.navigate('BookDetail', { bookId: book.id, title: book.title })}
+              onPress={() => navigateToStack('BookDetail', { bookId: book.id, title: book.title })}
             >
               <View style={styles.bookCover}>
                 <Ionicons name="book" size={32} color={colors.primary} />

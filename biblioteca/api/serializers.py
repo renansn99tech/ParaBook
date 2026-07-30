@@ -1,4 +1,6 @@
+# api/serializers.py
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from biblioteca.models import Livro, Categoria, Biblioteca
 from django.contrib.auth.models import User
 
@@ -33,9 +35,16 @@ class EstanteSerializer(serializers.ModelSerializer):
         model = Biblioteca
         fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'status', 'favorito', 'nota', 'resenha', 'data_adicao']
         read_only_fields = ['user']
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Biblioteca.objects.all(),
+                fields=['user', 'livro'],
+                message="Este livro já está presente na sua estante."
+            )
+        ]
 
     def get_livro_capa(self, obj):
-        if obj.livro.capa:
+        if obj.livro and obj.livro.capa:
             return obj.livro.capa.url
         return None
 
@@ -48,17 +57,10 @@ class ResenhaSerializer(serializers.ModelSerializer):
         fields = ['id', 'usuario_nome', 'usuario_foto', 'nota', 'resenha', 'data_adicao']
     
     def get_usuario_foto(self, obj):
-        # Tenta pegar a foto pelo perfil do app 'perfis'
-        try:
-            if hasattr(obj.user, 'perfil') and obj.user.perfil.foto:
-                return obj.user.perfil.foto.url
-        except:
-            pass
-        # Fallback para o perfil do app 'biblioteca'
-        try:
-            if hasattr(obj.user, 'perfil_da_biblioteca') and obj.user.perfil_da_biblioteca.foto:
-                return obj.user.perfil_da_biblioteca.foto.url
-        except:
-            pass
+        # Mapeia dinamicamente os relacionamentos de Perfil existentes no Parabook
+        user = obj.user
+        if hasattr(user, 'perfil_da_biblioteca') and user.perfil_da_biblioteca.foto:
+            return user.perfil_da_biblioteca.foto.url
+        elif hasattr(user, 'perfil') and user.perfil.foto:
+            return user.perfil.foto.url
         return None
-

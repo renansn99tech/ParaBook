@@ -1,10 +1,11 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types';
+
 import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { BookDetailScreen } from '../screens/BookDetailScreen';
 import { MyLibraryScreen } from '../screens/MyLibraryScreen';
 import { TabNavigator } from './TabNavigator';
-import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

@@ -2,7 +2,12 @@
 from django.urls import path
 from . import views
 
+# REMOVIDO: app_name = 'biblioteca' (Para manter compatibilidade com {% url 'biblioteca' %})
+
 urlpatterns = [
+    # ---------------------------------------------------------------------
+    # ROTAS WEB / TEMPLATES LEGADAS (Interface HTML)
+    # ---------------------------------------------------------------------
     path('', views.biblioteca, name='biblioteca'),
     
     # Rota de IA (Exclusiva Premium)

@@ -14,7 +14,7 @@ export const WelcomeScreen = () => {
   const navigation = useNavigation<any>();
 
   const handleStart = () => {
-    navigation.navigate('Home');
+    navigation.navigate('MainTabs');
   };
 
   const handleLogin = () => {

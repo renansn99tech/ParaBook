@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,139 +6,142 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
-  Image,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
-import { Book, ReadingStatus } from '../types/book';
-
-// Forçamos o fallback caso o RootStackParamList esteja preso no cache
-type BookDetailRouteParams = {
-  bookId: string;
-  title?: string;
-  book?: Book;
-};
+import { bookService, Book, LibraryStatus } from '../services/bookService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookDetail'>;
 
+// Fallback de demonstração caso a API Django não retorne os detalhes do livro
+const FALLBACK_BOOK: Book = {
+  id: '1',
+  title: 'Detalhes do Livro',
+  author: 'Autor Desconhecido',
+  description:
+    'Esta é uma descrição genérica de exibição. Quando a API REST do Django estiver online, os dados reais do MySQL serão carregados nesta tela.',
+  pages: 320,
+};
+
 export const BookDetailScreen = ({ route, navigation }: Props) => {
-  // Fazemos o cast explícito aqui para destravar o TypeScript imediatamente:
-  const params = (route.params || {}) as BookDetailRouteParams;
-  const bookId = params.bookId || '1';
-  const title = params.title || 'Título do Livro';
-  const initialBook = params.book;
+  const { bookId, title: initialTitle } = route.params || {};
 
-  const [book] = useState<Book>(
-    initialBook || {
-      id: bookId,
-      title: title,
-      author: 'Autor Exemplo',
-      category: 'Ficção',
-      rating: 4.8,
-      pages: 310,
-      synopsis:
-        'Esta é uma sinopse de exemplo do livro selecionado no Parabook. Aqui o leitor poderá visualizar um resumo completo da obra, opiniões da comunidade e iniciar sua leitura ou salvar na biblioteca pessoal.',
-      coverUrl: undefined,
-      isBookmarked: false,
-      status: null,
+  const [book, setBook] = useState<Book | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedStatus, setSelectedStatus] = useState<LibraryStatus | null>(null);
+  const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
+
+  // Busca os detalhes do livro via API
+  const fetchBookDetails = useCallback(async () => {
+    if (!bookId) {
+      setBook(FALLBACK_BOOK);
+      setLoading(false);
+      return;
     }
-  );
 
-  const [isBookmarked, setIsBookmarked] = useState<boolean>(book.isBookmarked || false);
-  const [currentStatus, setCurrentStatus] = useState<ReadingStatus>(book.status || null);
+    try {
+      const data = await bookService.getBookById(bookId);
+      setBook(data);
+    } catch (error) {
+      console.warn(`Falha ao buscar livro ${bookId} na API. Usando dados locais.`);
+      setBook({
+        ...FALLBACK_BOOK,
+        id: bookId,
+        title: initialTitle || FALLBACK_BOOK.title,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [bookId, initialTitle]);
 
-  const toggleBookmark = () => {
-    setIsBookmarked((prev) => !prev);
-  };
+  useEffect(() => {
+    fetchBookDetails();
+  }, [fetchBookDetails]);
 
-  const handleStatusChange = (newStatus: ReadingStatus) => {
-    setCurrentStatus(newStatus);
-  };
+  // Atualiza o status do livro na biblioteca do usuário
+  const handleUpdateStatus = async (status: LibraryStatus) => {
+    if (!bookId) return;
 
-  const getStatusButtonLabel = () => {
-    switch (currentStatus) {
-      case 'READING':
-        return 'Lendo Atualmente';
-      case 'COMPLETED':
-        return 'Leitura Concluída';
-      case 'WANT_TO_READ':
-        return 'Na Lista de Desejos';
-      default:
-        return 'Adicionar à Biblioteca';
+    setUpdatingStatus(true);
+    try {
+      await bookService.updateBookStatus(bookId, status);
+      setSelectedStatus(status);
+      Alert.alert('Sucesso', 'Status do livro atualizado na sua biblioteca!');
+    } catch (error) {
+      // Atualização local de feedback para desenvolvimento
+      setSelectedStatus(status);
+      Alert.alert('Aviso', 'Status atualizado localmente (offline).');
+    } finally {
+      setUpdatingStatus(false);
     }
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header Superior */}
+      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Detalhes do Livro</Text>
-        <TouchableOpacity onPress={toggleBookmark} style={styles.iconButton}>
-          <Ionicons
-            name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-            size={22}
-            color={isBookmarked ? colors.primary : colors.textPrimary}
-          />
-        </TouchableOpacity>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          {book?.title || initialTitle || 'Detalhes do Livro'}
+        </Text>
+        <View style={styles.headerPlaceholder} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* Capa */}
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Capa do Livro */}
         <View style={styles.coverContainer}>
-          {book.coverUrl ? (
-            <Image source={{ uri: book.coverUrl }} style={styles.coverImage} resizeMode="cover" />
-          ) : (
-            <View style={styles.coverPlaceholder}>
-              <Ionicons name="book" size={64} color={colors.primary} />
-            </View>
-          )}
-        </View>
-
-        {/* Informações */}
-        <Text style={styles.title}>{book.title}</Text>
-        <Text style={styles.author}>por {book.author}</Text>
-
-        {/* Métricas */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Ionicons name="star" size={18} color="#F59E0B" />
-            <Text style={styles.statValue}>{(book.rating ?? 0).toFixed(1)}</Text>
-            <Text style={styles.statLabel}>Avaliação</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Ionicons name="document-text-outline" size={18} color={colors.primary} />
-            <Text style={styles.statValue}>{book.pages ?? 0}</Text>
-            <Text style={styles.statLabel}>Páginas</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Ionicons name="pricetag-outline" size={18} color={colors.textSecondary} />
-            <Text style={styles.statValue}>{book.category ?? 'N/A'}</Text>
-            <Text style={styles.statLabel}>Gênero</Text>
+          <View style={styles.coverPlaceholder}>
+            <Ionicons name="book" size={60} color={colors.primary} />
           </View>
         </View>
 
-        {/* Status de Leitura */}
-        <View style={styles.statusSection}>
+        {/* Informações Básicas */}
+        <View style={styles.infoContainer}>
+          <Text style={styles.title}>{book?.title}</Text>
+          <Text style={styles.author}>{book?.author}</Text>
+          {book?.pages && <Text style={styles.pagesText}>{book.pages} páginas</Text>}
+        </View>
+
+        {/* Seleção de Status da Leitura */}
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Status de Leitura</Text>
-          <View style={styles.statusOptions}>
+          <View style={styles.statusButtonsContainer}>
             <TouchableOpacity
               style={[
-                styles.statusChip,
-                currentStatus === 'WANT_TO_READ' && styles.statusChipActive,
+                styles.statusButton,
+                selectedStatus === 'want_to_read' && styles.statusButtonActive,
               ]}
-              onPress={() => handleStatusChange('WANT_TO_READ')}
+              disabled={updatingStatus}
+              onPress={() => handleUpdateStatus('want_to_read')}
+              activeOpacity={0.7}
             >
+              <Ionicons
+                name="bookmark-outline"
+                size={18}
+                color={selectedStatus === 'want_to_read' ? '#FFF' : colors.textSecondary}
+              />
               <Text
                 style={[
-                  styles.statusChipText,
-                  currentStatus === 'WANT_TO_READ' && styles.statusChipTextActive,
+                  styles.statusButtonText,
+                  selectedStatus === 'want_to_read' && styles.statusButtonTextActive,
                 ]}
               >
                 Quero Ler
@@ -147,15 +150,22 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
             <TouchableOpacity
               style={[
-                styles.statusChip,
-                currentStatus === 'READING' && styles.statusChipActive,
+                styles.statusButton,
+                selectedStatus === 'reading' && styles.statusButtonActive,
               ]}
-              onPress={() => handleStatusChange('READING')}
+              disabled={updatingStatus}
+              onPress={() => handleUpdateStatus('reading')}
+              activeOpacity={0.7}
             >
+              <Ionicons
+                name="book-outline"
+                size={18}
+                color={selectedStatus === 'reading' ? '#FFF' : colors.textSecondary}
+              />
               <Text
                 style={[
-                  styles.statusChipText,
-                  currentStatus === 'READING' && styles.statusChipTextActive,
+                  styles.statusButtonText,
+                  selectedStatus === 'reading' && styles.statusButtonTextActive,
                 ]}
               >
                 Lendo
@@ -164,15 +174,22 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
             <TouchableOpacity
               style={[
-                styles.statusChip,
-                currentStatus === 'COMPLETED' && styles.statusChipActive,
+                styles.statusButton,
+                selectedStatus === 'completed' && styles.statusButtonActive,
               ]}
-              onPress={() => handleStatusChange('COMPLETED')}
+              disabled={updatingStatus}
+              onPress={() => handleUpdateStatus('completed')}
+              activeOpacity={0.7}
             >
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={18}
+                color={selectedStatus === 'completed' ? '#FFF' : colors.textSecondary}
+              />
               <Text
                 style={[
-                  styles.statusChipText,
-                  currentStatus === 'COMPLETED' && styles.statusChipTextActive,
+                  styles.statusButtonText,
+                  selectedStatus === 'completed' && styles.statusButtonTextActive,
                 ]}
               >
                 Lido
@@ -181,30 +198,14 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
           </View>
         </View>
 
-        {/* Sinopse */}
-        <View style={styles.synopsisContainer}>
+        {/* Sinopse / Descrição */}
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sinopse</Text>
-          <Text style={styles.synopsisText}>{book.synopsis}</Text>
+          <Text style={styles.description}>
+            {book?.description || 'Nenhuma descrição fornecida para este livro.'}
+          </Text>
         </View>
       </ScrollView>
-
-      {/* Botão Fixo */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[
-            styles.readButton,
-            currentStatus && { backgroundColor: colors.cardBackground, borderWidth: 1, borderColor: colors.primary },
-          ]}
-          onPress={() => handleStatusChange(currentStatus === 'READING' ? null : 'READING')}
-        >
-          <Ionicons
-            name={currentStatus === 'READING' ? 'pause-circle-outline' : 'book-outline'}
-            size={20}
-            color={colors.textPrimary}
-          />
-          <Text style={styles.readButtonText}>{getStatusButtonLabel()}</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
@@ -214,6 +215,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -221,148 +226,99 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
   },
-  iconButton: {
-    padding: 8,
+  backButton: {
+    padding: 4,
   },
   headerTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: colors.textPrimary,
+    flex: 1,
+    textAlign: 'center',
+    marginHorizontal: 10,
+  },
+  headerPlaceholder: {
+    width: 24,
   },
   scrollContent: {
-    padding: 20,
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   coverContainer: {
-    marginVertical: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8,
-  },
-  coverImage: {
-    width: 140,
-    height: 200,
-    borderRadius: 12,
+    alignItems: 'center',
+    marginVertical: 20,
   },
   coverPlaceholder: {
-    width: 140,
-    height: 200,
-    borderRadius: 12,
+    width: 120,
+    height: 170,
     backgroundColor: colors.cardBackground,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.border,
   },
+  infoContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: colors.textPrimary,
     textAlign: 'center',
-    marginTop: 16,
   },
   author: {
     fontSize: 14,
     color: colors.textSecondary,
-    textAlign: 'center',
     marginTop: 4,
+    textAlign: 'center',
   },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    width: '100%',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    marginVertical: 20,
+  pagesText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: 6,
   },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
+  section: {
+    marginBottom: 24,
   },
-  statValue: {
-    fontSize: 15,
+  sectionTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: colors.textPrimary,
-    marginTop: 4,
+    marginBottom: 12,
   },
-  statLabel: {
-    fontSize: 11,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: colors.border,
-  },
-  statusSection: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  statusOptions: {
+  statusButtonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
     gap: 8,
   },
-  statusChip: {
+  statusButton: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
     paddingVertical: 10,
-    borderRadius: 20,
     backgroundColor: colors.cardBackground,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
-    alignItems: 'center',
   },
-  statusChipActive: {
+  statusButtonActive: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
   },
-  statusChipText: {
-    fontSize: 13,
+  statusButtonText: {
+    fontSize: 12,
     fontWeight: '600',
     color: colors.textSecondary,
   },
-  statusChipTextActive: {
-    color: colors.textPrimary,
+  statusButtonTextActive: {
+    color: '#FFF',
   },
-  synopsisContainer: {
-    width: '100%',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.textPrimary,
-    marginBottom: 8,
-  },
-  synopsisText: {
+  description: {
     fontSize: 14,
     color: colors.textSecondary,
     lineHeight: 22,
-  },
-  footer: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  readButton: {
-    backgroundColor: colors.primary,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 16,
-    borderRadius: 30,
-    gap: 10,
-  },
-  readButtonText: {
-    color: colors.textPrimary,
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

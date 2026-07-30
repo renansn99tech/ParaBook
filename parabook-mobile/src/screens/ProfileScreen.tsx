@@ -9,8 +9,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
 export const ProfileScreen = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const userProfile = {
     name: 'Leitor Parabook',
     username: '@leitor_parabook',
@@ -85,13 +89,16 @@ export const ProfileScreen = () => {
         <View style={styles.menuSection}>
           <Text style={styles.sectionTitle}>Minha Biblioteca</Text>
 
-          <TouchableOpacity style={styles.menuItem}>
-            <View style={styles.menuItemLeft}>
-              <Ionicons name="bookmark-outline" size={20} color={colors.primary} />
-              <Text style={styles.menuItemText}>Salvos para Ler</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-          </TouchableOpacity>
+<TouchableOpacity 
+  style={styles.menuItem}
+  onPress={() => navigation.navigate('MyLibrary')}
+>
+  <View style={styles.menuItemLeft}>
+    <Ionicons name="bookmark-outline" size={20} color={colors.primary} />
+    <Text style={styles.menuItemText}>Salvos para Ler</Text>
+  </View>
+  <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+</TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemLeft}>

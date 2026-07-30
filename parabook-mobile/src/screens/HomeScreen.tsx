@@ -2,8 +2,12 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
 export const HomeScreen = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -28,7 +32,8 @@ export const HomeScreen = () => {
             placeholderTextColor={colors.textMuted}
           />
           <TouchableOpacity>
-            <Ionicons name="options-outline" size={20} color={colors.textMuted} />
+            <Ionicons name="options-outline" size={20} color={colors.textMuted}
+            onPress={() => navigation.navigate('BookDetail', { bookId: '1', title: 'O Hobbit' })} />
           </TouchableOpacity>
         </View>
 

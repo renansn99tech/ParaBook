@@ -12,7 +12,6 @@ from django.core.paginator import Paginator
 from django.http import Http404
 
 from comunidades.models import Comunidade
-from usuarios.models import Usuario, Notificacao
 from assinaturas.decorators import requer_premium
 from .models import Categoria, Livro, Biblioteca, Denuncia, SolicitacaoPublicacao
 from .forms import ObraAutorForm
@@ -62,7 +61,8 @@ def adicionar_a_biblioteca(request, livro_id):
                 limite_livros = plano.limite_livros
 
         with transaction.atomic():
-            Usuario.objects.select_for_update().get(pk=request.user.pk)
+            # Bloqueia a linha do usuário nativo (User) para evitar que 2 threads passem o limite
+            request.user.__class__.objects.select_for_update().get(pk=request.user.pk)
             total_atual = Biblioteca.objects.filter(user=request.user).count()
 
             if not is_ilimitado and total_atual >= limite_livros:
@@ -585,35 +585,35 @@ def recomendacao_ia_view(request):
             livro.afinidade = 82
             livro.motivo_card = "Destaque do catálogo recomendado para você"
 
-    # INTEGRAÇÃO IA REAL:
-    gemini_key = os.getenv("GEMINI_API_KEY")
-    if gemini_key:
-        try:
-            import google.generativeai as genai
-            import json
-            
-            genai.configure(api_key=gemini_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            
-            nomes_recomendados = ", ".join([livro.titulo for livro in recomendacoes])
-            nomes_lidos = ", ".join(livros_lidos) if livros_lidos else "nenhum"
-            
-            prompt = f"O usuário {user.username} já leu: {nomes_lidos}. Você está recomendando os livros: {nomes_recomendados}. Retorne um JSON estrito contendo os motivos personalizados da recomendação de cada livro, com a chave sendo o ID do livro e o valor uma breve frase (máx 15 palavras) explicando de forma entusiástica por que ele vai gostar, baseado no que ele já leu."
-            prompt += f" A lista de IDs é: {', '.join([str(l.id) for l in recomendacoes])}. Exemplo: {{\"{recomendacoes[0].id}\": \"Você vai amar esse thriller que tem a mesma pegada misteriosa do seu último livro!\"}}"
-            
-            response = model.generate_content(prompt)
-            texto_json = response.text.strip().replace("```json", "").replace("```", "")
-            
-            motivos_ia = json.loads(texto_json)
-            
-            for livro in recomendacoes:
-                if str(livro.id) in motivos_ia:
-                    livro.motivo_card = motivos_ia[str(livro.id)]
-                    livro.afinidade = min(100, livro.afinidade + 5)
-                    
-            motivo_geral = "✨ Nossa IA analisou sua estante e preparou recomendações personalizadas exclusivas para você!"
-        except Exception as e:
-            logger.error(f"Erro na API Gemini: {str(e)}")
+    # INTEGRAÇÃO IA REAL: (Desativada temporariamente por motivo de segurança)
+    # gemini_key = os.getenv("GEMINI_API_KEY")
+    # if gemini_key:
+    #     try:
+    #         import google.generativeai as genai
+    #         import json
+    #         
+    #         genai.configure(api_key=gemini_key)
+    #         model = genai.GenerativeModel('gemini-1.5-flash')
+    #         
+    #         nomes_recomendados = ", ".join([livro.titulo for livro in recomendacoes])
+    #         nomes_lidos = ", ".join(livros_lidos) if livros_lidos else "nenhum"
+    #         
+    #         prompt = f"O usuário {user.username} já leu: {nomes_lidos}. Você está recomendando os livros: {nomes_recomendados}. Retorne um JSON estrito contendo os motivos personalizados da recomendação de cada livro, com a chave sendo o ID do livro e o valor uma breve frase (máx 15 palavras) explicando de forma entusiástica por que ele vai gostar, baseado no que ele já leu."
+    #         prompt += f" A lista de IDs é: {', '.join([str(l.id) for l in recomendacoes])}. Exemplo: {{\"{recomendacoes[0].id}\": \"Você vai amar esse thriller que tem a mesma pegada misteriosa do seu último livro!\"}}"
+    #         
+    #         response = model.generate_content(prompt)
+    #         texto_json = response.text.strip().replace("```json", "").replace("```", "")
+    #         
+    #         motivos_ia = json.loads(texto_json)
+    #         
+    #         for livro in recomendacoes:
+    #             if str(livro.id) in motivos_ia:
+    #                 livro.motivo_card = motivos_ia[str(livro.id)]
+    #                 livro.afinidade = min(100, livro.afinidade + 5)
+    #                 
+    #         motivo_geral = "✨ Nossa IA analisou sua estante e preparou recomendações personalizadas exclusivas para você!"
+    #     except Exception as e:
+    #         logger.error(f"Erro na API Gemini: {str(e)}")
 
     context = {
         'recomendacoes': recomendacoes,

@@ -22,12 +22,11 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 # Configuração de hosts permitidos
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
-    default="localhost,127.0.0.1,0.0.0.0,192.168.0.75",
+    default="localhost,127.0.0.1,0.0.0.0,192.168.1.171,*",
 ).split(",")
 
 if not DEBUG:
     ALLOWED_HOSTS += [".onrender.com", "parabook-nl8o.onrender.com", ".railway.app"]
-
 # Configuração de origens confiáveis para CSRF
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",

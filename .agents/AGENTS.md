@@ -35,3 +35,23 @@ Sempre mantenha as seguintes informações como contexto base ao fornecer sugest
     3.  Construção de novo Frontend moderno em React.
     4.  Desenvolvimento de App Mobile nativo/híbrido em Flutter.
     5.  Lançamento de um Marketplace para troca de livros físicos.
+
+---
+
+## Procedimento de Fechamento de Sessão (/fechamento)
+
+Quando o usuário solicitar o encerramento da sessão ou um resumo (ex: usando a palavra **"/fechamento"** ou pedindo um **resumo de commits**), você deve obrigatoriamente seguir este roteiro:
+
+1. **Leitura dos Commits**: 
+   - Execute o comando git localmente para listar os commits recentes (da sessão atual). Exemplo: `git log --oneline -n 10` ou similar para coletar as mensagens.
+2. **Resumo das Atividades**:
+   - Faça uma síntese estruturada e objetiva (como [💻 Tech Lead] ou [⚙️ COO]) das funcionalidades, correções e refatorações que foram implementadas e enviadas ao Git.
+3. **Comandos de Atualização (Deploy / Sync Local)**:
+   - Forneça os comandos exatos que o usuário precisa rodar caso haja alguma pendência (ex: migrações de banco pendentes, instalação de dependências).
+   - **⚠️ REGRA ESTRITA DE AMBIENTE VIRTUAL**: 
+     - Para **QUALQUER comando do Django/Python**, você deve SEMPRE e OBRIGATORIAMENTE usar o caminho explícito do VENV local. 
+     - Exemplo Correto: `venv\Scripts\python.exe manage.py migrate` ou `venv\Scripts\python.exe manage.py makemigrations`.
+     - Nunca recomende apenas `python manage.py` ou `py manage.py`.
+   - **⚠️ REGRA PARA FRONT-END**: 
+     - Para comandos do **Vite, Node ou React**, você **NÃO** deve usar o VENV.
+     - Forneça os comandos nativos do Node (ex: `npm run dev`, `npm install`) orientando o usuário a executá-los na pasta correspondente (ex: `cd parabook-web`).

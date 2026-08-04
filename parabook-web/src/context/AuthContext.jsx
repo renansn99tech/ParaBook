@@ -51,12 +51,30 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      await api.post('/auth/register/', userData);
-      // Se cadastrou com sucesso, tentamos logar automaticamente
-      return await login(userData.username, userData.password);
+      const response = await api.post('/auth/register/', userData);
+      const tokens = response.data;
+
+      // A API já retorna os tokens JWT no registro
+      localStorage.setItem('parabookTokens', JSON.stringify(tokens));
+
+      // Busca os dados do perfil do usuário recém-criado
+      const userResponse = await api.get('/perfis/meu-perfil/');
+      setUser(userResponse.data);
+
+      return { success: true };
     } catch (error) {
       console.error("Erro no cadastro", error);
-      return false;
+      const data = error.response?.data;
+      let errorMsg = 'Erro ao realizar o cadastro.';
+
+      if (data) {
+        // Coleta mensagens de validação do DRF (ex: { username: ["..."], password: ["..."] })
+        const messages = Object.values(data).flat();
+        if (messages.length > 0) {
+          errorMsg = messages.join(' ');
+        }
+      }
+      return { success: false, error: errorMsg };
     }
   };
 

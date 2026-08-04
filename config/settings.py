@@ -107,31 +107,24 @@ CORS_ALLOWED_ORIGINS = config(
     default="http://localhost:5173,http://127.0.0.1:5173",
 ).split(",")
 
-# DATABASE CONFIGURATION (Dinâmico: Render/PostgreSQL se houver DATABASE_URL, MySQL se local)
+# DATABASE CONFIGURATION (PostgreSQL — unificado para todos os ambientes)
 DATABASE_URL = config('DATABASE_URL', default=None)
 
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': config('DB_NAME', default='mydb'),
-            'USER': config('DB_USER', default='root'),
-            'PASSWORD': config('DB_PASSWORD', default=''),
-            'HOST': config('DB_HOST', default='localhost'),
-            'PORT': config('DB_PORT', default='3306'),
-            'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            },
-        }
-    }
+if not DATABASE_URL:
+    _db_name = config('DB_NAME', default='parabook_db')
+    _db_user = config('DB_USER', default='parabook_user')
+    _db_pass = config('DB_PASSWORD', default='parabook_password')
+    _db_host = config('DB_HOST', default='localhost')
+    _db_port = config('DB_PORT', default='5432')
+    DATABASE_URL = f"postgres://{_db_user}:{_db_pass}@{_db_host}:{_db_port}/{_db_name}"
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

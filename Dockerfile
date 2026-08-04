@@ -7,13 +7,11 @@ ENV PYTHONUNBUFFERED 1
 # Define o diretório de trabalho no container
 WORKDIR /app
 
-# Instala dependências do sistema necessárias para o psycopg2 e MySQL (legado)
+# Instala dependências do sistema necessárias para o psycopg2
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         gcc \
         libpq-dev \
-        default-libmysqlclient-dev \
-        pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Copia e instala as dependências do Python

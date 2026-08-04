@@ -1,16 +1,31 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import transaction
 from usuarios.models import Usuario
-from .serializers import UsuarioSerializer
+from .serializers import UsuarioSerializer, RegisterSerializer
 from drf_spectacular.utils import extend_schema
+
 
 class RegisterAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
-    @extend_schema(request=None, responses={201: UsuarioSerializer})
+    @extend_schema(request=RegisterSerializer, responses={201: None})
     def post(self, request):
-        return Response({"message": "Endpoint de registro. Implementação completa na Fase 2.5."})
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        with transaction.atomic():
+            auth_user = serializer.save()
+
+        # Gera tokens JWT para login automático após o cadastro
+        refresh = RefreshToken.for_user(auth_user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_201_CREATED)
+
 
 class UserProfileAPIView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -18,6 +33,7 @@ class UserProfileAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user.perfil_customizado
+
 
 class ChangePasswordAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -37,3 +53,4 @@ class ChangePasswordAPIView(APIView):
         user.save()
 
         return Response({"message": "Senha atualizada com sucesso!"})
+

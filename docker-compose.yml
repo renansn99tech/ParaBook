@@ -1,24 +1,28 @@
-
+name: parabook
 
 services:
   db:
     image: postgres:15-alpine
+    container_name: parabook-db
     environment:
       POSTGRES_DB: parabook_db
       POSTGRES_USER: parabook_user
       POSTGRES_PASSWORD: parabook_password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - parabook_postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
   web:
     build: .
+    container_name: parabook-web
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
       - DEBUG=True
       - DATABASE_URL=postgres://parabook_user:parabook_password@db:5432/parabook_db
@@ -26,4 +30,4 @@ services:
       - db
 
 volumes:
-  postgres_data:
+  parabook_postgres_data:

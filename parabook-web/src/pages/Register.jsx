@@ -22,11 +22,11 @@ function Register() {
     e.preventDefault();
     setError('');
     
-    const success = await register(formData);
-    if (success) {
+    const result = await register(formData);
+    if (result.success) {
       navigate('/perfil');
     } else {
-      setError('Erro ao realizar o cadastro. Verifique os dados fornecidos.');
+      setError(result.error || 'Erro ao realizar o cadastro. Verifique os dados fornecidos.');
     }
   };
 

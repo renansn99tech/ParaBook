@@ -57,6 +57,12 @@ class LivroViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+from django.db import transaction
+from gamificacao.services import GamificacaoService
+import logging
+
+logger = logging.getLogger(__name__)
+
 class EstanteViewSet(viewsets.ModelViewSet):
     serializer_class = EstanteSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -64,5 +70,124 @@ class EstanteViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Biblioteca.objects.filter(user=self.request.user).order_by('-data_adicao')
 
+    def create(self, request, *args, **kwargs):
+        # 1. Checagem de Limite de Assinatura
+        limite_livros = 10
+        is_ilimitado = False
+
+        if hasattr(request.user, 'assinatura') and request.user.assinatura.ativa and request.user.assinatura.plano:
+            plano = request.user.assinatura.plano
+            if plano.limite_livros == 0:
+                is_ilimitado = True
+            else:
+                limite_livros = plano.limite_livros
+
+        with transaction.atomic():
+            request.user.__class__.objects.select_for_update().get(pk=request.user.pk)
+            total_atual = Biblioteca.objects.filter(user=request.user).count()
+
+            if not is_ilimitado and total_atual >= limite_livros:
+                return Response(
+                    {'detail': f"Você atingiu o limite de {limite_livros} livros do seu plano atual."}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
+            # 2. Gatilho de Gamificação (Adição à Biblioteca)
+            obj = serializer.instance
+            msg_extra = []
+            if not obj.xp_ganho_adicao:
+                obj.xp_ganho_adicao = True
+                obj.save(update_fields=['xp_ganho_adicao'])
+                try:
+                    res_xp = GamificacaoService.adicionar_xp(request.user, 10)
+                    if res_xp and res_xp.get('subiu_nivel'):
+                        msg_extra.append(f"Você subiu para o Nível {res_xp['nivel_atual']}!")
+                except Exception as e:
+                    logger.error(f"Erro na gamificação (adicionar): {str(e)}")
+
+            headers = self.get_success_headers(serializer.data)
+            response_data = serializer.data
+            if msg_extra:
+                response_data['gamificacao_alerts'] = msg_extra
+
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        # Armazena estado anterior para comparar após o update
+        status_anterior = instance.status
+        nota_anterior = instance.nota
+        estava_favoritado = instance.favorito
+        ja_tinha_resenha = bool(instance.resenha)
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        # 3. Gatilhos de Gamificação após atualização
+        obj = serializer.instance
+        msg_extra = []
+
+        try:
+            # A. Iniciou Leitura
+            if status_anterior != 'lendo' and obj.status == 'lendo':
+                GamificacaoService.atualizar_streak(request.user)
+
+            # B. Concluiu Leitura
+            if status_anterior != 'lido' and obj.status == 'lido':
+                if not obj.xp_ganho_leitura:
+                    obj.xp_ganho_leitura = True
+                    obj.save(update_fields=['xp_ganho_leitura'])
+                    GamificacaoService.atualizar_streak(request.user)
+                    res_xp = GamificacaoService.adicionar_xp(request.user, 100)
+                    conquista = GamificacaoService.conceder_conquista(request.user, 'primeira_leitura_concluida')
+                    if res_xp and res_xp.get('subiu_nivel'):
+                        msg_extra.append(f"Subiu para Nível {res_xp['nivel_atual']}!")
+                    if conquista:
+                        msg_extra.append(f"Conquista desbloqueada: {conquista.nome}!")
+
+            # C. Avaliação (Nota)
+            if nota_anterior is None and obj.nota is not None:
+                if not obj.xp_ganho_avaliacao:
+                    obj.xp_ganho_avaliacao = True
+                    obj.save(update_fields=['xp_ganho_avaliacao'])
+                    GamificacaoService.adicionar_xp(request.user, 30)
+                    GamificacaoService.conceder_conquista(request.user, 'primeira_avaliacao')
+
+            # D. Resenha
+            if not ja_tinha_resenha and bool(obj.resenha):
+                if not obj.xp_ganho_resenha:
+                    obj.xp_ganho_resenha = True
+                    obj.save(update_fields=['xp_ganho_resenha'])
+                    res_xp = GamificacaoService.adicionar_xp(request.user, 50)
+                    if res_xp and res_xp.get('subiu_nivel'):
+                        msg_extra.append(f"Subiu para Nível {res_xp['nivel_atual']}!")
+
+            # E. Favoritou
+            if not estava_favoritado and obj.favorito:
+                if not obj.xp_ganho_favorito:
+                    obj.xp_ganho_favorito = True
+                    obj.save(update_fields=['xp_ganho_favorito'])
+                    GamificacaoService.adicionar_xp(request.user, 5)
+                    GamificacaoService.conceder_conquista(request.user, 'primeiro_favorito')
+
+        except Exception as e:
+            logger.error(f"Erro na gamificação (update): {str(e)}")
+
+        response_data = serializer.data
+        if msg_extra:
+            response_data['gamificacao_alerts'] = msg_extra
+
+        return Response(response_data)

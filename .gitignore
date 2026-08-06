@@ -30,11 +30,5 @@ local_settings.py
 # Windows
 Thumbs.db
 
-# Media Django
-media/
-
-# Node / React (parabook-web)
-node_modules/
-parabook-web/node_modules/
-parabook-web/dist/
-.DS_Store
+# Pasta media do django
+media/.env

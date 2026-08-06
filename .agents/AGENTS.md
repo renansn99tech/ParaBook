@@ -36,6 +36,13 @@ Sempre mantenha as seguintes informações como contexto base ao fornecer sugest
     4.  Desenvolvimento de App Mobile nativo/híbrido em Flutter.
     5.  Lançamento de um Marketplace para troca de livros físicos.
 
+## Controle e Quantificação de Progresso
+
+Ao trabalhar em mudanças estruturais (como a migração de Django Templates para React, mudanças arquiteturais, etc):
+* **Sempre quantifique:** Forneça dados de avanço (ex: "10 de 25 arquivos concluídos = 40% de progresso").
+* **Mapeie o escopo:** Para descobrir o que falta, faça análises consultando os diretórios relevantes (ex: comparar arquivos HTML legados na pasta `templates/` com os componentes na pasta `parabook-web/src/`).
+* **Sinalize código morto:** Aponte arquivos ou funções antigas que não são mais utilizados devido às novas migrações.
+
 ---
 
 ## Procedimento de Fechamento de Sessão (/fechamento)
@@ -46,7 +53,9 @@ Quando o usuário solicitar o encerramento da sessão ou um resumo (ex: usando a
    - Execute o comando git localmente para listar os commits recentes (da sessão atual). Exemplo: `git log --oneline -n 10` ou similar para coletar as mensagens.
 2. **Resumo das Atividades**:
    - Faça uma síntese estruturada e objetiva (como [💻 Tech Lead] ou [⚙️ COO]) das funcionalidades, correções e refatorações que foram implementadas e enviadas ao Git.
-3. **Comandos de Atualização (Deploy / Sync Local)**:
+3. **Métricas de Progresso (Transições e Migrações)**: 
+   - Exiba um balanço de evolução se a sessão englobou tarefas de longa duração. Informe ao usuário o que já foi migrado, o que falta migrar e o percentual estimado de conclusão.
+4. **Comandos de Atualização (Deploy / Sync Local)**:
    - Forneça os comandos exatos que o usuário precisa rodar caso haja alguma pendência (ex: migrações de banco pendentes, instalação de dependências).
    - **⚠️ REGRA ESTRITA DE AMBIENTE VIRTUAL**: 
      - Para **QUALQUER comando do Django/Python**, você deve SEMPRE e OBRIGATORIAMENTE usar o caminho explícito do VENV local. 

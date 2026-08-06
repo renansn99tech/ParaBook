@@ -17,6 +17,10 @@ db.sqlite3
 .env
 *.log
 local_settings.py
+staticfiles/
+
+# Node
+node_modules/
 
 # VS Code
 .vscode/

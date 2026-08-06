@@ -70,3 +70,7 @@ Quando o usuário solicitar o encerramento da sessão ou um resumo (ex: usando a
    - **⚠️ REGRA PARA FRONT-END**: 
      - Para comandos do **Vite, Node ou React**, você **NÃO** deve usar o VENV.
      - Forneça os comandos nativos do Node (ex: `npm run dev`, `npm install`) orientando o usuário a executá-los na pasta correspondente (ex: `cd parabook-web`).
+   - **⚠️ REGRA DE VERSÃO LOCAL DO DJANGO/PYTHON**:
+     - Sempre que for necessário (re)instalar dependências via `requirements.txt` nesta máquina, confira depois a versão instalada de Django e Python no venv (`venv\Scripts\python.exe -c "import django; print(django.VERSION)"` e `venv\Scripts\python.exe --version`).
+     - Nesta máquina local queremos Django > 6 e Python > 3.14. O `requirements.txt` fica fixado em `Django>=4.2,<5.0` de propósito, por compatibilidade com o Python 3.11 do Rodrigo — não altere essa linha.
+     - Se a instalação trouxer uma versão de Django abaixo de 6 no venv local, reinstale só o pacote Django para a versão desejada (ex: `venv\Scripts\python.exe -m pip install "Django==6.0.8"`), sem tocar no `requirements.txt`.

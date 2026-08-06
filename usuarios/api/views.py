@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
 from usuarios.models import Usuario
+from usuarios.services import obter_ou_criar_usuario_customizado
 from .serializers import UsuarioSerializer, RegisterSerializer
 from drf_spectacular.utils import extend_schema
 
@@ -32,22 +33,7 @@ class UserProfileAPIView(generics.RetrieveAPIView):
     serializer_class = UsuarioSerializer
 
     def get_object(self):
-        user = self.request.user
-        try:
-            return user.perfil_customizado
-        except Usuario.DoesNotExist:
-            if user.is_superuser:
-                from perfis.models import Perfil
-                novo_perfil = Perfil.objects.create(descricao_perfil="Administrador do Sistema")
-                novo_usuario = Usuario.objects.create(
-                    user_auth=user, 
-                    nome="Super User", 
-                    tipo='admin', 
-                    perfil=novo_perfil,
-                    termos_aceitos=True
-                )
-                return novo_usuario
-            raise
+        return obter_ou_criar_usuario_customizado(self.request.user)
 
 
 class ChangePasswordAPIView(APIView):

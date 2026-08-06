@@ -4,21 +4,16 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db.models import Count
 from usuarios.models import Usuario
+from usuarios.services import obter_ou_criar_usuario_customizado
 from biblioteca.models import Biblioteca
 from comunidades.models import Comunidade
-from perfis.models import Perfil
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 
 @login_required
 def perfil(request):
-    try:
-        dados_usuario = Usuario.objects.get(user_auth=request.user)
-    except Usuario.DoesNotExist:
-        is_admin = request.user.is_superuser
-        novo_perfil = Perfil.objects.create(descricao_perfil="Administrador do Sistema" if is_admin else "Novo Leitor")
-        dados_usuario = Usuario.objects.create(user_auth=request.user, nome="Super User" if is_admin else request.user.username, tipo='admin' if is_admin else 'leitor', perfil=novo_perfil)
+    dados_usuario = obter_ou_criar_usuario_customizado(request.user)
 
     perfil_do_usuario = dados_usuario.perfil
 

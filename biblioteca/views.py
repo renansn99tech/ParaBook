@@ -12,6 +12,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 
 from comunidades.models import Comunidade
+from usuarios.models import Usuario
 from assinaturas.decorators import requer_premium
 from .models import Categoria, Livro, Biblioteca, Denuncia, SolicitacaoPublicacao
 from .forms import ObraAutorForm

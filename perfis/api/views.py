@@ -20,7 +20,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count
 from usuarios.models import Usuario
-from biblioteca.models import Biblioteca
+from biblioteca.models import Biblioteca, Livro
 from comunidades.models import Comunidade
 
 class PerfilPublicoAPIView(APIView):

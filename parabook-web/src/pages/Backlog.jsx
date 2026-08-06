@@ -152,7 +152,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry current-milestone">
+        <article className="timeline-entry">
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -161,6 +161,30 @@ function Backlog() {
             </div>
             <h3>Refatoração para React SPA</h3>
             <p>A grande virada: transição de todos os templates estáticos do Django para componentes React, aproveitando o design Neon Glassmorphism em uma Single Page Application extremamente veloz.</p>
+          </div>
+        </article>
+
+        <article className="timeline-entry inverse warning-milestone">
+          <div className="timeline-pointer"></div>
+          <div className="glass-card-news">
+            <div className="card-header">
+              <span className="date-tag">Ago 2026</span>
+              <span className="status-badge">Integração Full Stack</span>
+            </div>
+            <h3>Sincronização Back e Front (React/Vite)</h3>
+            <p>Criação e adaptação de todas as funções do backend (APIs DRF) com os componentes front-end no React/Vite, garantindo UX responsiva e controle de estado dinâmico.</p>
+          </div>
+        </article>
+
+        <article className="timeline-entry current-milestone">
+          <div className="timeline-pointer"></div>
+          <div className="glass-card-news">
+            <div className="card-header">
+              <span className="date-tag">Ago 2026</span>
+              <span className="status-badge">Banco de Dados Cloud</span>
+            </div>
+            <h3>Migração para Supabase</h3>
+            <p>Adoção do Supabase (PostgreSQL) para hospedar o banco de dados da aplicação, trazendo maior robustez, escalabilidade na nuvem e flexibilidade para o ecossistema.</p>
           </div>
         </article>
 

@@ -25,7 +25,19 @@ from comunidades.models import Comunidade
 
 class PerfilPublicoAPIView(APIView):
     def get(self, request, username, *args, **kwargs):
-        dados_usuario = get_object_or_404(Usuario, user_auth__username=username)
+        try:
+            dados_usuario = Usuario.objects.get(user_auth__username=username)
+        except Usuario.DoesNotExist:
+            user_auth_obj = get_object_or_404(Usuario.user_auth.field.related_model, username=username)
+            if user_auth_obj.is_superuser:
+                perfil, _ = Perfil.objects.get_or_create(usuario=user_auth_obj, defaults={"descricao_perfil": "Administrador do Sistema"})
+                dados_usuario, _ = Usuario.objects.get_or_create(
+                    user_auth=user_auth_obj, 
+                    defaults={"nome": "Super User", "tipo": "admin", "perfil": perfil, "termos_aceitos": True}
+                )
+            else:
+                return Response({"detail": "Não encontrado."}, status=404)
+
         user_auth_obj = dados_usuario.user_auth
 
         # O React vai tratar se o username é igual ao user.username logado, mas mandamos um flag caso precise:

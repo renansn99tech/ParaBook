@@ -193,8 +193,8 @@
 }
 
 .form-group.checkbox input[type="checkbox"]{
-    width:18px;
-    height:18px;
+    width:27px;
+    height:27px;
 
     accent-color:var(--purple);
 

@@ -32,7 +32,22 @@ class UserProfileAPIView(generics.RetrieveAPIView):
     serializer_class = UsuarioSerializer
 
     def get_object(self):
-        return self.request.user.perfil_customizado
+        user = self.request.user
+        try:
+            return user.perfil_customizado
+        except Usuario.DoesNotExist:
+            if user.is_superuser:
+                from perfis.models import Perfil
+                novo_perfil = Perfil.objects.create(descricao_perfil="Administrador do Sistema")
+                novo_usuario = Usuario.objects.create(
+                    user_auth=user, 
+                    nome="Super User", 
+                    tipo='admin', 
+                    perfil=novo_perfil,
+                    termos_aceitos=True
+                )
+                return novo_usuario
+            raise
 
 
 class ChangePasswordAPIView(APIView):

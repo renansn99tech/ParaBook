@@ -83,7 +83,7 @@ function Profile() {
             </div>
 
             <div className="info-body">
-              <p className="perfil-descricao"><i className="fa-solid fa-quote-left"></i> {user?.descricao_perfil || 'Sem status'}</p>
+              <p className="perfil-descricao"><i className="fa-solid fa-quote-left"></i> {fullProfile?.perfil?.descricao_perfil || user?.descricao_perfil || 'Sem status'}</p>
               <p className="perfil-historico">
                 <i className="fa-solid fa-clock-rotate-left"></i> 
                 Último lido: <strong>{stats.ultimo_lido || 'Nenhum livro lido'}</strong>
@@ -94,7 +94,7 @@ function Profile() {
                   <i className="fa-solid fa-location-dot"></i>
                   <div>
                     <span className="meta-label">Localização</span>
-                    <span className="meta-value">{user?.localizacao || 'Desconhecida'}</span>
+                    <span className="meta-value">{fullProfile?.perfil?.localizacao || user?.localizacao || 'Desconhecida'}</span>
                   </div>
                 </div>
               </div>
@@ -313,11 +313,11 @@ function Profile() {
                   </div>
                   <div className="perfil-form-group">
                     <label htmlFor="input-descricao">Frase de Status (Curta)</label>
-                    <input type="text" id="input-descricao" name="descricao_perfil" className="form-input" defaultValue={user?.descricao_perfil || ''} />
+                    <input type="text" id="input-descricao" name="descricao_perfil" className="form-input" defaultValue={fullProfile?.perfil?.descricao_perfil || user?.descricao_perfil || ''} />
                   </div>
                   <div className="perfil-form-group">
                     <label htmlFor="input-localizacao">Localização / Cidade</label>
-                    <input type="text" id="input-localizacao" name="localizacao" className="form-input" defaultValue={user?.localizacao || ''} />
+                    <input type="text" id="input-localizacao" name="localizacao" className="form-input" defaultValue={fullProfile?.perfil?.localizacao || user?.localizacao || ''} />
                   </div>
                 </div>
                 <button type="submit" className="btn-primary-action" style={{ marginTop: '20px' }}>

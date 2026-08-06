@@ -69,6 +69,8 @@ urlpatterns = [
     path('api/v1/comunidades/', include('comunidades.api.urls')),
     path('api/v1/perfis/', include('perfis.api.urls')),
     path('api/v1/dashboard/', include('dashboard.api.urls')),
+    path('api/v1/notificacoes/', include('notificacoes.api.urls')),
+    path('api/v1/assinaturas/', include('assinaturas.api.urls')),
 ]
 
 if settings.DEBUG:

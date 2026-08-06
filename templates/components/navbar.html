@@ -21,12 +21,8 @@
             
             <ul class="menu">
                 <li><a href="{% url 'biblioteca' %}">Explorar</a></li>
-                <li><a href="{% url 'recomendacao_ia' %}" style="color: #f59e0b; font-weight: 600;"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Recomendação IA</a></li>
                 <li><a href="{% url 'comunidades' %}">Comunidades</a></li>
-                <li><a href="{% url 'lista_autores' %}">Autores</a></li>
                 <li><a href="{% url 'solicitacoes_publicacao' %}">Publicar Livro</a></li>
-                <li><a href="{% url 'sobre' %}">Sobre</a></li>
-                <li><a href="{% url 'assinaturas:minha_assinatura' %}">Assinatura</a></li>
             </ul>
 
             <div class="nav-actions">
@@ -45,9 +41,6 @@
                         {% endif %}
                     </a>
 
-                    <a href="{% url 'assinaturas:minha_assinatura' %}" class="btn-nav btn-outline">
-                        Minha Assinatura
-                    </a>
                     <a href="{% url 'perfis:perfil_pessoal' %}" class="btn-nav btn-primary-nav">
                         Meu Perfil
                     </a>
@@ -59,8 +52,40 @@
                         Entrar
                     </a>
                 {% endif %}
+
+                <!-- Botão do Menu Lateral -->
+                <button class="btn-nav btn-outline" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
             </div>
 
         </div>
     </div>
 </nav>
+
+<!-- Offcanvas Menu (Menu Lateral) -->
+<div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel" style="background-color: #0f172a !important;">
+    <div class="offcanvas-header border-bottom border-secondary border-opacity-25">
+        <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu Principal</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="list-unstyled d-flex flex-column gap-3 fs-5 mt-3">
+            <li><a href="{% url 'recomendacao_ia' %}" style="color: #f59e0b; font-weight: 600; text-decoration: none;"><i class="fa-solid fa-wand-magic-sparkles me-2"></i> Recomendação IA</a></li>
+            <li><a href="{% url 'lista_autores' %}" class="text-white text-decoration-none"><i class="fa-solid fa-pen-nib me-2"></i> Autores</a></li>
+            <li><a href="{% url 'sobre' %}" class="text-white text-decoration-none"><i class="fa-solid fa-circle-info me-2"></i> Sobre</a></li>
+            
+            <li><hr class="border-secondary"></li>
+            
+            {% if user.is_authenticated %}
+                {% if user.assinatura and user.assinatura.ativa %}
+                    <li><a href="{% url 'assinaturas:minha_assinatura' %}" class="text-warning text-decoration-none"><i class="fa-solid fa-star me-2"></i> Minha Assinatura</a></li>
+                {% else %}
+                    <li><a href="{% url 'assinaturas:minha_assinatura' %}" class="text-warning text-decoration-none"><i class="fa-solid fa-crown me-2"></i> Assinatura</a></li>
+                {% endif %}
+            {% else %}
+                <li><a href="{% url 'assinaturas:minha_assinatura' %}" class="text-warning text-decoration-none"><i class="fa-solid fa-crown me-2"></i> Assinatura</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</div>

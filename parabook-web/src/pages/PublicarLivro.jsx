@@ -191,7 +191,6 @@ function PublicarLivro() {
               name="declaracao_autoria" 
               checked={formData.declaracao_autoria} 
               onChange={handleInputChange} 
-              className="form-check-input"
             />
             <label htmlFor="declaracao_autoria">
               Declaro que sou o legítimo autor da obra intelectual enviada e assumo total responsabilidade civil e penal pelo seu conteúdo.
@@ -205,7 +204,6 @@ function PublicarLivro() {
               name="aceitou_termos" 
               checked={formData.aceitou_termos} 
               onChange={handleInputChange} 
-              className="form-check-input"
             />
             <label htmlFor="aceitou_termos">
               Li e aceito os termos de uso, autorizando a plataforma a disponibilizar minha obra para leitura digital gratuita dos usuários.

@@ -75,28 +75,28 @@ function Sobre() {
               </div>
             </div>
 
-            <div className="timeline-item active">
+            <div className="timeline-item done">
               <div className="timeline-dot"></div>
               <div className="timeline-content">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span className="date" style={{ marginBottom: 0, color: '#d8b4fe' }}>JULHO 2026</span>
-                  <span className="badge-roadmap badge-active"><i className="fa-solid fa-spinner fa-spin-pulse"></i> Em
-                    Andamento</span>
+                  <span className="date" style={{ marginBottom: 0 }}>JULHO 2026</span>
+                  <span className="badge-roadmap badge-done">Concluído</span>
                 </div>
-                <h3 style={{ color: '#c4b5fd' }}>APIs e Inovações</h3>
+                <h3>APIs e Inovações</h3>
                 <p>Implementação de APIs externas e funcionalidades diferenciais para enriquecer a experiência
                   literária na plataforma.</p>
               </div>
             </div>
 
-            <div className="timeline-item future">
+            <div className="timeline-item active">
               <div className="timeline-dot"></div>
               <div className="timeline-content">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span className="date" style={{ marginBottom: 0 }}>AGOSTO 2026</span>
-                  <span className="badge-roadmap badge-future">Em Breve</span>
+                  <span className="date" style={{ marginBottom: 0, color: '#d8b4fe' }}>AGOSTO 2026</span>
+                  <span className="badge-roadmap badge-active"><i className="fa-solid fa-spinner fa-spin-pulse"></i> Em
+                    Andamento</span>
                 </div>
-                <h3>Comunidades Interconectadas</h3>
+                <h3 style={{ color: '#c4b5fd' }}>Comunidades Interconectadas</h3>
                 <p>Fóruns e espaços de debate dinâmicos integrados de forma nativa aos tipos de usuários (Leitores e
                   Autores).</p>
               </div>

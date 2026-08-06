@@ -48,3 +48,4 @@ django-extensions
 psycopg2-binary
 django-cors-headers==4.4.0
 stripe
+pymysql

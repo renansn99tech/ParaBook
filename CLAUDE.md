@@ -41,6 +41,8 @@ Quando solicitado para uma análise, tomada de decisão ou direcionamento, adote
   - **Exemplo Correto:** `venv\Scripts\python.exe manage.py migrate`
   - **Nunca recomende:** `python manage.py` ou `py manage.py`.
 * **⚠️ REGRA PARA FRONT-END:** Para comandos do Vite, Node ou React, você NÃO deve usar o VENV. Forneça os comandos nativos (ex: `npm run dev`) para a pasta correspondente (ex: `parabook-web`).
+* **⚠️ REGRA DE SINCRONIZAÇÃO COM A BRANCH:** Ao final de cada bloco de instruções (prompt) que envolva alterações no código, rode `git fetch` e verifique se a branch local está `behind` do `origin` (ex: `git status -sb`). Como o projeto tem mais de um colaborador (ex: Rodrigo) commitando na mesma branch, isso evita trabalhar sobre uma base desatualizada ou sobrescrever mudanças remotas na hora do commit/push. Se houver commits novos no remoto, avise o usuário antes de prosseguir.
+* **⚠️ REGRA DE ENCODING DO .GITIGNORE:** Na mesma checagem acima, confira também se o `.gitignore` continua em UTF-8 (não UTF-16 — problema já visto, possivelmente ligado ao editor/SO de algum colaborador). Basta olhar os 2 primeiros bytes do arquivo, não o conteúdo inteiro (checagem barata, ex: `[System.IO.File]::ReadAllBytes('.gitignore')[0,1]` — se vier `255,254` ou `254,255`, está em UTF-16 e precisa ser corrigido). Se detectar o problema, corrija e avise o usuário.
 
 ## 📊 Controle e Quantificação de Progresso
 Ao trabalhar em mudanças estruturais, especialmente na migração do Django Templates para o React:

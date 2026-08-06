@@ -104,6 +104,15 @@ CORS_ALLOWED_ORIGINS = config(
     default="http://localhost:5173,http://127.0.0.1:5173",
 ).split(",")
 
+# Libera automaticamente qualquer subdomínio das plataformas de deploy
+# (ex: o futuro Static Site do parabook-web no Render), sem precisar
+# hardcodar a URL exata a cada novo serviço criado.
+if not DEBUG:
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^https://.*\.onrender\.com$",
+        r"^https://.*\.railway\.app$",
+    ]
+
 # DATABASE CONFIGURATION (PostgreSQL — unificado para todos os ambientes)
 DATABASE_URL = config('DATABASE_URL', default=None)
 

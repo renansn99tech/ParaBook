@@ -1,8 +1,12 @@
 import axios from 'axios';
 
+// Em produção, defina VITE_API_URL nas variáveis de ambiente do serviço
+// (ex: Render Static Site). Sem isso, cai no backend local de desenvolvimento.
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1';
+
 // Instância base do Axios apontando para a API do Django
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/v1',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -42,7 +46,7 @@ api.interceptors.response.use(
           
           if (tokens.refresh) {
             // Tenta obter um novo access token usando o refresh token
-            const response = await axios.post('http://127.0.0.1:8000/api/v1/auth/refresh/', {
+            const response = await axios.post(`${API_BASE_URL}/auth/refresh/`, {
               refresh: tokens.refresh
             });
             

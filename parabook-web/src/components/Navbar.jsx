@@ -86,6 +86,13 @@ function Navbar() {
               <i className="fa-solid fa-pen-nib me-2"></i> Autores
             </Link>
           </li>
+          {user && (
+            <li>
+              <Link to="/minhas-comunidades" className="text-white text-decoration-none">
+                <i className="fa-solid fa-users-rectangle me-2"></i> Minhas Comunidades
+              </Link>
+            </li>
+          )}
           <li>
             <Link to="/sobre" className="text-white text-decoration-none">
               <i className="fa-solid fa-circle-info me-2"></i> Sobre

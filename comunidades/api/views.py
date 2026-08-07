@@ -19,6 +19,13 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(criador=self.request.user)
 
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def minhas(self, request):
+        """Lista apenas as comunidades em que o usuario logado e membro."""
+        comunidades = self.get_queryset().filter(membros=request.user)
+        serializer = self.get_serializer(comunidades, many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def entrar(self, request, pk=None):
         comunidade = self.get_object()

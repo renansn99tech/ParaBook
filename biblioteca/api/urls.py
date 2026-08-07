@@ -5,7 +5,13 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import LivroViewSet, CategoriaViewSet, EstanteViewSet, SolicitacaoPublicacaoCreateAPIView
+from .views import (
+    LivroViewSet,
+    CategoriaViewSet,
+    EstanteViewSet,
+    SolicitacaoPublicacaoCreateAPIView,
+    RecomendacoesIAAPIView,
+)
 
 router = DefaultRouter()
 router.register(r'livros', LivroViewSet, basename='livro')
@@ -15,6 +21,7 @@ router.register(r'estante', EstanteViewSet, basename='estante')
 urlpatterns = [
     path('', include(router.urls)),
     path('solicitacoes-publicacao/', SolicitacaoPublicacaoCreateAPIView.as_view(), name='solicitacao_publicacao_create'),
+    path('recomendacoes-ia/', RecomendacoesIAAPIView.as_view(), name='recomendacoes_ia'),
 
     # Endpoints JWT para login via API
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

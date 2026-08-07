@@ -1,4 +1,6 @@
-import { Routes, Route, useLocation, Link } from 'react-router-dom'
+import { useContext } from 'react'
+import { Routes, Route, useLocation, Link, Navigate } from 'react-router-dom'
+import { AuthContext } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -23,12 +25,36 @@ import AlterarSenha from './pages/AlterarSenha'
 import Notificacoes from './pages/Notificacoes'
 import Planos from './pages/Planos'
 import MinhaAssinatura from './pages/MinhaAssinatura'
+import EsqueciSenha from './pages/EsqueciSenha'
+import RedefinirSenha from './pages/RedefinirSenha'
+import AceitarTermos from './pages/AceitarTermos'
+import OnboardingAutor from './pages/OnboardingAutor'
+import RecomendacaoIA from './pages/RecomendacaoIA'
+import MinhasComunidades from './pages/MinhasComunidades'
+
+// Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
+const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', '/diretrizes', '/login', '/register', '/esqueci-senha'];
 
 function App() {
   const location = useLocation();
+  const { user, loading } = useContext(AuthContext);
   const isDashboard = location.pathname.startsWith('/dashboard');
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  // Telas do fluxo de autenticação: sem navbar/rodapé/banner, já que o usuário não está logado.
+  const isAuthPage = ['/login', '/register', '/esqueci-senha'].includes(location.pathname)
+    || location.pathname.startsWith('/redefinir-senha/');
   const hideNavAndFooter = isDashboard || isAuthPage;
+
+  // Equivalente ao ForcarAceiteTermosMiddleware do lado dos templates legados:
+  // trava a navegação de quem tem pendência de aceite dos termos.
+  const precisaAceitarTermos = !loading
+    && user
+    && user.termos_aceitos === false
+    && !ROTAS_ISENTAS_TERMOS.includes(location.pathname)
+    && !location.pathname.startsWith('/redefinir-senha/');
+
+  if (precisaAceitarTermos) {
+    return <Navigate to="/aceitar-termos" replace />;
+  }
 
   return (
     <>
@@ -73,6 +99,16 @@ function App() {
           <Route path="/notificacoes" element={<Notificacoes />} />
           <Route path="/planos" element={<Planos />} />
           <Route path="/minha-assinatura" element={<MinhaAssinatura />} />
+
+          {/* Recuperação de senha (fluxo público, fora do login) */}
+          <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+          <Route path="/redefinir-senha/:uid/:token" element={<RedefinirSenha />} />
+
+          {/* Compliance, onboarding e recursos de leitura */}
+          <Route path="/aceitar-termos" element={<AceitarTermos />} />
+          <Route path="/autor/onboarding" element={<OnboardingAutor />} />
+          <Route path="/recomendacao-ia" element={<RecomendacaoIA />} />
+          <Route path="/minhas-comunidades" element={<MinhasComunidades />} />
           
           {/* Rotas secundárias que ainda não foram migradas podem exibir uma página temporária ou redirecionar */}
           <Route path="*" element={<div className="text-center mt-5"><h2 className="text-white">Página em Construção</h2></div>} />

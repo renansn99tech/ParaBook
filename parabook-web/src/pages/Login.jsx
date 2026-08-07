@@ -84,7 +84,7 @@ function Login() {
                 <label>Senha</label>
               </div>
 
-              <a href="#" className="auth-forgot-link">Esqueceu a senha?</a>
+              <Link to="/esqueci-senha" className="auth-forgot-link">Esqueceu a senha?</Link>
 
               <button type="submit" className="auth-btn-submit">Acessar Conta</button>
 

@@ -68,3 +68,20 @@ class RegisterSerializer(serializers.Serializer):
 
         return auth_user
 
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    nova_senha = serializers.CharField(write_only=True)
+
+    def validate_nova_senha(self, value):
+        try:
+            validate_password(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(list(e.messages))
+        return value
+

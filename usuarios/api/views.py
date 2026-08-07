@@ -2,10 +2,22 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.db import transaction
+from django.utils import timezone
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from usuarios.models import Usuario
 from usuarios.services import obter_ou_criar_usuario_customizado
-from .serializers import UsuarioSerializer, RegisterSerializer
+from .serializers import (
+    UsuarioSerializer,
+    RegisterSerializer,
+    PasswordResetRequestSerializer,
+    PasswordResetConfirmSerializer,
+)
 from drf_spectacular.utils import extend_schema
 
 
@@ -54,4 +66,87 @@ class ChangePasswordAPIView(APIView):
         user.save()
 
         return Response({"message": "Senha atualizada com sucesso!"})
+
+
+class PasswordResetRequestAPIView(APIView):
+    """Dispara o email de redefinicao de senha com um link para o front-end React."""
+    permission_classes = [permissions.AllowAny]
+
+    # Resposta unica para email existente ou nao: evita que a rota vire um
+    # oraculo para descobrir quais emails possuem conta no ParaBook.
+    MENSAGEM_GENERICA = (
+        "Se houver uma conta associada a este e-mail, enviaremos as instruções de "
+        "redefinição de senha em instantes."
+    )
+
+    @extend_schema(request=PasswordResetRequestSerializer, responses={200: None})
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+
+        usuario = User.objects.filter(email__iexact=email, is_active=True).first()
+        if usuario:
+            uid = urlsafe_base64_encode(force_bytes(usuario.pk))
+            token = default_token_generator.make_token(usuario)
+            link = f"{settings.FRONTEND_URL}/redefinir-senha/{uid}/{token}"
+
+            send_mail(
+                subject="Redefinição de senha | ParaBook",
+                message=(
+                    f"Olá, {usuario.username}!\n\n"
+                    "Recebemos um pedido para redefinir a senha da sua conta no ParaBook.\n"
+                    f"Acesse o link abaixo para cadastrar uma nova senha:\n\n{link}\n\n"
+                    "Se não foi você quem solicitou, basta ignorar este e-mail: "
+                    "sua senha atual continua valendo."
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[usuario.email],
+                fail_silently=False,
+            )
+
+        return Response({"detail": self.MENSAGEM_GENERICA})
+
+
+class PasswordResetConfirmAPIView(APIView):
+    """Valida o par uid/token do email e efetiva a nova senha."""
+    permission_classes = [permissions.AllowAny]
+
+    @extend_schema(request=PasswordResetConfirmSerializer, responses={200: None})
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        dados = serializer.validated_data
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(dados['uid']))
+            usuario = User.objects.get(pk=user_id)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            usuario = None
+
+        if usuario is None or not default_token_generator.check_token(usuario, dados['token']):
+            return Response(
+                {"detail": "Link de redefinição inválido ou expirado. Solicite um novo."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        usuario.set_password(dados['nova_senha'])
+        usuario.save()
+
+        return Response({"detail": "Senha redefinida com sucesso! Você já pode entrar na sua conta."})
+
+
+class AceitarTermosAPIView(APIView):
+    """Registra o aceite dos termos de uso (mesma regra da view legada usuarios.views.aceitar_termos)."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(request=None, responses={200: None})
+    def post(self, request):
+        usuario_custom = obter_ou_criar_usuario_customizado(request.user)
+
+        usuario_custom.termos_aceitos = True
+        usuario_custom.data_aceite_termos = timezone.now()
+        usuario_custom.save(update_fields=['termos_aceitos', 'data_aceite_termos'])
+
+        return Response({"detail": "Termos aceitos com sucesso.", "termos_aceitos": True})
 

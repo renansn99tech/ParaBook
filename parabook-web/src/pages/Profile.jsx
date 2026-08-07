@@ -387,9 +387,9 @@ function Profile() {
             <h3>Escreve ou deseja publicar suas próprias obras?</h3>
             <p>Mude sua conta para Autor Independente e comece a compartilhar suas histórias.</p>
           </div>
-          <button className="btn-primary-action">
+          <Link to="/autor/onboarding" className="btn-primary-action" style={{ textDecoration: 'none' }}>
             <i className="fa-solid fa-feather"></i> Quero ser um Autor
-          </button>
+          </Link>
         </section>
       )}
     </main>

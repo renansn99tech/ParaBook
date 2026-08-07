@@ -281,12 +281,6 @@ def painel_admin(request):
 
     return render(request, 'dashboard/admin.html', context)
 
-def surpresa(request):
-    return render(request, "dashboard/surpresa.html")
-
-def leitor(request):
-    return render(request, "dashboard/leitor.html")
-
 @login_required
 @user_passes_test(apenas_superuser, login_url='home', redirect_field_name=None)
 def lixeira_admin(request):

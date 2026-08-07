@@ -1,7 +1,8 @@
 # api/serializers.py
+from django.conf import settings
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from biblioteca.models import Livro, Categoria, Biblioteca
+from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao
 from django.contrib.auth.models import User
 
 class CategoriaSerializer(serializers.ModelSerializer):
@@ -64,3 +65,41 @@ class ResenhaSerializer(serializers.ModelSerializer):
         elif hasattr(user, 'perfil') and user.perfil.foto:
             return user.perfil.foto.url
         return None
+
+
+class SolicitacaoPublicacaoSerializer(serializers.ModelSerializer):
+    """Recebe o formulário de PublicarLivro.jsx e cria o Livro (status=pendente) + a solicitação de moderação."""
+    pdf = serializers.FileField(required=True, error_messages={'required': 'O arquivo PDF do livro é obrigatório.'})
+
+    # Campos de identificação/compliance do autor: validados aqui, mas ainda não persistidos
+    # em nenhum model (mesmo comportamento da ObraAutorForm legada - ver biblioteca/forms.py).
+    cpf_autor = serializers.CharField(write_only=True, max_length=14)
+    registro_autoral = serializers.CharField(write_only=True, max_length=100, required=False, allow_blank=True)
+    numero_registro = serializers.CharField(write_only=True, max_length=20, required=False, allow_blank=True)
+    declaracao_autoria = serializers.BooleanField(write_only=True)
+    aceitou_termos = serializers.BooleanField(write_only=True)
+
+    class Meta:
+        model = Livro
+        fields = [
+            'id', 'titulo', 'categoria', 'paginas', 'ano_publicacao', 'isbn', 'edicao', 'capa', 'pdf',
+            'cpf_autor', 'registro_autoral', 'numero_registro', 'declaracao_autoria', 'aceitou_termos',
+        ]
+
+    def validate_declaracao_autoria(self, value):
+        if not value:
+            raise serializers.ValidationError("É necessário declarar que você é o autor da obra.")
+        return value
+
+    def validate_aceitou_termos(self, value):
+        if not value:
+            raise serializers.ValidationError("É necessário aceitar os termos de uso.")
+        return value
+
+    def validate_pdf(self, value):
+        if value.size > settings.MAX_BOOK_UPLOAD_SIZE:
+            max_mb = settings.MAX_BOOK_UPLOAD_SIZE / (1024 * 1024)
+            raise serializers.ValidationError(
+                f"O arquivo enviado é muito grande. O tamanho máximo permitido é de {max_mb:.1f}MB."
+            )
+        return value

@@ -2,9 +2,14 @@
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
-from biblioteca.models import Livro, Categoria, Biblioteca
-from .serializers import LivroSerializer, CategoriaSerializer, EstanteSerializer, ResenhaSerializer
+from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao
+from .serializers import (
+    LivroSerializer, CategoriaSerializer, EstanteSerializer, ResenhaSerializer,
+    SolicitacaoPublicacaoSerializer,
+)
 from django.http import FileResponse
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -191,3 +196,46 @@ class EstanteViewSet(viewsets.ModelViewSet):
             response_data['gamificacao_alerts'] = msg_extra
 
         return Response(response_data)
+
+
+class SolicitacaoPublicacaoCreateAPIView(APIView):
+    """Recebe o formulário de envio de obra (PublicarLivro.jsx) e cria o Livro + a fila de moderação.
+
+    Regras replicadas de biblioteca/views.py::solicitacoes_publicacao (fluxo legado):
+    autor/status do Livro vêm do usuário autenticado, nunca do payload do cliente.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, *args, **kwargs):
+        perfil_customizado = getattr(request.user, 'perfil_customizado', None)
+        if not perfil_customizado or perfil_customizado.tipo not in ['autor', 'admin']:
+            return Response(
+                {"detail": "Apenas Autores Independentes ou Administradores podem enviar obras."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = SolicitacaoPublicacaoSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        dados_livro = dict(serializer.validated_data)
+        for campo_extra in ['cpf_autor', 'registro_autoral', 'numero_registro', 'declaracao_autoria', 'aceitou_termos']:
+            dados_livro.pop(campo_extra, None)
+
+        with transaction.atomic():
+            livro = Livro.objects.create(
+                autor=request.user.get_full_name() or request.user.username,
+                origem='autor_independente',
+                status='pendente',
+                **dados_livro
+            )
+            SolicitacaoPublicacao.objects.create(
+                usuario=request.user,
+                livro=livro,
+                status='pendente'
+            )
+
+        return Response(
+            {"detail": "Sua obra foi enviada com sucesso para aprovação!", "livro_id": livro.id},
+            status=status.HTTP_201_CREATED
+        )

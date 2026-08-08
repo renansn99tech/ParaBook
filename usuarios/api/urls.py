@@ -4,6 +4,7 @@ from .views import (
     RegisterAPIView,
     UserProfileAPIView,
     ChangePasswordAPIView,
+    ExcluirContaAPIView,
     PasswordResetRequestAPIView,
     PasswordResetConfirmAPIView,
     AceitarTermosAPIView,
@@ -18,4 +19,5 @@ urlpatterns = [
     path('recuperar-senha/', PasswordResetRequestAPIView.as_view(), name='api_recuperar_senha'),
     path('redefinir-senha/', PasswordResetConfirmAPIView.as_view(), name='api_redefinir_senha'),
     path('aceitar-termos/', AceitarTermosAPIView.as_view(), name='api_aceitar_termos'),
+    path('excluir-conta/', ExcluirContaAPIView.as_view(), name='api_excluir_conta'),
 ]

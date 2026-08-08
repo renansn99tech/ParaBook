@@ -70,6 +70,10 @@ class PerfilPublicoAPIView(APIView):
         ultimo_lido = meus_livros.filter(status='lido').order_by('-id').first()
         historico_livros = meus_livros.filter(status='lido').order_by('-id')[:10]
 
+        # Livros marcados com o coração na tela de leitura. O front lê
+        # `favoritos.livros`, que antes nunca era preenchido.
+        livros_favoritos = meus_livros.filter(favorito=True).select_related('livro')
+
         return Response({
             "is_owner": is_owner,
             "usuario": {
@@ -92,7 +96,16 @@ class PerfilPublicoAPIView(APIView):
             },
             "favoritos": {
                 "generos": lista_generos_favoritos,
-                "autores": lista_autores_favoritos
+                "autores": lista_autores_favoritos,
+                "livros": [
+                    {
+                        "id": item.livro.id,
+                        "titulo": item.livro.titulo,
+                        "autor": item.livro.autor,
+                        "capa": request.build_absolute_uri(item.livro.capa.url) if item.livro.capa else None,
+                    }
+                    for item in livros_favoritos
+                ]
             },
             "ultimo_lido": {
                 "titulo": ultimo_lido.livro.titulo if ultimo_lido else None

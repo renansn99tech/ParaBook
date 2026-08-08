@@ -164,6 +164,15 @@ html {
 /* =======================================================
    MENU MOBILE - EMPILHAMENTO VERTICAL LIMPO
 ======================================================= */
+
+/* O offcanvas do Bootstrap tem 400px fixos e, em iPhones de 390px,
+   cobre a tela inteira sem deixar a página aparecer atrás. */
+@media (max-width: 575.98px) {
+    .offcanvas.offcanvas-end {
+        width: min(400px, 85vw) !important;
+    }
+}
+
 @media (max-width: 991.98px) {
     .navbar-container {
         padding: 15px 24px !important;

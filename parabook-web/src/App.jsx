@@ -31,6 +31,9 @@ import AceitarTermos from './pages/AceitarTermos'
 import OnboardingAutor from './pages/OnboardingAutor'
 import RecomendacaoIA from './pages/RecomendacaoIA'
 import MinhasComunidades from './pages/MinhasComunidades'
+import CriarComunidade from './pages/CriarComunidade'
+import Ranking from './pages/Ranking'
+import MinhasConquistas from './pages/MinhasConquistas'
 
 // Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
 const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', '/diretrizes', '/login', '/register', '/esqueci-senha'];
@@ -66,7 +69,13 @@ function App() {
             <div className="p-3 text-center rounded-3 border border-secondary border-opacity-25" style={{ background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(8px)' }}>
                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <small className="text-white-50"><i className="fa-solid fa-rectangle-ad me-1"></i> Espaço de Anúncio</small>
-                    <Link to="/assinatura" className="btn btn-sm btn-outline-warning rounded-pill px-3">
+                    {/* Ia para /assinatura, que não é rota declarada e caía no
+                        catch-all. O destino certo do CTA é a página de planos. */}
+                    <Link
+                        to="/planos"
+                        className="btn btn-sm btn-outline-warning rounded-pill px-3 d-inline-flex align-items-center"
+                        style={{ minHeight: '44px' }}
+                    >
                         Remover anúncios com o Premium ✨
                     </Link>
                 </div>
@@ -109,7 +118,12 @@ function App() {
           <Route path="/autor/onboarding" element={<OnboardingAutor />} />
           <Route path="/recomendacao-ia" element={<RecomendacaoIA />} />
           <Route path="/minhas-comunidades" element={<MinhasComunidades />} />
-          
+          <Route path="/comunidades/criar" element={<CriarComunidade />} />
+
+          {/* Gamificação */}
+          <Route path="/ranking" element={<Ranking />} />
+          <Route path="/minhas-conquistas" element={<MinhasConquistas />} />
+
           {/* Rotas secundárias que ainda não foram migradas podem exibir uma página temporária ou redirecionar */}
           <Route path="*" element={<div className="text-center mt-5"><h2 className="text-white">Página em Construção</h2></div>} />
         </Routes>

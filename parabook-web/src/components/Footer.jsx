@@ -35,9 +35,18 @@ function Footer() {
 
         <div className="footer-column">
           <h4>Contato</h4>
-          <a href="#"><i className="fa-brands fa-instagram"></i></a>
-          <a href="#"><i className="fa-brands fa-linkedin"></i></a>
-          <a href="#"><i className="fa-brands fa-github"></i></a>
+          {/* Redes lado a lado: a coluna empilha os filhos por padrão. */}
+          <div className="footer-social">
+            <a href="#" aria-label="Instagram do ParaBook" title="Instagram">
+              <i className="fa-brands fa-instagram"></i>
+            </a>
+            <a href="#" aria-label="LinkedIn do ParaBook" title="LinkedIn">
+              <i className="fa-brands fa-linkedin"></i>
+            </a>
+            <a href="#" aria-label="GitHub do ParaBook" title="GitHub">
+              <i className="fa-brands fa-github"></i>
+            </a>
+          </div>
         </div>
       </div>
 

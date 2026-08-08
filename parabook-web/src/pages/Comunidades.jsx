@@ -54,7 +54,12 @@ function Comunidades() {
   };
 
   const renderCard = (comunidade) => (
-    <article className="card-comunidade" key={comunidade.id}>
+    // Desativada só chega aqui para membro e admin: aparece opaca e sem acesso.
+    <article
+      className="card-comunidade"
+      key={comunidade.id}
+      style={comunidade.em_manutencao ? { opacity: 0.55 } : undefined}
+    >
       <div className="comunidade-header">
         <h3 className="comunidade-nome text-truncate" title={comunidade.nome}>
           {comunidade.nome}
@@ -69,13 +74,22 @@ function Comunidades() {
               <i className="fa-solid fa-check-circle me-1"></i>Oficial
             </span>
           )}
+          {comunidade.em_manutencao && (
+            <span className="badge bg-danger ms-2" style={{ fontSize: '0.7rem', verticalAlign: 'middle' }}>
+              <i className="fa-solid fa-power-off me-1"></i>Desativada
+            </span>
+          )}
         </div>
       </div>
       <p className="comunidade-descricao text-muted">
         {comunidade.descricao}
       </p>
       <div className="comunidade-footer mt-auto d-flex gap-2">
-        {comunidade.usuario_participa ? (
+        {comunidade.em_manutencao && !user?.is_superuser ? (
+          <button className="btn btn-secondary w-100 fw-medium" disabled>
+            <i className="fa-solid fa-power-off me-1"></i>Desativada
+          </button>
+        ) : comunidade.usuario_participa ? (
           <>
             <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn btn-primary flex-grow-1 fw-medium">
               Acessar
@@ -147,7 +161,7 @@ function Comunidades() {
 
           {/* Botão de Criar Comunidade (Visível apenas para usuários comuns/autores, não superuser) */}
           {user && !user.is_superuser && (
-            <Link to="#" className="card-criar-comunidade-link" style={{ textDecoration: 'none' }}>
+            <Link to="/comunidades/criar" className="card-criar-comunidade-link" style={{ textDecoration: 'none' }}>
               <div className="card-criar-comunidade" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', border: '2px dashed rgba(255,255,255,0.2)', borderRadius: '12px', padding: '20px', color: 'white' }}>
                 <div className="card-criar-icone mb-3" style={{ fontSize: '2rem', color: '#60a5fa' }}>
                   <i className="fas fa-plus"></i>

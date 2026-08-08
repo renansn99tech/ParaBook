@@ -66,8 +66,13 @@ function MinhasComunidades() {
             className="grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}
           >
+            {/* Comunidade desativada continua listada para o membro, porém opaca. */}
             {comunidades.map((comunidade) => (
-              <article className="card-comunidade" key={comunidade.id}>
+              <article
+                className="card-comunidade"
+                key={comunidade.id}
+                style={comunidade.em_manutencao ? { opacity: 0.55 } : undefined}
+              >
                 <div className="comunidade-header">
                   <h3 className="comunidade-nome text-truncate" title={comunidade.nome}>
                     {comunidade.nome}
@@ -82,17 +87,15 @@ function MinhasComunidades() {
                         <i className="fa-solid fa-check-circle me-1"></i>Oficial
                       </span>
                     )}
+                    {comunidade.em_manutencao && (
+                      <span className="badge bg-danger ms-2" style={{ fontSize: '0.7rem', verticalAlign: 'middle' }}>
+                        <i className="fa-solid fa-power-off me-1"></i>Desativada
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 <p className="comunidade-descricao text-muted">{comunidade.descricao}</p>
-
-                {comunidade.em_manutencao && (
-                  <div className="alert alert-warning py-2 px-3 small mb-2">
-                    <i className="fa-solid fa-screwdriver-wrench me-1"></i>
-                    Comunidade em manutenção temporária.
-                  </div>
-                )}
 
                 <div className="comunidade-footer mt-auto d-flex gap-2">
                   <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn btn-primary flex-grow-1 fw-medium">

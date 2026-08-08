@@ -153,7 +153,7 @@ function Home() {
             novidades.map(livro => (
               <article className="book-card card-novidade-evolved" key={livro.id}>
                 <Link
-                  to={`/biblioteca/livro/${livro.id}`}
+                  to={`/livro/${livro.id}`}
                   className="btn-info-livro"
                   title="Ver Informações"
                   style={{ zIndex: 20 }}

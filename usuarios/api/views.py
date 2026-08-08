@@ -48,6 +48,43 @@ class UserProfileAPIView(generics.RetrieveAPIView):
         return obter_ou_criar_usuario_customizado(self.request.user)
 
 
+class ExcluirContaAPIView(APIView):
+    """
+    Versão DRF de `usuarios.views.excluir_conta`.
+
+    Mantém a exclusão transacional (REGRA 2 do projeto): ou o Usuario, o Perfil
+    e o User caem juntos, ou nada é apagado. Admin não se autoexclui pela API
+    para não deixar a plataforma sem responsável por engano.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(request=None, responses={204: None})
+    def delete(self, request):
+        user = request.user
+
+        if user.is_superuser:
+            return Response(
+                {"detail": "Contas administrativas não podem ser excluídas por aqui."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        with transaction.atomic():
+            try:
+                usuario_custom = Usuario.objects.get(user_auth=user)
+                perfil_vinculado = usuario_custom.perfil
+
+                usuario_custom.delete()
+                if perfil_vinculado:
+                    perfil_vinculado.delete()
+            except Usuario.DoesNotExist:
+                pass
+
+            user.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class ChangePasswordAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

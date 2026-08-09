@@ -71,6 +71,7 @@ urlpatterns = [
     path('api/v1/dashboard/', include('dashboard.api.urls')),
     path('api/v1/notificacoes/', include('notificacoes.api.urls')),
     path('api/v1/assinaturas/', include('assinaturas.api.urls')),
+    path('api/v1/gamificacao/', include('gamificacao.api.urls')),
 ]
 
 if settings.DEBUG:

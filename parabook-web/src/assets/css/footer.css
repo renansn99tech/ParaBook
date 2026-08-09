@@ -80,6 +80,33 @@
     transform:translateX(4px);
 }
 
+/* Redes sociais em linha, fugindo do empilhamento vertical da coluna. */
+.footer-social{
+
+    display:flex;
+
+    flex-direction:row;
+
+    gap:18px;
+
+    align-items:center;
+}
+
+.footer-social a{
+
+    margin-bottom:0;
+
+    font-size:1.4rem;
+
+    line-height:1;
+}
+
+/* Nas redes o deslocamento lateral do hover atrapalha: sobe um pouco. */
+.footer-social a:hover{
+
+    transform:translateY(-3px);
+}
+
 .footer-bottom {
     margin-top: 25px;
     padding-top: 25px;
@@ -130,6 +157,8 @@
     
     .footer-column h4 { font-size: 1.8rem !important; margin-bottom: 20px !important; }
     .footer-column a { font-size: 1.4rem !important; padding: 12px 0 !important; }
+    .footer-social { justify-content: center; gap: 28px; }
+    .footer-social a { font-size: 2rem !important; padding: 0 !important; }
     
     .footer-bottom { flex-direction: column; gap: 30px; padding-top: 30px; }
     .footer-bottom p { font-size: 1.2rem !important; }

@@ -74,7 +74,7 @@ function Dashboard() {
             <i className="fa-solid fa-user" style={{ width: '20px', textAlign: 'center' }}></i> Meu Perfil
           </Link>
           <Link to="/" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px', background: 'transparent', color: '#94a3b8', border: 'none', padding: '12px 15px', textDecoration: 'none', borderRadius: '8px' }} className="hover-btn">
-            <i className="fa-solid fa-desktop" style={{ width: '20px', textAlign: 'center' }}></i> Visão Leitor
+            <i className="fa-solid fa-house" style={{ width: '20px', textAlign: 'center' }}></i> Página Inicial
           </Link>
           <button className="danger" onClick={handleLogout} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '12px', padding: '12px 15px', borderRadius: '8px' }}>
             <i className="fa-solid fa-right-from-bracket" style={{ width: '20px', textAlign: 'center' }}></i> Sair
@@ -89,7 +89,9 @@ function Dashboard() {
           <section className="secao" style={{ display: 'block' }}>
             <h1 style={{ color: 'white', marginBottom: '20px' }}>Visão Geral</h1>
             
-            <div className="metricas-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px' }}>
+            {/* Sem grid inline: o admin.css já define auto-fit no desktop e
+                1 coluna no mobile, e o inline anulava esse comportamento. */}
+            <div className="metricas-grid">
               <div className="card">
                 <h3>Total de Usuários</h3>
                 <p>{metricas.total_usuarios}</p>

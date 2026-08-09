@@ -117,13 +117,17 @@ html {
     font-weight: 500;
 }
 
-.btn-outline {
+/* Escopado ao .btn-nav de propósito: .btn-outline também existe global
+   (base.css) e a navbar tem altura própria de 44px a preservar. */
+.btn-nav.btn-outline {
     border: 1px solid rgba(255,255,255,.12);
     color: white;
     background: transparent;
+    padding: 0 24px;
+    border-radius: 12px;
 }
 
-.btn-outline:hover {
+.btn-nav.btn-outline:hover {
     border-color: #8b5cf6;
 }
 
@@ -164,6 +168,15 @@ html {
 /* =======================================================
    MENU MOBILE - EMPILHAMENTO VERTICAL LIMPO
 ======================================================= */
+
+/* O offcanvas do Bootstrap tem 400px fixos e, em iPhones de 390px,
+   cobre a tela inteira sem deixar a página aparecer atrás. */
+@media (max-width: 575.98px) {
+    .offcanvas.offcanvas-end {
+        width: min(400px, 85vw) !important;
+    }
+}
+
 @media (max-width: 991.98px) {
     .navbar-container {
         padding: 15px 24px !important;

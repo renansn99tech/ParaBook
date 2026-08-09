@@ -277,10 +277,6 @@ def acesso_biblioteca(request):
     return render(request, 'biblioteca/acesso-biblioteca.html', {'livros': livros})
 
 
-def mais_acessados(request):
-    return render(request, 'biblioteca/mais-acessados.html')
-
-
 def home(request):
     livros_em_alta = Livro.objects.filter(status='publicado').order_by('-avaliacao')[:6]
     livros_recentes = Livro.objects.filter(status='publicado').order_by('-id')[:6]
@@ -486,37 +482,6 @@ def registrar_denuncia(request, id):
         return JsonResponse({'success': False, 'error': 'Payload JSON inválido.'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
-
-
-@login_required
-@user_passes_test(is_admin)
-def painel_moderacao(request):
-    denuncias_pendentes = (
-        Denuncia.objects.filter(status='pendente')
-        .select_related('livro', 'usuario')
-        .order_by('-data_denuncia')
-    )
-    return render(request, 'biblioteca/painel_moderacao.html', {'denuncias': denuncias_pendentes})
-
-
-@login_required
-@user_passes_test(is_admin)
-@require_POST
-def resolver_denuncia(request, id_denuncia):
-    denuncia = get_object_or_404(Denuncia, id=id_denuncia)
-    acao = request.POST.get('acao')
-
-    if acao == 'remover_obra':
-        livro = denuncia.livro
-        livro_nome = livro.titulo
-        livro.delete()
-        messages.success(request, f"A obra '{livro_nome}' e suas denúncias associadas foram removidas.")
-    elif acao == 'falso_positivo':
-        denuncia.status = 'analisado'
-        denuncia.save()
-        messages.info(request, "Denúncia arquivada como falso positivo.")
-
-    return redirect('painel_moderacao')
 
 
 @login_required

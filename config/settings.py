@@ -184,6 +184,12 @@ LOGOUT_REDIRECT_URL = 'home'
 MAX_BOOK_UPLOAD_SIZE = 5 * 1024 * 1024
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='nao-responda@parabook.com.br')
+
+# URL publica do front-end React. Usada para montar os links enviados por email
+# (ex: redefinicao de senha), que devem apontar para o parabook-web e nao para
+# as telas legadas do Django.
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173').rstrip('/')
 
 # DRF Configuration
 REST_FRAMEWORK = {

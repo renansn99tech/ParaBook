@@ -6,6 +6,31 @@ import api from '../services/api';
 import userImg from '../assets/img/user.png';
 import '../assets/css/perfil.css'; // O CSS importado
 
+const swalTema = {
+  background: '#1e293b',
+  color: '#fff',
+  confirmButtonColor: '#8b5cf6'
+};
+
+/** Card usado nas abas sem conteúdo, para a aba nunca aparecer simplesmente vazia. */
+function EstadoVazio({ icone, titulo, texto, acao }) {
+  return (
+    <div
+      className="content-glass-card full-width"
+      style={{ textAlign: 'center', padding: '50px 25px', border: '1px dashed rgba(255,255,255,0.12)' }}
+    >
+      <i className={`fa-solid ${icone}`} style={{ fontSize: '2.5rem', color: '#64748b', marginBottom: '18px', display: 'block' }}></i>
+      <h3 style={{ color: 'white', marginBottom: '10px' }}>{titulo}</h3>
+      <p style={{ color: 'var(--text-secondary)', maxWidth: '440px', margin: '0 auto 22px' }}>{texto}</p>
+      {acao && (
+        <Link to={acao.to} className="btn-primary-action" style={{ textDecoration: 'none', display: 'inline-flex' }}>
+          {acao.label}
+        </Link>
+      )}
+    </div>
+  );
+}
+
 function Profile() {
   const { user, loading, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -31,8 +56,8 @@ function Profile() {
     total_comunidades: 0
   };
 
-  const favoritosMock = fullProfile?.favoritos?.livros || [];
-  const comunidadesMock = fullProfile?.comunidades || [];
+  const livrosFavoritos = fullProfile?.favoritos?.livros || [];
+  const minhasComunidades = fullProfile?.comunidades || [];
 
   if (loading || loadingProfile) {
     return <div className="text-center mt-5" style={{ color: 'white' }}>Carregando perfil...</div>;
@@ -46,6 +71,44 @@ function Profile() {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  // Mesmo fluxo do template legado: confirma, chama a exclusão transacional
+  // da API e derruba a sessão local.
+  const handleExcluirConta = async () => {
+    const confirmacao = await Swal.fire({
+      ...swalTema,
+      title: 'Você tem certeza?',
+      text: 'Esta ação é irreversível! Sua conta, perfil e histórico serão apagados.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir!',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#374151'
+    });
+
+    if (!confirmacao.isConfirmed) return;
+
+    try {
+      await api.delete('/auth/excluir-conta/');
+      logout();
+      await Swal.fire({
+        ...swalTema,
+        icon: 'success',
+        title: 'Conta excluída',
+        text: 'Sua conta foi excluída com sucesso. Esperamos te ver novamente no futuro!'
+      });
+      navigate('/');
+    } catch (error) {
+      console.error("Erro ao excluir conta", error);
+      Swal.fire({
+        ...swalTema,
+        icon: 'error',
+        title: 'Erro',
+        text: error.response?.data?.detail || 'Não foi possível excluir sua conta. Tente novamente.'
+      });
+    }
   };
 
   return (
@@ -210,8 +273,16 @@ function Profile() {
         {/* TAB FAVORITOS */}
         {activeTab === 'favoritos' && (
           <div className="tab-content active">
+            {livrosFavoritos.length === 0 ? (
+              <EstadoVazio
+                icone="fa-heart-crack"
+                titulo="Ainda não há livros favoritados"
+                texto="Marque um livro com o coração durante a leitura para vê-lo aqui."
+                acao={{ to: '/biblioteca', label: 'Explorar a Biblioteca' }}
+              />
+            ) : (
             <div className="favoritos-grid full">
-              {favoritosMock.map((livro) => (
+              {livrosFavoritos.map((livro) => (
                 <div key={livro.id} className="favorito-card content-glass-card">
                   <div className="favorito-capa">
                     {livro.capa ? (
@@ -230,14 +301,23 @@ function Profile() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         )}
 
         {/* TAB COMUNIDADES */}
         {activeTab === 'comunidades' && (
           <div className="tab-content active">
+            {minhasComunidades.length === 0 ? (
+              <EstadoVazio
+                icone="fa-users-slash"
+                titulo="Você ainda não participa de comunidades"
+                texto="Entre em um espaço de discussão para acompanhar as conversas sobre os livros que você ama."
+                acao={{ to: '/comunidades', label: 'Explorar Comunidades' }}
+              />
+            ) : (
             <div className="favoritos-grid full">
-              {comunidadesMock.map((comunidade) => (
+              {minhasComunidades.map((comunidade) => (
                 <div key={comunidade.id} className="favorito-card content-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
                   <div className="favorito-capa" style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(139, 92, 246, 0.15)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                     <i className="fa-solid fa-users" style={{ fontSize: '3.5rem', color: '#8b5cf6' }}></i>
@@ -252,6 +332,7 @@ function Profile() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         )}
 
@@ -334,14 +415,7 @@ function Profile() {
                   <Link to="/perfil/alterar-senha" className="btn-outline" style={{ textDecoration: 'none' }}>
                     Alterar Senha
                   </Link> 
-                  <button className="btn-danger-outline" onClick={() => Swal.fire({
-                    icon: 'warning',
-                    title: 'Em breve',
-                    text: 'Função de Excluir Conta estará disponível na próxima atualização.',
-                    background: '#1e293b',
-                    color: '#fff',
-                    confirmButtonColor: '#ef4444'
-                  })}>
+                  <button className="btn-danger-outline" onClick={handleExcluirConta}>
                     <i className="fa-solid fa-trash"></i> Excluir conta
                   </button>
                 </div>
@@ -387,9 +461,9 @@ function Profile() {
             <h3>Escreve ou deseja publicar suas próprias obras?</h3>
             <p>Mude sua conta para Autor Independente e comece a compartilhar suas histórias.</p>
           </div>
-          <button className="btn-primary-action">
+          <Link to="/autor/onboarding" className="btn-primary-action" style={{ textDecoration: 'none' }}>
             <i className="fa-solid fa-feather"></i> Quero ser um Autor
-          </button>
+          </Link>
         </section>
       )}
     </main>

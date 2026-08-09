@@ -71,11 +71,41 @@
     text-align: left;
 }
 
+/* Antes cada badge vinha de uma cor solta do Bootstrap (cinza, azul,
+   vermelho) — nenhuma delas da paleta do ParaBook. Agora são três
+   variantes da mesma peça. */
+.comunidade-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
 .comunidade-badge {
-    font-size: 0.8rem;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: var(--radius-pill);
+
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.comunidade-badge--oficial {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.4);
+    color: var(--purple-text);
+}
+
+.comunidade-badge--inativa {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: var(--danger-soft);
 }
 
 .comunidade-descricao {

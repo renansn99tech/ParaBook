@@ -1,14 +1,21 @@
 import { useState, useEffect, useContext } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import Swal from 'sweetalert2';
 import '../assets/css/conteudo-comunidade.css';
 
+const swalTema = {
+  background: '#1e293b',
+  color: '#fff',
+  confirmButtonColor: '#8b5cf6'
+};
+
 function ConteudoComunidade() {
   const { id } = useParams();
-  const { user } = useContext(AuthContext);
-  
+  const { user, loading: carregandoUsuario } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [comunidade, setComunidade] = useState(null);
   const [postagens, setPostagens] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,9 +29,20 @@ function ConteudoComunidade() {
 
   // Config state
   const [showConfig, setShowConfig] = useState(false);
+  const [novoNome, setNovoNome] = useState('');
   const [novaDescricao, setNovaDescricao] = useState('');
+  const [salvandoConfig, setSalvandoConfig] = useState(false);
+
+  // Lista de membros (retrátil, carregada sob demanda)
+  const [showMembros, setShowMembros] = useState(false);
+  const [membros, setMembros] = useState(null);
+  const [carregandoMembros, setCarregandoMembros] = useState(false);
 
   useEffect(() => {
+    // Espera o AuthContext resolver: sem isso um membro legítimo seria
+    // expulso da comunidade desativada só porque `user` ainda era null.
+    if (carregandoUsuario) return;
+
     const fetchDados = async () => {
       try {
         const [comunidadeRes, postagensRes] = await Promise.all([
@@ -32,7 +50,21 @@ function ConteudoComunidade() {
           api.get(`/comunidades/postagens/?comunidade=${id}`)
         ]);
         setComunidade(comunidadeRes.data);
-        
+
+        // Comunidade desativada é inacessível para todos menos o admin,
+        // que precisa entrar para reativá-la nas Configurações.
+        if (comunidadeRes.data.em_manutencao && !user?.is_superuser) {
+          await Swal.fire({
+            ...swalTema,
+            icon: 'info',
+            title: 'Comunidade Desativada Temporariamente',
+            text: 'Este espaço foi fechado para ajustes pela equipe do ParaBook. Volte em breve.',
+            confirmButtonText: 'Voltar para Comunidades'
+          });
+          navigate('/comunidades');
+          return;
+        }
+
         let pData = postagensRes.data.results || postagensRes.data;
         // Sort newest first
         pData.sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
@@ -44,7 +76,7 @@ function ConteudoComunidade() {
       }
     };
     fetchDados();
-  }, [id]);
+  }, [id, carregandoUsuario]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,20 +123,124 @@ function ConteudoComunidade() {
   };
 
   const handleConfigClick = () => {
+    setNovoNome(comunidade.nome);
     setNovaDescricao(comunidade.descricao);
     setShowConfig(!showConfig);
     setShowForm(false); // Fecha form se abrir config
   };
 
   const handleSalvarConfig = async () => {
+    setSalvandoConfig(true);
     try {
-      const res = await api.patch(`/comunidades/comunidades/${id}/`, { descricao: novaDescricao });
+      const res = await api.patch(`/comunidades/comunidades/${id}/`, {
+        nome: novoNome.trim(),
+        descricao: novaDescricao.trim()
+      });
       setComunidade(res.data);
-      Swal.fire('Sucesso!', 'Descrição da comunidade atualizada.', 'success');
+      Swal.fire({ ...swalTema, icon: 'success', title: 'Sucesso!', text: 'Comunidade atualizada.' });
       setShowConfig(false);
     } catch (error) {
       console.error("Erro ao atualizar comunidade", error);
-      Swal.fire('Erro', 'Ocorreu um erro ao atualizar as configurações.', 'error');
+      const dados = error.response?.data;
+      const mensagem = dados?.detail
+        || Object.values(dados || {}).flat()[0]
+        || 'Ocorreu um erro ao atualizar as configurações.';
+      Swal.fire({ ...swalTema, icon: 'error', title: 'Erro', text: mensagem });
+    } finally {
+      setSalvandoConfig(false);
+    }
+  };
+
+  const handleToggleMembros = async () => {
+    const abrindo = !showMembros;
+    setShowMembros(abrindo);
+
+    // Só busca na primeira abertura; depois reaproveita o que já veio.
+    if (abrindo && membros === null) {
+      setCarregandoMembros(true);
+      try {
+        const res = await api.get(`/comunidades/comunidades/${id}/membros/`);
+        setMembros(res.data);
+      } catch (error) {
+        console.error("Erro ao carregar membros", error);
+        Swal.fire({ ...swalTema, icon: 'error', title: 'Erro', text: 'Não foi possível carregar a lista de membros.' });
+        setShowMembros(false);
+      } finally {
+        setCarregandoMembros(false);
+      }
+    }
+  };
+
+  const handleDesativar = async () => {
+    const desativando = !comunidade.em_manutencao;
+
+    const confirmacao = await Swal.fire({
+      ...swalTema,
+      icon: 'warning',
+      title: desativando ? 'Desativar comunidade?' : 'Reativar comunidade?',
+      html: desativando
+        ? `<strong>${comunidade.nome}</strong> sairá da lista pública e ficará inacessível.
+           Os membros continuarão vendo-a marcada como desativada.`
+        : `<strong>${comunidade.nome}</strong> voltará a aparecer para todos os leitores.`,
+      showCancelButton: true,
+      confirmButtonText: desativando ? 'Sim, desativar' : 'Sim, reativar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: desativando ? '#ef4444' : '#22c55e'
+    });
+
+    if (!confirmacao.isConfirmed) return;
+
+    try {
+      const res = await api.post(`/comunidades/comunidades/${id}/desativar/`);
+      setComunidade({ ...comunidade, em_manutencao: res.data.em_manutencao });
+      Swal.fire({
+        ...swalTema,
+        icon: 'success',
+        title: res.data.em_manutencao ? 'Comunidade desativada' : 'Comunidade reativada',
+        text: res.data.detail
+      });
+    } catch (error) {
+      console.error("Erro ao desativar comunidade", error);
+      Swal.fire({
+        ...swalTema,
+        icon: 'error',
+        title: 'Erro',
+        text: error.response?.data?.detail || 'Não foi possível alterar o status da comunidade.'
+      });
+    }
+  };
+
+  const handleExcluirComunidade = async () => {
+    const confirmacao = await Swal.fire({
+      ...swalTema,
+      icon: 'warning',
+      title: 'Excluir comunidade?',
+      html: `Todas as postagens de <strong>${comunidade.nome}</strong> serão perdidas. Esta ação não pode ser desfeita.`,
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#ef4444'
+    });
+
+    if (!confirmacao.isConfirmed) return;
+
+    try {
+      await api.delete(`/comunidades/comunidades/${id}/`);
+      await Swal.fire({
+        ...swalTema,
+        icon: 'success',
+        title: 'Comunidade excluída',
+        text: 'O espaço foi removido da plataforma.'
+      });
+      navigate('/comunidades');
+    } catch (error) {
+      console.error("Erro ao excluir comunidade", error);
+      Swal.fire({
+        ...swalTema,
+        icon: 'error',
+        title: 'Erro',
+        text: error.response?.data?.detail || 'Não foi possível excluir a comunidade.'
+      });
     }
   };
 
@@ -150,7 +286,14 @@ function ConteudoComunidade() {
       <section className="banner-comunidade">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px' }}>
           <div>
-            <h2>{comunidade.nome}</h2>
+            <h2>
+              {comunidade.nome}
+              {comunidade.em_manutencao && (
+                <span className="badge ms-2" style={{ background: 'rgba(239,68,68,0.2)', color: '#fca5a5', fontSize: '0.9rem', verticalAlign: 'middle' }}>
+                  <i className="fa-solid fa-power-off me-1"></i>Desativada
+                </span>
+              )}
+            </h2>
             <p>{comunidade.descricao}</p>
           </div>
         </div>
@@ -166,7 +309,7 @@ function ConteudoComunidade() {
               </button>
             )}
             {user && !comunidade.criada_por_sistema && comunidade.criador === user.usuario && (
-              <button className="btn-primary-action" style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#fca5a5' }} title="Excluir Comunidade">
+              <button onClick={handleExcluirComunidade} className="btn-primary-action" style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#fca5a5' }} title="Excluir Comunidade">
                 <i className="fa-solid fa-trash"></i> Excluir Comunidade
               </button>
             )}
@@ -190,7 +333,19 @@ function ConteudoComunidade() {
         {showConfig && (
           <section className="post-form-container" style={{ marginBottom: '30px', animation: 'fadeIn 0.3s ease-in-out' }}>
             <h3 style={{ color: 'white', marginBottom: '15px' }}>Configurações da Comunidade</h3>
+
             <div className="form-group">
+              <label style={{ color: '#94a3b8', marginBottom: '5px', display: 'block' }}>Nome da Comunidade</label>
+              <input
+                type="text"
+                maxLength={100}
+                value={novoNome}
+                onChange={(e) => setNovoNome(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }}
+              />
+            </div>
+
+            <div className="form-group mt-3">
               <label style={{ color: '#94a3b8', marginBottom: '5px', display: 'block' }}>Descrição da Comunidade</label>
               <textarea
                 rows="4"
@@ -198,20 +353,77 @@ function ConteudoComunidade() {
                 onChange={(e) => setNovaDescricao(e.target.value)}
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white', fontFamily: 'inherit' }}
               ></textarea>
-              <button onClick={handleSalvarConfig} className="btn btn-primary mt-3 fw-bold px-4 py-2" style={{ borderRadius: '8px', alignSelf: 'flex-start' }}>
-                Salvar Descrição
+              <button
+                onClick={handleSalvarConfig}
+                disabled={salvandoConfig || !novoNome.trim() || !novaDescricao.trim()}
+                className="btn btn-primary mt-3 fw-bold px-4 py-2"
+                style={{ borderRadius: '8px', alignSelf: 'flex-start' }}
+              >
+                {salvandoConfig ? 'Salvando...' : 'Salvar Alterações'}
               </button>
             </div>
-            
+
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '25px', paddingTop: '25px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '8px', cursor: 'not-allowed' }}>
-                <span style={{ color: '#cbd5e1', fontWeight: '500' }}><i className="fa-solid fa-users me-2"></i>Lista de Membros</span>
-                <span className="badge bg-secondary">Em breve</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(239, 68, 68, 0.05)', padding: '15px', borderRadius: '8px', border: '1px dashed rgba(239, 68, 68, 0.3)', cursor: 'not-allowed' }}>
-                <span style={{ color: '#fca5a5', fontWeight: '500' }}><i className="fa-solid fa-power-off me-2"></i>Desativar Comunidade</span>
-                <span className="badge bg-secondary">Em breve</span>
-              </div>
+              {/* Lista de membros retrátil */}
+              <button
+                onClick={handleToggleMembros}
+                aria-expanded={showMembros}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: showMembros ? '0' : '15px', background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: showMembros ? '8px 8px 0 0' : '8px', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+              >
+                <span style={{ color: '#cbd5e1', fontWeight: '500' }}>
+                  <i className="fa-solid fa-users me-2"></i>Lista de Membros
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span className="badge" style={{ background: 'rgba(139,92,246,0.25)', color: '#c4b5fd' }}>
+                    {membros ? membros.total : comunidade.total_membros}/{comunidade.max_participantes}
+                  </span>
+                  <i className={`fa-solid ${showMembros ? 'fa-chevron-up' : 'fa-chevron-down'}`} style={{ color: '#94a3b8' }}></i>
+                </span>
+              </button>
+
+              {showMembros && (
+                <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: '0 0 8px 8px', padding: '10px 15px', marginBottom: '15px', maxHeight: '260px', overflowY: 'auto' }}>
+                  {carregandoMembros && <p style={{ color: '#94a3b8', margin: '10px 0' }}>Carregando membros...</p>}
+
+                  {!carregandoMembros && membros?.membros?.length === 0 && (
+                    <p style={{ color: '#94a3b8', margin: '10px 0' }}>Esta comunidade ainda não tem membros.</p>
+                  )}
+
+                  {!carregandoMembros && membros?.membros?.map((membro) => (
+                    <div
+                      key={membro.id}
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                    >
+                      <Link to={`/perfil/${membro.username}`} style={{ color: '#e2e8f0', textDecoration: 'none' }}>
+                        <i className="fa-solid fa-user me-2" style={{ color: '#64748b' }}></i>
+                        {membro.nome_exibicao}
+                        <small style={{ color: '#64748b', marginLeft: '8px' }}>@{membro.username}</small>
+                      </Link>
+                      {membro.e_criador && (
+                        <span className="badge" style={{ background: 'rgba(245,158,11,0.2)', color: '#fcd34d' }}>
+                          <i className="fa-solid fa-crown me-1"></i>Criador
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Desativar: só admin, e só em comunidade oficial do ParaBook */}
+              {user?.is_superuser && comunidade.criada_por_sistema && (
+                <button
+                  onClick={handleDesativar}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', background: comunidade.em_manutencao ? 'rgba(34,197,94,0.05)' : 'rgba(239, 68, 68, 0.05)', padding: '15px', borderRadius: '8px', border: `1px dashed ${comunidade.em_manutencao ? 'rgba(34,197,94,0.4)' : 'rgba(239, 68, 68, 0.3)'}`, cursor: 'pointer', textAlign: 'left' }}
+                >
+                  <span style={{ color: comunidade.em_manutencao ? '#86efac' : '#fca5a5', fontWeight: '500' }}>
+                    <i className="fa-solid fa-power-off me-2"></i>
+                    {comunidade.em_manutencao ? 'Reativar Comunidade' : 'Desativar Comunidade'}
+                  </span>
+                  {comunidade.em_manutencao && (
+                    <span className="badge" style={{ background: 'rgba(239,68,68,0.2)', color: '#fca5a5' }}>Desativada</span>
+                  )}
+                </button>
+              )}
             </div>
           </section>
         )}

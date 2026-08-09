@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
-from usuarios.models import Usuario, Notificacao
+from usuarios.models import Usuario
 from biblioteca.models import Livro, Categoria, SolicitacaoPublicacao, Denuncia
 from comunidades.models import Comunidade, DenunciaComunidade
 
@@ -280,12 +280,6 @@ def painel_admin(request):
     }
 
     return render(request, 'dashboard/admin.html', context)
-
-def surpresa(request):
-    return render(request, "dashboard/surpresa.html")
-
-def leitor(request):
-    return render(request, "dashboard/leitor.html")
 
 @login_required
 @user_passes_test(apenas_superuser, login_url='home', redirect_field_name=None)

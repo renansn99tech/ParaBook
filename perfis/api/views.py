@@ -20,6 +20,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count
 from usuarios.models import Usuario
+from usuarios.services import obter_ou_criar_usuario_customizado
 from biblioteca.models import Biblioteca, Livro
 from comunidades.models import Comunidade
 
@@ -69,6 +70,10 @@ class PerfilPublicoAPIView(APIView):
         ultimo_lido = meus_livros.filter(status='lido').order_by('-id').first()
         historico_livros = meus_livros.filter(status='lido').order_by('-id')[:10]
 
+        # Livros marcados com o coração na tela de leitura. O front lê
+        # `favoritos.livros`, que antes nunca era preenchido.
+        livros_favoritos = meus_livros.filter(favorito=True).select_related('livro')
+
         return Response({
             "is_owner": is_owner,
             "usuario": {
@@ -91,7 +96,16 @@ class PerfilPublicoAPIView(APIView):
             },
             "favoritos": {
                 "generos": lista_generos_favoritos,
-                "autores": lista_autores_favoritos
+                "autores": lista_autores_favoritos,
+                "livros": [
+                    {
+                        "id": item.livro.id,
+                        "titulo": item.livro.titulo,
+                        "autor": item.livro.autor,
+                        "capa": request.build_absolute_uri(item.livro.capa.url) if item.livro.capa else None,
+                    }
+                    for item in livros_favoritos
+                ]
             },
             "ultimo_lido": {
                 "titulo": ultimo_lido.livro.titulo if ultimo_lido else None
@@ -103,6 +117,32 @@ class PerfilPublicoAPIView(APIView):
                 {"id": c.id, "nome": c.nome, "descricao": c.descricao} for c in minhas_comunidades
             ]
         })
+
+class SolicitarAutorAPIView(APIView):
+    """Registra o aceite do onboarding e envia o usuario para a fila de aprovacao de autor.
+
+    Mesmas guardas da view legada perfis.views.onboarding_autor: quem ja e autor,
+    admin ou tem solicitacao em andamento nao entra na fila de novo.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        usuario_custom = obter_ou_criar_usuario_customizado(request.user)
+
+        if usuario_custom.tipo in ['autor', 'admin', 'aguardando_aprovacao']:
+            return Response(
+                {"detail": "Você já possui uma solicitação em andamento ou privilégios de publicação."},
+                status=409
+            )
+
+        usuario_custom.tipo = 'aguardando_aprovacao'
+        usuario_custom.save(update_fields=['tipo'])
+
+        return Response({
+            "detail": "Sua solicitação para Autor Independente está em análise pela nossa equipe.",
+            "tipo": usuario_custom.tipo,
+        })
+
 
 class AutoresListAPIView(APIView):
     def get(self, request, *args, **kwargs):

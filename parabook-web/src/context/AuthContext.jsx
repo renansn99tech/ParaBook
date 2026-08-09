@@ -83,8 +83,21 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // Rebusca o perfil quando algo muda no back-end fora do fluxo de login
+  // (ex: aceite de termos, solicitacao para virar autor).
+  const recarregarUsuario = async () => {
+    try {
+      const response = await api.get('/perfis/meu-perfil/');
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao recarregar o usuário", error);
+      return null;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, recarregarUsuario }}>
       {children}
     </AuthContext.Provider>
   );

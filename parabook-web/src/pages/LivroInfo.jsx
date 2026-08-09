@@ -1,7 +1,8 @@
-import { useState, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Swal from 'sweetalert2';
+import api from '../services/api';
 import '../assets/css/livro-info.css';
 
 function LivroInfo() {

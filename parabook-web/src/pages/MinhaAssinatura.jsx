@@ -1,24 +1,62 @@
-import { useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import Swal from 'sweetalert2';
+import api from '../services/api';
 
 function MinhaAssinatura() {
-  const { user } = useContext(AuthContext);
+  const [assinatura, setAssinatura] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
+  const [abrindoPortal, setAbrindoPortal] = useState(false);
 
-  // Mock data explícito: se for superuser (admin), mostra como Premium, senão mostra estado vazio
-  const isPremiumMock = user && user.is_superuser;
-  
-  const assinatura = isPremiumMock ? {
-    ativa: true,
-    plano: {
-      nome: 'Premium',
-      preco: 19.90,
-      anuncios: false,
-      limite_livros: 0
-    },
-    data_inicio: '01/08/2026',
-    data_fim: '01/09/2026'
-  } : null;
+  useEffect(() => {
+    api.get('/assinaturas/minha-assinatura/')
+      .then(res => setAssinatura(res.data))
+      .catch(err => {
+        if (err.response && err.response.status === 404) {
+          // Resposta esperada da API para quem ainda não tem plano ativo
+          setAssinatura(null);
+        } else {
+          console.error("Erro ao carregar assinatura:", err);
+          setErro('Não foi possível carregar sua assinatura no momento. Tente novamente em instantes.');
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const formatarData = (isoString) => {
+    if (!isoString) return null;
+    return new Date(isoString).toLocaleDateString('pt-BR');
+  };
+
+  const abrirPortal = async () => {
+    setAbrindoPortal(true);
+    try {
+      const returnUrl = `${window.location.origin}/minha-assinatura`;
+      const res = await api.get('/assinaturas/portal/', { params: { return_url: returnUrl } });
+      window.location.href = res.data.url;
+    } catch (err) {
+      console.error("Erro ao abrir portal de gerenciamento:", err);
+      const mensagem = err.response?.data?.detail || 'Não foi possível abrir o portal de gerenciamento. Tente novamente.';
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: mensagem,
+        background: '#1e293b',
+        color: '#fff',
+        confirmButtonColor: '#8b5cf6'
+      });
+      setAbrindoPortal(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container py-5 text-center" style={{ minHeight: '80vh' }}>
+        <h2 className="text-white-50">Carregando sua assinatura...</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-5" style={{ minHeight: '80vh' }}>
@@ -26,13 +64,14 @@ function MinhaAssinatura() {
         <div className="col-lg-8">
           <h2 className="fw-bold text-white mb-4">
             Minha Assinatura
-            <span className="badge bg-warning text-dark fs-6 ms-2 align-middle" title="Dados Fictícios (Mock)">Mock</span>
           </h2>
 
           <div className="card border-0 shadow-lg rounded-4 text-white" style={{ background: '#12131C', backdropFilter: 'blur(10px)' }}>
             <div className="card-body p-4 p-md-5">
-              
-              {assinatura && assinatura.ativa && assinatura.plano ? (
+
+              {erro ? (
+                <div className="alert alert-danger text-center mb-0">{erro}</div>
+              ) : assinatura && assinatura.ativa && assinatura.plano ? (
                 <>
                   <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-4 mb-4 border-bottom border-secondary border-opacity-25">
                     <div>
@@ -48,24 +87,24 @@ function MinhaAssinatura() {
                     <div className="col-sm-4">
                       <div className="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
                         <small className="text-white-50 d-block mb-1">Valor do Plano</small>
-                        <strong className="fs-5 text-white">R$ {assinatura.plano.preco.toFixed(2).replace('.', ',')} <span className="fs-6 text-white-50">/mês</span></strong>
+                        <strong className="fs-5 text-white">R$ {Number(assinatura.plano.preco).toFixed(2).replace('.', ',')} <span className="fs-6 text-white-50">/mês</span></strong>
                       </div>
                     </div>
-                    
-                    {assinatura.data_inicio && (
+
+                    {formatarData(assinatura.data_inicio) && (
                       <div className="col-sm-4">
                         <div className="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
                           <small className="text-white-50 d-block mb-1">Membro desde</small>
-                          <strong className="fs-5 text-white">{assinatura.data_inicio}</strong>
+                          <strong className="fs-5 text-white">{formatarData(assinatura.data_inicio)}</strong>
                         </div>
                       </div>
                     )}
 
-                    {assinatura.data_fim && (
+                    {formatarData(assinatura.data_fim) && (
                       <div className="col-sm-4">
                         <div className="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
                           <small className="text-white-50 d-block mb-1">Próxima Renovação</small>
-                          <strong className="fs-5 text-white">{assinatura.data_fim}</strong>
+                          <strong className="fs-5 text-white">{formatarData(assinatura.data_fim)}</strong>
                         </div>
                       </div>
                     )}
@@ -90,8 +129,12 @@ function MinhaAssinatura() {
                   </ul>
 
                   <div className="pt-2 d-flex flex-wrap gap-2">
-                    <button className="btn btn-outline-light px-4 py-2 rounded-3">
-                      ⚙️ Gerenciar ou Cancelar Assinatura
+                    <button
+                      className="btn-ghost"
+                      onClick={abrirPortal}
+                      disabled={abrindoPortal}
+                    >
+                      {abrindoPortal ? 'Abrindo portal...' : '⚙️ Gerenciar ou Cancelar Assinatura'}
                     </button>
                   </div>
                 </>

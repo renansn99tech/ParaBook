@@ -329,43 +329,73 @@
 /* ================= BOTÕES AÇÕES ================= */
 .btn-primary-action,
 .btn_gerenciar_solicitacao {
-    background:
-        linear-gradient(
-            135deg,
-            var(--purple),
-            var(--purple-dark)
-        );
-
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
     color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 14px;
 
+    padding: var(--btn-padding);
+    border: 1px solid transparent;
+    border-radius: var(--btn-radius);
+
+    font-size: 1rem;
     font-weight: 600;
+    line-height: 1.25;
     cursor: pointer;
-    transition: .35s;
 
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
+
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
 }
 .btn-primary-action:hover,
 .btn_gerenciar_solicitacao:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(139,92,246,.35);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
 }
+.btn-primary-action:active,
+.btn_gerenciar_solicitacao:active { transform: translateY(0) scale(.98); }
+.btn-primary-action:focus-visible,
+.btn_gerenciar_solicitacao:focus-visible { outline: 2px solid var(--purple-light); outline-offset: 2px; }
 
-.btn-outline {
-    background: transparent; border: 1px solid rgba(255,255,255,.2); color: white;
-    padding: 10px 20px; border-radius: 10px; text-decoration: none; transition: 0.3s;
-}
-.btn-outline:hover { border-color: white; background: rgba(255,255,255,.05); }
+/* .btn-outline era redefinido aqui e vazava por cima da navbar (que tem
+   a própria versão, de 44px). Agora vem só de base.css. */
 
+/* Mesma caixa dos botões globais, para não destoar quando aparecem lado
+   a lado; a cor continua sendo a de ação destrutiva. */
 .btn-danger-outline {
-    background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #fca5a5;
-    padding: 10px 20px; border-radius: 10px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: var(--btn-padding);
+    border: 1px solid rgba(239,68,68,.35);
+    border-radius: var(--btn-radius);
+
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+
+    background: rgba(239,68,68,.12);
+    color: var(--danger-soft);
+    cursor: pointer;
+
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-standard),
+                border-color var(--dur-fast) var(--ease-standard);
 }
-.btn-danger-outline:hover { background: #ef4444; color: white; border-color: #ef4444; box-shadow: 0 5px 15px rgba(239,68,68,.4); }
+.btn-danger-outline:hover {
+    transform: translateY(-2px);
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+    box-shadow: 0 10px 24px rgba(239,68,68,.35);
+}
+.btn-danger-outline:active { transform: translateY(0) scale(.98); }
+.btn-danger-outline:focus-visible { outline: 2px solid var(--danger-soft); outline-offset: 2px; }
 
 /* DANGER ZONE */
 .danger-zone { margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(239,68,68,.2); display: flex; justify-content: space-between; align-items: center; }

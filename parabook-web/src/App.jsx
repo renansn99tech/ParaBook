@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { Routes, Route, useLocation, Link, Navigate } from 'react-router-dom'
 import { AuthContext } from './context/AuthContext'
+import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -40,6 +41,10 @@ const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', '/diretrizes', '/login', '/regi
 
 function App() {
   const location = useLocation();
+  // Conteúdo da rota é renderizado a partir daqui — navbar/footer/banner
+  // continuam presos à location real, para não "piscar" durante a
+  // transição (ver hooks/useViewTransitionLocation.js).
+  const displayLocation = useViewTransitionLocation(location);
   const { user, loading } = useContext(AuthContext);
   const isDashboard = location.pathname.startsWith('/dashboard');
   // Telas do fluxo de autenticação: sem navbar/rodapé/banner, já que o usuário não está logado.
@@ -83,7 +88,7 @@ function App() {
         </div>
       )}
 
-        <Routes>
+        <Routes location={displayLocation}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import Skeleton from '../components/Skeleton';
 
 /**
  * O catálogo tem ícones do Font Awesome (seed) e o default do model é do
@@ -51,8 +52,33 @@ function MinhasConquistas() {
 
   if (carregando) {
     return (
-      <main className="container py-5 text-center" style={{ minHeight: '70vh' }}>
-        <h2 className="text-white-50">Abrindo sua galeria de badges...</h2>
+      <main className="container py-5" style={{ minHeight: '70vh' }}>
+        <div className="text-center mb-4">
+          <h1 className="fw-bold text-white mb-2">
+            <i className="fa-solid fa-award me-2" style={{ color: '#8b5cf6' }}></i>
+            Galeria de Conquistas
+          </h1>
+          <p className="text-white-50 fs-5 mx-auto" style={{ maxWidth: '620px' }}>
+            Complete desafios no ParaBook para desbloquear badges e ganhar experiência.
+          </p>
+        </div>
+
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div className="col" key={i}>
+              <div className="card h-100 border-0 shadow-lg rounded-4" style={{ background: '#12131C', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="card-body p-4 d-flex align-items-start gap-3">
+                  <Skeleton variant="avatar" width="58px" height="58px" />
+                  <div className="flex-grow-1">
+                    <Skeleton variant="text" width="90px" height="20px" style={{ borderRadius: 'var(--radius-pill)', marginBottom: '10px' }} />
+                    <Skeleton variant="title" width="80%" />
+                    <Skeleton variant="text" width="100%" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </main>
     );
   }
@@ -113,7 +139,7 @@ function MinhasConquistas() {
           <i className="fa-solid fa-box-open text-white-50 fs-1 mb-3 d-block"></i>
           <h4 className="text-white">Nenhuma conquista cadastrada no momento</h4>
           <p className="text-white-50 mb-4">Novos desafios chegarão em breve à plataforma.</p>
-          <Link to="/biblioteca" className="btn btn-outline-light px-4 py-2 rounded-3">
+          <Link to="/biblioteca" className="btn-ghost">
             Explorar a Biblioteca
           </Link>
         </div>
@@ -172,7 +198,7 @@ function MinhasConquistas() {
       )}
 
       <div className="text-center mt-5">
-        <Link to="/ranking" className="btn btn-outline-light px-4 py-2 rounded-3">
+        <Link to="/ranking" className="btn-ghost">
           <i className="fa-solid fa-trophy me-2"></i>Ver o Ranking de Leitores
         </Link>
       </div>

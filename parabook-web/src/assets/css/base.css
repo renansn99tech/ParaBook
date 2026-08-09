@@ -38,16 +38,55 @@ body{
     --purple:#8B5CF6;
     --purple-light:#A855F7;
     --purple-dark:#6D28D9;
+    /* Roxo claro de texto/ícone sobre fundo escuro — estava repetido
+       como #c4b5fd em ~10 lugares. */
+    --purple-text:#c4b5fd;
 
     --text:#F8FAFC;
     --text-secondary:#9CA3AF;
 
     --border:rgba(255,255,255,.08);
+    /* Divisórias usam --border; contornos que precisam ser vistos
+       (botão ghost, por ex.) usam esta, senão somem no fundo escuro. */
+    --border-strong:rgba(255,255,255,.22);
 
+    /* Caixa dos botões — ver seção BOTÕES. Altura resultante ~48px,
+       acima do mínimo de 44px de alvo de toque. */
+    --btn-padding:13px 24px;
+    --btn-padding-sm:9px 16px;
+    --btn-radius:14px;
+
+    /* Escala de radius: --radius (18px) já era usado por várias páginas;
+       os demais nomeiam valores que já apareciam soltos pelo CSS. */
+    --radius-sm:8px;
     --radius:18px;
+    --radius-lg:22px;
+    --radius-pill:999px;
+    --radius-circle:50%;
 
     --shadow:
         0 20px 50px rgba(0,0,0,.35);
+    --shadow-glow:
+        0 15px 35px rgba(139,92,246,.35);
+
+    /* Cores semânticas — já usadas em rgba() soltas em várias páginas
+       (badges de erro/aviso/sucesso), agora nomeadas. */
+    --danger:#ef4444;
+    --danger-soft:#fca5a5;
+    --warning:#f59e0b;
+    --warning-soft:#fcd34d;
+    --success:#22c55e;
+    --success-soft:#86efac;
+
+    /* Motion — tokens do plano de modernização do front-end.
+       --dur-base/--ease-standard batem com o .3s/ease que já domina o
+       código; --dur-fast e --ease-out são incrementos p/ transição de
+       rota e skeleton loaders. */
+    --dur-fast:150ms;
+    --dur-base:300ms;
+    --dur-slow:450ms;
+    --ease-standard:ease;
+    --ease-out:cubic-bezier(0.16, 1, 0.3, 1);
 
 }
 
@@ -84,77 +123,120 @@ a{
 }
 
 /* ===============================
-   BOTÕES
+   BOTÕES — camada única do design system
+
+   Regra de cor (uma decisão, não três):
+     .btn-primary -> ação principal da tela
+     .btn-ghost   -> ação secundária e reversível: Sair, Cancelar, Voltar
+     .btn-danger  -> SÓ o que não tem volta: excluir conta, excluir obra
+
+   As três dividem a mesma caixa (altura, padding, raio), então convivem
+   lado a lado sem desalinhar. .btn-secondary é apelido legado de ghost.
 ================================ */
 
-.btn-primary{
-
+.btn-primary,
+.btn-ghost,
+.btn-secondary,
+.btn-outline,
+.btn-danger{
     display:inline-flex;
-
     align-items:center;
-
     justify-content:center;
-
     gap:10px;
 
-    padding:14px 26px;
+    padding:var(--btn-padding);
+    border:1px solid transparent;
+    border-radius:var(--btn-radius);
 
-    border:none;
-
-    border-radius:14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--purple),
-            var(--purple-dark)
-        );
-
-    color:white;
+    font-size:1rem;
+    font-weight:600;
+    line-height:1.25;
 
     cursor:pointer;
+    text-decoration:none;
 
-    transition:.35s;
+    transition:transform var(--dur-fast) var(--ease-out),
+               box-shadow var(--dur-fast) var(--ease-out),
+               background var(--dur-fast) var(--ease-standard),
+               border-color var(--dur-fast) var(--ease-standard);
+}
+
+.btn-primary{
+    background:linear-gradient(135deg, var(--purple), var(--purple-dark));
+    color:#fff;
 }
 
 .btn-primary:hover{
-
-    transform:translateY(-3px);
-
-    box-shadow:
-        0 15px 35px rgba(139,92,246,.35);
+    transform:translateY(-2px);
+    box-shadow:var(--shadow-glow);
+    color:#fff;
 }
 
-.btn-secondary{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:10px;
-
-    padding:14px 26px;
-
-    border-radius:14px;
-
-    border:1px solid var(--border);
-
+.btn-ghost,
+.btn-secondary,
+.btn-outline{
     background:transparent;
-
-    color:white;
-
-    cursor:pointer;
-
-    transition:.35s;
+    border-color:var(--border-strong);
+    color:var(--text);
 }
 
-.btn-secondary:hover{
-
+.btn-ghost:hover,
+.btn-secondary:hover,
+.btn-outline:hover{
+    transform:translateY(-2px);
     border-color:var(--purple);
+    background:rgba(139,92,246,.10);
+    color:#fff;
+}
 
-    background:rgba(139,92,246,.08);
+.btn-danger{
+    background:rgba(239,68,68,.12);
+    border-color:rgba(239,68,68,.35);
+    color:var(--danger-soft);
+}
+
+.btn-danger:hover{
+    transform:translateY(-2px);
+    background:var(--danger);
+    border-color:var(--danger);
+    color:#fff;
+    box-shadow:0 10px 24px rgba(239,68,68,.35);
+}
+
+/* Press e foco de teclado, iguais nas três variantes. */
+.btn-primary:active,
+.btn-ghost:active,
+.btn-secondary:active,
+.btn-outline:active,
+.btn-danger:active{
+    transform:translateY(0) scale(.98);
+}
+
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-secondary:focus-visible,
+.btn-outline:focus-visible,
+.btn-danger:focus-visible{
+    outline:2px solid var(--purple-light);
+    outline-offset:2px;
+}
+
+.btn-primary:disabled,
+.btn-ghost:disabled,
+.btn-secondary:disabled,
+.btn-outline:disabled,
+.btn-danger:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:none;
+}
+
+/* Vem depois das variantes de propósito, para vencer o padding delas. */
+.btn-sm{
+    padding:var(--btn-padding-sm);
+    border-radius:var(--radius-sm);
+    font-size:.875rem;
 }
 
 /* ===============================
@@ -218,6 +300,27 @@ select:focus{
     border-color:var(--purple);
 
     box-shadow:0 0 15px rgba(139,92,246,.2);
+}
+
+/* Campos dentro do SweetAlert2.
+
+   O SweetAlert já reserva 2em de margem lateral nos próprios campos e
+   conta com a largura automática para caber. O width:100% da regra
+   acima ignorava essa margem (100% + 2em + 2em) e o campo transbordava
+   para fora do modal.
+
+   Os seletores do SweetAlert usam :where(), que tem especificidade
+   zero, então qualquer regra de elemento os vence — por isso o conserto
+   precisa morar aqui, junto da regra que causa o problema. O visual
+   (fundo escuro, borda, brilho no foco) continua sendo o do app. */
+.swal2-popup .swal2-input,
+.swal2-popup .swal2-textarea,
+.swal2-popup .swal2-select,
+.swal2-popup .swal2-file{
+
+    width:auto;
+
+    max-width:100%;
 }
 
 /* ===============================

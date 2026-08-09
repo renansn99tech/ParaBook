@@ -87,32 +87,10 @@ body{
     margin-top:30px;
 }
 
-.btn-primary{
-    background:#8b5cf6;
-    color:white;
-    padding:15px 25px;
-    border-radius:10px;
-    text-decoration:none;
-    transition:.3s;
-}
-
-.btn-primary:hover{
-    transform:translateY(-2px);
-    box-shadow:0 0 20px rgba(139,92,246,.5);
-}
-
-.btn-secondary{
-    border:1px solid #555;
-    color:white;
-    padding:15px 25px;
-    border-radius:10px;
-    text-decoration:none;
-    transition:.3s;
-}
-
-.btn-secondary:hover{
-    border-color:#8b5cf6;
-}
+/* .btn-primary e .btn-secondary viviam aqui e, como todas as páginas são
+   importadas de uma vez em App.jsx, esta folha era injetada depois de
+   base.css e reescrevia os botões do app inteiro — não só os da Home.
+   As definições agora são só de base.css. */
 
 .hero-image{
     position:relative;
@@ -1051,8 +1029,10 @@ body{
         gap:14px;
     }
 
-    .btn-primary,
-    .btn-secondary{
+    /* Escopado ao hero: sem o prefixo, isto esticava todo botão do app
+       para 100% no celular, quebrando pares lado a lado (Acessar/Sair). */
+    .hero-buttons .btn-primary,
+    .hero-buttons .btn-secondary{
         width:100%;
         text-align:center;
     }

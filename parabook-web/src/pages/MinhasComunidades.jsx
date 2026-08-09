@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import CardComunidade from '../components/CardComunidade';
 import '../assets/css/comunidade.css';
 
 function MinhasComunidades() {
@@ -57,7 +58,7 @@ function MinhasComunidades() {
             <p className="text-muted mb-4">
               Explore os espaços disponíveis e junte-se a discussões sobre os livros que você ama.
             </p>
-            <Link to="/comunidades" className="btn btn-primary px-4 py-2 rounded-3 fw-medium">
+            <Link to="/comunidades" className="btn-primary">
               Explorar Comunidades
             </Link>
           </div>
@@ -66,46 +67,15 @@ function MinhasComunidades() {
             className="grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}
           >
-            {/* Comunidade desativada continua listada para o membro, porém opaca. */}
             {comunidades.map((comunidade) => (
-              <article
-                className="card-comunidade"
-                key={comunidade.id}
-                style={comunidade.em_manutencao ? { opacity: 0.55 } : undefined}
-              >
-                <div className="comunidade-header">
-                  <h3 className="comunidade-nome text-truncate" title={comunidade.nome}>
-                    {comunidade.nome}
-                  </h3>
-                  <div>
-                    <span className="comunidade-badge badge bg-secondary text-white">
-                      <i className="fa-solid fa-users me-1"></i>
-                      {comunidade.total_membros || 0}/{comunidade.max_participantes}
-                    </span>
-                    {comunidade.criada_por_sistema && (
-                      <span className="badge bg-primary ms-2" style={{ fontSize: '0.7rem', verticalAlign: 'middle' }}>
-                        <i className="fa-solid fa-check-circle me-1"></i>Oficial
-                      </span>
-                    )}
-                    {comunidade.em_manutencao && (
-                      <span className="badge bg-danger ms-2" style={{ fontSize: '0.7rem', verticalAlign: 'middle' }}>
-                        <i className="fa-solid fa-power-off me-1"></i>Desativada
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <p className="comunidade-descricao text-muted">{comunidade.descricao}</p>
-
-                <div className="comunidade-footer mt-auto d-flex gap-2">
-                  <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn btn-primary flex-grow-1 fw-medium">
-                    Acessar
-                  </Link>
-                  <button onClick={() => handleSair(comunidade.id)} className="btn btn-outline-danger fw-medium px-3">
-                    Sair
-                  </button>
-                </div>
-              </article>
+              <CardComunidade key={comunidade.id} comunidade={comunidade}>
+                <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-primary flex-grow-1">
+                  Acessar
+                </Link>
+                <button onClick={() => handleSair(comunidade.id)} className="btn-ghost">
+                  Sair
+                </button>
+              </CardComunidade>
             ))}
           </div>
         )}

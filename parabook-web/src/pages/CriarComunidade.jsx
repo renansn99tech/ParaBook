@@ -131,7 +131,7 @@ function CriarComunidade() {
                     Você atingiu o limite de {cota.limite} comunidades criadas.
                     Exclua uma existente para abrir espaço.
                   </div>
-                  <Link to="/minhas-comunidades" className="btn btn-outline-light px-4 py-2 rounded-3">
+                  <Link to="/minhas-comunidades" className="btn-ghost">
                     Ver Minhas Comunidades
                   </Link>
                 </div>
@@ -168,7 +168,7 @@ function CriarComunidade() {
                   </div>
 
                   <div className="d-flex flex-wrap gap-3 justify-content-end">
-                    <Link to="/comunidades" className="btn btn-outline-light px-4 py-2 rounded-3">
+                    <Link to="/comunidades" className="btn-ghost">
                       Cancelar
                     </Link>
                     <button

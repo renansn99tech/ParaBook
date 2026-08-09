@@ -113,7 +113,7 @@ function Planos() {
                   </ul>
 
                   <div className="mt-auto">
-                    <Link to="/minha-assinatura" className={`btn ${preco > 0 ? 'btn-primary shadow-lg' : 'btn-outline-light'} w-100 py-3 rounded-3 fw-bold transition-all`}>
+                    <Link to="/minha-assinatura" className={`${preco > 0 ? 'btn-primary shadow-lg' : 'btn-ghost'} w-100`}>
                       {preco === 0 ? 'Começar Grátis' : `Assinar ${plano.nome}`}
                     </Link>
                   </div>

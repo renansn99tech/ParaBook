@@ -130,7 +130,7 @@ function MinhaAssinatura() {
 
                   <div className="pt-2 d-flex flex-wrap gap-2">
                     <button
-                      className="btn btn-outline-light px-4 py-2 rounded-3"
+                      className="btn-ghost"
                       onClick={abrirPortal}
                       disabled={abrindoPortal}
                     >

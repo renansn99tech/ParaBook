@@ -77,7 +77,7 @@ function RecomendacaoIA() {
           <p className="text-white-50 mb-4">
             Parece que você já adicionou à sua estante tudo o que temos publicado por aqui!
           </p>
-          <Link to="/biblioteca" className="btn btn-outline-light px-4 py-2 rounded-3">
+          <Link to="/biblioteca" className="btn-ghost">
             Explorar a Biblioteca
           </Link>
         </div>

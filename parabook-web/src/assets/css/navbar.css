@@ -117,13 +117,17 @@ html {
     font-weight: 500;
 }
 
-.btn-outline {
+/* Escopado ao .btn-nav de propósito: .btn-outline também existe global
+   (base.css) e a navbar tem altura própria de 44px a preservar. */
+.btn-nav.btn-outline {
     border: 1px solid rgba(255,255,255,.12);
     color: white;
     background: transparent;
+    padding: 0 24px;
+    border-radius: 12px;
 }
 
-.btn-outline:hover {
+.btn-nav.btn-outline:hover {
     border-color: #8b5cf6;
 }
 

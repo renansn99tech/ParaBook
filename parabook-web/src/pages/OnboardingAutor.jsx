@@ -101,18 +101,18 @@ function OnboardingAutor() {
                   ? 'Sua solicitação já está em análise pela nossa equipe de moderação.'
                   : 'Você já possui privilégios de publicação no ParaBook.'}
               </div>
-              <Link to="/perfil" className="btn btn-outline-light px-4 py-2 rounded-3">
+              <Link to="/perfil" className="btn-ghost">
                 Ir para Meu Perfil
               </Link>
             </div>
           ) : (
             <div className="d-flex flex-wrap gap-3 justify-content-center">
-              <Link to="/perfil" className="btn btn-outline-light px-4 py-3 rounded-3">
+              <Link to="/perfil" className="btn-ghost">
                 Cancelar
               </Link>
               <button
                 onClick={handleSolicitar}
-                className="btn btn-primary px-4 py-3 rounded-3 fw-bold"
+                className="btn-primary"
                 disabled={enviando}
               >
                 <i className="fa-solid fa-check-double me-2"></i>

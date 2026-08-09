@@ -289,7 +289,7 @@ function PublicarLivro() {
             <button type="submit" className="submit-btn" disabled={enviando}>
               {enviando ? 'Enviando...' : 'Enviar Obra para Moderação'}
             </button>
-            <Link to="/biblioteca" className="btn btn-outline-light py-3" style={{ borderRadius: '16px', textAlign: 'center' }}>
+            <Link to="/biblioteca" className="btn-ghost">
               Voltar para a Biblioteca
             </Link>
           </div>

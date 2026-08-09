@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import Skeleton from '../components/Skeleton';
 
 // Medalhas para o pódio; da 4ª posição em diante mostramos o número.
 const MEDALHAS = { 1: '🥇', 2: '🥈', 3: '🥉' };
@@ -39,8 +40,45 @@ function Ranking() {
 
   if (carregando) {
     return (
-      <main className="container py-5 text-center" style={{ minHeight: '70vh' }}>
-        <h2 className="text-white-50">Somando o XP dos leitores...</h2>
+      <main className="container py-5" style={{ minHeight: '70vh' }}>
+        <div className="text-center mb-5">
+          <h1 className="fw-bold text-white mb-2">
+            <i className="fa-solid fa-trophy me-2" style={{ color: '#f59e0b' }}></i>
+            Ranking de Leitores
+          </h1>
+          <p className="text-white-50 fs-5 mx-auto" style={{ maxWidth: '620px' }}>
+            Os membros mais ativos e apaixonados da nossa comunidade literária.
+          </p>
+        </div>
+
+        <div className="card border-0 shadow-lg rounded-4 text-white" style={{ background: '#12131C' }}>
+          <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-dark table-borderless align-middle mb-0" style={{ background: 'transparent' }}>
+                <thead style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                  <tr className="text-white-50">
+                    <th scope="col" className="text-center ps-4" style={{ width: '90px' }}>Posição</th>
+                    <th scope="col">Leitor</th>
+                    <th scope="col" className="text-center">Nível</th>
+                    <th scope="col" className="text-center">Sequência</th>
+                    <th scope="col" className="text-end pe-4">Total XP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                      <td className="text-center ps-4"><Skeleton variant="text" width="28px" height="20px" style={{ margin: '0 auto' }} /></td>
+                      <td><Skeleton variant="text" width="140px" /></td>
+                      <td className="text-center"><Skeleton variant="text" width="70px" height="24px" style={{ margin: '0 auto', borderRadius: 'var(--radius-pill)' }} /></td>
+                      <td className="text-center"><Skeleton variant="text" width="40px" style={{ margin: '0 auto' }} /></td>
+                      <td className="text-end pe-4"><Skeleton variant="text" width="60px" style={{ marginLeft: 'auto' }} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </main>
     );
   }
@@ -151,7 +189,7 @@ function Ranking() {
       </div>
 
       <div className="text-center mt-4">
-        <Link to="/minhas-conquistas" className="btn btn-outline-light px-4 py-2 rounded-3">
+        <Link to="/minhas-conquistas" className="btn-ghost">
           <i className="fa-solid fa-award me-2"></i>Ver Minhas Conquistas
         </Link>
       </div>

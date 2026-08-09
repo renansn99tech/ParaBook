@@ -132,6 +132,20 @@ DATABASES = {
     )
 }
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "mydb",
+#         "USER": "root",
+#         "PASSWORD": "admin",
+#         "HOST": "127.0.0.1",
+#         "PORT": "3306",  
+#         "OPTIONS": {
+#             "charset": "utf8mb4",
+#         },
+#     }
+# }
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

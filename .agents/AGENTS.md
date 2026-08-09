@@ -74,3 +74,6 @@ Quando o usuário solicitar o encerramento da sessão ou um resumo (ex: usando a
      - Sempre que for necessário (re)instalar dependências via `requirements.txt` nesta máquina, confira depois a versão instalada de Django e Python no venv (`venv\Scripts\python.exe -c "import django; print(django.VERSION)"` e `venv\Scripts\python.exe --version`).
      - Nesta máquina local queremos Django > 6 e Python > 3.14. O `requirements.txt` fica fixado em `Django>=4.2,<5.0` de propósito, por compatibilidade com o Python 3.11 do Rodrigo — não altere essa linha.
      - Se a instalação trouxer uma versão de Django abaixo de 6 no venv local, reinstale só o pacote Django para a versão desejada (ex: `venv\Scripts\python.exe -m pip install "Django==6.0.8"`), sem tocar no `requirements.txt`.
+5. **Prompt de Continuidade para a Próxima Sessão**:
+   - Gere, ao final do fechamento, um bloco de texto pronto para copiar/colar como primeira mensagem da próxima sessão.
+   - Deve conter: contexto específico (o que foi feito nesta sessão), contexto macro (visão geral do que o ParaBook está construindo agora, fase do roadmap) e 3 opções de melhoria priorizadas para a próxima sessão, cada uma com uma frase de justificativa.

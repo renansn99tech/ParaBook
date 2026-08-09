@@ -6,6 +6,7 @@ from perfis.models import Perfil
 class Usuario(models.Model):
     TIPO_USUARIO_CHOICES = [
         ('leitor', 'Leitor'),
+        ('aguardando_aprovacao', 'Aguardando Aprovação de Autor'),
         ('autor', 'Autor Independente'),
         ('admin', 'Administrador'),
     ]

@@ -86,6 +86,27 @@ function Navbar() {
               <i className="fa-solid fa-pen-nib me-2"></i> Autores
             </Link>
           </li>
+          {user && (
+            <li>
+              <Link to="/minhas-comunidades" className="text-white text-decoration-none">
+                <i className="fa-solid fa-users-rectangle me-2"></i> Minhas Comunidades
+              </Link>
+            </li>
+          )}
+          {user && (
+            <>
+              <li>
+                <Link to="/ranking" className="text-white text-decoration-none">
+                  <i className="fa-solid fa-trophy me-2"></i> Ranking de Leitores
+                </Link>
+              </li>
+              <li>
+                <Link to="/minhas-conquistas" className="text-white text-decoration-none">
+                  <i className="fa-solid fa-award me-2"></i> Minhas Conquistas
+                </Link>
+              </li>
+            </>
+          )}
           <li>
             <Link to="/sobre" className="text-white text-decoration-none">
               <i className="fa-solid fa-circle-info me-2"></i> Sobre

@@ -16,7 +16,6 @@ urlpatterns = [
     # CORREÇÃO ERRO 1: Nome mapeado como acesso_biblioteca para resolver o NoReverseMatch
     path('acesso-biblioteca/', views.acesso_biblioteca, name='acesso_biblioteca'),
     
-    path('mais-acessados/', views.mais_acessados, name='mais_acessados'),
     path('novidade/', views.novidade, name='novidade'),
     
     # Nova nomenclatura arquitetural substituindo obras-autores
@@ -47,7 +46,5 @@ urlpatterns = [
     path('favoritar-livro/<int:livro_id>/', views.favoritar_livro, name='favoritar_livro'),
     path('livro/<int:id>/', views.livro_info, name='livro_info'),
     path('livro/<int:id>/denunciar/', views.registrar_denuncia, name='registrar_denuncia'),
-    path('moderacao/', views.painel_moderacao, name='painel_moderacao'),
-    path('moderacao/resolver/<int:id_denuncia>/', views.resolver_denuncia, name='resolver_denuncia'),
     path('autores/', views.lista_autores, name='lista_autores'),
 ]

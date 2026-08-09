@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from .models import Plano, Assinatura
-from usuarios.models import Notificacao
+from notificacoes.models import Notificacao
 
 User = get_user_model()
 
@@ -89,8 +89,8 @@ def stripe_webhook(request):
                     usuario=usuario,
                     titulo="Pagamento Confirmado! 🎉",
                     mensagem=f"Seu pagamento do plano {plano.nome} foi processado com sucesso. Aproveite a leitura!",
-                    tipo=Notificacao.TipoNotificacao.ASSINATURA,
-                    link_destino="/assinaturas/minha-assinatura/"
+                    tipo='ASSINATURA',
+                    link="/assinaturas/minha-assinatura/"
                 )
 
             except (User.DoesNotExist, Plano.DoesNotExist):
@@ -123,8 +123,8 @@ def stripe_webhook(request):
                     usuario=usuario,
                     titulo="Assinatura Ativada! ✨",
                     mensagem=f"Parabéns! Sua assinatura do plano {plano.nome} foi ativada com sucesso.",
-                    tipo=Notificacao.TipoNotificacao.ASSINATURA,
-                    link_destino="/assinaturas/minha-assinatura/"
+                    tipo='ASSINATURA',
+                    link="/assinaturas/minha-assinatura/"
                 )
 
             except (User.DoesNotExist, Plano.DoesNotExist):
@@ -146,8 +146,8 @@ def stripe_webhook(request):
                     usuario=assinatura.usuario,
                     titulo="Alerta de Assinatura ⚠️",
                     mensagem="Sua assinatura foi cancelada ou identificamos uma falha no pagamento. Atualize suas informações para manter o acesso Premium.",
-                    tipo=Notificacao.TipoNotificacao.ASSINATURA,
-                    link_destino="/assinaturas/minha-assinatura/"
+                    tipo='ASSINATURA',
+                    link="/assinaturas/minha-assinatura/"
                 )
 
     return HttpResponse(status=200)

@@ -2,7 +2,10 @@ import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
+import Skeleton from '../components/Skeleton';
 import '../assets/css/biblioteca.css';
+
+const TOTAL_SKELETONS = 8;
 
 function Biblioteca() {
   const { user } = useContext(AuthContext);
@@ -103,9 +106,31 @@ function Biblioteca() {
 
   if (loading) {
     return (
-      <div className="container py-4 text-center mt-5">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Carregando...</span>
+      <div className="container py-4" id="topo">
+        <header className="banner-biblioteca-publica p-5 mb-5 text-center text-md-start">
+          <div className="row align-items-center">
+            <div className="col-12 col-md-8">
+              <h1 className="display-5 fw-bold mb-3">Todos os Títulos</h1>
+              <p className="lead mb-2">Aqui você encontrará uma ampla seleção de livros, desde os clássicos aos atuais.</p>
+              <p className="mb-0 opacity-75">Explore nosso acervo e descubra novos títulos em diferentes categorias.</p>
+            </div>
+          </div>
+        </header>
+        <div className="row g-4">
+          {Array.from({ length: TOTAL_SKELETONS }).map((_, i) => (
+            <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={i}>
+              <article className="card h-100 card-livro-publico">
+                <div className="container-capa">
+                  <Skeleton variant="thumb" width="100%" height="100%" />
+                </div>
+                <div className="card-body d-flex flex-column p-3 gap-2">
+                  <Skeleton variant="title" />
+                  <Skeleton variant="text" width="45%" />
+                  <Skeleton variant="text" width="100%" height="34px" style={{ marginTop: 'auto' }} />
+                </div>
+              </article>
+            </div>
+          ))}
         </div>
       </div>
     );

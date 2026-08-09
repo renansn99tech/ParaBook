@@ -2,7 +2,20 @@ import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import Skeleton from '../components/Skeleton';
+import CardComunidade from '../components/CardComunidade';
 import '../assets/css/comunidade.css';
+
+const cardSkeleton = (key) => (
+  <div className="card-comunidade" key={key}>
+    <div className="comunidade-header" style={{ width: '100%' }}>
+      <Skeleton variant="title" width="70%" />
+    </div>
+    <Skeleton variant="text" />
+    <Skeleton variant="text" width="80%" />
+    <Skeleton variant="text" width="100%" height="38px" style={{ marginTop: 'auto', borderRadius: 'var(--radius-pill)' }} />
+  </div>
+);
 
 function Comunidades() {
   const { user } = useContext(AuthContext);
@@ -22,6 +35,24 @@ function Comunidades() {
       .catch(err => console.error("Erro ao carregar comunidades:", err))
       .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <main className="container py-4">
+        <section className="pagina-comunidade">
+          <h1 className="pagina-comunidade-titulo mb-3" style={{ color: 'white' }}>
+            Comunidades
+          </h1>
+          <p style={{ fontSize: '1.1rem', color: '#d8d9e6', marginBottom: '40px' }}>
+            Sinta-se livre para escolher uma comunidade para participar.
+          </p>
+          <div className="grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            {[0, 1, 2].map(cardSkeleton)}
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   const handleToggleParticipacao = async (comunidadeId) => {
     if (!user) {
@@ -53,44 +84,29 @@ function Comunidades() {
     }
   };
 
+  // Sair é reversível (dá pra reentrar num clique), então usa o ghost
+  // neutro — vermelho fica reservado para o que não tem volta.
   const renderCard = (comunidade) => (
-    <article className="card-comunidade" key={comunidade.id}>
-      <div className="comunidade-header">
-        <h3 className="comunidade-nome text-truncate" title={comunidade.nome}>
-          {comunidade.nome}
-        </h3>
-        <div>
-          <span className="comunidade-badge badge bg-secondary text-white">
-            <i className="fa-solid fa-users me-1"></i>
-            {comunidade.total_membros || 0}/{comunidade.max_participantes}
-          </span>
-          {comunidade.criada_por_sistema && (
-            <span className="badge bg-primary ms-2" style={{ fontSize: '0.7rem', verticalAlign: 'middle' }}>
-              <i className="fa-solid fa-check-circle me-1"></i>Oficial
-            </span>
-          )}
-        </div>
-      </div>
-      <p className="comunidade-descricao text-muted">
-        {comunidade.descricao}
-      </p>
-      <div className="comunidade-footer mt-auto d-flex gap-2">
-        {comunidade.usuario_participa ? (
-          <>
-            <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn btn-primary flex-grow-1 fw-medium">
-              Acessar
-            </Link>
-            <button onClick={() => handleToggleParticipacao(comunidade.id)} className="btn btn-outline-danger fw-medium px-3">
-              Sair
-            </button>
-          </>
-        ) : (
-          <button onClick={() => handleToggleParticipacao(comunidade.id)} className="btn btn-primary w-100 fw-medium">
-            Entrar na Comunidade
+    <CardComunidade key={comunidade.id} comunidade={comunidade}>
+      {comunidade.em_manutencao && !user?.is_superuser ? (
+        <button className="btn-ghost w-100" disabled>
+          <i className="fa-solid fa-power-off"></i>Desativada
+        </button>
+      ) : comunidade.usuario_participa ? (
+        <>
+          <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-primary flex-grow-1">
+            Acessar
+          </Link>
+          <button onClick={() => handleToggleParticipacao(comunidade.id)} className="btn-ghost">
+            Sair
           </button>
-        )}
-      </div>
-    </article>
+        </>
+      ) : (
+        <button onClick={() => handleToggleParticipacao(comunidade.id)} className="btn-primary w-100">
+          Entrar na Comunidade
+        </button>
+      )}
+    </CardComunidade>
   );
 
   return (
@@ -147,7 +163,7 @@ function Comunidades() {
 
           {/* Botão de Criar Comunidade (Visível apenas para usuários comuns/autores, não superuser) */}
           {user && !user.is_superuser && (
-            <Link to="#" className="card-criar-comunidade-link" style={{ textDecoration: 'none' }}>
+            <Link to="/comunidades/criar" className="card-criar-comunidade-link" style={{ textDecoration: 'none' }}>
               <div className="card-criar-comunidade" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', border: '2px dashed rgba(255,255,255,0.2)', borderRadius: '12px', padding: '20px', color: 'white' }}>
                 <div className="card-criar-icone mb-3" style={{ fontSize: '2rem', color: '#60a5fa' }}>
                   <i className="fas fa-plus"></i>

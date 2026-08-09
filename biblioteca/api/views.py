@@ -2,9 +2,15 @@
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
-from biblioteca.models import Livro, Categoria, Biblioteca
-from .serializers import LivroSerializer, CategoriaSerializer, EstanteSerializer, ResenhaSerializer
+from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao
+from assinaturas.utils import usuario_eh_premium
+from .serializers import (
+    LivroSerializer, CategoriaSerializer, EstanteSerializer, ResenhaSerializer,
+    SolicitacaoPublicacaoSerializer,
+)
 from django.http import FileResponse
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -191,3 +197,132 @@ class EstanteViewSet(viewsets.ModelViewSet):
             response_data['gamificacao_alerts'] = msg_extra
 
         return Response(response_data)
+
+
+class SolicitacaoPublicacaoCreateAPIView(APIView):
+    """Recebe o formulário de envio de obra (PublicarLivro.jsx) e cria o Livro + a fila de moderação.
+
+    Regras replicadas de biblioteca/views.py::solicitacoes_publicacao (fluxo legado):
+    autor/status do Livro vêm do usuário autenticado, nunca do payload do cliente.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, *args, **kwargs):
+        perfil_customizado = getattr(request.user, 'perfil_customizado', None)
+        if not perfil_customizado or perfil_customizado.tipo not in ['autor', 'admin']:
+            return Response(
+                {"detail": "Apenas Autores Independentes ou Administradores podem enviar obras."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = SolicitacaoPublicacaoSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        dados_livro = dict(serializer.validated_data)
+        for campo_extra in ['cpf_autor', 'registro_autoral', 'numero_registro', 'declaracao_autoria', 'aceitou_termos']:
+            dados_livro.pop(campo_extra, None)
+
+        with transaction.atomic():
+            livro = Livro.objects.create(
+                autor=request.user.get_full_name() or request.user.username,
+                origem='autor_independente',
+                status='pendente',
+                **dados_livro
+            )
+            SolicitacaoPublicacao.objects.create(
+                usuario=request.user,
+                livro=livro,
+                status='pendente'
+            )
+
+        return Response(
+            {"detail": "Sua obra foi enviada com sucesso para aprovação!", "livro_id": livro.id},
+            status=status.HTTP_201_CREATED
+        )
+
+
+class RecomendacoesIAAPIView(APIView):
+    """Recomendacoes personalizadas (recurso exclusivo Premium).
+
+    Mesma heuristica da view legada biblioteca.views.recomendacao_ia_view: cruza as
+    categorias ja presentes na estante do usuario e completa a lista com os
+    destaques do acervo. A camada de IA generativa segue desativada la e aqui.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    TOTAL_RECOMENDACOES = 12
+
+    def get(self, request, *args, **kwargs):
+        if not usuario_eh_premium(request.user):
+            return Response(
+                {"detail": "Este recurso é exclusivo para assinantes Premium.", "requer_premium": True},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        user = request.user
+        itens_estante = Biblioteca.objects.filter(user=user).select_related('livro__categoria')
+        livros_estante_ids = list(itens_estante.values_list('livro_id', flat=True))
+        categorias_preferidas_ids = list(
+            itens_estante.values_list('livro__categoria_id', flat=True).distinct()
+        )
+
+        queryset_base = Livro.objects.filter(status='publicado').exclude(id__in=livros_estante_ids)
+        ids_recomendados = []
+
+        if categorias_preferidas_ids:
+            ids_recomendados = list(
+                queryset_base.filter(categoria_id__in=categorias_preferidas_ids)
+                .order_by('-avaliacao', '-id')
+                .values_list('id', flat=True)[:8]
+            )
+            motivo_geral = (
+                "Cruzamos seu histórico de leituras para encontrar estas obras "
+                "perfeitamente alinhadas ao seu perfil!"
+            )
+        else:
+            motivo_geral = (
+                "Como sua estante ainda está no início, selecionamos os títulos de "
+                "maior destaque da nossa comunidade!"
+            )
+
+        if len(ids_recomendados) < 8:
+            faltam = self.TOTAL_RECOMENDACOES - len(ids_recomendados)
+            ids_recomendados.extend(
+                queryset_base.exclude(id__in=ids_recomendados)
+                .order_by('-avaliacao', '-id')
+                .values_list('id', flat=True)[:faltam]
+            )
+
+        livros_map = {
+            livro.id: livro
+            for livro in Livro.objects.filter(id__in=ids_recomendados).select_related('categoria')
+        }
+
+        recomendacoes = []
+        for livro_id in ids_recomendados:
+            livro = livros_map.get(livro_id)
+            if not livro:
+                continue
+
+            cat_nome = livro.categoria.nome if livro.categoria else "Geral"
+            avaliacao = livro.avaliacao or 0
+
+            if livro.categoria_id in categorias_preferidas_ids:
+                afinidade = 95 if avaliacao >= 4.0 else 88
+                motivo_card = f"Com base no seu interesse em {cat_nome}"
+            elif avaliacao >= 4.5:
+                afinidade = 92
+                motivo_card = "Aclamado pelos leitores do ParaBook"
+            else:
+                afinidade = 82
+                motivo_card = "Destaque do catálogo recomendado para você"
+
+            dados_livro = LivroSerializer(livro, context={'request': request}).data
+            dados_livro['afinidade'] = afinidade
+            dados_livro['motivo_card'] = motivo_card
+            recomendacoes.append(dados_livro)
+
+        return Response({
+            "motivo_geral": motivo_geral,
+            "recomendacoes": recomendacoes,
+        })

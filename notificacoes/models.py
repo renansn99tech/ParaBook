@@ -5,6 +5,7 @@ class Notificacao(models.Model):
     TIPO_CHOICES = (
         ('SOLICITACAO', 'Solicitação de Publicação'),
         ('COMUNIDADE', 'Comunidade/Comentário'),
+        ('ASSINATURA', 'Assinatura & Pagamentos'),
         ('SISTEMA', 'Sistema/Aviso'),
     )
 

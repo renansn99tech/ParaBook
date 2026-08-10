@@ -2,7 +2,7 @@
 .guidelines-main {
     min-height: 80vh;
     padding: 60px 20px;
-    background: radial-gradient(circle at center, #0a0f1c, #050816);
+    background: radial-gradient(circle at center, #0a0f1c, var(--bg-main));
 }
 
 .hero-guidelines {
@@ -13,7 +13,7 @@
 .gradient-text {
     font-size: 3rem;
     font-weight: 800;
-    background: linear-gradient(90deg, #60a5fa, #8b5cf6);
+    background: linear-gradient(90deg, var(--info), var(--purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 15px;
@@ -39,7 +39,7 @@
 
 /* Subtítulos de seções jurídicas */
 .glass-rule-card h4 {
-    color: #60a5fa;
+    color: var(--info);
     font-size: 1.1rem;
     font-weight: 600;
     margin-top: 25px;
@@ -56,7 +56,7 @@
 
 /* Estilização para as listas de direitos e proibições */
 .glass-rule-card ul {
-    color: #94a3b8;
+    color: var(--text-secondary);
     padding-left: 20px;
     margin-top: 10px;
     margin-bottom: 15px;

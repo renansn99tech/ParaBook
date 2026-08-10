@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import api from '../services/api';
 
 function MinhaAssinatura() {
@@ -38,13 +38,10 @@ function MinhaAssinatura() {
     } catch (err) {
       console.error("Erro ao abrir portal de gerenciamento:", err);
       const mensagem = err.response?.data?.detail || 'Não foi possível abrir o portal de gerenciamento. Tente novamente.';
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Erro',
         text: mensagem,
-        background: '#1e293b',
-        color: '#fff',
-        confirmButtonColor: '#8b5cf6'
       });
       setAbrindoPortal(false);
     }

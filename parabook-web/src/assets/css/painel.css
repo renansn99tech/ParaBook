@@ -1,0 +1,228 @@
+/* ==========================================================
+   PAINÉIS DE PROGRESSO — Ranking, Minhas Conquistas,
+   Recomendação IA, Minha Assinatura e Planos.
+
+   Estas telas nasceram depois das outras e foram montadas com
+   Bootstrap + `style={{...}}`: o card, os chips e a tabela eram
+   desenhados à mão em cada arquivo, com #12131C repetido 15 vezes como
+   fundo. Como estilo inline vence qualquer classe, nenhuma delas
+   obedecia à paleta.
+
+   Aqui a linguagem vira um arquivo só, em cima dos tokens de base.css.
+========================================================== */
+
+.painel-page{
+    min-height:70vh;
+}
+
+/* Cabeçalho da tela: título com ícone e uma linha de apoio centrada. */
+.painel-titulo i{
+    color:var(--purple);
+}
+
+/* O troféu do Ranking é âmbar, não roxo — é a única cor com significado
+   próprio aqui, então ganha modificador em vez de virar exceção inline. */
+.painel-titulo.premio i{
+    color:var(--warning);
+}
+
+.painel-lead{
+    max-width:620px;
+
+    color:var(--text-secondary);
+}
+
+/* Card padrão do painel. Era `background:#12131C` inline — um cinza que
+   não existia na paleta, quase igual ao --bg-card. */
+.painel-card{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+
+    box-shadow:var(--shadow-md);
+
+    color:var(--text);
+}
+
+/* Variante de destaque, para o resumo no topo da tela. */
+.painel-card.destaque{
+    background:linear-gradient(135deg, rgba(var(--purple-dark-rgb),.45) 0%, var(--bg-card) 100%);
+    border-color:rgba(var(--purple-rgb),.25);
+}
+
+/* Chips de número (XP, conquistas, posição). Mesmo idioma de badge do
+   resto do app: tinta translúcida + texto na versão -soft. */
+.painel-chip{
+    padding:.5rem 1rem;
+
+    border-radius:var(--radius-pill);
+
+    font-size:.9rem;
+    font-weight:600;
+
+    white-space:nowrap;
+}
+
+.painel-chip.roxo{
+    background:rgba(var(--purple-rgb),.25);
+    color:var(--purple-text);
+}
+
+.painel-chip.verde{
+    background:rgba(var(--success-rgb),.2);
+    color:var(--success-soft);
+}
+
+.painel-chip.ambar{
+    background:rgba(var(--warning-rgb),.2);
+    color:var(--warning-soft);
+}
+
+/* Tabela do Ranking. O Bootstrap pinta .table-dark com o próprio cinza;
+   aqui ela fica transparente e herda o fundo do card. */
+.painel-tabela{
+    --bs-table-bg:transparent;
+    --bs-table-color:var(--text);
+
+    margin-bottom:0;
+}
+
+.painel-tabela thead{
+    border-bottom:1px solid rgba(var(--white-rgb),.08);
+}
+
+.painel-tabela tbody tr{
+    border-bottom:1px solid rgba(var(--white-rgb),.04);
+}
+
+.painel-tabela .col-posicao{
+    width:90px;
+}
+
+/* Linha do próprio usuário no ranking: precisa saltar sem virar outro
+   componente. */
+.painel-tabela tr.eu{
+    background:rgba(var(--purple-rgb),.12);
+}
+
+/* Números com leitura semântica dentro da tabela. */
+.valor-xp{
+    color:var(--success-soft);
+}
+
+.valor-nivel{
+    color:var(--warning-soft);
+}
+
+/* Barra de progresso das conquistas. */
+.painel-progresso{
+    height:10px;
+
+    background:rgba(var(--white-rgb),.08);
+}
+
+.painel-progresso .progress-bar{
+    background:linear-gradient(90deg, var(--purple), var(--info));
+}
+
+/* Card de conquista. Desbloqueada ganha contorno roxo; bloqueada fica
+   apagada — o contraste entre as duas é a informação. */
+.conquista-card{
+    height:100%;
+
+    padding:0;
+
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+
+    color:var(--text);
+
+    transition:border-color var(--dur-base) var(--ease-standard),
+               opacity var(--dur-base) var(--ease-standard);
+}
+
+/* Verde = conquistado. É a mesma leitura de "lido" em Minha Biblioteca,
+   então usa o mesmo --success em vez de inventar outro sinal. */
+.conquista-card.desbloqueada{
+    border-color:rgba(var(--success-rgb),.35);
+}
+
+.conquista-card.bloqueada{
+    opacity:.65;
+}
+
+.conquista-icone{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    width:58px;
+    height:58px;
+
+    flex-shrink:0;
+
+    border-radius:var(--radius-circle);
+
+    font-size:1.4rem;
+}
+
+.conquista-card.desbloqueada .conquista-icone,
+.conquista-card.desbloqueada .conquista-selo{
+    background:rgba(var(--success-rgb),.2);
+    color:var(--success-soft);
+}
+
+.conquista-card.bloqueada .conquista-icone,
+.conquista-card.bloqueada .conquista-selo{
+    background:rgba(var(--white-rgb),.08);
+    color:var(--text-secondary);
+}
+
+/* Etiqueta "Desbloqueada / Bloqueada". */
+.conquista-selo{
+    border-radius:var(--radius-pill);
+}
+
+.conquista-xp{
+    color:var(--success-soft);
+}
+
+/* ---- Recomendação IA ---- */
+
+.painel-page.alta{
+    min-height:80vh;
+}
+
+.painel-lead.larga{
+    max-width:640px;
+}
+
+.painel-lead.estreita{
+    max-width:480px;
+}
+
+/* Etiqueta "por que recomendamos" no canto do card. */
+.selo-ia{
+    background:rgba(var(--purple-rgb),.25);
+    color:var(--purple-text);
+
+    font-size:.75rem;
+}
+
+.motivo-ia{
+    color:var(--purple-text);
+}
+
+/* Capa do livro recomendado — altura fixa para a grade não desalinhar. */
+.capa-recomendacao{
+    height:260px;
+
+    object-fit:cover;
+}
+
+.capa-recomendacao-vazia{
+    height:260px;
+
+    background:rgba(var(--white-rgb),.03);
+}

@@ -5,10 +5,43 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>parabook-web</title>
+    <!-- Inter é a fonte do design system (base.css a declara no body).
+         Vinha por @import dentro de tela-login.css, então só carregava em
+         quem abrisse a tela de login — o resto do app caía no sans-serif
+         do sistema. Aqui carrega uma vez, para todas as rotas, e sem a
+         fila de espera que um @import de CSS cria. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+
     <!-- Bootstrap e FontAwesome da aplicação antiga -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- Define o tema ANTES da primeira pintura.
+
+         Se isso rodasse dentro do React, a página apareceria escura por
+         um instante antes de virar clara — o "flash of wrong theme".
+         Por isso é um script bloqueante aqui no <head>, e não um efeito
+         no App: precisa executar antes do browser desenhar qualquer
+         coisa. É também o único lugar que lê prefers-color-scheme, para
+         a paleta clara existir uma vez só (em base.css).
+
+         A ordem é: escolha salva do usuário > preferência do sistema. -->
+    <script>
+      (function () {
+        try {
+          var salvo = localStorage.getItem('parabookTema');
+          var claro = salvo
+            ? salvo === 'claro'
+            : window.matchMedia('(prefers-color-scheme: light)').matches;
+          document.documentElement.setAttribute('data-tema', claro ? 'claro' : 'escuro');
+        } catch (e) {
+          document.documentElement.setAttribute('data-tema', 'escuro');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

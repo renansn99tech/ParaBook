@@ -53,7 +53,7 @@ function PerfilPublico() {
   if (erro) {
     return (
       <div className="text-center mt-5">
-        <h2 style={{ color: '#ef4444' }}><i className="fa-solid fa-triangle-exclamation"></i> Ops!</h2>
+        <h2 className="perfil-erro"><i className="fa-solid fa-triangle-exclamation"></i> Ops!</h2>
         <h4 className="text-white">{erro}</h4>
       </div>
     );
@@ -64,7 +64,7 @@ function PerfilPublico() {
   return (
     <main className="perfil-page perfil-publico-page">
       <section className="perfil-header-container">
-        <div className="perfil-cover" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(5, 8, 22, 0.9))' }}></div>
+        <div className="perfil-cover"></div>
 
         <div className="perfil-content-wrapper">
           <div className="perfil-sidebar">
@@ -72,7 +72,7 @@ function PerfilPublico() {
               {dados.perfil.foto ? (
                 <img src={dados.perfil.foto} alt="Foto de Perfil" className="perfil-avatar" />
               ) : (
-                <div style={{ width: '150px', height: '150px', borderRadius: '50%', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '4rem', margin: '0 auto' }}>
+                <div className="avatar-placeholder">
                   <i className="fa-solid fa-user"></i>
                 </div>
               )}
@@ -110,21 +110,21 @@ function PerfilPublico() {
 
       <section className="perfil-stats-grid">
         <div className="stat-glass-card">
-          <div className="stat-icon" style={{ color: '#60a5fa', background: 'rgba(59,130,246,.2)' }}><i className="fa-solid fa-book-open"></i></div>
+          <div className="stat-icon"><i className="fa-solid fa-book-open"></i></div>
           <div className="stat-info">
             <p className="stat-number">{dados.estatisticas.total_lidos}</p>
             <p className="stat-label">Livros Lidos</p>
           </div>
         </div>
         <div className="stat-glass-card">
-          <div className="stat-icon" style={{ color: '#60a5fa', background: 'rgba(59,130,246,.2)' }}><i className="fa-solid fa-star"></i></div>
+          <div className="stat-icon"><i className="fa-solid fa-star"></i></div>
           <div className="stat-info">
             <p className="stat-number">{dados.estatisticas.total_avaliados}</p>
             <p className="stat-label">Avaliados</p>
           </div>
         </div>
         <div className="stat-glass-card">
-          <div className="stat-icon" style={{ color: '#60a5fa', background: 'rgba(59,130,246,.2)' }}><i className="fa-solid fa-users"></i></div>
+          <div className="stat-icon"><i className="fa-solid fa-users"></i></div>
           <div className="stat-info">
             <p className="stat-number">{dados.estatisticas.total_comunidades}</p>
             <p className="stat-label">Comunidades</p>
@@ -133,7 +133,7 @@ function PerfilPublico() {
       </section>
 
       <section className="perfil-tabs-section">
-        <div className="tabs-nav" style={{ justifyContent: 'center' }}>
+        <div className="tabs-nav centralizado">
           <button className={`tab-btn ${abaAtiva === 'info' ? 'active' : ''}`} onClick={() => setAbaAtiva('info')}>
             <i className="fa-solid fa-circle-info"></i> Informações
           </button>
@@ -150,9 +150,9 @@ function PerfilPublico() {
 
         {abaAtiva === 'info' && (
           <div className="tab-content active">
-            <div className="content-glass-card full-width" style={{ textAlign: 'center' }}>
+            <div className="content-glass-card full-width centralizado">
               <h3>Sobre {dados.usuario.nome}</h3>
-              <p className="sobre-texto" style={{ margin: '20px auto', maxWidth: '800px', lineHeight: '1.8' }}>
+              <p className="sobre-texto">
                 {dados.perfil.bio || "Nenhuma biografia cadastrada."}
               </p>
             </div>
@@ -173,7 +173,7 @@ function PerfilPublico() {
                   </div>
                 ))
               ) : (
-                <div className="content-glass-card"><p className="text-muted" style={{ textAlign: 'center' }}>Nenhum histórico encontrado.</p></div>
+                <div className="content-glass-card"><p className="text-muted centralizado">Nenhum histórico encontrado.</p></div>
               )}
             </div>
           </div>
@@ -184,7 +184,7 @@ function PerfilPublico() {
             <div className="perfil-info-grid">
               <div className="content-glass-card">
                 <h3>Gêneros acessados recentemente</h3>
-                <ul className="genres-list" style={{ justifyContent: 'center' }}>
+                <ul className="genres-list centralizado">
                   {dados.favoritos.generos.length > 0 ? (
                     dados.favoritos.generos.map((genero, i) => <li key={i} className="genre-tag">{genero}</li>)
                   ) : (
@@ -195,7 +195,7 @@ function PerfilPublico() {
 
               <div className="content-glass-card">
                 <h3>Autores acessados recentemente</h3>
-                <ul className="authors-list" style={{ alignItems: 'center' }}>
+                <ul className="authors-list centralizado">
                   {dados.favoritos.autores.length > 0 ? (
                     dados.favoritos.autores.map((autor, i) => <li key={i}><i className="fa-solid fa-pen-nib"></i> {autor}</li>)
                   ) : (
@@ -212,21 +212,21 @@ function PerfilPublico() {
             <div className="favoritos-grid full">
               {dados.comunidades.length > 0 ? (
                 dados.comunidades.map(comunidade => (
-                  <div key={comunidade.id} className="favorito-card content-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-                    <div className="favorito-capa" style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(59, 130, 246, 0.15)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                      <i className="fa-solid fa-users" style={{ fontSize: '3.5rem', color: '#60a5fa' }}></i>
+                  <div key={comunidade.id} className="favorito-card content-glass-card">
+                    <div className="favorito-capa">
+                      <i className="fa-solid fa-users"></i>
                     </div>
-                    <div className="favorito-info" style={{ padding: '20px' }}>
+                    <div className="favorito-info">
                       <h4>{comunidade.nome}</h4>
-                      <p style={{ marginBottom: 0, minHeight: '40px' }}>
+                      <p className="mb-0">
                         {comunidade.descricao.length > 60 ? comunidade.descricao.substring(0, 60) + '...' : comunidade.descricao}
                       </p>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="content-glass-card" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px 20px' }}>
-                  <i className="fa-solid fa-ghost text-muted" style={{ fontSize: '3rem', marginBottom: '15px' }}></i>
+                <div className="content-glass-card full-width perfil-vazio">
+                  <i className="fa-solid fa-ghost text-muted"></i>
                   <p className="text-muted">Este usuário ainda não participa de comunidades.</p>
                 </div>
               )}

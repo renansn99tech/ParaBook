@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import '../assets/css/tela-login.css';
@@ -27,13 +27,10 @@ function AceitarTermos() {
       navigate('/perfil');
     } catch (error) {
       console.error("Erro ao aceitar termos", error);
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Erro',
         text: 'Não foi possível registrar o aceite. Tente novamente.',
-        background: '#1e293b',
-        color: '#fff',
-        confirmButtonColor: '#8b5cf6'
       });
       setEnviando(false);
     }

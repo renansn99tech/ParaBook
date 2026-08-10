@@ -2,14 +2,8 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
-import Swal from 'sweetalert2';
+import swal, { BOTAO } from '../services/swal';
 import '../assets/css/conteudo-comunidade.css';
-
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
 
 function ConteudoComunidade() {
   const { id } = useParams();
@@ -54,8 +48,7 @@ function ConteudoComunidade() {
         // Comunidade desativada é inacessível para todos menos o admin,
         // que precisa entrar para reativá-la nas Configurações.
         if (comunidadeRes.data.em_manutencao && !user?.is_superuser) {
-          await Swal.fire({
-            ...swalTema,
+          await swal.fire({
             icon: 'info',
             title: 'Comunidade Desativada Temporariamente',
             text: 'Este espaço foi fechado para ajustes pela equipe do ParaBook. Volte em breve.',
@@ -84,7 +77,7 @@ function ConteudoComunidade() {
       if (editingPostId) {
         const res = await api.patch(`/comunidades/postagens/${editingPostId}/`, { titulo, conteudo });
         setPostagens(postagens.map(p => p.id === editingPostId ? res.data : p));
-        Swal.fire('Sucesso!', 'A postagem foi atualizada.', 'success');
+        swal.fire('Sucesso!', 'A postagem foi atualizada.', 'success');
       } else {
         const novaPostagem = {
           comunidade: id,
@@ -93,7 +86,7 @@ function ConteudoComunidade() {
         };
         const res = await api.post('/comunidades/postagens/', novaPostagem);
         setPostagens([res.data, ...postagens]);
-        Swal.fire('Sucesso!', 'Sua postagem foi criada.', 'success');
+        swal.fire('Sucesso!', 'Sua postagem foi criada.', 'success');
       }
       setTitulo('');
       setConteudo('');
@@ -101,7 +94,7 @@ function ConteudoComunidade() {
       setShowForm(false);
     } catch (error) {
       console.error("Erro ao salvar postagem", error);
-      Swal.fire('Erro', 'Ocorreu um erro ao salvar a postagem.', 'error');
+      swal.fire('Erro', 'Ocorreu um erro ao salvar a postagem.', 'error');
     }
   };
 
@@ -137,7 +130,7 @@ function ConteudoComunidade() {
         descricao: novaDescricao.trim()
       });
       setComunidade(res.data);
-      Swal.fire({ ...swalTema, icon: 'success', title: 'Sucesso!', text: 'Comunidade atualizada.' });
+      swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Comunidade atualizada.' });
       setShowConfig(false);
     } catch (error) {
       console.error("Erro ao atualizar comunidade", error);
@@ -145,7 +138,7 @@ function ConteudoComunidade() {
       const mensagem = dados?.detail
         || Object.values(dados || {}).flat()[0]
         || 'Ocorreu um erro ao atualizar as configurações.';
-      Swal.fire({ ...swalTema, icon: 'error', title: 'Erro', text: mensagem });
+      swal.fire({ icon: 'error', title: 'Erro', text: mensagem });
     } finally {
       setSalvandoConfig(false);
     }
@@ -163,7 +156,7 @@ function ConteudoComunidade() {
         setMembros(res.data);
       } catch (error) {
         console.error("Erro ao carregar membros", error);
-        Swal.fire({ ...swalTema, icon: 'error', title: 'Erro', text: 'Não foi possível carregar a lista de membros.' });
+        swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível carregar a lista de membros.' });
         setShowMembros(false);
       } finally {
         setCarregandoMembros(false);
@@ -174,8 +167,7 @@ function ConteudoComunidade() {
   const handleDesativar = async () => {
     const desativando = !comunidade.em_manutencao;
 
-    const confirmacao = await Swal.fire({
-      ...swalTema,
+    const confirmacao = await swal.fire({
       icon: 'warning',
       title: desativando ? 'Desativar comunidade?' : 'Reativar comunidade?',
       html: desativando
@@ -185,7 +177,7 @@ function ConteudoComunidade() {
       showCancelButton: true,
       confirmButtonText: desativando ? 'Sim, desativar' : 'Sim, reativar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: desativando ? '#ef4444' : '#22c55e'
+      confirmButtonColor: desativando ? BOTAO.perigo : BOTAO.sucesso
     });
 
     if (!confirmacao.isConfirmed) return;
@@ -193,16 +185,14 @@ function ConteudoComunidade() {
     try {
       const res = await api.post(`/comunidades/comunidades/${id}/desativar/`);
       setComunidade({ ...comunidade, em_manutencao: res.data.em_manutencao });
-      Swal.fire({
-        ...swalTema,
+      swal.fire({
         icon: 'success',
         title: res.data.em_manutencao ? 'Comunidade desativada' : 'Comunidade reativada',
         text: res.data.detail
       });
     } catch (error) {
       console.error("Erro ao desativar comunidade", error);
-      Swal.fire({
-        ...swalTema,
+      swal.fire({
         icon: 'error',
         title: 'Erro',
         text: error.response?.data?.detail || 'Não foi possível alterar o status da comunidade.'
@@ -211,23 +201,21 @@ function ConteudoComunidade() {
   };
 
   const handleExcluirComunidade = async () => {
-    const confirmacao = await Swal.fire({
-      ...swalTema,
+    const confirmacao = await swal.fire({
       icon: 'warning',
       title: 'Excluir comunidade?',
       html: `Todas as postagens de <strong>${comunidade.nome}</strong> serão perdidas. Esta ação não pode ser desfeita.`,
       showCancelButton: true,
       confirmButtonText: 'Sim, excluir',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#ef4444'
+      confirmButtonColor: BOTAO.perigo
     });
 
     if (!confirmacao.isConfirmed) return;
 
     try {
       await api.delete(`/comunidades/comunidades/${id}/`);
-      await Swal.fire({
-        ...swalTema,
+      await swal.fire({
         icon: 'success',
         title: 'Comunidade excluída',
         text: 'O espaço foi removido da plataforma.'
@@ -235,8 +223,7 @@ function ConteudoComunidade() {
       navigate('/comunidades');
     } catch (error) {
       console.error("Erro ao excluir comunidade", error);
-      Swal.fire({
-        ...swalTema,
+      swal.fire({
         icon: 'error',
         title: 'Erro',
         text: error.response?.data?.detail || 'Não foi possível excluir a comunidade.'
@@ -245,13 +232,13 @@ function ConteudoComunidade() {
   };
 
   const handleExcluir = async (postId) => {
-    const result = await Swal.fire({
+    const result = await swal.fire({
       title: 'Apagar postagem?',
       text: "Essa ação não poderá ser desfeita.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#475569',
+      confirmButtonColor: BOTAO.perigo,
+      cancelButtonColor: BOTAO.neutro,
       confirmButtonText: 'Sim, excluir',
       cancelButtonText: 'Cancelar'
     });
@@ -260,10 +247,10 @@ function ConteudoComunidade() {
       try {
         await api.delete(`/comunidades/postagens/${postId}/`);
         setPostagens(postagens.filter(p => p.id !== postId));
-        Swal.fire('Excluído!', 'A postagem foi apagada.', 'success');
+        swal.fire('Excluído!', 'A postagem foi apagada.', 'success');
       } catch (error) {
         console.error("Erro ao excluir", error);
-        Swal.fire('Erro', 'Ocorreu um erro ao excluir a postagem.', 'error');
+        swal.fire('Erro', 'Ocorreu um erro ao excluir a postagem.', 'error');
       }
     }
   };
@@ -282,34 +269,32 @@ function ConteudoComunidade() {
   }
 
   return (
-    <main id="topo">
+    <main id="topo" className="pagina-comunidade">
       <section className="banner-comunidade">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px' }}>
-          <div>
-            <h2>
-              {comunidade.nome}
-              {comunidade.em_manutencao && (
-                <span className="badge ms-2" style={{ background: 'rgba(239,68,68,0.2)', color: '#fca5a5', fontSize: '0.9rem', verticalAlign: 'middle' }}>
-                  <i className="fa-solid fa-power-off me-1"></i>Desativada
-                </span>
-              )}
-            </h2>
-            <p>{comunidade.descricao}</p>
-          </div>
+        <div>
+          <h2>
+            {comunidade.nome}
+            {comunidade.em_manutencao && (
+              <span className="badge perigo ms-2">
+                <i className="fa-solid fa-power-off me-1"></i>Desativada
+              </span>
+            )}
+          </h2>
+          <p>{comunidade.descricao}</p>
         </div>
       </section>
 
       <section className="posts-section">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '15px' }}>
-          <h3 style={{ marginBottom: 0, color: 'white' }}>Postagens</h3>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="linha-titulo">
+          <h3>Postagens</h3>
+          <div className="acoes">
             {user && (user.is_superuser || (!comunidade.criada_por_sistema && comunidade.criador === user.usuario)) && (
-              <button onClick={handleConfigClick} className="btn-primary-action" style={{ background: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.5)', color: '#fcd34d' }} title="Editar Comunidade">
+              <button onClick={handleConfigClick} className="btn-primary-action aviso" title="Editar Comunidade">
                 <i className="fa-solid fa-gear"></i> Configurações da Comunidade
               </button>
             )}
             {user && !comunidade.criada_por_sistema && comunidade.criador === user.usuario && (
-              <button onClick={handleExcluirComunidade} className="btn-primary-action" style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#fca5a5' }} title="Excluir Comunidade">
+              <button onClick={handleExcluirComunidade} className="btn-primary-action perigo" title="Excluir Comunidade">
                 <i className="fa-solid fa-trash"></i> Excluir Comunidade
               </button>
             )}
@@ -331,76 +316,72 @@ function ConteudoComunidade() {
         </div>
 
         {showConfig && (
-          <section className="post-form-container" style={{ marginBottom: '30px', animation: 'fadeIn 0.3s ease-in-out' }}>
-            <h3 style={{ color: 'white', marginBottom: '15px' }}>Configurações da Comunidade</h3>
+          <section className="post-form-container painel-config">
+            <h3>Configurações da Comunidade</h3>
 
             <div className="form-group">
-              <label style={{ color: '#94a3b8', marginBottom: '5px', display: 'block' }}>Nome da Comunidade</label>
+              <label htmlFor="comunidade-nome">Nome da Comunidade</label>
               <input
+                id="comunidade-nome"
                 type="text"
                 maxLength={100}
                 value={novoNome}
                 onChange={(e) => setNovoNome(e.target.value)}
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }}
               />
             </div>
 
             <div className="form-group mt-3">
-              <label style={{ color: '#94a3b8', marginBottom: '5px', display: 'block' }}>Descrição da Comunidade</label>
+              <label htmlFor="comunidade-descricao">Descrição da Comunidade</label>
               <textarea
+                id="comunidade-descricao"
                 rows="4"
                 value={novaDescricao}
                 onChange={(e) => setNovaDescricao(e.target.value)}
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white', fontFamily: 'inherit' }}
               ></textarea>
               <button
                 onClick={handleSalvarConfig}
                 disabled={salvandoConfig || !novoNome.trim() || !novaDescricao.trim()}
-                className="btn btn-primary mt-3 fw-bold px-4 py-2"
-                style={{ borderRadius: '8px', alignSelf: 'flex-start' }}
+                className="btn-primary mt-3"
               >
                 {salvandoConfig ? 'Salvando...' : 'Salvar Alterações'}
               </button>
             </div>
 
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '25px', paddingTop: '25px' }}>
+            <div className="painel-secao">
               {/* Lista de membros retrátil */}
               <button
                 onClick={handleToggleMembros}
                 aria-expanded={showMembros}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: showMembros ? '0' : '15px', background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: showMembros ? '8px 8px 0 0' : '8px', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                className={`painel-toggle ${showMembros ? 'aberto' : ''}`}
               >
-                <span style={{ color: '#cbd5e1', fontWeight: '500' }}>
-                  <i className="fa-solid fa-users me-2"></i>Lista de Membros
+                <span className="rotulo">
+                  <i className="fa-solid fa-users"></i>Lista de Membros
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span className="badge" style={{ background: 'rgba(139,92,246,0.25)', color: '#c4b5fd' }}>
+                <span className="direita">
+                  <span className="badge roxo">
                     {membros ? membros.total : comunidade.total_membros}/{comunidade.max_participantes}
                   </span>
-                  <i className={`fa-solid ${showMembros ? 'fa-chevron-up' : 'fa-chevron-down'}`} style={{ color: '#94a3b8' }}></i>
+                  <i className={`fa-solid chevron ${showMembros ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
                 </span>
               </button>
 
               {showMembros && (
-                <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: '0 0 8px 8px', padding: '10px 15px', marginBottom: '15px', maxHeight: '260px', overflowY: 'auto' }}>
-                  {carregandoMembros && <p style={{ color: '#94a3b8', margin: '10px 0' }}>Carregando membros...</p>}
+                <div className="lista-membros">
+                  {carregandoMembros && <p className="texto-apoio">Carregando membros...</p>}
 
                   {!carregandoMembros && membros?.membros?.length === 0 && (
-                    <p style={{ color: '#94a3b8', margin: '10px 0' }}>Esta comunidade ainda não tem membros.</p>
+                    <p className="texto-apoio">Esta comunidade ainda não tem membros.</p>
                   )}
 
                   {!carregandoMembros && membros?.membros?.map((membro) => (
-                    <div
-                      key={membro.id}
-                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                    >
-                      <Link to={`/perfil/${membro.username}`} style={{ color: '#e2e8f0', textDecoration: 'none' }}>
-                        <i className="fa-solid fa-user me-2" style={{ color: '#64748b' }}></i>
+                    <div key={membro.id} className="membro-linha">
+                      <Link to={`/perfil/${membro.username}`}>
+                        <i className="fa-solid fa-user me-2"></i>
                         {membro.nome_exibicao}
-                        <small style={{ color: '#64748b', marginLeft: '8px' }}>@{membro.username}</small>
+                        <small>@{membro.username}</small>
                       </Link>
                       {membro.e_criador && (
-                        <span className="badge" style={{ background: 'rgba(245,158,11,0.2)', color: '#fcd34d' }}>
+                        <span className="badge aviso">
                           <i className="fa-solid fa-crown me-1"></i>Criador
                         </span>
                       )}
@@ -413,14 +394,14 @@ function ConteudoComunidade() {
               {user?.is_superuser && comunidade.criada_por_sistema && (
                 <button
                   onClick={handleDesativar}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', background: comunidade.em_manutencao ? 'rgba(34,197,94,0.05)' : 'rgba(239, 68, 68, 0.05)', padding: '15px', borderRadius: '8px', border: `1px dashed ${comunidade.em_manutencao ? 'rgba(34,197,94,0.4)' : 'rgba(239, 68, 68, 0.3)'}`, cursor: 'pointer', textAlign: 'left' }}
+                  className={`painel-toggle ${comunidade.em_manutencao ? 'acao-ativar' : 'acao-desativar'}`}
                 >
-                  <span style={{ color: comunidade.em_manutencao ? '#86efac' : '#fca5a5', fontWeight: '500' }}>
-                    <i className="fa-solid fa-power-off me-2"></i>
+                  <span className="rotulo">
+                    <i className="fa-solid fa-power-off"></i>
                     {comunidade.em_manutencao ? 'Reativar Comunidade' : 'Desativar Comunidade'}
                   </span>
                   {comunidade.em_manutencao && (
-                    <span className="badge" style={{ background: 'rgba(239,68,68,0.2)', color: '#fca5a5' }}>Desativada</span>
+                    <span className="badge perigo">Desativada</span>
                   )}
                 </button>
               )}
@@ -429,30 +410,30 @@ function ConteudoComunidade() {
         )}
 
         {showForm && (
-          <section id="form-postagem" className="post-form-container" style={{ marginBottom: '30px' }}>
-            <h3 style={{ color: 'white', marginBottom: '15px' }}>{editingPostId ? 'Editar Postagem' : 'Adicionar Postagem'}</h3>
+          <section id="form-postagem" className="post-form-container">
+            <h3>{editingPostId ? 'Editar Postagem' : 'Adicionar Postagem'}</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label style={{ color: '#94a3b8', marginBottom: '5px', display: 'block' }}>Título</label>
+                <label htmlFor="post-titulo">Título</label>
                 <input
+                  id="post-titulo"
                   type="text"
                   required
                   value={titulo}
                   onChange={(e) => setTitulo(e.target.value)}
-                  style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }}
                 />
               </div>
               <div className="form-group mt-3">
-                <label style={{ color: '#94a3b8', marginBottom: '5px', display: 'block' }}>Conteúdo</label>
+                <label htmlFor="post-conteudo">Conteúdo</label>
                 <textarea
+                  id="post-conteudo"
                   required
                   rows="4"
                   value={conteudo}
                   onChange={(e) => setConteudo(e.target.value)}
-                  style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', color: 'white', fontFamily: 'inherit' }}
                 ></textarea>
               </div>
-              <button type="submit" className="btn btn-primary mt-3 fw-bold px-4 py-2" style={{ borderRadius: '8px' }}>
+              <button type="submit" className="btn-primary mt-3">
                 {editingPostId ? 'Salvar Alterações' : 'Publicar'}
               </button>
             </form>
@@ -463,34 +444,34 @@ function ConteudoComunidade() {
           {postsFiltrados.length > 0 ? (
             postsFiltrados.map(post => (
               <div className="post-card" key={post.id}>
-                <div className="post-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+                <div className="post-header">
                   <div>
-                    <h4 className="post-title" style={{ color: 'white', marginBottom: '5px' }}>{post.titulo}</h4>
-                    <p className="post-author mb-3" style={{ fontSize: '0.85rem' }}>
-                      <Link to={`/perfil/${post.autor_nome}`} style={{ color: '#c4b5fd', fontWeight: '500', textDecoration: 'none' }}>@{post.autor_nome}</Link>
+                    <h4 className="post-title">{post.titulo}</h4>
+                    <p className="post-author mb-3">
+                      <Link to={`/perfil/${post.autor_nome}`}>@{post.autor_nome}</Link>
                       <span className="post-date text-muted ms-2">• {new Date(post.criado_em).toLocaleDateString()}</span>
                     </p>
                   </div>
-                  <div className="post-actions d-flex gap-2">
+                  <div className="post-acoes">
                     {user && user.usuario === post.autor && (
-                      <button onClick={() => handleEditClick(post)} className="btn-primary-outline" style={{ padding: '8px 12px', fontSize: '0.85rem', borderRadius: '8px', background: 'transparent', border: '1px solid rgba(99, 102, 241, 0.4)', color: '#a5b4fc' }} title="Editar postagem">
+                      <button onClick={() => handleEditClick(post)} className="btn-primary-outline" title="Editar postagem">
                         <i className="fa-solid fa-pen"></i>
                       </button>
                     )}
                     {user && (user.usuario === post.autor || user.is_superuser) && (
-                      <button onClick={() => handleExcluir(post.id)} className="btn-danger-outline" style={{ padding: '8px 12px', fontSize: '0.85rem', borderRadius: '8px', background: 'transparent', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5' }} title="Remover postagem">
+                      <button onClick={() => handleExcluir(post.id)} className="btn-danger-outline" title="Remover postagem">
                         <i className="fa-solid fa-trash"></i>
                       </button>
                     )}
                   </div>
                 </div>
-                <div className="post-content" style={{ color: '#e2e8f0', lineHeight: '1.6' }}>
+                <div className="post-content">
                   {post.conteudo}
                 </div>
               </div>
             ))
           ) : (
-            <div className="empty-state text-center p-5" style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+            <div className="empty-state text-center p-5">
               <i className="fas fa-comments fs-2 text-muted mb-3"></i>
               <p className="text-muted m-0">Nenhuma postagem encontrada.</p>
             </div>

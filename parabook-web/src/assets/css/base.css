@@ -8,21 +8,51 @@
     box-sizing:border-box;
 }
 
+/* O fundo do app é pintado em TRÊS lugares, e não é redundância:
+
+   1. <html> — cobre a área de "overscroll" (o elástico ao puxar a
+      página além do fim, no celular);
+   2. .app-shell — o wrapper dentro do <body>, que é quem realmente
+      pinta a tela;
+   3. as páginas que têm ambiente próprio (a Home, por exemplo).
+
+   O item 2 existe por um motivo específico. Ao trocar o tema em tempo
+   de execução, o fundo de <html> e <body> não era recalculado: o token
+   já valia o novo valor nos dois (dá para conferir com
+   getComputedStyle), mas a cor pintada continuava a antiga. É o fundo
+   que o browser propaga para o canvas da viewport, e essa propagação
+   não reage à mudança de custom property no próprio elemento. Qualquer
+   descendente — inclusive um <div> logo abaixo do body — atualiza
+   normalmente.
+
+   Daí o wrapper: ele é descendente, então obedece na hora. */
 html{
     scroll-behavior:smooth;
+
+    background:var(--bg-main);
+
+    color:var(--text);
 }
 
 body{
 
     font-family:'Inter',sans-serif;
 
-    background:#050816;
+    background:transparent;
 
-    color:#fff;
+    color:inherit;
 
     overflow-x:hidden;
 
     line-height:1.6;
+}
+
+.app-shell{
+    min-height:100vh;
+
+    background:var(--bg-main);
+
+    color:var(--text);
 }
 
 /* ===============================
@@ -31,24 +61,79 @@ body{
 
 :root{
 
+    /* --- Canais RGB ------------------------------------------------
+       Boa parte do CSS precisa da MESMA cor com opacidades diferentes:
+       o roxo a .12 no fundo do hover, a .35 no glow, a .45 na borda.
+       Como rgba() não aceita um hex dentro, cada alfa exigia reescrever
+       o valor à mão — só o roxo aparecia solto em 166 lugares.
+
+       A saída é guardar o canal (os três números) e derivar o hex dele.
+       Assim `rgba(var(--purple-rgb),.35)` é a mesma cor da paleta, não
+       uma cópia, e o canal + a cor nunca podem divergir: existe um valor
+       só. É também o que torna um tema claro viável depois — basta
+       redefinir estes canais dentro de uma classe no <body>.
+
+       (A sintaxe `rgb(from var(--purple) r g b / .35)` resolveria isso
+       sem os canais, mas exige browser bem recente; fica para quando o
+       suporte não custar nada.) */
+    --bg-main-rgb:5,8,22;
+    --bg-card-rgb:16,25,45;
+    --bg-deep-rgb:15,23,42;
+    --purple-rgb:139,92,246;
+    --purple-light-rgb:168,85,247;
+    --purple-dark-rgb:109,40,217;
+    --danger-rgb:239,68,68;
+    --warning-rgb:245,158,11;
+    --success-rgb:34,197,94;
+    --info-rgb:59,130,246;
+    --white-rgb:255,255,255;
+    --black-rgb:0,0,0;
+
+    /* Superfícies: hex literal, não `rgb(var(--*-rgb))`.
+
+       A derivação seria mais elegante e foi a primeira tentativa, mas na
+       troca de tema em tempo de execução ela não recalcula: o browser vê
+       a MESMA declaração vencendo a cascata (só o canal, lá em cima,
+       mudou) e não invalida quem consome o token. O resultado era o
+       fundo do body continuar escuro depois de clicar no botão de tema,
+       enquanto a navbar — que usa o canal direto — virava na hora.
+
+       Então estes seis ficam escritos à mão nos dois temas. É a
+       duplicação que o resto do arquivo evita, e está aqui de propósito.
+       Ao mexer num, mexa também no canal correspondente. */
     --bg-main:#050816;
     --bg-card:#10192d;
     --bg-card-hover:#16213b;
+    /* Fundo de campo de formulário — era #0d1427 repetido à mão. */
+    --bg-input:#0d1427;
+    /* Superfície slate que veio das páginas herdadas (Minha Biblioteca,
+       Livro Info). Mais fria que --bg-card; usada em áreas rebaixadas
+       como o miolo de um select ou o fundo de uma capa sem imagem. */
+    --bg-deep:#0f172a;
 
-    --purple:#8B5CF6;
-    --purple-light:#A855F7;
-    --purple-dark:#6D28D9;
+    --purple:rgb(var(--purple-rgb));
+    --purple-light:rgb(var(--purple-light-rgb));
+    --purple-dark:rgb(var(--purple-dark-rgb));
     /* Roxo claro de texto/ícone sobre fundo escuro — estava repetido
        como #c4b5fd em ~10 lugares. */
     --purple-text:#c4b5fd;
 
+    /* Escala de texto, do mais forte ao mais apagado. Existia só --text
+       e --text-secondary, então o meio-termo virou 8 hexes diferentes
+       (#e2e8f0, #e5e7eb, #d1d5db, #aeb3c7, #94a3b8...) espalhados por
+       página. São quatro degraus, e todos passam AA sobre --bg-main. */
     --text:#F8FAFC;
+    --text-soft:#E2E8F0;
     --text-secondary:#9CA3AF;
+    /* Era #6B7280, que dava 4.13:1 sobre --bg-main — reprovado em AA
+       para texto normal. #737D8C sobe para 4.79:1 e continua sendo o
+       degrau mais apagado da escala. */
+    --text-dim:#737D8C;
 
-    --border:rgba(255,255,255,.08);
+    --border:rgba(var(--white-rgb),.08);
     /* Divisórias usam --border; contornos que precisam ser vistos
        (botão ghost, por ex.) usam esta, senão somem no fundo escuro. */
-    --border-strong:rgba(255,255,255,.22);
+    --border-strong:rgba(var(--white-rgb),.22);
 
     /* Caixa dos botões — ver seção BOTÕES. Altura resultante ~48px,
        acima do mínimo de 44px de alvo de toque. */
@@ -57,26 +142,49 @@ body{
     --btn-radius:14px;
 
     /* Escala de radius: --radius (18px) já era usado por várias páginas;
-       os demais nomeiam valores que já apareciam soltos pelo CSS. */
+       os demais nomeiam valores que já apareciam soltos pelo CSS. Os
+       vizinhos de 1–2px de diferença (16 e 20 viram 18, 24/25/26 viram
+       22) foram absorvidos: a diferença não é perceptível, mas o
+       espalhamento de valores era. */
+    --radius-xs:6px;
     --radius-sm:8px;
+    --radius-md:12px;
     --radius:18px;
     --radius-lg:22px;
+    --radius-xl:28px;
     --radius-pill:999px;
     --radius-circle:50%;
 
+    /* Elevação. --shadow e --shadow-glow já existiam; os degraus menores
+       nomeiam as sombras que as páginas escreviam à mão. --focus-ring é
+       o halo roxo de campo em foco, que aparecia com 3 alfas diferentes. */
+    --shadow-sm:
+        0 4px 12px rgba(var(--black-rgb),.25);
+    --shadow-md:
+        0 10px 30px rgba(var(--black-rgb),.35);
     --shadow:
-        0 20px 50px rgba(0,0,0,.35);
+        0 20px 50px rgba(var(--black-rgb),.35);
+    --shadow-lg:
+        0 25px 70px rgba(var(--black-rgb),.4);
+    --shadow-glow-sm:
+        0 4px 15px rgba(var(--purple-rgb),.3);
     --shadow-glow:
-        0 15px 35px rgba(139,92,246,.35);
+        0 15px 35px rgba(var(--purple-rgb),.35);
+    --focus-ring:
+        0 0 0 3px rgba(var(--purple-rgb),.16);
 
     /* Cores semânticas — já usadas em rgba() soltas em várias páginas
-       (badges de erro/aviso/sucesso), agora nomeadas. */
-    --danger:#ef4444;
+       (badges de erro/aviso/sucesso), agora nomeadas. --info é o azul
+       que o Backlog e as Diretrizes usam como sotaque próprio; não é
+       CTA, para não competir com o roxo da marca. */
+    --danger:rgb(var(--danger-rgb));
     --danger-soft:#fca5a5;
-    --warning:#f59e0b;
+    --warning:rgb(var(--warning-rgb));
     --warning-soft:#fcd34d;
-    --success:#22c55e;
+    --success:rgb(var(--success-rgb));
     --success-soft:#86efac;
+    --info:rgb(var(--info-rgb));
+    --info-soft:#93c5fd;
 
     /* Motion — tokens do plano de modernização do front-end.
        --dur-base/--ease-standard batem com o .3s/ease que já domina o
@@ -88,10 +196,138 @@ body{
     --ease-standard:ease;
     --ease-out:cubic-bezier(0.16, 1, 0.3, 1);
 
+    /* Quanto um elemento sobe no hover. Estava em dez valores diferentes
+       (-2, -3, -4, -5, -6, -7, -8, -10...), às vezes dois deles na mesma
+       tela — o olho lê isso como instabilidade, não como profundidade.
+       Três degraus bastam, e o tamanho do salto passa a significar algo:
+         sm  botões, chips, links       — o toque
+         md  cards de lista             — o padrão
+         lg  cards em destaque, hero    — o convite */
+    --lift-sm:-2px;
+    --lift-md:-5px;
+    --lift-lg:-8px;
+
 }
 
+/* ===============================
+   TEMA CLARO
+
+   Toda a inversão cabe aqui porque nada mais no app escreve cor: as
+   páginas usam os tokens acima, e as camadas de vidro usam
+   rgba(var(--white-rgb), α). Redefinindo os canais, o app inteiro vira
+   junto — inclusive telas que nunca foram pensadas para tema claro.
+
+   O gancho é um atributo no <html>, não uma classe no <body>: o script
+   no <head> do index.html o define antes da primeira pintura, então não
+   existe aquele lampejo de tela escura ao carregar. `escuro` e `claro`
+   são escolhas explícitas do usuário; sem atributo, vale o tema do
+   sistema (ver o @media logo abaixo).
+================================ */
+
+:root[data-tema="claro"]{
+
+    /* O "branco" das sobreposições vira quase-preto: é isso que inverte
+       bordas, divisórias e fundos de vidro em ~200 lugares de uma vez. */
+    --white-rgb:15,23,42;
+    --black-rgb:100,116,139;
+
+    --bg-main-rgb:248,250,252;
+    --bg-card-rgb:255,255,255;
+    --bg-deep-rgb:226,232,240;
+
+    /* Pares canal + hex, pelo motivo explicado lá em cima na seção de
+       superfícies: derivar um do outro não sobrevive à troca de tema em
+       tempo de execução. */
+    --bg-main:#F8FAFC;
+    --bg-card:#FFFFFF;
+    --bg-deep:#E2E8F0;
+
+    --bg-card-hover:#F1F5F9;
+    --bg-input:#FFFFFF;
+
+    /* A escala de texto inverte a ordem: --text é o mais escuro. */
+    --text:#0F172A;
+    --text-soft:#1E293B;
+    --text-secondary:#475569;
+    --text-dim:#64748B;
+
+    /* Contornos precisam de mais alfa aqui: um preto a 8% sobre branco
+       quase some, enquanto um branco a 8% sobre quase-preto aparece. */
+    --border:rgba(var(--white-rgb),.12);
+    --border-strong:rgba(var(--white-rgb),.28);
+
+    /* O roxo da marca não muda — ele é a marca. Mas #8B5CF6 sobre branco
+       dá 3.5:1, abaixo de AA para texto, então a variante de TEXTO
+       escurece. Preenchimentos continuam usando --purple. */
+    --purple-text:#6D28D9;
+
+    /* As variantes -soft foram desenhadas para brilhar sobre fundo
+       escuro; sobre branco elas somem. Aqui viram os tons fechados. */
+    --danger-soft:#B91C1C;
+    --warning-soft:#B45309;
+    --success-soft:#15803D;
+    --info-soft:#1D4ED8;
+
+    /* Sombra colorida e pesada é linguagem de tema escuro. No claro ela
+       fica mais curta e discreta, senão o app parece sujo. */
+    --shadow-sm:
+        0 1px 3px rgba(var(--black-rgb),.12);
+    --shadow-md:
+        0 4px 12px rgba(var(--black-rgb),.14);
+    --shadow:
+        0 8px 24px rgba(var(--black-rgb),.14);
+    --shadow-lg:
+        0 16px 40px rgba(var(--black-rgb),.18);
+    --shadow-glow-sm:
+        0 4px 12px rgba(var(--purple-rgb),.22);
+    --shadow-glow:
+        0 10px 26px rgba(var(--purple-rgb),.28);
+}
+
+/* Não há um `@media (prefers-color-scheme: light)` aqui de propósito.
+   Ele exigiria repetir o bloco inteiro acima — e duas cópias da paleta
+   clara é exatamente o tipo de duplicação que esta refatoração veio
+   apagar. Quem lê a preferência do sistema é o script de boot no
+   index.html, que a traduz para data-tema. Uma fonte de verdade só. */
+
+/* A troca de tema anima o fundo e o texto para não ser um estalo seco.
+   Só o que muda de cor entra na transição — animar tudo daria arrasto. */
+html,
+.card,
+.glass-card,
+.content-glass-card,
+.painel-card,
+.admin-panel,
+.conquista-card{
+    transition:background-color var(--dur-base) var(--ease-standard),
+               color var(--dur-base) var(--ease-standard),
+               border-color var(--dur-base) var(--ease-standard);
+}
+
+/* Sobrescreve a .text-muted do Bootstrap, que nasce clara demais para
+   fundo escuro. É a única definição da classe no app — perfil.css tinha
+   uma segunda, sem escopo, brigando por ela. */
 .text-muted{
-    color: rgba(130, 130, 130, 0.85) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* O Bootstrap tem utilitários de cor absoluta que várias telas usam
+   (.text-white, .text-white-50). No tema claro eles somem no fundo.
+   Aqui eles passam a significar "texto forte" e "texto de apoio", que é
+   o que as telas realmente queriam dizer. */
+:root[data-tema="claro"] .text-white{
+    color:var(--text) !important;
+}
+
+:root[data-tema="claro"] .text-white-50{
+    color:var(--text-secondary) !important;
+}
+
+/* Mesma ideia para o .table-dark do Bootstrap, usado no Ranking. */
+:root[data-tema="claro"] .table-dark{
+    --bs-table-bg:transparent;
+    --bs-table-color:var(--text);
+    --bs-table-border-color:var(--border);
 }
 
 /* ===============================
@@ -167,7 +403,7 @@ a{
 }
 
 .btn-primary:hover{
-    transform:translateY(-2px);
+    transform:translateY(var(--lift-sm));
     box-shadow:var(--shadow-glow);
     color:#fff;
 }
@@ -183,24 +419,24 @@ a{
 .btn-ghost:hover,
 .btn-secondary:hover,
 .btn-outline:hover{
-    transform:translateY(-2px);
+    transform:translateY(var(--lift-sm));
     border-color:var(--purple);
-    background:rgba(139,92,246,.10);
+    background:rgba(var(--purple-rgb),.10);
     color:#fff;
 }
 
 .btn-danger{
-    background:rgba(239,68,68,.12);
-    border-color:rgba(239,68,68,.35);
+    background:rgba(var(--danger-rgb),.12);
+    border-color:rgba(var(--danger-rgb),.35);
     color:var(--danger-soft);
 }
 
 .btn-danger:hover{
-    transform:translateY(-2px);
+    transform:translateY(var(--lift-sm));
     background:var(--danger);
     border-color:var(--danger);
     color:#fff;
-    box-shadow:0 10px 24px rgba(239,68,68,.35);
+    box-shadow:0 10px 24px rgba(var(--danger-rgb),.35);
 }
 
 /* Press e foco de teclado, iguais nas três variantes. */
@@ -248,13 +484,13 @@ a{
     background:
         linear-gradient(
             145deg,
-            rgba(16,25,45,.95),
-            rgba(16,25,45,.75)
+            rgba(var(--bg-card-rgb),.95),
+            rgba(var(--bg-card-rgb),.75)
         );
 
     border:1px solid var(--border);
 
-    border-radius:22px;
+    border-radius:var(--radius-lg);
 
     transition:.35s;
 
@@ -263,9 +499,9 @@ a{
 
 .card:hover{
 
-    transform:translateY(-5px);
+    transform:translateY(var(--lift-md));
 
-    border-color:rgba(139,92,246,.35);
+    border-color:rgba(var(--purple-rgb),.35);
 }
 
 /* ===============================
@@ -278,17 +514,18 @@ select{
 
     width:100%;
 
-    background:#0d1427;
+    background:var(--bg-input);
 
     border:1px solid var(--border);
 
-    border-radius:12px;
+    border-radius:var(--radius-md);
 
-    color:white;
+    color:var(--text);
 
     padding:14px 16px;
 
-    transition:.3s;
+    transition:border-color var(--dur-fast) var(--ease-standard),
+               box-shadow var(--dur-fast) var(--ease-standard);
 }
 
 input:focus,
@@ -299,7 +536,9 @@ select:focus{
 
     border-color:var(--purple);
 
-    box-shadow:0 0 15px rgba(139,92,246,.2);
+    /* Mesmo halo do resto do app: era um brilho difuso aqui e um anel
+       de 3px em outras seis telas. Agora é o mesmo --focus-ring. */
+    box-shadow:var(--focus-ring);
 }
 
 /* Campos dentro do SweetAlert2.
@@ -367,19 +606,19 @@ select:focus{
 
 ::-webkit-scrollbar-track{
 
-    background:#050816;
+    background:var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb{
 
-    background:#6D28D9;
+    background:var(--purple-dark);
 
-    border-radius:50px;
+    border-radius:var(--radius-pill);
 }
 
 ::-webkit-scrollbar-thumb:hover{
 
-    background:#8B5CF6;
+    background:var(--purple);
 }
 
 /* ==================================
@@ -396,25 +635,25 @@ select:focus{
     right: 12px;
     width: 32px;
     height: 32px;
-    border-radius: 50%;
-    background: rgba(15, 23, 42, 0.6);
-    color: rgba(255, 255, 255, 0.6);
+    border-radius: var(--radius-circle);
+    background: rgba(var(--bg-deep-rgb),0.6);
+    color: rgba(var(--white-rgb),0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
     backdrop-filter: blur(5px);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(var(--white-rgb),0.1);
     z-index: 10;
     transition: 0.3s ease;
 }
 
 .btn-info-livro:hover {
-    color: #c4b5fd;
-    background: rgba(139, 92, 246, 0.4);
-    border-color: #8b5cf6;
+    color: var(--purple-text);
+    background: rgba(var(--purple-rgb),0.4);
+    border-color: var(--purple);
     transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(139,92,246,0.5);
+    box-shadow: 0 0 15px rgba(var(--purple-rgb),0.5);
 }
 
 /* ==================================
@@ -438,9 +677,9 @@ select:focus{
 
 .livro-capa-img {
     width: 100%;
-    border-radius: 16px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 50px rgba(var(--black-rgb),0.6);
+    border: 1px solid rgba(var(--white-rgb),0.1);
 }
 
 .livro-dados-col h1 {
@@ -452,7 +691,7 @@ select:focus{
 
 .livro-dados-col .autor-destaque {
     font-size: 1.2rem;
-    color: #c4b5fd;
+    color: var(--purple-text);
     margin-bottom: 30px;
     display: flex;
     align-items: center;
@@ -463,10 +702,10 @@ select:focus{
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    background: rgba(255,255,255,0.02);
+    background: rgba(var(--white-rgb),0.02);
     padding: 25px;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    border: 1px solid rgba(var(--white-rgb),0.05);
     margin-bottom: 30px;
 }
 
@@ -480,7 +719,7 @@ select:focus{
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #94a3b8;
+    color: var(--text-secondary);
 }
 
 .meta-valor {
@@ -566,4 +805,12 @@ select:focus{
         padding-left: 0;
         align-items: center;
     }
+}
+/* Caixa do espaço de anúncio no topo. Era um rgba escuro inline, que
+   ficaria preto sobre o tema claro. */
+.caixa-anuncio{
+    background:rgba(var(--bg-deep-rgb),.6);
+
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
 }

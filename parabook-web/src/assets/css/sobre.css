@@ -80,11 +80,11 @@
 
     background:
         linear-gradient(145deg,
-            rgba(16, 25, 45, .95),
-            rgba(16, 25, 45, .72));
+            rgba(var(--bg-card-rgb),.95),
+            rgba(var(--bg-card-rgb),.72));
 
     border: 1px solid var(--border);
-    border-radius: 22px;
+    border-radius: var(--radius-lg);
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
@@ -115,7 +115,7 @@
 
     background:
         radial-gradient(circle,
-            rgba(139, 92, 246, .22),
+            rgba(var(--purple-rgb),.22),
             transparent 70%);
 
     opacity: 0;
@@ -127,12 +127,12 @@
 .glass-feature-card:hover,
 .about-container:hover,
 .timeline-content:hover {
-    transform: translateY(-6px);
+    transform: translateY(var(--lift-md));
 
-    border-color: rgba(139, 92, 246, .45);
+    border-color: rgba(var(--purple-rgb),.45);
 
     box-shadow:
-        0 18px 45px rgba(139, 92, 246, .14);
+        0 18px 45px rgba(var(--purple-rgb),.14);
 }
 
 .fade-section:hover::before,
@@ -227,7 +227,7 @@
     align-items: center;
     justify-content: center;
 
-    border-radius: 18px;
+    border-radius: var(--radius);
 
     font-size: 1.6rem;
 
@@ -239,7 +239,7 @@
             var(--purple-dark));
 
     box-shadow:
-        0 0 25px rgba(139, 92, 246, .35);
+        0 0 25px rgba(var(--purple-rgb),.35);
 }
 
 /* =================================
@@ -288,13 +288,13 @@
 
     padding: 8px 16px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
-    background: rgba(139, 92, 246, .14);
+    background: rgba(var(--purple-rgb),.14);
 
-    border: 1px solid rgba(139, 92, 246, .35);
+    border: 1px solid rgba(var(--purple-rgb),.35);
 
-    color: #c4b5fd;
+    color: var(--purple-text);
 
     font-size: .85rem;
 }
@@ -305,12 +305,12 @@
 
     margin: 0 auto;
 
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
 
     background:
         radial-gradient(circle,
-            rgba(139, 92, 246, .85),
-            rgba(109, 40, 217, .35),
+            rgba(var(--purple-rgb),.85),
+            rgba(var(--purple-dark-rgb),.35),
             transparent 70%);
 
     filter: blur(25px);
@@ -358,7 +358,7 @@
     background:
         linear-gradient(to bottom,
             var(--purple),
-            rgba(139, 92, 246, .15));
+            rgba(var(--purple-rgb),.15));
 }
 
 .timeline-item {
@@ -378,14 +378,14 @@
     width: 18px;
     height: 18px;
 
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
 
     background: var(--bg-main);
 
     border: 2px solid var(--purple);
 
     box-shadow:
-        0 0 16px rgba(139, 92, 246, .55);
+        0 0 16px rgba(var(--purple-rgb),.55);
 
     z-index: 2;
 }
@@ -403,7 +403,7 @@
 
     margin-bottom: 8px;
 
-    color: #c4b5fd;
+    color: var(--purple-text);
 
     font-size: .75rem;
 
@@ -438,12 +438,12 @@
 }
 
 .timeline-item.active .timeline-content {
-    border-color: rgba(139, 92, 246, .5);
+    border-color: rgba(var(--purple-rgb),.5);
 
     background:
         linear-gradient(145deg,
             rgba(40, 25, 88, .86),
-            rgba(15, 23, 42, .78));
+            rgba(var(--bg-deep-rgb),.78));
 }
 
 .timeline-item.future {
@@ -456,15 +456,15 @@
 
 @keyframes pulsePurple {
     0% {
-        box-shadow: 0 0 0 0 rgba(139, 92, 246, .65);
+        box-shadow: 0 0 0 0 rgba(var(--purple-rgb),.65);
     }
 
     70% {
-        box-shadow: 0 0 0 14px rgba(139, 92, 246, 0);
+        box-shadow: 0 0 0 14px rgba(var(--purple-rgb),0);
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+        box-shadow: 0 0 0 0 rgba(var(--purple-rgb),0);
     }
 }
 
@@ -476,7 +476,7 @@
     width: 50px;
     height: 50px;
 
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
 
     background:
         linear-gradient(135deg,
@@ -494,14 +494,14 @@
     margin: 40px 60px 0 auto;
 
     box-shadow:
-        0 0 25px rgba(139, 92, 246, .35);
+        0 0 25px rgba(var(--purple-rgb),.35);
 
     transition: .35s;
 }
 
 .button-top:hover {
     width: 140px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 }
 
 .button-top::before {
@@ -542,29 +542,29 @@
 .badge-roadmap {
     font-size: 0.7rem;
     padding: 5px 12px;
-    border-radius: 6px;
+    border-radius: var(--radius-xs);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .badge-done {
-    background: rgba(255, 255, 255, 0.05);
-    color: #9ca3af;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(var(--white-rgb),0.05);
+    color: var(--text-secondary);
+    border: 1px solid rgba(var(--white-rgb),0.15);
 }
 
 .badge-active {
-    background: rgba(139, 92, 246, 0.2);
-    color: #d8b4fe;
-    border: 1px solid rgba(139, 92, 246, 0.5);
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+    background: rgba(var(--purple-rgb),0.2);
+    color: var(--purple-text);
+    border: 1px solid rgba(var(--purple-rgb),0.5);
+    box-shadow: 0 0 12px rgba(var(--purple-rgb),0.3);
 }
 
 .badge-future {
     background: transparent;
-    color: #6b7280;
-    border: 1px dashed rgba(255, 255, 255, 0.15);
+    color: var(--text-dim);
+    border: 1px dashed rgba(var(--white-rgb),0.15);
 }
 
 /* =================================
@@ -675,7 +675,7 @@
 
     .fade-section {
         padding: 20px;
-        border-radius: 18px;
+        border-radius: var(--radius);
     }
 
     .ticker-item {
@@ -692,7 +692,7 @@
 
     .about-container {
         padding: 22px;
-        border-radius: 18px;
+        border-radius: var(--radius);
     }
 
     .floating-circle {
@@ -707,4 +707,38 @@
     .timeline-content h3 {
         font-size: 1.05rem;
     }
+}
+/* ==========================================================
+   MIGRADO DO INLINE — cabeçalho de marco na linha do tempo.
+   Os cinco marcos repetiam o mesmo `style={{ display:'flex', ... }}`.
+========================================================== */
+
+.sobre-conteudo{
+    max-width:1400px;
+    margin:0 auto;
+}
+
+.marco-cabecalho{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:8px;
+}
+
+.marco-cabecalho .date{
+    margin-bottom:0;
+}
+
+/* O marco do mês corrente ganha a cor da marca em vez de um lilás
+   avulso (#d8b4fe / #c4b5fd escritos à mão). */
+.marco-atual .date,
+.marco-atual h3{
+    color:var(--purple-text);
+}
+
+.sobre-rodape{
+    margin-top:40px;
+
+    text-align:center;
 }

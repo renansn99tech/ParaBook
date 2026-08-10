@@ -60,7 +60,7 @@ function Notificacoes() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Minhas Notificações</h2>
         {notificacoes.length > 0 && (
-          <button onClick={marcarTodasComoLidas} className="btn btn-sm btn-outline-secondary">
+          <button onClick={marcarTodasComoLidas} className="btn-ghost btn-sm">
             Marcar todas como lidas
           </button>
         )}

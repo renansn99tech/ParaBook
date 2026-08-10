@@ -41,7 +41,7 @@ function Home() {
   }, []);
 
   return (
-    <main>
+    <main className="home-page">
       <section className="hero">
         <div className="hero-content">
           <h1>Descubra, leia e publique <span>histórias</span></h1>
@@ -66,8 +66,8 @@ function Home() {
             <div className="floating-user">
               <div className="floating-avatar">👩</div>
               <div>
-                <h4 style={{ fontSize: '0.8rem', marginBottom: '2px' }}>{isAuthenticated ? user.username : 'Visitante'}</h4>
-                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                <h4 className="visitante-nome">{isAuthenticated ? user.username : 'Visitante'}</h4>
+                <span className="visitante-papel">
                   {isAuthenticated 
                     ? (user.tipo === 'admin' ? 'Administrador' 
                       : user.tipo === 'autor' ? 'Autor' 
@@ -191,57 +191,27 @@ function Home() {
           )}
         </div>
 
-        <div className="section-title-wrapper" style={{ marginTop: '80px' }}>
+        <div className="section-title-wrapper afastado">
           <h2 className="section-title">Comunidades Oficiais</h2>
           <p className="section-subtitle">
             Participe dos nossos espaços exclusivos de debate literário.
           </p>
         </div>
 
-        <div className="novidades-grid" style={{ marginBottom: '60px' }}>
+        <div className="novidades-grid com-folga">
           {comunidadesOficiais.length > 0 ? (
             comunidadesOficiais.map(comunidade => (
               <article
                 key={comunidade.id}
-                className="book-card card-novidade-evolved"
-                style={{
-                  padding: '30px 20px',
-                  textAlign: 'center',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
+                className="book-card card-novidade-evolved card-comunidade-oficial"
               >
-                <div
-                  style={{
-                    background: 'rgba(139, 92, 246, 0.15)',
-                    width: '70px',
-                    height: '70px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '20px',
-                    border: '1px solid rgba(139, 92, 246, 0.3)',
-                  }}
-                >
-                  <i
-                    className="fa-solid fa-users"
-                    style={{ color: '#8b5cf6', fontSize: '1.8rem' }}
-                  ></i>
+                <div className="icone">
+                  <i className="fa-solid fa-users"></i>
                 </div>
-                <h3 style={{ fontSize: '1.3rem', marginBottom: '10px', color: 'white' }}>
+                <h3>
                   {comunidade.nome}
                 </h3>
-                <p
-                  style={{
-                    fontSize: '0.95rem',
-                    color: 'var(--text-secondary)',
-                    marginBottom: '25px',
-                    lineHeight: '1.5',
-                  }}
-                >
+                <p>
                   {comunidade.descricao && comunidade.descricao.length > 90
                     ? comunidade.descricao.substring(0, 90) + '...'
                     : comunidade.descricao}
@@ -250,16 +220,6 @@ function Home() {
                 <Link
                   to="/comunidades"
                   className="btn-outline"
-                  style={{
-                    width: '100%',
-                    borderRadius: '12px',
-                    padding: '10px',
-                    textAlign: 'center',
-                    color: '#c4b5fd',
-                    borderColor: 'rgba(139, 92, 246, 0.4)',
-                    border: '1px solid',
-                    textDecoration: 'none'
-                  }}
                 >
                   Explorar Sala
                 </Link>
@@ -274,7 +234,7 @@ function Home() {
           )}
         </div>
 
-        <div className="cta" style={{ textAlign: 'center', margin: '4rem 0' }}>
+        <div className="cta">
           <h2>Tem uma história para contar?</h2>
           <p>Compartilhe sua obra gratuitamente e alcance novos leitores através da comunidade ParaBook.</p>
           <Link to="/publicar" className="btn-primary">Publicar Minha Obra</Link>

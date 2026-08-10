@@ -1,19 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
-
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
 
 const inputEstilo = {
   background: 'rgba(0,0,0,0.25)',
   border: '1px solid rgba(255,255,255,0.12)',
-  color: '#fff'
 };
 
 function CriarComunidade() {
@@ -83,11 +76,10 @@ function CriarComunidade() {
         descricao: form.descricao.trim()
       });
 
-      await Swal.fire({
+      await swal.fire({
         icon: 'success',
         title: 'Comunidade criada!',
-        text: `"${res.data.nome}" já está disponível e você é o primeiro membro.`,
-        ...swalTema
+        text: `"${res.data.nome}" já está disponível e você é o primeiro membro.`
       });
 
       navigate(`/comunidade/${res.data.id}/conteudo`);
@@ -99,7 +91,7 @@ function CriarComunidade() {
         || Object.values(dados || {}).flat()[0]
         || 'Não foi possível criar a comunidade. Tente novamente.';
 
-      Swal.fire({ icon: 'error', title: 'Ops', text: mensagem, ...swalTema });
+      swal.fire({ icon: 'error', title: 'Ops', text: mensagem});
       setEnviando(false);
     }
   };

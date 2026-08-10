@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import '../assets/css/painel.css';
 
 function RecomendacaoIA() {
   const [recomendacoes, setRecomendacoes] = useState([]);
@@ -28,7 +29,7 @@ function RecomendacaoIA() {
 
   if (loading) {
     return (
-      <div className="container py-5 text-center" style={{ minHeight: '80vh' }}>
+      <div className="container py-5 text-center painel-page alta">
         <h2 className="text-white-50">Analisando sua estante...</h2>
       </div>
     );
@@ -36,14 +37,14 @@ function RecomendacaoIA() {
 
   if (requerPremium) {
     return (
-      <div className="container py-5" style={{ minHeight: '80vh' }}>
+      <div className="container py-5 painel-page alta">
         <div className="row justify-content-center">
           <div className="col-lg-7">
-            <div className="card border-0 shadow-lg rounded-4 text-white text-center" style={{ background: '#12131C' }}>
+            <div className="painel-card text-center">
               <div className="card-body p-4 p-md-5">
                 <span className="badge bg-warning bg-opacity-25 text-warning rounded-circle p-3 fs-3 mb-3">✨</span>
                 <h3 className="fw-bold text-white mb-3">Recurso exclusivo Premium</h3>
-                <p className="text-white-50 mx-auto mb-4" style={{ maxWidth: '480px' }}>
+                <p className="painel-lead estreita mx-auto mb-4">
                   As recomendações personalizadas analisam seu histórico de leituras para sugerir
                   obras alinhadas ao seu gosto. Assine o ParaBook Premium para desbloquear.
                 </p>
@@ -59,13 +60,13 @@ function RecomendacaoIA() {
   }
 
   return (
-    <div className="container py-5" style={{ minHeight: '80vh' }}>
+    <div className="container py-5 painel-page alta">
       <div className="text-center mb-5">
         <h1 className="fw-bold text-white mb-2">
-          <i className="fa-solid fa-wand-magic-sparkles me-2" style={{ color: '#8b5cf6' }}></i>
+          <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
           Recomendações para Você
         </h1>
-        <p className="text-white-50 fs-5 mx-auto" style={{ maxWidth: '640px' }}>{motivoGeral}</p>
+        <p className="fs-5 mx-auto painel-lead larga">{motivoGeral}</p>
       </div>
 
       {erro && <div className="alert alert-danger text-center">{erro}</div>}
@@ -86,13 +87,11 @@ function RecomendacaoIA() {
           {recomendacoes.map((livro) => (
             <div className="col" key={livro.id}>
               <div
-                className="card h-100 border-0 shadow-lg rounded-4 text-white position-relative"
-                style={{ background: '#12131C' }}
+                className="painel-card h-100 position-relative"
               >
                 <div className="position-absolute top-0 end-0 m-2">
                   <span
                     className="badge rounded-pill px-3 py-2 fw-semibold"
-                    style={{ background: 'rgba(139,92,246,0.25)', color: '#c4b5fd', fontSize: '0.75rem' }}
                     title="Índice de afinidade com o seu perfil de leitura"
                   >
                     {livro.afinidade}% match
@@ -102,15 +101,13 @@ function RecomendacaoIA() {
                 {livro.capa_url ? (
                   <img
                     src={livro.capa_url}
-                    className="card-img-top rounded-top-4"
+                    className="card-img-top rounded-top-4 capa-recomendacao"
                     alt={`Capa do livro ${livro.titulo}`}
-                    style={{ height: '260px', objectFit: 'cover' }}
                     loading="lazy"
                   />
                 ) : (
                   <div
                     className="d-flex flex-column align-items-center justify-content-center rounded-top-4"
-                    style={{ height: '260px', background: 'rgba(255,255,255,0.03)' }}
                   >
                     <i className="fa-solid fa-book fa-3x text-white-50 mb-2"></i>
                     <small className="text-white-50 text-uppercase">Sem Capa</small>
@@ -121,7 +118,7 @@ function RecomendacaoIA() {
                   <h5 className="fw-bold text-white mb-1">{livro.titulo}</h5>
                   <p className="text-white-50 small mb-2">{livro.autor}</p>
 
-                  <p className="small mb-3 flex-grow-1" style={{ color: '#c4b5fd' }}>
+                  <p className="small mb-3 flex-grow-1 motivo-ia">
                     <i className="fa-solid fa-sparkles me-1"></i>{livro.motivo_card}
                   </p>
 

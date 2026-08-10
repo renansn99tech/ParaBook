@@ -1,14 +1,8 @@
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
-
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
 
 function OnboardingAutor() {
   const { user, loading, recarregarUsuario } = useContext(AuthContext);
@@ -32,20 +26,17 @@ function OnboardingAutor() {
     try {
       const res = await api.post('/perfis/solicitar-autor/');
       await recarregarUsuario();
-      await Swal.fire({
+      await swal.fire({
         icon: 'success',
         title: 'Solicitação enviada!',
-        text: res.data.detail,
-        ...swalTema
-      });
+        text: res.data.detail});
       navigate('/perfil');
     } catch (error) {
       console.error("Erro ao solicitar perfil de autor", error);
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Erro',
-        text: error.response?.data?.detail || 'Não foi possível enviar sua solicitação. Tente novamente.',
-        ...swalTema
+        text: error.response?.data?.detail || 'Não foi possível enviar sua solicitação. Tente novamente.'
       });
       setEnviando(false);
     }

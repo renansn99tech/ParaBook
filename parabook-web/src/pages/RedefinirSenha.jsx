@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import api from '../services/api';
 import '../assets/css/password-reset.css';
-
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
 
 function RedefinirSenha() {
   const { uid, token } = useParams();
@@ -37,11 +31,10 @@ function RedefinirSenha() {
         nova_senha: novaSenha
       });
 
-      await Swal.fire({
+      await swal.fire({
         icon: 'success',
         title: 'Senha redefinida!',
-        text: 'Sua senha foi alterada com sucesso. Faça login para continuar.',
-        ...swalTema
+        text: 'Sua senha foi alterada com sucesso. Faça login para continuar.'
       });
       navigate('/login');
     } catch (error) {

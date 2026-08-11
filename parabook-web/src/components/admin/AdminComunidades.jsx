@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
-import Swal from 'sweetalert2';
+import swal, { BOTAO } from '../../services/swal';
 import api from '../../services/api';
-
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
 
 // Espelha MIN_DENUNCIAS_PARA_EXCLUSAO da API: aqui é só para o aviso ao admin;
 // quem barra de fato a exclusão é o servidor.
@@ -51,11 +45,10 @@ function AdminComunidades() {
       const res = await api.post('/comunidades/comunidades/', formData);
       setComunidades([res.data, ...comunidades]);
       setFormData({ nome: '', descricao: '' });
-      Swal.fire({
+      swal.fire({
         icon: 'success',
         title: 'Comunidade oficial criada!',
-        text: `"${res.data.nome}" já está disponível para os leitores.`,
-        ...swalTema
+        text: `"${res.data.nome}" já está disponível para os leitores.`
       });
     } catch (error) {
       console.error("Erro ao criar comunidade oficial", error);
@@ -64,22 +57,21 @@ function AdminComunidades() {
         || Object.values(dados || {}).flat()[0]
         || 'Não foi possível criar a comunidade oficial.';
 
-      Swal.fire({ icon: 'error', title: 'Ops', text: mensagem, ...swalTema });
+      swal.fire({ icon: 'error', title: 'Ops', text: mensagem});
     }
   };
 
   const handleExcluir = async (comunidade) => {
     // Sala oficial é da casa: basta a confirmação do admin.
     if (comunidade.criada_por_sistema) {
-      const confirmacao = await Swal.fire({
-        ...swalTema,
+      const confirmacao = await swal.fire({
         icon: 'warning',
         title: 'Excluir comunidade oficial?',
         html: `<strong>${comunidade.nome}</strong> e todas as suas postagens serão removidas. Esta ação não pode ser desfeita.`,
         showCancelButton: true,
         confirmButtonText: 'Sim, excluir',
         cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#ef4444'
+        confirmButtonColor: BOTAO.perigo
       });
 
       if (!confirmacao.isConfirmed) return;
@@ -92,8 +84,7 @@ function AdminComunidades() {
     const faltam = MIN_DENUNCIAS_EXCLUSAO - denuncias;
     const atingiuMinimo = faltam <= 0;
 
-    const confirmacao = await Swal.fire({
-      ...swalTema,
+    const confirmacao = await swal.fire({
       icon: atingiuMinimo ? 'warning' : 'info',
       title: atingiuMinimo ? 'Excluir comunidade denunciada?' : 'Denúncias insuficientes',
       html: `
@@ -108,7 +99,7 @@ function AdminComunidades() {
       showCancelButton: atingiuMinimo,
       confirmButtonText: atingiuMinimo ? 'Sim, excluir' : 'Entendi',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: atingiuMinimo ? '#ef4444' : '#8b5cf6'
+      confirmButtonColor: atingiuMinimo ? BOTAO.perigo : BOTAO.padrao
     });
 
     if (atingiuMinimo && confirmacao.isConfirmed) {
@@ -120,16 +111,14 @@ function AdminComunidades() {
     try {
       await api.delete(`/comunidades/comunidades/${comunidade.id}/`);
       setComunidades(comunidades.filter(c => c.id !== comunidade.id));
-      Swal.fire({
-        ...swalTema,
+      swal.fire({
         icon: 'success',
         title: 'Comunidade excluída',
         text: `"${comunidade.nome}" foi removida da plataforma.`
       });
     } catch (error) {
       console.error("Erro ao excluir comunidade", error);
-      Swal.fire({
-        ...swalTema,
+      swal.fire({
         icon: 'error',
         title: 'Erro',
         text: error.response?.data?.detail || 'Não foi possível excluir a comunidade.'
@@ -147,67 +136,56 @@ function AdminComunidades() {
   const totalUsuarios = comunidades.filter(c => !c.criada_por_sistema).length;
 
   return (
-    <section className="secao" style={{ display: 'block' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
+    <section className="secao">
+      <div className="admin-secao-topo">
         <div>
-          <h1 style={{ color: 'white', marginBottom: '5px' }}>Gerenciar Comunidades</h1>
-          <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Controle de ecossistemas literários e moderação de salas.</p>
+          <h1>Gerenciar Comunidades</h1>
+          <p className="admin-subtitulo">Controle de ecossistemas literários e moderação de salas.</p>
         </div>
-        
-        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <input 
-            type="text" 
-            name="nome" 
-            placeholder="Nome da Comunidade Oficial" 
-            value={formData.nome} 
-            onChange={handleChange} 
-            required 
-            style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.1)', background: '#0f172a', color: 'white', height: '45px' }} 
+
+        <form className="admin-form-inline" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="nome"
+            placeholder="Nome da Comunidade Oficial"
+            value={formData.nome}
+            onChange={handleChange}
+            required
           />
-          <input 
-            type="text" 
-            name="descricao" 
-            placeholder="Descrição Curta" 
-            value={formData.descricao} 
-            onChange={handleChange} 
-            required 
-            style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.1)', background: '#0f172a', color: 'white', height: '45px' }} 
+          <input
+            type="text"
+            name="descricao"
+            placeholder="Descrição Curta"
+            value={formData.descricao}
+            onChange={handleChange}
+            required
           />
-          <button type="submit" style={{ background: '#8b5cf6', color: 'white', padding: '0 25px', height: '45px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', whiteSpace: 'nowrap' }}>
-            + Criar Oficial
-          </button>
+          <button type="submit">+ Criar Oficial</button>
         </form>
       </div>
-      
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <button 
-          onClick={() => setFiltro('todas')}
-          style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: filtro === 'todas' ? '#6b21a8' : '#1e293b', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}
-        >
+
+      {/* aria-pressed carrega o estado do filtro: o CSS pinta a partir dele
+          e o leitor de tela anuncia qual está ativo. */}
+      <div className="admin-filtros">
+        <button className="admin-filtro" aria-pressed={filtro === 'todas'} onClick={() => setFiltro('todas')}>
           Todas ({comunidades.length})
         </button>
-        <button 
-          onClick={() => setFiltro('sistema')}
-          style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: filtro === 'sistema' ? '#166534' : '#1e293b', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}
-        >
+        <button className="admin-filtro" aria-pressed={filtro === 'sistema'} onClick={() => setFiltro('sistema')}>
           Do Sistema ({totalSistema})
         </button>
-        <button 
-          onClick={() => setFiltro('usuarios')}
-          style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: filtro === 'usuarios' ? '#1e40af' : '#1e293b', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}
-        >
+        <button className="admin-filtro" aria-pressed={filtro === 'usuarios'} onClick={() => setFiltro('usuarios')}>
           Dos Usuários ({totalUsuarios})
         </button>
       </div>
 
-      <div className="admin-list-container" style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+      <div className="admin-panel admin-list-container">
         {loading ? (
-          <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Carregando...</p>
+          <p className="admin-estado">Carregando...</p>
         ) : filtradas.length > 0 ? (
-          <table style={{ width: '100%', color: 'white', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <table className="admin-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                <th style={{ padding: '10px 0' }}>Nome</th>
+              <tr>
+                <th>Nome</th>
                 <th>Criador</th>
                 <th>Membros</th>
                 <th>Denúncias</th>
@@ -217,31 +195,32 @@ function AdminComunidades() {
             </thead>
             <tbody>
               {filtradas.map(comum => (
-                <tr key={comum.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                  <td style={{ padding: '10px 0' }}>{comum.nome}</td>
+                <tr key={comum.id}>
+                  <td>{comum.nome}</td>
                   <td>{comum.criador_nome || 'Sistema'}</td>
                   <td>{comum.total_membros || 0}</td>
                   <td>
                     {comum.criada_por_sistema ? (
-                      <span style={{ color: '#64748b' }}>—</span>
+                      <span className="admin-contador na">—</span>
                     ) : (
-                      <span style={{ color: (comum.total_denuncias || 0) >= MIN_DENUNCIAS_EXCLUSAO ? '#ef4444' : '#94a3b8', fontWeight: (comum.total_denuncias || 0) >= MIN_DENUNCIAS_EXCLUSAO ? 'bold' : 'normal' }}>
+                      <span className={`admin-contador ${(comum.total_denuncias || 0) >= MIN_DENUNCIAS_EXCLUSAO ? 'no-limite' : ''}`}>
                         {comum.total_denuncias || 0}/{MIN_DENUNCIAS_EXCLUSAO}
                       </span>
                     )}
                   </td>
                   <td>
-                    {comum.criada_por_sistema ?
-                      <span style={{ color: '#4ade80', fontSize: '0.9rem' }}><i className="fa-solid fa-shield-halved"></i> Oficial</span> : 
-                      <span style={{ color: '#60a5fa', fontSize: '0.9rem' }}><i className="fa-solid fa-user-group"></i> Usuário</span>
-                    }
+                    {comum.criada_por_sistema ? (
+                      <span className="admin-origem oficial"><i className="fa-solid fa-shield-halved"></i> Oficial</span>
+                    ) : (
+                      <span className="admin-origem usuario"><i className="fa-solid fa-user-group"></i> Usuário</span>
+                    )}
                   </td>
                   <td>
                     <button
+                      className="admin-table-acao"
                       onClick={() => handleExcluir(comum)}
                       title={`Excluir ${comum.nome}`}
                       aria-label={`Excluir ${comum.nome}`}
-                      style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '8px' }}
                     >
                       <i className="fa-solid fa-trash"></i>
                     </button>
@@ -251,7 +230,7 @@ function AdminComunidades() {
             </tbody>
           </table>
         ) : (
-          <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Nenhuma comunidade encontrada para este filtro.</p>
+          <p className="admin-estado vazio">Nenhuma comunidade encontrada para este filtro.</p>
         )}
       </div>
     </section>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import Swal from 'sweetalert2';
+import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
 import '../assets/css/livro-info.css';
 
@@ -44,7 +44,7 @@ function LivroInfo() {
   }, [id, user]);
 
   const abrirDenuncia = () => {
-    Swal.fire({
+    swal.fire({
       title: "Relatar Problema",
       text: `Selecione o motivo da denúncia para a obra "${livro?.titulo}":`,
       input: "select",
@@ -58,8 +58,8 @@ function LivroInfo() {
       showCancelButton: true,
       confirmButtonText: "Enviar Denúncia",
       cancelButtonText: "Cancelar",
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#374151",
+      confirmButtonColor: BOTAO.perigo,
+      cancelButtonColor: BOTAO.neutro,
       background: "#0f172a",
       color: "#f8fafc",
       inputValidator: (value) => {
@@ -73,26 +73,25 @@ function LivroInfo() {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
+        swal.fire({
           title: "Denúncia Recebida!",
           text: "Nossa equipe de moderação analisará o caso em até 48 horas.",
           icon: "success",
           background: "#0f172a",
           color: "#f8fafc",
-          confirmButtonColor: "#8b5cf6",
         });
       }
     });
   };
 
   const confirmarRemocaoAvaliacao = () => {
-    Swal.fire({
+    swal.fire({
       title: "Remover Avaliação?",
       text: "Tem certeza de que deseja apagar sua nota e comentário desta obra?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#374151",
+      confirmButtonColor: BOTAO.perigo,
+      cancelButtonColor: BOTAO.neutro,
       confirmButtonText: "Sim, remover",
       cancelButtonText: "Cancelar",
       background: "#0f172a",
@@ -101,7 +100,7 @@ function LivroInfo() {
       if (result.isConfirmed && minhaAvaliacao?.id) {
         try {
           await api.patch(`/biblioteca/estante/${minhaAvaliacao.id}/`, { nota: null, resenha: null });
-          Swal.fire('Removido', 'Sua avaliação foi removida.', 'success');
+          swal.fire('Removido', 'Sua avaliação foi removida.', 'success');
           setMinhaAvaliacao(null);
           const resResenhas = await api.get(`/biblioteca/livros/${id}/resenhas/`);
           setAvaliacoes(resResenhas.data);
@@ -128,7 +127,7 @@ function LivroInfo() {
         });
       }
       
-      Swal.fire('Sucesso!', 'Avaliação salva com sucesso.', 'success');
+      swal.fire('Sucesso!', 'Avaliação salva com sucesso.', 'success');
       
       const resEstante = await api.get(`/biblioteca/estante/`);
       const estanteData = resEstante.data.results || resEstante.data;
@@ -170,8 +169,8 @@ function LivroInfo() {
           {livro.capa_url ? (
             <img src={livro.capa_url} alt={livro.titulo} className="livro-capa-img" />
           ) : (
-            <div className="livro-capa-placeholder">
-              <i className="fa-solid fa-book" style={{ fontSize: '5rem', color: '#475569' }}></i>
+            <div className="livro-capa-placeholder capa-vazia">
+              <i className="fa-solid fa-book"></i>
             </div>
           )}
 
@@ -197,42 +196,42 @@ function LivroInfo() {
             <div className="metadata-item">
               <span className="meta-titulo">Gênero / Categoria</span>
               <span className="meta-valor">
-                <i className="fa-solid fa-bookmark" style={{ color: '#8b5cf6' }}></i> {livro.categoria_nome || "Não informado"}
+                <i className="fa-solid fa-bookmark"></i> {livro.categoria_nome || "Não informado"}
               </span>
             </div>
 
             <div className="metadata-item">
               <span className="meta-titulo">Ano / Data de Publicação</span>
               <span className="meta-valor">
-                <i className="fa-regular fa-calendar-days" style={{ color: '#8b5cf6' }}></i> {livro.ano_publicacao || "Não informado"}
+                <i className="fa-regular fa-calendar-days"></i> {livro.ano_publicacao || "Não informado"}
               </span>
             </div>
 
             <div className="metadata-item">
               <span className="meta-titulo">ISBN</span>
               <span className="meta-valor">
-                <i className="fa-solid fa-barcode" style={{ color: '#8b5cf6' }}></i> {livro.isbn || "Não cadastrado"}
+                <i className="fa-solid fa-barcode"></i> {livro.isbn || "Não cadastrado"}
               </span>
             </div>
 
             <div className="metadata-item">
               <span className="meta-titulo">Edição / Organização</span>
               <span className="meta-valor">
-                <i className="fa-solid fa-layer-group" style={{ color: '#8b5cf6' }}></i> {livro.edicao || "1ª Edição"}
+                <i className="fa-solid fa-layer-group"></i> {livro.edicao || "1ª Edição"}
               </span>
             </div>
 
             <div className="metadata-item">
               <span className="meta-titulo">Páginas (Aprox.)</span>
               <span className="meta-valor">
-                <i className="fa-solid fa-file-lines" style={{ color: '#8b5cf6' }}></i> {livro.paginas || "---"}
+                <i className="fa-solid fa-file-lines"></i> {livro.paginas || "---"}
               </span>
             </div>
 
             <div className="metadata-item">
               <span className="meta-titulo">Avaliação Média</span>
               <span className="meta-valor">
-                <i className="fa-solid fa-star" style={{ color: '#fbbf24' }}></i> {livro.avaliacao || "S/N"} / 5
+                <i className="fa-solid fa-star"></i> {livro.avaliacao || "S/N"} / 5
               </span>
             </div>
           </div>
@@ -246,7 +245,7 @@ function LivroInfo() {
 
       <section className="avaliacoes-section">
         <h2 className="avaliacoes-titulo">
-          <i className="fa-solid fa-comments" style={{ color: '#8b5cf6' }}></i> Avaliações da Comunidade
+          <i className="fa-solid fa-comments"></i> Avaliações da Comunidade
         </h2>
 
         {user && (
@@ -254,13 +253,13 @@ function LivroInfo() {
             {minhaAvaliacao ? (
               <div className="minha-avaliacao-header">
                 <div>
-                  <h4 style={{ color: '#c4b5fd', marginBottom: '10px' }}>Sua Avaliação</h4>
-                  <div style={{ color: '#fbbf24', marginBottom: '10px', fontSize: '1.2rem' }}>
+                  <h4>Sua Avaliação</h4>
+                  <div className="minha-avaliacao-nota">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <i key={star} className={`fa-${star <= minhaAvaliacao.nota ? 'solid' : 'regular'} fa-star`}></i>
                     ))}
                   </div>
-                  <p style={{ color: '#cbd5e1', fontStyle: 'italic', margin: 0 }}>
+                  <p className="minha-avaliacao-texto">
                     "{minhaAvaliacao.resenha}"
                   </p>
                 </div>
@@ -274,10 +273,10 @@ function LivroInfo() {
               </div>
             ) : (
               <>
-                <h4 style={{ color: 'white', marginBottom: '20px' }}>O que você achou desta obra?</h4>
+                <h4>O que você achou desta obra?</h4>
                 <form onSubmit={handleAvaliar} className="form-avaliacao">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-                    <label style={{ color: '#cbd5e1', fontWeight: 'bold' }}>Sua Nota:</label>
+                  <div className="form-avaliacao-linha">
+                    <label>Sua Nota:</label>
                     <select
                       required
                       className="form-avaliacao-select"
@@ -317,9 +316,9 @@ function LivroInfo() {
                 <div className="avaliacao-header">
                   <strong className="avaliacao-user">
                     {ava.usuario_foto ? (
-                      <img src={ava.usuario_foto} alt="User Avatar" style={{ width: '24px', height: '24px', borderRadius: '50%', marginRight: '5px', verticalAlign: 'middle', objectFit: 'cover' }} />
+                      <img src={ava.usuario_foto} alt="" className="avaliacao-avatar" />
                     ) : (
-                      <i className="fa-solid fa-user-circle" style={{ color: '#94a3b8', fontSize: '1.2rem', verticalAlign: 'middle', marginRight: '5px' }}></i>
+                      <i className="fa-solid fa-user-circle avaliacao-avatar-vazio"></i>
                     )}
                     @{ava.usuario_nome}
                   </strong>
@@ -335,8 +334,8 @@ function LivroInfo() {
             ))
           ) : (
             <div className="empty-avaliacoes">
-              <i className="fa-solid fa-star-half-stroke" style={{ fontSize: '2.5rem', color: '#475569', marginBottom: '15px' }}></i>
-              <p style={{ color: '#64748b', fontSize: '1.1rem', margin: 0 }}>
+              <i className="fa-solid fa-star-half-stroke"></i>
+              <p>
                 Nenhuma avaliação para esta obra ainda. Seja o primeiro a avaliar!
               </p>
             </div>

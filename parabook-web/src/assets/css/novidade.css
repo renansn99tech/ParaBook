@@ -9,9 +9,9 @@
 
 /* Efeito Glow nos Cards de Lançamento */
 .news-marketing-page .book-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(139, 92, 246, 0.45) !important;
-    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
+    transform: translateY(var(--lift-md));
+    border-color: rgba(var(--purple-rgb),0.45) !important;
+    box-shadow: 0 20px 40px rgba(var(--purple-rgb),0.15);
 }
 
 /* Animação do Ticker Literário */
@@ -19,18 +19,18 @@
     width: 100%;
     overflow: hidden;
     background: rgba(10, 15, 30, 0.95);
-    border-top: 1px solid rgba(139, 92, 246, 0.4);
-    border-bottom: 1px solid rgba(139, 92, 246, 0.4);
+    border-top: 1px solid rgba(var(--purple-rgb),0.4);
+    border-bottom: 1px solid rgba(var(--purple-rgb),0.4);
     padding: 14px 0;
     white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(var(--black-rgb),0.3);
 }
 
 .novidade-ticker-item {
     display: inline-block;
     padding-left: 100%;
     animation: tickerAnimation 25s linear infinite;
-    color: #e2e8f0 !important;
+    color: var(--text-soft) !important;
     font-weight: 700;
     font-size: 0.95rem;
     letter-spacing: 2px;

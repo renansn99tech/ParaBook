@@ -170,7 +170,10 @@ function Biblioteca() {
           </div>
           <div className="col-12 col-md-4 text-center text-md-end mt-4 mt-md-0">
             {user && (
-              <Link to="/minha-biblioteca" className="btn btn-light btn-lg fw-semibold shadow-sm">
+              /* Era `btn btn-light`: um botão branco do Bootstrap sobre o
+                 banner roxo escuro. .btn-ghost é a ação secundária do
+                 design system e já traz hover, foco e press prontos. */
+              <Link to="/minha-biblioteca" className="btn-ghost">
                 <i className="fa-solid fa-bookmark me-2 text-primary"></i>Minha Estante
               </Link>
             )}

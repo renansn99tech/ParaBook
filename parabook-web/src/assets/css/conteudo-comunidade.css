@@ -39,9 +39,13 @@
     max-width: 1200px;
     margin: 3rem auto 2rem;
     padding: 2.5rem 2rem;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #14213d, #58504a);
-    color: white;
+    border-radius: var(--radius);
+    /* Era um degradê azul-marinho -> cinza-quente (#14213d -> #58504a),
+       a única superfície morna do app. Agora usa o roxo da marca. */
+    background: linear-gradient(135deg, var(--purple-dark), var(--bg-card));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    color: var(--text);
 }
 
 .banner-comunidade h2 {
@@ -66,7 +70,7 @@
 .posts-section h3 {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
-    border-bottom: 2px solid #58504a;
+    border-bottom: 2px solid var(--border-strong);
     padding-bottom: 0.8rem;
 }
 
@@ -77,15 +81,15 @@
 }
 
 .post-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
+    background: rgba(var(--white-rgb),0.04);
+    border: 1px solid rgba(var(--white-rgb),0.08);
+    border-radius: var(--radius-md);
     padding: 1.5rem;
-    color: #E5E7EB;
+    color: var(--text-soft);
 }
 
 .post-card:hover {
-    border-color: rgba(139, 92, 246, 0.4);
+    border-color: rgba(var(--purple-rgb),0.4);
 }
 
 .post-actions button {
@@ -103,15 +107,15 @@
     max-width: 1200px;
     margin: 1.5rem auto 3rem;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--white-rgb),0.05);
     backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
+    border: 1px solid rgba(var(--white-rgb),0.08);
+    border-radius: var(--radius);
 }
 
 .post-form-container h3 {
     margin-bottom: 1.5rem;
-    color: #E5E7EB;
+    color: var(--text-soft);
 }
 
 .form-group {
@@ -122,17 +126,17 @@
 
 .form-group label {
     margin-bottom: 0.6rem;
-    color: #9CA3AF;
+    color: var(--text-secondary);
 }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
     padding: 14px;
-    background: #020617;
-    border: 1px solid #1F2937;
-    border-radius: 12px;
-    color: #E5E7EB;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-soft);
     outline: none;
     transition: 0.3s;
 }
@@ -144,24 +148,32 @@
 
 .form-group input:focus,
 .form-group textarea:focus {
-    border-color: #6366F1;
+    border-color: var(--purple);
+    box-shadow: var(--focus-ring);
 }
 
-/* BUTTONS */
+/* BUTTONS
+   O índigo (#6366F1) que abria o degradê e marcava o foco era o roxo de
+   outra paleta — perto o bastante do --purple para parecer erro de
+   render, longe o bastante para não ser a marca. */
 .btn-publicar, .btn-primary-action {
-    padding: 12px 22px;
-    border-radius: 8px;
+    padding: var(--btn-padding);
+    border-radius: var(--btn-radius);
     border: none;
-    background: linear-gradient(90deg, #6366F1, #8B5CF6);
-    color: white;
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    color: #fff;
     cursor: pointer;
     font-weight: 600;
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .btn-primary-action:hover, .btn-publicar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transform: translateY(var(--lift-sm));
+    box-shadow: var(--shadow-glow-sm);
 }
+
+.btn-primary-action:active, .btn-publicar:active { transform: translateY(0) scale(0.98); }
 
 /* SEARCH */
 .search-box {
@@ -172,29 +184,313 @@
 .search-box input {
     width: 100%;
     padding: 12px 16px;
-    border-radius: 12px;
-    border: 1px solid #1F2937;
-    background: rgba(2, 6, 23, 0.85);
-    color: #E5E7EB;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: rgba(var(--bg-main-rgb), 0.85);
+    color: var(--text-soft);
     outline: none;
     font-size: 1rem;
     transition: 0.3s ease;
 }
 
 .search-box input::placeholder {
-    color: #6B7280;
+    color: var(--text-dim);
 }
 
 .search-box input:focus {
-    border-color: #6366F1;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+    border-color: var(--purple);
+    box-shadow: var(--focus-ring);
+}
+
+/* ==========================================================
+   LINHAS, BADGES E PAINÉIS
+
+   Tudo abaixo estava escrito em `style={{...}}` dentro do JSX. Estilo
+   inline vence qualquer classe, então essa página não obedecia à paleta
+   — e não obedeceria a um tema claro. Aqui vira classe, com os tokens.
+========================================================== */
+
+/* Cabeçalho de bloco: título à esquerda, ações à direita, quebrando
+   para baixo no celular. */
+.linha-titulo{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+
+    margin-bottom:24px;
+}
+
+.linha-titulo h3{
+    margin-bottom:0;
+
+    color:var(--text);
+}
+
+.linha-titulo .acoes{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+/* Etiquetas de estado. Mesmo idioma do resto do app: tinta translúcida
+   da cor semântica + texto na versão -soft dela. */
+.pagina-comunidade .badge.perigo{
+    background:rgba(var(--danger-rgb),.2);
+    color:var(--danger-soft);
+}
+
+.pagina-comunidade .badge.aviso{
+    background:rgba(var(--warning-rgb),.2);
+    color:var(--warning-soft);
+}
+
+.pagina-comunidade .badge.roxo{
+    background:rgba(var(--purple-rgb),.25);
+    color:var(--purple-text);
+}
+
+.banner-comunidade .badge{
+    font-size:.9rem;
+    vertical-align:middle;
+}
+
+/* Variantes de intenção do botão de ação do topo. */
+.btn-primary-action.aviso{
+    background:rgba(var(--warning-rgb),.2);
+    border:1px solid rgba(var(--warning-rgb),.5);
+    color:var(--warning-soft);
+}
+
+.btn-primary-action.perigo{
+    background:rgba(var(--danger-rgb),.2);
+    border:1px solid rgba(var(--danger-rgb),.4);
+    color:var(--danger-soft);
+}
+
+/* Bloco separado por uma linha, dentro do painel de configurações. */
+.painel-secao{
+    margin-top:25px;
+    padding-top:25px;
+
+    border-top:1px solid rgba(var(--white-rgb),.1);
+}
+
+/* Cabeçalho clicável de uma seção que abre e fecha (membros, status). */
+.painel-toggle{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    width:100%;
+    padding:12px 15px;
+
+    border:none;
+    border-radius:var(--radius-sm);
+
+    background:rgba(var(--white-rgb),.05);
+
+    cursor:pointer;
+
+    transition:background var(--dur-fast) var(--ease-standard);
+}
+
+.painel-toggle:hover{
+    background:rgba(var(--white-rgb),.09);
+}
+
+.painel-toggle.aberto{
+    border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.painel-toggle .rotulo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    color:var(--text-soft);
+    font-weight:500;
+}
+
+.painel-toggle .direita{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.painel-toggle .chevron{
+    color:var(--text-secondary);
+}
+
+/* O botão de ligar/desligar a comunidade herda a cor do que ele FAZ:
+   verde quando vai reativar, vermelho quando vai desativar. */
+.painel-toggle.acao-ativar{
+    background:rgba(var(--success-rgb),.05);
+}
+
+.painel-toggle.acao-ativar .rotulo{
+    color:var(--success-soft);
+}
+
+.painel-toggle.acao-desativar{
+    background:rgba(var(--danger-rgb),.05);
+}
+
+.painel-toggle.acao-desativar .rotulo{
+    color:var(--danger-soft);
+}
+
+/* Lista de membros que desce do cabeçalho acima. */
+.lista-membros{
+    max-height:260px;
+    padding:10px 15px;
+    margin-bottom:15px;
+
+    overflow-y:auto;
+
+    border-radius:0 0 var(--radius-sm) var(--radius-sm);
+
+    background:rgba(var(--black-rgb),.25);
+}
+
+.membro-linha{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:10px 0;
+
+    border-bottom:1px solid var(--border);
+}
+
+.membro-linha:last-child{
+    border-bottom:none;
+}
+
+.membro-linha a{
+    color:var(--text-soft);
+}
+
+.membro-linha a:hover{
+    color:var(--purple-text);
+}
+
+.membro-linha i{
+    color:var(--text-dim);
+}
+
+.membro-linha small{
+    margin-left:8px;
+
+    color:var(--text-dim);
+}
+
+/* Texto de apoio: carregando, lista vazia. */
+.texto-apoio{
+    margin:10px 0;
+
+    color:var(--text-secondary);
+}
+
+/* ---- Postagens ---- */
+
+.post-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+
+    width:100%;
+}
+
+.post-title{
+    margin-bottom:5px;
+
+    color:var(--text);
+}
+
+.post-author{
+    font-size:.85rem;
+}
+
+.post-author a{
+    color:var(--purple-text);
+    font-weight:500;
+}
+
+.post-content{
+    color:var(--text-soft);
+    line-height:1.6;
+}
+
+.post-acoes{
+    display:flex;
+    gap:8px;
+    flex-shrink:0;
+}
+
+.post-acoes button{
+    padding:8px 12px;
+
+    border-radius:var(--radius-sm);
+
+    font-size:.85rem;
+
+    background:transparent;
+
+    cursor:pointer;
+
+    transition:background var(--dur-fast) var(--ease-standard),
+               border-color var(--dur-fast) var(--ease-standard),
+               color var(--dur-fast) var(--ease-standard);
+}
+
+/* Editar usava um índigo (#a5b4fc/rgba(99,102,241,...)) que não existe na
+   paleta. É uma ação reversível: entra como contorno roxo. */
+.post-acoes .btn-primary-outline{
+    border:1px solid rgba(var(--purple-rgb),.4);
+    color:var(--purple-text);
+}
+
+.post-acoes .btn-primary-outline:hover{
+    background:rgba(var(--purple-rgb),.15);
+    border-color:var(--purple);
+}
+
+.post-acoes .btn-danger-outline{
+    border:1px solid rgba(var(--danger-rgb),.3);
+    color:var(--danger-soft);
+}
+
+.post-acoes .btn-danger-outline:hover{
+    background:var(--danger);
+    border-color:var(--danger);
+    color:#fff;
+}
+
+/* O painel de configuração e o de nova postagem respiram do que vem
+   depois. Antes era um marginBottom inline em cada um.
+
+   Também havia um `animation: fadeIn .3s` inline no painel de config,
+   apontando para um @keyframes que mora em perfil.css — CSS que esta
+   página nunca carrega. A animação não rodava; foi removida em vez de
+   ser copiada para cá. */
+.post-form-container{
+    margin-bottom:30px;
+}
+
+.post-form-container h3{
+    margin-bottom:15px;
+
+    color:var(--text);
 }
 
 .empty-state {
     text-align: center;
     padding: 40px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 16px;
-    border: 1px dashed rgba(255, 255, 255, 0.1);
-    color: var(--text-secondary, #94a3b8);
+    background: rgba(var(--white-rgb),0.02);
+    border-radius: var(--radius);
+    border: 1px dashed rgba(var(--white-rgb),0.1);
+    color: var(--text-secondary, var(--text-secondary));
 }

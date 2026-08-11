@@ -1,17 +1,19 @@
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
+import useTema from '../hooks/useTema'
 import logoNova from '../assets/img/logo-nova.png'
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const { alternar, ehClaro } = useTema();
 
   return (
     <>
     <nav className="navbar navbar-expand-lg">
       <div className="container-fluid navbar-container">
         
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to="/" className="logo-link">
           <div className="logo-container">
             <img src={logoNova} alt="ParaBook" className="logo-img" />
             <h1 className="logo">
@@ -20,7 +22,7 @@ function Navbar() {
           </div>
         </Link>
 
-        <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#parabookNavbar" aria-controls="parabookNavbar" aria-expanded="false" aria-label="Toggle navigation" style={{ filter: 'invert(1)' }}>
+        <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#parabookNavbar" aria-controls="parabookNavbar" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
 
@@ -36,12 +38,25 @@ function Navbar() {
               <i className="fa-solid fa-magnifying-glass"></i>
             </button>
 
+            {/* aria-pressed comunica o estado ao leitor de tela; o title e
+                o aria-label dizem o que o clique VAI fazer, não o que está
+                ativo — é o que se espera de um botão. */}
+            <button
+              className="btn-nav btn-outline btn-tema"
+              onClick={alternar}
+              aria-pressed={ehClaro}
+              title={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
+              aria-label={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
+            >
+              <i className={`fa-solid ${ehClaro ? 'fa-moon' : 'fa-sun'}`}></i>
+            </button>
+
             {user ? (
               <>
                 <Link to="/notificacoes" className="btn-nav btn-outline position-relative" title="Notificações">
                   <i className="fa-solid fa-bell"></i>
                   {user.notificacoes_nao_lidas_count > 0 && (
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.65rem' }}>
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-contador">
                       {user.notificacoes_nao_lidas_count}
                     </span>
                   )}
@@ -69,7 +84,7 @@ function Navbar() {
     </nav>
 
     {/* Offcanvas Menu (Menu Lateral) no React */}
-    <div className="offcanvas offcanvas-end text-bg-dark" tabIndex="-1" id="offcanvasMenuReact" aria-labelledby="offcanvasMenuLabel" style={{ background: 'linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%)' }}>
+    <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasMenuReact" aria-labelledby="offcanvasMenuLabel">
       <div className="offcanvas-header border-bottom border-secondary border-opacity-25">
         <h5 className="offcanvas-title" id="offcanvasMenuLabel">Menu Principal</h5>
         <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -77,7 +92,7 @@ function Navbar() {
       <div className="offcanvas-body">
         <ul className="list-unstyled d-flex flex-column gap-3 fs-5 mt-3">
           <li>
-            <Link to="/recomendacao-ia" style={{ color: '#f59e0b', fontWeight: '600', textDecoration: 'none' }}>
+            <Link to="/recomendacao-ia" className="link-ia">
               <i className="fa-solid fa-wand-magic-sparkles me-2"></i> Recomendação IA
             </Link>
           </li>

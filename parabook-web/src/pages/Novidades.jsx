@@ -36,7 +36,7 @@ function Novidades() {
 
       <section className="news-hero-section" style={{ padding: '30px 20px', textAlign: 'center' }}>
         <div className="news-intro-content" style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h1 className="display-5 fw-bold mb-2" style={{ color: 'white', fontSize: '2.5rem' }}>
+          <h1 className="display-5 fw-bold mb-2" style={{ color: 'var(--text)', fontSize: '2.5rem' }}>
             Novidades da Plataforma
           </h1>
           <p className="lead" style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>

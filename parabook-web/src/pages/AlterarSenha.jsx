@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import api from '../services/api';
 import '../assets/css/password-reset.css';
 
@@ -24,25 +24,19 @@ function AlterarSenha() {
     e.preventDefault();
 
     if (novaSenha !== confirmarSenha) {
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Senhas incompatíveis',
         text: 'A nova senha e a confirmação devem ser iguais.',
-        background: '#1e293b',
-        color: '#fff',
-        confirmButtonColor: '#8b5cf6'
       });
       return;
     }
 
     if (novaSenha.length < 8) {
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Senha muito curta',
         text: 'A nova senha deve ter no mínimo 8 caracteres.',
-        background: '#1e293b',
-        color: '#fff',
-        confirmButtonColor: '#8b5cf6'
       });
       return;
     }
@@ -55,13 +49,10 @@ function AlterarSenha() {
         nova_senha: novaSenha
       });
 
-      Swal.fire({
+      swal.fire({
         icon: 'success',
         title: 'Sucesso!',
         text: 'Sua senha foi alterada com sucesso.',
-        background: '#1e293b',
-        color: '#fff',
-        confirmButtonColor: '#8b5cf6'
       }).then(() => {
         navigate('/perfil');
       });
@@ -70,13 +61,10 @@ function AlterarSenha() {
       
       const errorMessage = error.response?.data?.error || 'Verifique se a sua senha atual está correta.';
       
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Erro ao alterar senha',
         text: errorMessage,
-        background: '#1e293b',
-        color: '#fff',
-        confirmButtonColor: '#8b5cf6'
       });
     } finally {
       setLoading(false);

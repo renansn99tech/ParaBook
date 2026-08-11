@@ -4,7 +4,7 @@ import '../assets/css/sobre.css';
 function Sobre() {
   return (
     <main className="perfil-page">
-      <section className="sobre-conteudo" style={{ margin: '0 auto', maxWidth: '1400px' }}>
+      <section className="sobre-conteudo">
         <article className="fade-section">
           <h2>Nossa Visão</h2>
           <p>
@@ -53,8 +53,8 @@ function Sobre() {
             <div className="timeline-item done">
               <div className="timeline-dot"></div>
               <div className="timeline-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span className="date" style={{ marginBottom: 0 }}>MARÇO 2026</span>
+                <div className="marco-cabecalho">
+                  <span className="date">MARÇO 2026</span>
                   <span className="badge-roadmap badge-done">Concluído</span>
                 </div>
                 <h3>Arquitetura Base</h3>
@@ -65,8 +65,8 @@ function Sobre() {
             <div className="timeline-item done">
               <div className="timeline-dot"></div>
               <div className="timeline-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span className="date" style={{ marginBottom: 0 }}>JUNHO 2026</span>
+                <div className="marco-cabecalho">
+                  <span className="date">JUNHO 2026</span>
                   <span className="badge-roadmap badge-done">Concluído</span>
                 </div>
                 <h3>Ecossistema Integrado</h3>
@@ -78,8 +78,8 @@ function Sobre() {
             <div className="timeline-item done">
               <div className="timeline-dot"></div>
               <div className="timeline-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span className="date" style={{ marginBottom: 0 }}>JULHO 2026</span>
+                <div className="marco-cabecalho">
+                  <span className="date">JULHO 2026</span>
                   <span className="badge-roadmap badge-done">Concluído</span>
                 </div>
                 <h3>APIs e Inovações</h3>
@@ -91,12 +91,12 @@ function Sobre() {
             <div className="timeline-item active">
               <div className="timeline-dot"></div>
               <div className="timeline-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span className="date" style={{ marginBottom: 0, color: '#d8b4fe' }}>AGOSTO 2026</span>
+                <div className="marco-cabecalho">
+                  <span className="date">AGOSTO 2026</span>
                   <span className="badge-roadmap badge-active"><i className="fa-solid fa-spinner fa-spin-pulse"></i> Em
                     Andamento</span>
                 </div>
-                <h3 style={{ color: '#c4b5fd' }}>Comunidades Interconectadas</h3>
+                <h3>Comunidades Interconectadas</h3>
                 <p>Fóruns e espaços de debate dinâmicos integrados de forma nativa aos tipos de usuários (Leitores e
                   Autores).</p>
               </div>
@@ -105,8 +105,8 @@ function Sobre() {
             <div className="timeline-item future">
               <div className="timeline-dot"></div>
               <div className="timeline-content">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span className="date" style={{ marginBottom: 0 }}>SETEMBRO 2026</span>
+                <div className="marco-cabecalho">
+                  <span className="date">SETEMBRO 2026</span>
                   <span className="badge-roadmap badge-future">Em Breve</span>
                 </div>
                 <h3>Feira do Livro & Expansão</h3>
@@ -118,9 +118,8 @@ function Sobre() {
           </div>
         </article>
 
-        <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <Link to="/backlog" className="btn-outline"
-            style={{ padding: '12px 24px', borderRadius: '12px', color: '#c4b5fd', borderColor: 'rgba(139,92,246,0.3)', textDecoration: 'none' }}>
+        <div className="sobre-rodape">
+          <Link to="/backlog" className="btn-outline">
             <i className="fa-solid fa-code-branch"></i> Ver Backlog Técnico do Projeto
           </Link>
         </div>

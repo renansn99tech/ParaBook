@@ -17,14 +17,14 @@
     padding:58px;
     margin-bottom:34px;
 
-    border-radius:28px;
-    border:1px solid rgba(139,92,246,.25);
+    border-radius:var(--radius-xl);
+    border:1px solid rgba(var(--purple-rgb),.25);
 
     background:
-        radial-gradient(circle at 85% 25%,rgba(139,92,246,.35),transparent 35%),
-        linear-gradient(145deg,rgba(16,25,45,.96),rgba(16,25,45,.72));
+        radial-gradient(circle at 85% 25%,rgba(var(--purple-rgb),.35),transparent 35%),
+        linear-gradient(145deg,rgba(var(--bg-card-rgb),.96),rgba(var(--bg-card-rgb),.72));
 
-    box-shadow:0 25px 70px rgba(0,0,0,.35), 0 0 60px rgba(139,92,246,.1);
+    box-shadow:0 25px 70px rgba(var(--black-rgb),.35), 0 0 60px rgba(var(--purple-rgb),.1);
 }
 
 .header-autores::after{
@@ -47,11 +47,11 @@
     margin-bottom:18px;
     padding:7px 14px;
 
-    border-radius:999px;
+    border-radius:var(--radius-pill);
 
-    color:#c4b5fd;
-    background:rgba(139,92,246,.14);
-    border:1px solid rgba(139,92,246,.35);
+    color:var(--purple-text);
+    background:rgba(var(--purple-rgb),.14);
+    border:1px solid rgba(var(--purple-rgb),.35);
 
     font-size:.78rem;
     font-weight:800;
@@ -60,7 +60,7 @@
 }
 
 .header-autores h1{
-    color:white;
+    color:var(--text);
     font-size:3.3rem;
     font-weight:800;
     letter-spacing:-1.5px;
@@ -86,14 +86,14 @@
     padding:22px;
     margin-bottom:42px;
 
-    border-radius:22px;
+    border-radius:var(--radius-lg);
     border:1px solid var(--border);
 
     background:
         linear-gradient(
             145deg,
-            rgba(16,25,45,.9),
-            rgba(16,25,45,.62)
+            rgba(var(--bg-card-rgb),.9),
+            rgba(var(--bg-card-rgb),.62)
         );
 
     box-shadow:var(--shadow);
@@ -126,11 +126,11 @@
 
     padding:14px 44px 14px 44px;
 
-    border-radius:14px;
-    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--radius-md);
+    border:1px solid rgba(var(--white-rgb),.08);
 
-    background:#0d1427;
-    color:white;
+    background:var(--bg-input);
+    color:var(--text);
 
     outline:none;
     transition:.3s;
@@ -138,7 +138,7 @@
 
 #input-busca-autores:focus{
     border-color:var(--purple);
-    box-shadow:0 0 0 3px rgba(139,92,246,.16);
+    box-shadow:var(--focus-ring);
 }
 
 .btn-limpar-busca{
@@ -152,7 +152,7 @@
 }
 
 .btn-limpar-busca:hover{
-    color:#ef4444;
+    color:var(--danger);
 }
 
 .btn-buscar-autores,
@@ -167,7 +167,7 @@
     padding:13px 20px;
 
     border:none;
-    border-radius:14px;
+    border-radius:var(--radius-md);
 
     color:white;
     text-decoration:none;
@@ -183,8 +183,8 @@
 .btn-enviar-obra-cta:hover,
 .btn-autor-obras:hover,
 .btn-voltar-lista:hover{
-    transform:translateY(-3px);
-    box-shadow:0 15px 35px rgba(139,92,246,.35);
+    transform:translateY(var(--lift-md));
+    box-shadow:var(--shadow-glow);
 }
 
 .cta-autor-box{
@@ -221,14 +221,14 @@
     align-items:center;
     text-align:center;
 
-    border-radius:22px;
+    border-radius:var(--radius-lg);
     border:1px solid var(--border);
 
     background:
         linear-gradient(
             145deg,
-            rgba(16,25,45,.95),
-            rgba(16,25,45,.72)
+            rgba(var(--bg-card-rgb),.95),
+            rgba(var(--bg-card-rgb),.72)
         );
 
     box-shadow:var(--shadow);
@@ -246,16 +246,16 @@
     right:-70px;
     top:-70px;
 
-    background:radial-gradient(circle,rgba(139,92,246,.22),transparent 70%);
+    background:radial-gradient(circle,rgba(var(--purple-rgb),.22),transparent 70%);
 
     opacity:0;
     transition:.35s;
 }
 
 .card-autor:hover{
-    transform:translateY(-7px);
-    border-color:rgba(139,92,246,.45);
-    box-shadow:0 22px 55px rgba(0,0,0,.38), 0 0 35px rgba(139,92,246,.12);
+    transform:translateY(var(--lift-md));
+    border-color:rgba(var(--purple-rgb),.45);
+    box-shadow:0 22px 55px rgba(var(--black-rgb),.38), 0 0 35px rgba(var(--purple-rgb),.12);
 }
 
 .card-autor:hover::before{
@@ -267,8 +267,8 @@
     height:78px;
 
     background:
-        radial-gradient(circle at center,rgba(139,92,246,.32),transparent 50%),
-        linear-gradient(135deg,rgba(139,92,246,.45),rgba(16,25,45,.2));
+        radial-gradient(circle at center,rgba(var(--purple-rgb),.32),transparent 50%),
+        linear-gradient(135deg,rgba(var(--purple-rgb),.45),rgba(var(--bg-card-rgb),.2));
 }
 
 .avatar-autor-container{
@@ -280,18 +280,18 @@
 
     margin-top:-48px;
 
-    border-radius:50%;
+    border-radius:var(--radius-circle);
     overflow:hidden;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    background:#0d1427;
+    background:var(--bg-input);
 
-    border:4px solid #10192d;
+    border:4px solid var(--bg-card);
 
-    box-shadow:0 15px 35px rgba(0,0,0,.35), 0 0 24px rgba(139,92,246,.25);
+    box-shadow:0 15px 35px rgba(var(--black-rgb),.35), 0 0 24px rgba(var(--purple-rgb),.25);
 }
 
 .foto-autor{
@@ -320,7 +320,7 @@
 }
 
 .nome-autor{
-    color:white;
+    color:var(--text);
     font-size:1.25rem;
     font-weight:800;
     margin-bottom:10px;
@@ -334,11 +334,11 @@
     margin-bottom:18px;
     padding:7px 12px;
 
-    border-radius:999px;
+    border-radius:var(--radius-pill);
 
-    color:#c4b5fd;
-    background:rgba(139,92,246,.14);
-    border:1px solid rgba(139,92,246,.35);
+    color:var(--purple-text);
+    background:rgba(var(--purple-rgb),.14);
+    border:1px solid rgba(var(--purple-rgb),.35);
 
     font-size:.82rem;
     font-weight:700;
@@ -371,10 +371,10 @@
 
     text-align:center;
 
-    border-radius:22px;
+    border-radius:var(--radius-lg);
     border:1px solid var(--border);
 
-    background:rgba(255,255,255,.03);
+    background:rgba(var(--white-rgb),.03);
 
     color:var(--text-secondary);
 }
@@ -386,7 +386,7 @@
 }
 
 .empty-state-autores h3{
-    color:white;
+    color:var(--text);
     font-size:1.5rem;
     margin-bottom:10px;
 }
@@ -416,21 +416,21 @@
 
     padding:0 14px;
 
-    border-radius:13px;
+    border-radius:var(--radius-md);
     border:1px solid var(--border);
 
     color:var(--text-secondary);
     text-decoration:none;
 
-    background:rgba(255,255,255,.03);
+    background:rgba(var(--white-rgb),.03);
 
     transition:.3s;
 }
 
 .item-paginacao:hover{
-    color:white;
-    border-color:rgba(139,92,246,.45);
-    background:rgba(139,92,246,.12);
+    color:var(--purple-text);
+    border-color:rgba(var(--purple-rgb),.45);
+    background:rgba(var(--purple-rgb),.12);
 }
 
 .item-paginacao.ativo{
@@ -471,7 +471,7 @@
 
     .header-autores{
         padding:34px 26px;
-        border-radius:22px;
+        border-radius:var(--radius-lg);
     }
 
     .header-autores h1{

@@ -39,10 +39,10 @@ function MinhasComunidades() {
   return (
     <main className="container py-4" style={{ minHeight: '60vh' }}>
       <section className="pagina-comunidade">
-        <h1 className="pagina-comunidade-titulo mb-3" style={{ color: 'white' }}>
+        <h1 className="pagina-comunidade-titulo mb-3">
           Minhas Comunidades
         </h1>
-        <p style={{ fontSize: '1.1rem', color: '#d8d9e6', marginBottom: '40px' }}>
+        <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '40px' }}>
           Todos os espaços em que você participa, reunidos em um só lugar.
         </p>
 
@@ -51,7 +51,7 @@ function MinhasComunidades() {
         {!erro && comunidades.length === 0 ? (
           <div
             className="empty-state text-center"
-            style={{ padding: '50px', border: '2px dashed rgba(255,255,255,0.15)', borderRadius: '12px', color: 'white' }}
+            style={{ padding: '50px', border: '2px dashed var(--border-strong)', borderRadius: '12px', color: 'var(--text)' }}
           >
             <i className="fa-solid fa-users-slash" style={{ fontSize: '2.5rem', color: '#6b7280', marginBottom: '15px' }}></i>
             <h3>Você ainda não participa de nenhuma comunidade</h3>

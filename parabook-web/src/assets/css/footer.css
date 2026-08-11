@@ -5,10 +5,10 @@
     padding:50px 8% 30px;
 
     border-top:
-    1px solid rgba(255,255,255,.08);
+    1px solid rgba(var(--white-rgb),.08);
 
     background:
-    rgba(255,255,255,.02);
+    rgba(var(--white-rgb),.02);
 
     backdrop-filter:
     blur(10px);
@@ -32,7 +32,7 @@
 
 .footer-brand p{
 
-    color:#9ca3af;
+    color:var(--text-secondary);
 
     line-height:1.7;
 
@@ -40,11 +40,11 @@
 }
 
 .footer-para{
-    color:white;
+    color:var(--text);
 }
 
 .footer-book{
-    color:#8b5cf6;
+    color:var(--purple);
     margin-left: 2px;
 }
 
@@ -59,14 +59,14 @@
 
     margin-bottom:15px;
 
-    color:white;
+    color:var(--text);
 }
 
 .footer-column a{
 
     margin-bottom:10px;
 
-    color:#9ca3af;
+    color:var(--text-secondary);
 
     text-decoration:none;
 
@@ -75,7 +75,7 @@
 
 .footer-column a:hover{
 
-    color:#8b5cf6;
+    color:var(--purple);
 
     transform:translateX(4px);
 }
@@ -104,28 +104,28 @@
 /* Nas redes o deslocamento lateral do hover atrapalha: sobe um pouco. */
 .footer-social a:hover{
 
-    transform:translateY(-3px);
+    transform:translateY(var(--lift-md));
 }
 
 .footer-bottom {
     margin-top: 25px;
     padding-top: 25px;
-    border-top: 1px solid rgba(255,255,255,.05);
+    border-top: 1px solid rgba(var(--white-rgb),.05);
     
     /* Alinha o copyright na esquerda e o botão na direita */
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    color: #6b7280;
+    color: var(--text-dim);
 }
 
 .btn-scroll-top {
     width: 56px;
     height: 56px;
-    border-radius: 50%;
-    background: rgba(139, 92, 246, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    color: #c4b5fd;
+    border-radius: var(--radius-circle);
+    background: rgba(var(--purple-rgb),0.1);
+    border: 1px solid rgba(var(--purple-rgb),0.3);
+    color: var(--purple-text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -136,11 +136,11 @@
 
 /* Efeito de hover alinhado com a experiência premium da Home */
 .btn-scroll-top:hover {
-    background: #8b5cf6;
-    color: rgb(255, 255, 255);
-    border-color: #8b5cf6;
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+    background: var(--purple);
+    color: rgb(var(--white-rgb));
+    border-color: var(--purple);
+    transform: translateY(var(--lift-md));
+    box-shadow: 0 8px 20px rgba(var(--purple-rgb),0.4);
 }
 
 @media (max-width: 768px) {

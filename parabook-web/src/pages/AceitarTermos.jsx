@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import '../assets/css/tela-login.css';
@@ -11,7 +11,7 @@ function AceitarTermos() {
   const [enviando, setEnviando] = useState(false);
 
   if (loading) {
-    return <div className="text-center mt-5"><h2 style={{ color: 'white' }}>Carregando...</h2></div>;
+    return <div className="text-center mt-5"><h2 style={{ color: 'var(--text)' }}>Carregando...</h2></div>;
   }
 
   if (!user) {
@@ -27,13 +27,10 @@ function AceitarTermos() {
       navigate('/perfil');
     } catch (error) {
       console.error("Erro ao aceitar termos", error);
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Erro',
         text: 'Não foi possível registrar o aceite. Tente novamente.',
-        background: '#1e293b',
-        color: '#fff',
-        confirmButtonColor: '#8b5cf6'
       });
       setEnviando(false);
     }

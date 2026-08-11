@@ -11,31 +11,47 @@ import dj_database_url
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-1z+q%(deeme==owa&2+iq5jmk)3r*4-ma8+oea!a)p9$1))u=f')
+
+SECRET_KEY = config(
+    'SECRET_KEY',
+    default='django-insecure-1z+q%(deeme==owa&2+iq5jmk)3r*4-ma8+oea!a)p9$1))u=f'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Configuração de hosts permitidos
+
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
     default="localhost,127.0.0.1,0.0.0.0,192.168.1.171,*",
 ).split(",")
 
 if not DEBUG:
-    ALLOWED_HOSTS += [".onrender.com", "parabook-nl8o.onrender.com", ".railway.app"]
+    ALLOWED_HOSTS += [
+        ".onrender.com",
+        "parabook-nl8o.onrender.com",
+        ".railway.app",
+    ]
+
 # Configuração de origens confiáveis para CSRF
+
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
     default="http://localhost,http://127.0.0.1",
 ).split(",")
 
 if not DEBUG:
-    CSRF_TRUSTED_ORIGINS += ["https://*.onrender.com", "https://parabook-nl8o.onrender.com", "https://*.railway.app"]
-
+    CSRF_TRUSTED_ORIGINS += [
+        "https://*.onrender.com",
+        "https://parabook-nl8o.onrender.com",
+        "https://*.railway.app",
+    ]
 
 # Application definition
 
@@ -99,6 +115,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Configuração CORS
+
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
     default="http://localhost:5173,http://127.0.0.1:5173",
@@ -107,6 +124,7 @@ CORS_ALLOWED_ORIGINS = config(
 # Libera automaticamente qualquer subdomínio das plataformas de deploy
 # (ex: o futuro Static Site do parabook-web no Render), sem precisar
 # hardcodar a URL exata a cada novo serviço criado.
+
 if not DEBUG:
     CORS_ALLOWED_ORIGIN_REGEXES = [
         r"^https://.*\.onrender\.com$",
@@ -114,6 +132,7 @@ if not DEBUG:
     ]
 
 # DATABASE CONFIGURATION (PostgreSQL — unificado para todos os ambientes)
+
 DATABASE_URL = config('DATABASE_URL', default=None)
 
 if not DATABASE_URL:
@@ -122,7 +141,9 @@ if not DATABASE_URL:
     _db_pass = config('DB_PASSWORD', default='parabook_password')
     _db_host = config('DB_HOST', default='localhost')
     _db_port = config('DB_PORT', default='5432')
-    DATABASE_URL = f"postgres://{_db_user}:{_db_pass}@{_db_host}:{_db_port}/{_db_name}"
+    DATABASE_URL = (
+        f"postgres://{_db_user}:{_db_pass}@{_db_host}:{_db_port}/{_db_name}"
+    )
 
 DATABASES = {
     'default': dj_database_url.config(
@@ -133,57 +154,91 @@ DATABASES = {
 }
 
 # DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": "mydb",
-#         "USER": "root",
-#         "PASSWORD": "admin",
-#         "HOST": "127.0.0.1",
-#         "PORT": "3306",  
-#         "OPTIONS": {
-#             "charset": "utf8mb4",
-#         },
-#     }
+#
+# "default": {
+#
+# "ENGINE": "django.db.backends.mysql",
+#
+# "NAME": "mydb",
+#
+# "USER": "root",
+#
+# "PASSWORD": "admin",
+#
+# "HOST": "127.0.0.1",
+#
+# "PORT": "3306",
+#
+# "OPTIONS": {
+#
+# "charset": "utf8mb4",
+#
+# },
+#
+# }
+#
 # }
 
 # Password validation
+
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'
+    },
 ]
 
-
 # Internationalization
+
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Belem'
 USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
+
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Credenciais do Supabase obtidas via decouple/env
+
 SUPABASE_URL = config("SUPABASE_URL", default=None)
 SUPABASE_KEY = config("SUPABASE_KEY", default=None)
 SUPABASE_STORAGE_BUCKET_NAME = "parabook-media"
 
 # Define se o storage padrão de uploads será o Supabase ou o FileSystem local
+
 if not DEBUG and SUPABASE_URL and SUPABASE_KEY:
-    MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_STORAGE_BUCKET_NAME}/"
+    MEDIA_URL = (
+        f"{SUPABASE_URL}/storage/v1/object/public/"
+        f"{SUPABASE_STORAGE_BUCKET_NAME}/"
+    )
 else:
     MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configuração consolidada dos Storages
+
 STORAGES = {
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
     "default": {
-        "BACKEND": "storages.backends.supabase.SupabaseStorage" if (not DEBUG and SUPABASE_URL and SUPABASE_KEY) else "django.core.files.storage.FileSystemStorage"
+        "BACKEND": (
+            "storages.backends.supabase.SupabaseStorage"
+            if (not DEBUG and SUPABASE_URL and SUPABASE_KEY)
+            else "django.core.files.storage.FileSystemStorage"
+        )
     },
 }
 
@@ -197,15 +252,36 @@ LOGOUT_REDIRECT_URL = 'home'
 
 MAX_BOOK_UPLOAD_SIZE = 5 * 1024 * 1024
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='nao-responda@parabook.com.br')
+# Configuração de e-mail:
+# Em desenvolvimento local, continua usando o console.
+# Em produção, usa SMTP com as variáveis de ambiente.
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = config('EMAIL_HOST', default='')
+    EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+
+DEFAULT_FROM_EMAIL = config(
+    'DEFAULT_FROM_EMAIL',
+    default='nao-responda@parabook.com.br'
+)
 
 # URL publica do front-end React. Usada para montar os links enviados por email
 # (ex: redefinicao de senha), que devem apontar para o parabook-web e nao para
 # as telas legadas do Django.
-FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173').rstrip('/')
+
+FRONTEND_URL = config(
+    'FRONTEND_URL',
+    default='http://localhost:5173'
+).rstrip('/')
 
 # DRF Configuration
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -227,11 +303,12 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Documentação oficial das APIs do ParaBook (Fase 2)',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    #'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
+    # 'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
     'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
 }
 
 # Configuração da Stripe com tratativa para variáveis ausentes
+
 STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')

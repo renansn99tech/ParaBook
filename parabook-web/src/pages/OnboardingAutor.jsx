@@ -10,7 +10,7 @@ function OnboardingAutor() {
   const [enviando, setEnviando] = useState(false);
 
   if (loading) {
-    return <div className="text-center mt-5"><h2 style={{ color: 'white' }}>Carregando...</h2></div>;
+    return <div className="text-center mt-5"><h2 style={{ color: 'var(--text)' }}>Carregando...</h2></div>;
   }
 
   if (!user) {

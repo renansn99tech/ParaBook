@@ -60,7 +60,7 @@
 }
 
 .header-autores h1{
-    color:white;
+    color:var(--text);
     font-size:3.3rem;
     font-weight:800;
     letter-spacing:-1.5px;
@@ -130,7 +130,7 @@
     border:1px solid rgba(var(--white-rgb),.08);
 
     background:var(--bg-input);
-    color:white;
+    color:var(--text);
 
     outline:none;
     transition:.3s;
@@ -320,7 +320,7 @@
 }
 
 .nome-autor{
-    color:white;
+    color:var(--text);
     font-size:1.25rem;
     font-weight:800;
     margin-bottom:10px;
@@ -386,7 +386,7 @@
 }
 
 .empty-state-autores h3{
-    color:white;
+    color:var(--text);
     font-size:1.5rem;
     margin-bottom:10px;
 }
@@ -428,7 +428,7 @@
 }
 
 .item-paginacao:hover{
-    color:white;
+    color:var(--purple-text);
     border-color:rgba(var(--purple-rgb),.45);
     background:rgba(var(--purple-rgb),.12);
 }

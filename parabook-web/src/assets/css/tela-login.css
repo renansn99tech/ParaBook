@@ -27,6 +27,10 @@
 
 /* Botões topo */
 
+/* Par de botões circulares no topo: mesma caixa (46px), mesmo raio, e um
+   espaçamento de 24px entre os dois — não os 176px que sobravam antes
+   quando só o de voltar tinha medida própria (herdada de um inline) e o
+   de tema usava o `right` avulso de um botão com texto. */
 .btn-voltar-fixo,
 #theme-toggle{
     position:absolute;
@@ -36,11 +40,11 @@
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:8px;
 
-    padding:10px 16px;
+    width:46px;
+    height:46px;
 
-    border-radius:var(--radius-pill);
+    border-radius:var(--radius-circle);
 
     color:var(--text-secondary);
     text-decoration:none;
@@ -59,14 +63,15 @@
     right:24px;
 }
 
+/* 24px à direita do botão de voltar (24 + 46 de largura + 24 de vão). */
 #theme-toggle{
-    right:200px;
+    right:94px;
     cursor:pointer;
 }
 
 .btn-voltar-fixo:hover,
 #theme-toggle:hover{
-    color:white;
+    color:var(--purple-text);
     border-color:rgba(var(--purple-rgb),.45);
     background:rgba(var(--purple-rgb),.1);
 }
@@ -250,7 +255,7 @@
     font-size:3rem;
     font-weight:800;
     letter-spacing:-1.5px;
-    color:white;
+    color:var(--text);
 }
 
 .logo-text span{
@@ -280,7 +285,7 @@
     font-weight:800;
     letter-spacing:-1px;
 
-    color:white;
+    color:var(--text);
 
     margin-bottom:18px;
 }
@@ -296,10 +301,13 @@
 
     padding:60px;
 
+    /* Os dois pontos da diagonal usam tokens de propósito: com o primeiro
+       cravado em hex, o canto do painel ficava azul-marinho fixo mesmo no
+       tema claro, brigando com o vidro branco do .auth-box por cima. */
     background:
         linear-gradient(
             145deg,
-            rgba(11,16,35,.96),
+            rgba(var(--bg-card-rgb),.96),
             rgba(var(--bg-main-rgb),.98)
         );
 
@@ -339,17 +347,22 @@
 
     border-radius:var(--radius-lg);
 
+    /* Mais opaco que o .card padrão do app (.95/.75): é a única tela onde
+       login/senha precisam ficar 100% legíveis contra qualquer fundo, sem
+       depender do que estiver atrás do vidro. Ainda é vidro — blur e
+       gradiente continuam — só menos transparente que o resto do design
+       system. */
     background:
         linear-gradient(
             145deg,
-            rgba(var(--bg-card-rgb),.9),
-            rgba(var(--bg-card-rgb),.62)
+            rgba(var(--bg-card-rgb),.97),
+            rgba(var(--bg-card-rgb),.86)
         );
 
-    border:1px solid var(--border);
+    border:1px solid var(--border-strong);
 
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
 
     /* O card de autenticação flutua sozinho na tela, então pede o degrau
        de cima da escala — era o que o --shadow local fazia antes. */
@@ -358,7 +371,7 @@
 
 .pure-form h2,
 .auth-form-header h2{
-    color:white;
+    color:var(--text);
 
     font-size:2rem;
     font-weight:800;
@@ -394,7 +407,7 @@
 
     background:var(--bg-input);
 
-    color:white;
+    color:var(--text);
 
     font-size:.95rem;
 
@@ -461,7 +474,7 @@
 
 .auth-forgot-link:hover,
 .auth-footer-text a:hover{
-    color:white;
+    color:var(--purple-text);
 }
 
 .auth-footer-text{

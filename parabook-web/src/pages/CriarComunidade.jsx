@@ -29,7 +29,7 @@ function CriarComunidade() {
   }, [user]);
 
   if (carregandoUsuario) {
-    return <div className="text-center mt-5"><h2 style={{ color: 'white' }}>Carregando...</h2></div>;
+    return <div className="text-center mt-5"><h2 style={{ color: 'var(--text)' }}>Carregando...</h2></div>;
   }
 
   if (!user) {

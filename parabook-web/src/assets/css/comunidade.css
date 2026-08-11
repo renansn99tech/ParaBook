@@ -12,7 +12,7 @@
 .pagina-comunidade-titulo {
     font-size: 3rem;
     font-weight: 800;
-    color: white;
+    color: var(--text);
     margin-bottom: 12px;
     letter-spacing: -1px;
 }
@@ -64,7 +64,7 @@
 }
 
 .comunidade-nome {
-    color: white;
+    color: var(--text);
     font-size: 1.35rem;
     margin-bottom: 8px;
     font-weight: 700;
@@ -133,10 +133,6 @@
    Estava tudo em style={{...}} no JSX: o grid, o cabeçalho de cada
    seção e os estados vazios. Vira classe, com os tokens.
 ========================================================== */
-
-.pagina-comunidade-titulo{
-    color:var(--text);
-}
 
 .pagina-comunidade-lead{
     margin-bottom:40px;
@@ -281,7 +277,7 @@
 }
 
 .card-criar-content h4 {
-    color: white;
+    color: var(--text);
     font-size: 1.35rem;
     font-weight: 700;
     margin-bottom: 8px;

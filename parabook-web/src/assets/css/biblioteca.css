@@ -88,7 +88,7 @@
 }
 
 .banner-biblioteca-publica h1{
-    color:white;
+    color:var(--text);
 
     font-size:3.4rem;
     font-weight:800;
@@ -170,7 +170,7 @@
 
     border:none !important;
 
-    color:white !important;
+    color:var(--text) !important;
 
     font-size:1.8rem;
     font-weight:800;
@@ -229,7 +229,7 @@
             rgba(var(--bg-card-rgb),.72)
         ) !important;
 
-    color:white !important;
+    color:var(--text) !important;
 
     box-shadow:
         0 18px 45px rgba(var(--black-rgb),.28);
@@ -330,7 +330,7 @@
 }
 
 .card-livro-publico .card-title{
-    color:white !important;
+    color:var(--text) !important;
 
     font-size:1rem;
 

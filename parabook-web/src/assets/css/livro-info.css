@@ -247,7 +247,7 @@
 
 .livro-info-page .form-avaliacao-select {
   background: var(--bg-deep);
-  color: white;
+  color: var(--text);
   border: 1px solid rgba(var(--white-rgb),0.2);
   padding: 10px;
   border-radius: var(--radius-sm);
@@ -258,7 +258,7 @@
 .livro-info-page .form-avaliacao-textarea {
   width: 100%;
   background: var(--bg-deep);
-  color: white;
+  color: var(--text);
   border: 1px solid rgba(var(--white-rgb),0.2);
   border-radius: var(--radius-md);
   padding: 15px;

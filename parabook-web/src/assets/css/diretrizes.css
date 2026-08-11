@@ -68,7 +68,7 @@
 }
 
 .glass-rule-card li strong {
-    color: #ffffff;
+    color: var(--text);
 }
 
 @media (max-width: 768px) {

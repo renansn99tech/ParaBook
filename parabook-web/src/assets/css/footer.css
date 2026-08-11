@@ -40,7 +40,7 @@
 }
 
 .footer-para{
-    color:white;
+    color:var(--text);
 }
 
 .footer-book{
@@ -59,7 +59,7 @@
 
     margin-bottom:15px;
 
-    color:white;
+    color:var(--text);
 }
 
 .footer-column a{

@@ -52,7 +52,7 @@ html {
 }
 
 .para{
-    color:white;
+    color:var(--text);
 }
 
 .book{
@@ -121,7 +121,7 @@ html {
    (base.css) e a navbar tem altura própria de 44px a preservar. */
 .btn-nav.btn-outline {
     border: 1px solid rgba(var(--white-rgb),.12);
-    color: white;
+    color: var(--text);
     background: transparent;
     padding: 0 24px;
     border-radius: var(--radius-md);

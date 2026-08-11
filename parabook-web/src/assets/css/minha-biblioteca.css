@@ -15,9 +15,9 @@
     margin: 0 auto; 
 }
 
-.minha-biblioteca-page .banner-biblioteca { 
-    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-deep) 100%); 
-    color: #fff; 
+.minha-biblioteca-page .banner-biblioteca {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-deep) 100%);
+    color: var(--text);
     padding: 3rem 2rem; 
     border-radius: var(--radius-md); 
     margin-bottom: 2rem; 

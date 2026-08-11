@@ -49,7 +49,7 @@ function PublicarLivro() {
   }, []);
 
   if (loading) {
-    return <div className="text-center mt-5"><h2 style={{ color: 'white' }}>Carregando...</h2></div>;
+    return <div className="text-center mt-5"><h2 style={{ color: 'var(--text)' }}>Carregando...</h2></div>;
   }
 
   // Verifica se está logado e se tem permissão (autor ou admin)
@@ -60,7 +60,7 @@ function PublicarLivro() {
       <div className="publicar-container" style={{ paddingTop: '100px' }}>
         <div className="form-box text-center" style={{ maxWidth: '500px', padding: '40px' }}>
           <i className="fa-solid fa-lock mb-3" style={{ fontSize: '3rem', color: '#f87171' }}></i>
-          <h2 style={{ color: 'white', marginBottom: '15px' }}>Acesso Restrito</h2>
+          <h2 style={{ color: 'var(--text)', marginBottom: '15px' }}>Acesso Restrito</h2>
           <p style={{ color: '#94a3b8', marginBottom: '30px' }}>
             Esta página é exclusiva para Autores Independentes aprovados e Administradores do ParaBook.
           </p>

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/leitura.css';
 
 function Leitura() {
@@ -29,6 +30,11 @@ function Leitura() {
   const [favorito, setFavorito] = useState(false);
   
   const [inputPag, setInputPag] = useState('');
+
+  // Só a moldura do leitor entra animada: o <article> do canvas fica de
+  // fora de propósito, para não animar o elemento que o PDF.js mede e
+  // pinta enquanto a página monta.
+  const paginaRef = useRevelacao([loading]);
 
   // Initial load
   useEffect(() => {
@@ -256,14 +262,14 @@ function Leitura() {
   const progressoSeguro = totalPaginas > 0 ? Math.min(Math.max((paginaAtual / totalPaginas) * 100, 0), 100) : 0;
 
   return (
-    <main className="leitura-page" tabIndex="-1">
+    <main className="leitura-page" tabIndex="-1" ref={paginaRef}>
       <section className="container leitura-container">
         
         <header className="leitura-acessivel-header">
           <h1 className="sr-only">Lendo: Obra de Teste</h1>
         </header>
 
-        <nav className="barra-ferramentas-leitura" aria-label="Ferramentas de customização da leitura">
+        <nav className="barra-ferramentas-leitura" aria-label="Ferramentas de customização da leitura" data-revelar>
           <div className="grupo-controle">
             <span className="label-controle" id="label-zoom">Zoom Canvas:</span>
             <button className="btn-tool" onClick={() => setZoomAtual(z => Math.min(z + 0.1, 3.0))} title="Aumentar zoom">
@@ -342,7 +348,7 @@ function Leitura() {
           </button>
         </nav>
 
-        <div className="acoes">
+        <div className="acoes" data-revelar>
           <Link to="/minha-biblioteca" className="btn secondary">
             Voltar à Biblioteca
           </Link>

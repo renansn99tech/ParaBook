@@ -1,11 +1,14 @@
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/diretrizes.css';
 
 function Diretrizes() {
+  const paginaRef = useRevelacao([]);
+
   return (
-    <main className="guidelines-main" style={{ paddingTop: '80px', paddingBottom: '40px' }}>
-      
+    <main className="guidelines-main" ref={paginaRef} style={{ paddingTop: '80px', paddingBottom: '40px' }}>
+
       {/* Hero Section */}
-      <div className="hero-guidelines">
+      <div className="hero-guidelines" data-revelar>
         <h1 className="gradient-text">Termos e Políticas</h1>
         <p style={{ color: '#94a3b8', maxWidth: '650px', margin: '0 auto', fontSize: '1.1rem', lineHeight: 1.5 }}>
           Governança, privacidade e regras comunitárias da plataforma ParaBook. Conheça seus direitos e deveres antes de criar sua conta.
@@ -14,10 +17,10 @@ function Diretrizes() {
       </div>
 
       {/* Container dos Cards */}
-      <div className="guidelines-container">
-        
+      <div className="guidelines-container" data-revelar-cascata>
+
         {/* CARD 01: PRIVACIDADE */}
-        <div className="glass-rule-card">
+        <div className="glass-rule-card" data-revelar>
           <div className="rule-number">01</div>
           <div className="card-legal-content">
             <h3>Política de Privacidade e Proteção de Dados (LGPD)</h3>
@@ -32,7 +35,7 @@ function Diretrizes() {
         </div>
 
         {/* CARD 02: TERMOS DE USO */}
-        <div className="glass-rule-card">
+        <div className="glass-rule-card" data-revelar>
           <div className="rule-number">02</div>
           <div className="card-legal-content">
             <h3>Termos de Uso e Propriedade Intelectual</h3>
@@ -50,7 +53,7 @@ function Diretrizes() {
         </div>
 
         {/* CARD 03: DIRETRIZES DA COMUNIDADE */}
-        <div className="glass-rule-card">
+        <div className="glass-rule-card" data-revelar>
           <div className="rule-number">03</div>
           <div className="card-legal-content">
             <h3>Diretrizes da Comunidade e Responsabilidades</h3>

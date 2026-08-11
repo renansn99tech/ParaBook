@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/sobre.css';
 
 function Sobre() {
+  const paginaRef = useRevelacao([]);
+
   return (
-    <main className="perfil-page">
+    <main className="perfil-page" ref={paginaRef}>
       <section className="sobre-conteudo">
-        <article className="fade-section">
+        <article className="fade-section" data-revelar>
           <h2>Nossa Visão</h2>
           <p>
             O ParaBook nasceu para ser a infraestrutura definitiva de leitura digital. Nossa missão é democratizar o
@@ -17,7 +20,7 @@ function Sobre() {
           </p>
         </article>
 
-        <article className="about-split-section">
+        <article className="about-split-section" data-revelar>
           <div className="about-container">
             <div className="about-text">
               <h2 className="gradient-text">O Futuro do ParaBook</h2>
@@ -47,10 +50,10 @@ function Sobre() {
         </article>
 
         <article className="fade-section">
-          <h2 className="timeline-title">Roadmap Evolutivo</h2>
+          <h2 className="timeline-title" data-revelar>Roadmap Evolutivo</h2>
           <div className="sobre-timeline-container">
 
-            <div className="timeline-item done">
+            <div className="timeline-item done" data-revelar>
               <div className="timeline-dot"></div>
               <div className="timeline-content">
                 <div className="marco-cabecalho">
@@ -62,7 +65,7 @@ function Sobre() {
               </div>
             </div>
 
-            <div className="timeline-item done">
+            <div className="timeline-item done" data-revelar>
               <div className="timeline-dot"></div>
               <div className="timeline-content">
                 <div className="marco-cabecalho">
@@ -75,7 +78,7 @@ function Sobre() {
               </div>
             </div>
 
-            <div className="timeline-item done">
+            <div className="timeline-item done" data-revelar>
               <div className="timeline-dot"></div>
               <div className="timeline-content">
                 <div className="marco-cabecalho">
@@ -88,7 +91,7 @@ function Sobre() {
               </div>
             </div>
 
-            <div className="timeline-item active">
+            <div className="timeline-item active" data-revelar>
               <div className="timeline-dot"></div>
               <div className="timeline-content">
                 <div className="marco-cabecalho">
@@ -102,7 +105,7 @@ function Sobre() {
               </div>
             </div>
 
-            <div className="timeline-item future">
+            <div className="timeline-item future" data-revelar>
               <div className="timeline-dot"></div>
               <div className="timeline-content">
                 <div className="marco-cabecalho">
@@ -118,7 +121,7 @@ function Sobre() {
           </div>
         </article>
 
-        <div className="sobre-rodape">
+        <div className="sobre-rodape" data-revelar>
           <Link to="/backlog" className="btn-outline">
             <i className="fa-solid fa-code-branch"></i> Ver Backlog Técnico do Projeto
           </Link>

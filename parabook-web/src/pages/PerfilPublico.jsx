@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/perfil.css';
 
 function PerfilPublico() {
@@ -13,6 +14,7 @@ function PerfilPublico() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [abaAtiva, setAbaAtiva] = useState('info');
+  const paginaRef = useRevelacao([dados, abaAtiva, loading]);
 
   useEffect(() => {
     // Se for o próprio usuário, já redireciona de cara (fallback extra)
@@ -62,8 +64,8 @@ function PerfilPublico() {
   if (!dados) return null;
 
   return (
-    <main className="perfil-page perfil-publico-page">
-      <section className="perfil-header-container">
+    <main className="perfil-page perfil-publico-page" ref={paginaRef}>
+      <section className="perfil-header-container" data-revelar>
         <div className="perfil-cover"></div>
 
         <div className="perfil-content-wrapper">
@@ -108,22 +110,22 @@ function PerfilPublico() {
         </div>
       </section>
 
-      <section className="perfil-stats-grid">
-        <div className="stat-glass-card">
+      <section className="perfil-stats-grid" data-revelar-cascata>
+        <div className="stat-glass-card" data-revelar>
           <div className="stat-icon"><i className="fa-solid fa-book-open"></i></div>
           <div className="stat-info">
             <p className="stat-number">{dados.estatisticas.total_lidos}</p>
             <p className="stat-label">Livros Lidos</p>
           </div>
         </div>
-        <div className="stat-glass-card">
+        <div className="stat-glass-card" data-revelar>
           <div className="stat-icon"><i className="fa-solid fa-star"></i></div>
           <div className="stat-info">
             <p className="stat-number">{dados.estatisticas.total_avaliados}</p>
             <p className="stat-label">Avaliados</p>
           </div>
         </div>
-        <div className="stat-glass-card">
+        <div className="stat-glass-card" data-revelar>
           <div className="stat-icon"><i className="fa-solid fa-users"></i></div>
           <div className="stat-info">
             <p className="stat-number">{dados.estatisticas.total_comunidades}</p>
@@ -132,7 +134,7 @@ function PerfilPublico() {
         </div>
       </section>
 
-      <section className="perfil-tabs-section">
+      <section className="perfil-tabs-section" data-revelar>
         <div className="tabs-nav centralizado">
           <button className={`tab-btn ${abaAtiva === 'info' ? 'active' : ''}`} onClick={() => setAbaAtiva('info')}>
             <i className="fa-solid fa-circle-info"></i> Informações

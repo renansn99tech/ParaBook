@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
 import userImg from '../assets/img/user.png';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/perfil.css'; // O CSS importado
 
 /** Card usado nas abas sem conteúdo, para a aba nunca aparecer simplesmente vazia. */
@@ -29,6 +30,7 @@ function Profile() {
   const [activeTab, setActiveTab] = useState('info');
   const [fullProfile, setFullProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const paginaRef = useRevelacao([fullProfile, activeTab, loadingProfile]);
 
   useEffect(() => {
     if (user?.username) {
@@ -100,9 +102,9 @@ function Profile() {
   };
 
   return (
-    <main className="perfil-page">
+    <main className="perfil-page" ref={paginaRef}>
       {/* PERFIL HEADER */}
-      <section className="perfil-header-container">
+      <section className="perfil-header-container" data-revelar>
         <div className="perfil-cover">
             {/* Capa com gradiente e blur inspirado na Home */}
         </div>
@@ -155,29 +157,29 @@ function Profile() {
       </section>
 
       {/* ESTATÍSTICAS */}
-      <section className="perfil-stats-grid">
-        <div className="stat-glass-card">
+      <section className="perfil-stats-grid" data-revelar-cascata>
+        <div className="stat-glass-card" data-revelar>
           <div className="stat-icon"><i className="fa-solid fa-book-open"></i></div>
           <div className="stat-info">
             <p className="stat-number">{stats.total_lidos}</p>
             <p className="stat-label">Livros Lidos</p>
           </div>
         </div>
-        <div className="stat-glass-card">
+        <div className="stat-glass-card" data-revelar>
           <div className="stat-icon"><i className="fa-solid fa-book-reader"></i></div>
           <div className="stat-info">
             <p className="stat-number">{stats.lendo_agora}</p>
             <p className="stat-label">Lendo Agora</p>
           </div>
         </div>
-        <div className="stat-glass-card">
+        <div className="stat-glass-card" data-revelar>
           <div className="stat-icon"><i className="fa-solid fa-star"></i></div>
           <div className="stat-info">
             <p className="stat-number">{stats.total_avaliados}</p>
             <p className="stat-label">Avaliados</p>
           </div>
         </div>
-        <div className="stat-glass-card">
+        <div className="stat-glass-card" data-revelar>
           <div className="stat-icon"><i className="fa-solid fa-users"></i></div>
           <div className="stat-info">
             <p className="stat-number">{stats.total_comunidades}</p>
@@ -187,7 +189,7 @@ function Profile() {
       </section>
 
       {/* ABAS DE NAVEGAÇÃO */}
-      <section className="perfil-tabs-section">
+      <section className="perfil-tabs-section" data-revelar>
         <div className="tabs-nav">
           <button className={`tab-btn ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>
             <i className="fa-solid fa-circle-info"></i> Informações
@@ -400,7 +402,7 @@ function Profile() {
 
       {/* PAINEIS ESPECÍFICOS DE TIPO DE USUÁRIO */}
       {user?.tipo === 'admin' && (
-        <section className="special-panel admin-panel content-glass-card">
+        <section data-revelar className="special-panel admin-panel content-glass-card">
           <div className="panel-info">
             <h3><i className="fa-solid fa-server"></i> Central de Comando</h3>
             <p>Você tem privilégios totais. Acesse o dashboard para gerenciar a plataforma.</p>
@@ -410,7 +412,7 @@ function Profile() {
       )}
 
       {user?.tipo === 'autor' && (
-        <section className="special-panel autor-panel content-glass-card">
+        <section data-revelar className="special-panel autor-panel content-glass-card">
           <div className="panel-info">
             <h3><i className="fa-solid fa-wand-magic-sparkles"></i> Painel do Autor Independente</h3>
             <p>Gerencie suas publicações e veja o alcance das suas obras.</p>
@@ -420,7 +422,7 @@ function Profile() {
       )}
 
       {user?.tipo === 'aguardando_aprovacao' && (
-        <section className="special-panel pendente-panel content-glass-card">
+        <section data-revelar className="special-panel pendente-panel content-glass-card">
           <div className="panel-info">
             <h3 className="perfil-analise-titulo"><i className="fa-solid fa-hourglass-half"></i> Solicitação em Análise</h3>
             <p>Nossa equipe de moderação está avaliando seu pedido para se tornar Autor Independente.</p>
@@ -429,7 +431,7 @@ function Profile() {
       )}
 
       {user?.tipo === 'leitor' && (
-        <section className="special-panel upgrade-panel content-glass-card">
+        <section data-revelar className="special-panel upgrade-panel content-glass-card">
           <div className="panel-info">
             <h3>Escreve ou deseja publicar suas próprias obras?</h3>
             <p>Mude sua conta para Autor Independente e comece a compartilhar suas histórias.</p>

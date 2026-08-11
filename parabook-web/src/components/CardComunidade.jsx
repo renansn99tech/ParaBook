@@ -3,13 +3,18 @@
  * e a listagem do usuário (MinhasComunidades). O miolo — nome, badges e
  * descrição — é sempre igual; o que muda são os botões do rodapé, que
  * cada página passa via children.
+ *
+ * O resto das props cai direto no <article> — é assim que as páginas
+ * marcam o card com `data-revelar` sem precisar de um wrapper extra, que
+ * quebraria o `:nth-child` da cascata no CSS.
  */
-function CardComunidade({ comunidade, children }) {
+function CardComunidade({ comunidade, children, ...rest }) {
   return (
     // Desativada aparece opaca; quem pode vê-la é membro ou admin.
     <article
       className="card-comunidade"
       style={comunidade.em_manutencao ? { opacity: 0.55 } : undefined}
+      {...rest}
     >
       <div className="comunidade-header">
         <h3 className="comunidade-nome text-truncate" title={comunidade.nome}>

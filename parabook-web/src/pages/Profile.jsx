@@ -1,29 +1,20 @@
 import { useContext, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import Swal from 'sweetalert2';
+import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
 import userImg from '../assets/img/user.png';
 import '../assets/css/perfil.css'; // O CSS importado
 
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
-
 /** Card usado nas abas sem conteúdo, para a aba nunca aparecer simplesmente vazia. */
 function EstadoVazio({ icone, titulo, texto, acao }) {
   return (
-    <div
-      className="content-glass-card full-width"
-      style={{ textAlign: 'center', padding: '50px 25px', border: '1px dashed rgba(255,255,255,0.12)' }}
-    >
-      <i className={`fa-solid ${icone}`} style={{ fontSize: '2.5rem', color: '#64748b', marginBottom: '18px', display: 'block' }}></i>
-      <h3 style={{ color: 'white', marginBottom: '10px' }}>{titulo}</h3>
-      <p style={{ color: 'var(--text-secondary)', maxWidth: '440px', margin: '0 auto 22px' }}>{texto}</p>
+    <div className="content-glass-card full-width perfil-vazio">
+      <i className={`fa-solid ${icone}`}></i>
+      <h3>{titulo}</h3>
+      <p>{texto}</p>
       {acao && (
-        <Link to={acao.to} className="btn-primary-action" style={{ textDecoration: 'none', display: 'inline-flex' }}>
+        <Link to={acao.to} className="btn-primary-action">
           {acao.label}
         </Link>
       )}
@@ -60,7 +51,7 @@ function Profile() {
   const minhasComunidades = fullProfile?.comunidades || [];
 
   if (loading || loadingProfile) {
-    return <div className="text-center mt-5" style={{ color: 'white' }}>Carregando perfil...</div>;
+    return <div className="text-center mt-5 text-white">Carregando perfil...</div>;
   }
 
   if (!user) {
@@ -76,16 +67,15 @@ function Profile() {
   // Mesmo fluxo do template legado: confirma, chama a exclusão transacional
   // da API e derruba a sessão local.
   const handleExcluirConta = async () => {
-    const confirmacao = await Swal.fire({
-      ...swalTema,
+    const confirmacao = await swal.fire({
       title: 'Você tem certeza?',
       text: 'Esta ação é irreversível! Sua conta, perfil e histórico serão apagados.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sim, excluir!',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#374151'
+      confirmButtonColor: BOTAO.perigo,
+      cancelButtonColor: BOTAO.neutro
     });
 
     if (!confirmacao.isConfirmed) return;
@@ -93,8 +83,7 @@ function Profile() {
     try {
       await api.delete('/auth/excluir-conta/');
       logout();
-      await Swal.fire({
-        ...swalTema,
+      await swal.fire({
         icon: 'success',
         title: 'Conta excluída',
         text: 'Sua conta foi excluída com sucesso. Esperamos te ver novamente no futuro!'
@@ -102,8 +91,7 @@ function Profile() {
       navigate('/');
     } catch (error) {
       console.error("Erro ao excluir conta", error);
-      Swal.fire({
-        ...swalTema,
+      swal.fire({
         icon: 'error',
         title: 'Erro',
         text: error.response?.data?.detail || 'Não foi possível excluir sua conta. Tente novamente.'
@@ -123,10 +111,10 @@ function Profile() {
           <div className="perfil-sidebar">
             <div className="perfil-avatar-box">
               <img src={fullProfile?.perfil?.foto || user?.foto || userImg} alt="Avatar do Usuário" className="perfil-avatar" />
-              <input type="file" id="inputFotoOculto" accept="image/*" style={{ display: 'none' }} />
+              <input type="file" id="inputFotoOculto" accept="image/*" hidden />
 
-              <div style={{ position: 'absolute', bottom: '5px', right: '-15px', display: 'flex', gap: '8px' }}>
-                <button className="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto" style={{ position: 'static' }}>
+              <div className="perfil-avatar-acoes">
+                <button className="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto">
                   <i className="fa-solid fa-camera"></i>
                 </button>
               </div>
@@ -204,7 +192,7 @@ function Profile() {
           <button className={`tab-btn ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>
             <i className="fa-solid fa-circle-info"></i> Informações
           </button>
-          <button className={`tab-btn ${activeTab === 'historico' ? 'active' : ''}`} onClick={() => setActiveTab('historico')} style={{ display: 'none' }}>
+          <button className={`tab-btn ${activeTab === 'historico' ? 'active' : ''}`} onClick={() => setActiveTab('historico')} hidden>
             <i className="fa-solid fa-clock-rotate-left"></i> Histórico
           </button>
           <button className={`tab-btn ${activeTab === 'favoritos' ? 'active' : ''}`} onClick={() => setActiveTab('favoritos')}>
@@ -226,7 +214,7 @@ function Profile() {
                 <h3>Sobre Você</h3>
                 <p className="sobre-texto">{user?.bio || 'Nenhuma biografia informada.'}</p>
                 <button className="btn-primary-action" onClick={async () => {
-                  const { value: text } = await Swal.fire({
+                  const { value: text } = await swal.fire({
                     input: 'textarea',
                     inputLabel: 'Sua Biografia',
                     inputPlaceholder: 'Escreva um pouco sobre você...',
@@ -234,31 +222,22 @@ function Profile() {
                     showCancelButton: true,
                     confirmButtonText: 'Salvar',
                     cancelButtonText: 'Cancelar',
-                    background: '#1e293b',
-                    color: '#fff',
-                    confirmButtonColor: '#8b5cf6',
-                    cancelButtonColor: '#ef4444'
+                    cancelButtonColor: BOTAO.perigo
                   });
 
                   if (text !== undefined) {
                     try {
                       await api.patch('/perfis/meu-perfil/', { bio: text });
-                      Swal.fire({
+                      swal.fire({
                         icon: 'success',
                         title: 'Atualizado!',
                         text: 'Sua biografia foi atualizada com sucesso.',
-                        background: '#1e293b',
-                        color: '#fff',
-                        confirmButtonColor: '#8b5cf6'
                       }).then(() => window.location.reload());
                     } catch (err) {
-                      Swal.fire({
+                      swal.fire({
                         icon: 'error',
                         title: 'Erro',
                         text: 'Falha ao atualizar biografia.',
-                        background: '#1e293b',
-                        color: '#fff',
-                        confirmButtonColor: '#8b5cf6'
                       });
                     }
                   }
@@ -288,7 +267,7 @@ function Profile() {
                     {livro.capa ? (
                       <img src={livro.capa} alt={livro.titulo} />
                     ) : (
-                      <i className="fa-solid fa-book-open" style={{ fontSize: '3rem', color: 'rgba(255,255,255,0.1)' }}></i>
+                      <i className="fa-solid fa-book-open fs-1 text-white-50"></i>
                     )}
                   </div>
                   <div className="favorito-info">
@@ -318,14 +297,14 @@ function Profile() {
             ) : (
             <div className="favoritos-grid full">
               {minhasComunidades.map((comunidade) => (
-                <div key={comunidade.id} className="favorito-card content-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-                  <div className="favorito-capa" style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(139, 92, 246, 0.15)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <i className="fa-solid fa-users" style={{ fontSize: '3.5rem', color: '#8b5cf6' }}></i>
+                <div key={comunidade.id} className="favorito-card content-glass-card">
+                  <div className="favorito-capa">
+                    <i className="fa-solid fa-users"></i>
                   </div>
-                  <div className="favorito-info" style={{ padding: '20px' }}>
+                  <div className="favorito-info">
                     <h4>{comunidade.nome}</h4>
-                    <p style={{ marginBottom: '15px', minHeight: '40px' }}>{comunidade.descricao}</p>
-                    <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-outline" style={{ width: '100%', justifyContent: 'center', textAlign: 'center' }}>
+                    <p>{comunidade.descricao}</p>
+                    <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-outline">
                       Acessar Comunidade
                     </Link>
                   </div>
@@ -351,36 +330,30 @@ function Profile() {
 
                 try {
                   await api.patch('/perfis/meu-perfil/', data);
-                  Swal.fire({
+                  swal.fire({
                     icon: 'success',
                     title: 'Sucesso!',
                     text: 'Configurações salvas com sucesso.',
-                    background: '#1e293b',
-                    color: '#fff',
-                    confirmButtonColor: '#8b5cf6'
                   }).then(() => window.location.reload());
                 } catch (error) {
                   console.error(error);
-                  Swal.fire({
+                  swal.fire({
                     icon: 'error',
                     title: 'Ops...',
                     text: 'Erro ao salvar as configurações.',
-                    background: '#1e293b',
-                    color: '#fff',
-                    confirmButtonColor: '#8b5cf6'
                   });
                 }
               }}>
                 <div className="form-grid">
                   {user?.tipo !== 'admin' && (
-                    <div className="perfil-form-group full-width" style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '14px', border: '1px dashed rgba(139,92,246,0.2)', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                    <div className="perfil-form-group full-width perfil-privacidade">
                       <div>
-                        <h4 style={{ margin: '0 0 5px 0', color: 'white' }}><i className="fa-solid fa-user-shield" style={{ color: '#8b5cf6', marginRight: '8px' }}></i> Modo de Privacidade da Conta</h4>
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Ao ativar, seu perfil ficará oculto para leitores e autores comuns do ParaBook.</p>
+                        <h4><i className="fa-solid fa-user-shield me-2"></i> Modo de Privacidade da Conta</h4>
+                        <p>Ao ativar, seu perfil ficará oculto para leitores e autores comuns do ParaBook.</p>
                       </div>
-                      <label className="switch-ui" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '26px', cursor: 'pointer' }}>
-                        <input type="checkbox" name="perfil_privado" style={{ opacity: 0, width: 0, height: 0 }} defaultChecked={user?.perfil_privado || false} />
-                        <span className="slider-ui" style={{ position: 'absolute', inset: 0, backgroundColor: '#374151', borderRadius: '34px', transition: '.4s' }}></span>
+                      <label className="switch-ui">
+                        <input type="checkbox" name="perfil_privado" defaultChecked={user?.perfil_privado || false} />
+                        <span className="slider-ui"></span>
                       </label>
                     </div>
                   )}
@@ -401,7 +374,7 @@ function Profile() {
                     <input type="text" id="input-localizacao" name="localizacao" className="form-input" defaultValue={fullProfile?.perfil?.localizacao || user?.localizacao || ''} />
                   </div>
                 </div>
-                <button type="submit" className="btn-primary-action" style={{ marginTop: '20px' }}>
+                <button type="submit" className="btn-primary-action mt-4">
                   <i className="fa-solid fa-floppy-disk"></i> Salvar Alterações
                 </button>
               </form>
@@ -412,7 +385,7 @@ function Profile() {
                   <p>Gerencie sua senha ou encerre sua conta.</p>
                 </div>
                 <div className="danger-actions">
-                  <Link to="/perfil/alterar-senha" className="btn-outline" style={{ textDecoration: 'none' }}>
+                  <Link to="/perfil/alterar-senha" className="btn-outline">
                     Alterar Senha
                   </Link> 
                   <button className="btn-danger-outline" onClick={handleExcluirConta}>
@@ -449,7 +422,7 @@ function Profile() {
       {user?.tipo === 'aguardando_aprovacao' && (
         <section className="special-panel pendente-panel content-glass-card">
           <div className="panel-info">
-            <h3 style={{ color: '#fbbf24' }}><i className="fa-solid fa-hourglass-half"></i> Solicitação em Análise</h3>
+            <h3 className="perfil-analise-titulo"><i className="fa-solid fa-hourglass-half"></i> Solicitação em Análise</h3>
             <p>Nossa equipe de moderação está avaliando seu pedido para se tornar Autor Independente.</p>
           </div>
         </section>
@@ -461,7 +434,7 @@ function Profile() {
             <h3>Escreve ou deseja publicar suas próprias obras?</h3>
             <p>Mude sua conta para Autor Independente e comece a compartilhar suas histórias.</p>
           </div>
-          <Link to="/autor/onboarding" className="btn-primary-action" style={{ textDecoration: 'none' }}>
+          <Link to="/autor/onboarding" className="btn-primary-action">
             <i className="fa-solid fa-feather"></i> Quero ser um Autor
           </Link>
         </section>

@@ -21,25 +21,25 @@
     padding:56px !important;
     margin-bottom:70px !important;
 
-    border-radius:28px !important;
+    border-radius:var(--radius-xl) !important;
 
     background:
         radial-gradient(
             circle at 80% 30%,
-            rgba(139,92,246,.35),
+            rgba(var(--purple-rgb),.35),
             transparent 35%
         ),
         linear-gradient(
             145deg,
-            rgba(16,25,45,.96),
-            rgba(16,25,45,.72)
+            rgba(var(--bg-card-rgb),.96),
+            rgba(var(--bg-card-rgb),.72)
         ) !important;
 
-    border:1px solid rgba(139,92,246,.25);
+    border:1px solid rgba(var(--purple-rgb),.25);
 
     box-shadow:
-        0 25px 70px rgba(0,0,0,.35),
-        0 0 60px rgba(139,92,246,.1);
+        0 25px 70px rgba(var(--black-rgb),.35),
+        0 0 60px rgba(var(--purple-rgb),.1);
 }
 
 .banner-biblioteca-publica::before{
@@ -56,7 +56,7 @@
     background:
         radial-gradient(
             circle,
-            rgba(139,92,246,.35),
+            rgba(var(--purple-rgb),.35),
             transparent 70%
         );
 
@@ -88,7 +88,7 @@
 }
 
 .banner-biblioteca-publica h1{
-    color:white;
+    color:var(--text);
 
     font-size:3.4rem;
     font-weight:800;
@@ -107,7 +107,7 @@
 }
 
 .banner-biblioteca-publica .lead{
-    color:#d8d9e6;
+    color:var(--text-soft);
     font-size:1.15rem;
 }
 
@@ -121,7 +121,7 @@
     padding:14px 24px;
 
     border:none;
-    border-radius:14px;
+    border-radius:var(--radius-md);
 
     color:white !important;
 
@@ -133,16 +133,16 @@
         ) !important;
 
     box-shadow:
-        0 15px 35px rgba(139,92,246,.35);
+        var(--shadow-glow);
 
     transition:.35s;
 }
 
 .banner-biblioteca-publica .btn-light:hover{
-    transform:translateY(-3px);
+    transform:translateY(var(--lift-md));
 
     box-shadow:
-        0 20px 45px rgba(139,92,246,.45);
+        0 20px 45px rgba(var(--purple-rgb),.45);
 }
 
 .banner-biblioteca-publica .btn-light i{
@@ -170,7 +170,7 @@
 
     border:none !important;
 
-    color:white !important;
+    color:var(--text) !important;
 
     font-size:1.8rem;
     font-weight:800;
@@ -191,7 +191,7 @@
     width:4px;
     height:30px;
 
-    border-radius:999px;
+    border-radius:var(--radius-pill);
 
     background:var(--purple);
 }
@@ -220,19 +220,19 @@
     height:100%;
 
     border:1px solid var(--border) !important;
-    border-radius:22px !important;
+    border-radius:var(--radius-lg) !important;
 
     background:
         linear-gradient(
             145deg,
-            rgba(16,25,45,.95),
-            rgba(16,25,45,.72)
+            rgba(var(--bg-card-rgb),.95),
+            rgba(var(--bg-card-rgb),.72)
         ) !important;
 
-    color:white !important;
+    color:var(--text) !important;
 
     box-shadow:
-        0 18px 45px rgba(0,0,0,.28);
+        0 18px 45px rgba(var(--black-rgb),.28);
 
     transition:.35s ease;
 }
@@ -251,7 +251,7 @@
     background:
         radial-gradient(
             circle,
-            rgba(139,92,246,.22),
+            rgba(var(--purple-rgb),.22),
             transparent 70%
         );
 
@@ -263,13 +263,13 @@
 }
 
 .card-livro-publico:hover{
-    transform:translateY(-8px);
+    transform:translateY(var(--lift-lg));
 
-    border-color:rgba(139,92,246,.45) !important;
+    border-color:rgba(var(--purple-rgb),.45) !important;
 
     box-shadow:
-        0 22px 55px rgba(0,0,0,.38),
-        0 0 35px rgba(139,92,246,.13);
+        0 22px 55px rgba(var(--black-rgb),.38),
+        0 0 35px rgba(var(--purple-rgb),.13);
 }
 
 .card-livro-publico:hover::before{
@@ -283,11 +283,11 @@
 
     height:320px;
 
-    background:#0b1023 !important;
+    background:var(--bg-input) !important;
 
     overflow:hidden;
 
-    border-bottom:1px solid rgba(255,255,255,.06) !important;
+    border-bottom:1px solid rgba(var(--white-rgb),.06) !important;
 }
 
 .container-capa::after{
@@ -301,7 +301,7 @@
         linear-gradient(
             180deg,
             transparent 60%,
-            rgba(5,8,22,.45)
+            rgba(var(--bg-main-rgb),.45)
         );
 
     pointer-events:none;
@@ -330,7 +330,7 @@
 }
 
 .card-livro-publico .card-title{
-    color:white !important;
+    color:var(--text) !important;
 
     font-size:1rem;
 
@@ -350,23 +350,23 @@
 .card-livro-publico .badge{
     padding:7px 12px;
 
-    border-radius:999px;
+    border-radius:var(--radius-pill);
 
-    background:rgba(139,92,246,.15) !important;
+    background:rgba(var(--purple-rgb),.15) !important;
 
-    border:1px solid rgba(139,92,246,.35);
+    border:1px solid rgba(var(--purple-rgb),.35);
 
-    color:#c4b5fd !important;
+    color:var(--purple-text) !important;
 
     font-weight:600;
 }
 
 .card-livro-publico .bg-success{
-    background:rgba(34,197,94,.15) !important;
+    background:rgba(var(--success-rgb),.15) !important;
 
-    border:1px solid rgba(34,197,94,.35);
+    border:1px solid rgba(var(--success-rgb),.35);
 
-    color:#86efac !important;
+    color:var(--success-soft) !important;
 }
 
 /* Botões dentro dos cards */
@@ -380,7 +380,7 @@
 
     border:none !important;
 
-    border-radius:13px !important;
+    border-radius:var(--radius-md) !important;
 
     padding:11px 16px !important;
 
@@ -400,10 +400,10 @@
 
 .card-livro-publico .btn-primary:hover,
 .card-livro-publico .btn-outline-success:hover{
-    transform:translateY(-2px);
+    transform:translateY(var(--lift-sm));
 
     box-shadow:
-        0 12px 28px rgba(139,92,246,.35);
+        0 12px 28px rgba(var(--purple-rgb),.35);
 }
 
 /* Mensagens vazias */
@@ -411,9 +411,9 @@
 .secao-genero .text-muted.fst-italic{
     padding:24px;
 
-    border-radius:18px;
+    border-radius:var(--radius);
 
-    background:rgba(255,255,255,.03);
+    background:rgba(var(--white-rgb),.03);
 
     border:1px solid var(--border);
 
@@ -436,7 +436,7 @@
     height:50px;
 
     border:none;
-    border-radius:50%;
+    border-radius:var(--radius-circle);
 
     display:flex;
     align-items:center;
@@ -452,7 +452,7 @@
         ) !important;
 
     box-shadow:
-        0 0 25px rgba(139,92,246,.4);
+        0 0 25px rgba(var(--purple-rgb),.4);
 
     cursor:pointer;
 
@@ -460,10 +460,10 @@
 }
 
 .button-top:hover{
-    transform:translateY(-4px);
+    transform:translateY(var(--lift-md));
 
     box-shadow:
-        0 15px 35px rgba(139,92,246,.45);
+        0 15px 35px rgba(var(--purple-rgb),.45);
 }
 
 /* =================================
@@ -520,7 +520,7 @@
     .banner-biblioteca-publica{
         padding:34px 24px !important;
         margin-bottom:50px !important;
-        border-radius:22px !important;
+        border-radius:var(--radius-lg) !important;
     }
 
     .banner-biblioteca-publica h1{

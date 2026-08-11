@@ -11,12 +11,12 @@ html {
     z-index:1000;
 
     background:
-    rgba(5,8,22,.85);
+    rgba(var(--bg-main-rgb),.85);
 
     backdrop-filter:blur(15px);
 
     border-bottom:
-    1px solid rgba(255,255,255,.05);
+    1px solid rgba(var(--white-rgb),.05);
 }
 
 .navbar-container{
@@ -52,11 +52,11 @@ html {
 }
 
 .para{
-    color:white;
+    color:var(--text);
 }
 
 .book{
-    color:#8b5cf6;
+    color:var(--purple);
     margin-left: 2px;
 }
 
@@ -70,12 +70,12 @@ html {
 
 .menu a{
     text-decoration:none;
-    color:#d4d4d8;
+    color:var(--text-soft);
     transition:.3s;
 }
 
 .menu a:hover{
-    color:#8b5cf6;
+    color:var(--purple);
 }
 
 .nav-actions {
@@ -105,7 +105,7 @@ html {
 .btn-nav {
     text-decoration: none;
     padding: 0 24px; /* O padding vertical agora é controlado de forma rígida pelo height */
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     transition: .3s;
     
     /* O SEGREDO DO ALINHAMENTO: Força os botões a se comportarem como blocos idênticos */
@@ -120,19 +120,19 @@ html {
 /* Escopado ao .btn-nav de propósito: .btn-outline também existe global
    (base.css) e a navbar tem altura própria de 44px a preservar. */
 .btn-nav.btn-outline {
-    border: 1px solid rgba(255,255,255,.12);
-    color: white;
+    border: 1px solid rgba(var(--white-rgb),.12);
+    color: var(--text);
     background: transparent;
     padding: 0 24px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
 }
 
 .btn-nav.btn-outline:hover {
-    border-color: #8b5cf6;
+    border-color: var(--purple);
 }
 
 .btn-primary-nav {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
     color: white;
     
     /* A COMPENSAÇÃO DE BOX-MODEL: Uma borda transparente para igualar a matemática do .btn-outline */
@@ -140,8 +140,8 @@ html {
 }
 
 .btn-primary-nav:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(139,92,246,.4);
+    transform: translateY(var(--lift-sm));
+    box-shadow: 0 10px 30px rgba(var(--purple-rgb),.4);
 }
 
 /* No desktop, garante o alinhamento correto usando flexbox nativo */
@@ -192,12 +192,12 @@ html {
         flex-direction: column;
         align-items: stretch;
         /* Adiciona um fundo escuro translúcido ao abrir o menu para leitura perfeita */
-        background: rgba(5, 8, 22, 0.98); 
+        background: rgba(var(--bg-main-rgb),0.98); 
         padding: 20px;
-        border-radius: 16px;
+        border-radius: var(--radius);
         margin-top: 15px;
-        border: 1px solid rgba(139, 92, 246, 0.15);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        border: 1px solid rgba(var(--purple-rgb),0.15);
+        box-shadow: 0 15px 40px rgba(var(--black-rgb),0.5);
     }
     
     .navbar-collapse.show {
@@ -234,7 +234,7 @@ html {
         width: 100%;
         margin-top: 15px !important;
         padding-top: 25px !important;
-        border-top: 1px dashed rgba(255, 255, 255, 0.1); /* Linha divisória sutil */
+        border-top: 1px dashed rgba(var(--white-rgb),0.1); /* Linha divisória sutil */
     }
 
     .btn-nav {
@@ -243,6 +243,59 @@ html {
         padding: 16px !important;
         text-align: center;
         justify-content: center;
-        border-radius: 12px !important;
+        border-radius: var(--radius-md) !important;
     }
+}
+/* Link do logotipo — era textDecoration/color inline. */
+.logo-link{
+    text-decoration:none;
+    color:inherit;
+}
+
+/* Botão de troca de tema. Mesma caixa dos outros .btn-nav, mas quadrado
+   para o ícone ficar centrado. */
+.btn-tema{
+    min-width:44px;
+
+    justify-content:center;
+}
+
+/* O ícone do menu hambúrguer do Bootstrap é desenhado escuro. No tema
+   escuro ele precisa ser invertido para aparecer; no claro, não — e o
+   filtro estava cravado inline, então ficaria invisível no tema claro. */
+.navbar-toggler-icon{
+    filter:invert(1);
+}
+
+:root[data-tema="claro"] .navbar-toggler-icon{
+    filter:none;
+}
+
+.badge-contador{
+    font-size:.65rem;
+}
+
+/* Atalho da Recomendação IA no menu lateral: âmbar para se destacar da
+   lista, mas vindo do token de aviso, não de um hex solto. */
+.link-ia{
+    color:var(--warning);
+    font-weight:600;
+}
+
+/* Menu lateral (offcanvas). O fundo estava inline com dois hex fixos,
+   então ele continuaria escuro no tema claro. */
+.offcanvas{
+    background:linear-gradient(145deg, var(--bg-deep) 0%, rgba(var(--purple-dark-rgb),.35) 100%);
+    color:var(--text);
+}
+
+.offcanvas .text-white,
+.offcanvas .text-white-50{
+    color:var(--text) !important;
+}
+
+/* O X de fechar do Bootstrap é um SVG preto; a variante -white inverte.
+   No tema claro queremos o preto de volta. */
+:root[data-tema="claro"] .btn-close-white{
+    filter:none;
 }

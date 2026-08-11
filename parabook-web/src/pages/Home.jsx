@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/home.css';
 import openBookImg from '../assets/img/open-book.png';
 import leitoraImg from '../assets/img/leitora.png';
@@ -14,6 +15,10 @@ function Home() {
   const [novidades, setNovidades] = useState([]);
   const [comunidadesOficiais, setComunidadesOficiais] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Os cards de novidades e comunidades só existem depois da resposta da
+  // API, então o hook precisa saber quando reobservar o que nasceu tarde.
+  const paginaRef = useRevelacao([novidades, comunidadesOficiais]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,8 +46,10 @@ function Home() {
   }, []);
 
   return (
-    <main className="home-page">
+    <main className="home-page" ref={paginaRef}>
       <section className="hero">
+        <div className="hero-cosmos" aria-hidden="true"></div>
+
         <div className="hero-content">
           <h1>Descubra, leia e publique <span>histórias</span></h1>
           <p>
@@ -62,6 +69,26 @@ function Home() {
         </div>
 
         <div className="hero-image">
+          <div className="hero-orbit" aria-hidden="true">
+            <div className="hero-orbit-ring hero-orbit-ring-1">
+              <span className="hero-orbit-dot"></span>
+              <span className="hero-orbit-dot"></span>
+            </div>
+            <div className="hero-orbit-ring hero-orbit-ring-2">
+              <span className="hero-orbit-dot"></span>
+              <span className="hero-orbit-dot"></span>
+              <span className="hero-orbit-dot"></span>
+            </div>
+            <div className="hero-orbit-ring hero-orbit-ring-3">
+              <span className="hero-orbit-dot"></span>
+              <span className="hero-orbit-dot"></span>
+              <span className="hero-orbit-dot"></span>
+              <span className="hero-orbit-dot"></span>
+            </div>
+          </div>
+
+          <img src={openBookImg} alt="Livro Aberto" />
+
           <div className="floating-card author-card">
             <div className="floating-user">
               <div className="floating-avatar">👩</div>
@@ -97,13 +124,11 @@ function Home() {
             <strong>+500</strong>
             <div className="mini-chart chart-large"><span></span></div>
           </div>
-
-          <img src={openBookImg} alt="Livro Aberto" />
         </div>
       </section>
 
-      <section className="features">
-        <div className="feature-card">
+      <section className="features" data-revelar-cascata>
+        <div className="feature-card" data-revelar>
           <div className="feature-content">
             <div className="feature-icon">📚</div>
             <h2>Para Leitores</h2>
@@ -120,7 +145,7 @@ function Home() {
           </div>
         </div>
 
-        <div className="feature-card">
+        <div className="feature-card" data-revelar>
           <div className="feature-content">
             <div className="feature-icon">
               <i className="fa-solid fa-feather"></i>
@@ -141,17 +166,17 @@ function Home() {
       </section>
 
       <section className="communities container my-5">
-        <div className="section-header">
+        <div className="section-header" data-revelar>
           <h2>Novidades</h2>
           <Link to="/biblioteca/novidade" className="btn-ver-mais-news">
             Ver mais <i className="fa-solid fa-arrow-right"></i>
           </Link>
         </div>
 
-        <div className="novidades-grid">
+        <div className="novidades-grid" data-revelar-cascata>
           {novidades.length > 0 ? (
             novidades.map(livro => (
-              <article className="book-card card-novidade-evolved" key={livro.id}>
+              <article className="book-card card-novidade-evolved" key={livro.id} data-revelar>
                 <Link
                   to={`/livro/${livro.id}`}
                   className="btn-info-livro"
@@ -191,19 +216,20 @@ function Home() {
           )}
         </div>
 
-        <div className="section-title-wrapper afastado">
+        <div className="section-title-wrapper afastado" data-revelar>
           <h2 className="section-title">Comunidades Oficiais</h2>
           <p className="section-subtitle">
             Participe dos nossos espaços exclusivos de debate literário.
           </p>
         </div>
 
-        <div className="novidades-grid com-folga">
+        <div className="novidades-grid com-folga" data-revelar-cascata>
           {comunidadesOficiais.length > 0 ? (
             comunidadesOficiais.map(comunidade => (
               <article
                 key={comunidade.id}
                 className="book-card card-novidade-evolved card-comunidade-oficial"
+                data-revelar
               >
                 <div className="icone">
                   <i className="fa-solid fa-users"></i>
@@ -234,7 +260,7 @@ function Home() {
           )}
         </div>
 
-        <div className="cta">
+        <div className="cta" data-revelar>
           <h2>Tem uma história para contar?</h2>
           <p>Compartilhe sua obra gratuitamente e alcance novos leitores através da comunidade ParaBook.</p>
           <Link to="/publicar" className="btn-primary">Publicar Minha Obra</Link>

@@ -252,12 +252,12 @@ html {
     color:inherit;
 }
 
-/* Botão de troca de tema. Mesma caixa dos outros .btn-nav, mas quadrado
-   para o ícone ficar centrado. */
-.btn-tema{
+/* Botões de ação só-ícone da navbar (tema, notificações). Mesma caixa
+   dos outros .btn-nav, mas sem o min-width:120px pensado para texto —
+   um ícone sozinho não precisa da mesma largura de "Meu Perfil". */
+.btn-nav-icone{
     min-width:44px;
-
-    justify-content:center;
+    padding:0 14px;
 }
 
 /* O ícone do menu hambúrguer do Bootstrap é desenhado escuro. No tema

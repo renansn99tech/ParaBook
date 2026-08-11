@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import swal from '../services/swal';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/password-reset.css';
 
 function AlterarSenha() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const paginaRef = useRevelacao([user]);
 
   const [senhaAntiga, setSenhaAntiga] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
@@ -72,8 +74,8 @@ function AlterarSenha() {
   };
 
   return (
-    <div className="reset-page">
-      <div className="reset-container">
+    <div className="reset-page" ref={paginaRef}>
+      <div className="reset-container" data-revelar>
         <h2>Alterar Senha</h2>
         <p className="reset-text">
           Crie uma nova senha forte e segura para a sua conta.

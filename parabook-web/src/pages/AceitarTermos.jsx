@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/tela-login.css';
 
 function AceitarTermos() {
   const { user, loading, recarregarUsuario } = useContext(AuthContext);
   const navigate = useNavigate();
   const [enviando, setEnviando] = useState(false);
+  const paginaRef = useRevelacao([loading, user]);
 
   if (loading) {
     return <div className="text-center mt-5"><h2 style={{ color: 'var(--text)' }}>Carregando...</h2></div>;
@@ -37,8 +39,9 @@ function AceitarTermos() {
   };
 
   return (
-    <main className="container" style={{ display: 'flex', justifyContent: 'center', padding: '80px 20px', minHeight: '75vh' }}>
+    <main className="container" ref={paginaRef} style={{ display: 'flex', justifyContent: 'center', padding: '80px 20px', minHeight: '75vh' }}>
       <div
+        data-revelar
         className="card border-0 shadow-lg rounded-4 text-white"
         style={{ maxWidth: '600px', width: '100%', background: '#12131C', backdropFilter: 'blur(10px)' }}
       >

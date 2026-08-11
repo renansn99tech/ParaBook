@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import Skeleton from '../components/Skeleton';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/painel.css';
 
 // Medalhas para o pódio; da 4ª posição em diante mostramos o número.
@@ -15,6 +16,7 @@ function Ranking() {
   const [meuProgresso, setMeuProgresso] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const paginaRef = useRevelacao([ranking, meuProgresso, carregando]);
 
   useEffect(() => {
     if (!user) return;
@@ -85,8 +87,8 @@ function Ranking() {
   }
 
   return (
-    <main className="container py-5 painel-page">
-      <div className="text-center mb-5">
+    <main className="container py-5 painel-page" ref={paginaRef}>
+      <div className="text-center mb-5" data-revelar>
         <h1 className="fw-bold text-white mb-2 painel-titulo premio">
           <i className="fa-solid fa-trophy me-2"></i>
           Ranking de Leitores
@@ -100,7 +102,7 @@ function Ranking() {
 
       {/* Cartão com a posição do usuário logado */}
       {meuProgresso && (
-        <div className="painel-card destaque mb-5">
+        <div className="painel-card destaque mb-5" data-revelar>
           <div className="card-body p-4">
             <div className="row align-items-center g-3">
               <div className="col-md-6">
@@ -127,7 +129,7 @@ function Ranking() {
       )}
 
       {/* Tabela do ranking */}
-      <div className="painel-card">
+      <div className="painel-card" data-revelar>
         <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table table-dark table-borderless align-middle painel-tabela">
@@ -180,7 +182,7 @@ function Ranking() {
         </div>
       </div>
 
-      <div className="text-center mt-4">
+      <div className="text-center mt-4" data-revelar>
         <Link to="/minhas-conquistas" className="btn-ghost">
           <i className="fa-solid fa-award me-2"></i>Ver Minhas Conquistas
         </Link>

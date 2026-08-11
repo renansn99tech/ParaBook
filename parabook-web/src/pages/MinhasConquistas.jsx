@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import Skeleton from '../components/Skeleton';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/painel.css';
 
 /**
@@ -22,6 +23,7 @@ function MinhasConquistas() {
   const [resumo, setResumo] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const paginaRef = useRevelacao([conquistas, resumo, carregando]);
 
   useEffect(() => {
     if (!user) return;
@@ -89,8 +91,8 @@ function MinhasConquistas() {
     : 0;
 
   return (
-    <main className="container py-5 painel-page">
-      <div className="text-center mb-4">
+    <main className="container py-5 painel-page" ref={paginaRef}>
+      <div className="text-center mb-4" data-revelar>
         <h1 className="fw-bold text-white mb-2 painel-titulo">
           <i className="fa-solid fa-award me-2"></i>
           Galeria de Conquistas
@@ -104,7 +106,7 @@ function MinhasConquistas() {
 
       {/* Barra de progresso geral */}
       {resumo && (
-        <div className="painel-card mb-5">
+        <div className="painel-card mb-5" data-revelar>
           <div className="card-body p-4">
             <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
               <h5 className="fw-bold mb-0">
@@ -136,7 +138,7 @@ function MinhasConquistas() {
       )}
 
       {conquistas.length === 0 && !erro ? (
-        <div className="text-center py-5">
+        <div className="text-center py-5" data-revelar>
           <i className="fa-solid fa-box-open text-white-50 fs-1 mb-3 d-block"></i>
           <h4 className="text-white">Nenhuma conquista cadastrada no momento</h4>
           <p className="text-white-50 mb-4">Novos desafios chegarão em breve à plataforma.</p>
@@ -145,9 +147,9 @@ function MinhasConquistas() {
           </Link>
         </div>
       ) : (
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" data-revelar-cascata>
           {conquistas.map((conquista) => (
-            <div className="col" key={conquista.id}>
+            <div className="col" key={conquista.id} data-revelar>
               {/* O estado (desbloqueada/bloqueada) entra como classe; quem
                   decide a cor, a opacidade e o contorno é o painel.css. */}
               <div className={`conquista-card ${conquista.desbloqueada ? 'desbloqueada' : 'bloqueada'}`}>
@@ -178,7 +180,7 @@ function MinhasConquistas() {
         </div>
       )}
 
-      <div className="text-center mt-5">
+      <div className="text-center mt-5" data-revelar>
         <Link to="/ranking" className="btn-ghost">
           <i className="fa-solid fa-trophy me-2"></i>Ver o Ranking de Leitores
         </Link>

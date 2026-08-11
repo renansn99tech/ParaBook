@@ -36,3 +36,10 @@ Thumbs.db
 
 # Pasta media do django
 media/.env
+
+# Claude Code — arquivos de gerenciamento/config pessoal, não de projeto.
+# .claude/launch.json e .claude/skills/ continuam versionados de propósito:
+# são config de dev server e uma skill reutilizável, úteis pra qualquer
+# colaborador (Rodrigo incluso), não estado pessoal de uma máquina.
+CLAUDE.md
+.claude/settings.local.json

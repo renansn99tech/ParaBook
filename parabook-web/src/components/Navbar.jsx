@@ -42,7 +42,7 @@ function Navbar() {
                 o aria-label dizem o que o clique VAI fazer, não o que está
                 ativo — é o que se espera de um botão. */}
             <button
-              className="btn-nav btn-outline btn-tema"
+              className="btn-nav btn-outline btn-nav-icone"
               onClick={alternar}
               aria-pressed={ehClaro}
               title={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
@@ -53,7 +53,7 @@ function Navbar() {
 
             {user ? (
               <>
-                <Link to="/notificacoes" className="btn-nav btn-outline position-relative" title="Notificações">
+                <Link to="/notificacoes" className="btn-nav btn-outline btn-nav-icone position-relative" title="Notificações">
                   <i className="fa-solid fa-bell"></i>
                   {user.notificacoes_nao_lidas_count > 0 && (
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-contador">

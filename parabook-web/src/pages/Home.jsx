@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import useRevelacao from '../hooks/useRevelacao';
+import useProgressoScroll from '../hooks/useProgressoScroll';
 import '../assets/css/home.css';
 import openBookImg from '../assets/img/open-book.png';
 import leitoraImg from '../assets/img/leitora.png';
@@ -19,6 +20,9 @@ function Home() {
   // Os cards de novidades e comunidades só existem depois da resposta da
   // API, então o hook precisa saber quando reobservar o que nasceu tarde.
   const paginaRef = useRevelacao([novidades, comunidadesOficiais]);
+
+  // Publica --progresso (0 a 1) na .jornada conforme ela atravessa a tela.
+  const jornadaRef = useProgressoScroll();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,14 +51,24 @@ function Home() {
 
   return (
     <main className="home-page" ref={paginaRef}>
-      <section className="hero">
+      {/* O wrapper existe para DELIMITAR o alcance do fundo grudado: um
+          sticky solta ao acabar o próprio pai, então envolver só hero +
+          jornada faz a nebulosa acompanhar os dois e liberar a página
+          justamente onde a narrativa termina. Antes o pai era a
+          .home-page inteira e o brilho seguia até o rodapé. */}
+      <div className="jornada-wrapper">
+        <div className="home-cosmos-layer" aria-hidden="true"></div>
+
+        <section className="hero">
         <div className="hero-cosmos" aria-hidden="true"></div>
 
         <div className="hero-content">
-          <h1>Descubra, leia e publique <span>histórias</span></h1>
-          <p>
-            Conectamos leitores, autores e comunidades em um único espaço para
-            compartilhar conhecimento e incentivar a leitura.
+          <p className="hero-eyebrow">Biblioteca digital independente</p>
+
+          <h1>Leia fundo. Publique <span>alto</span>.</h1>
+
+          <p className="hero-lead">
+            Descubra obras independentes, leia sem sair do navegador e publique a sua.
           </p>
 
           <div className="hero-buttons">
@@ -63,7 +77,7 @@ function Home() {
             </Link>
 
             <Link to="/publicar" className="btn-secondary">
-              <i className="fa-solid fa-feather"></i> Publicar meu livro
+              <i className="fa-solid fa-feather"></i> Publicar minha obra
             </Link>
           </div>
         </div>
@@ -125,7 +139,69 @@ function Home() {
             <div className="mini-chart chart-large"><span></span></div>
           </div>
         </div>
-      </section>
+        </section>
+
+        {/* ATO 2 — a jornada. O cenário fica preso na tela enquanto os
+            capítulos passam por cima dele; quem diz "onde estamos" é o
+            --progresso escrito por useProgressoScroll, e todo o resto
+            (giro da página, troca de nebulosa, paisagem) é CSS lendo
+            essa variável. */}
+        <section className="jornada" ref={jornadaRef}>
+          <div className="jornada-cena" aria-hidden="true">
+            <div className="cena-nebulosa"></div>
+            <div className="cena-astro"></div>
+
+            <div className="cena-orbita">
+              <div className="cena-anel cena-anel-1"></div>
+              <div className="cena-anel cena-anel-2"></div>
+            </div>
+
+            <div className="cena-livro">
+              <img src={openBookImg} alt="" />
+              <div className="cena-pagina"></div>
+            </div>
+
+            <div className="cena-paisagem">
+              <div className="cena-morro cena-morro-3"></div>
+              <div className="cena-morro cena-morro-2"></div>
+              <div className="cena-morro cena-morro-1"></div>
+            </div>
+          </div>
+
+          <div className="jornada-textos">
+          <article className="jornada-capitulo" data-revelar>
+            <p className="capitulo-rotulo">Descubra</p>
+            <h2>O acervo aprende com o que você lê</h2>
+            <p className="capitulo-texto">Sem formulário de preferências — cada obra aberta afina a próxima recomendação.</p>
+          </article>
+
+          <article className="jornada-capitulo alinhado-direita" data-revelar>
+            <p className="capitulo-rotulo">Publique</p>
+            <h2>Do manuscrito à vitrine, sem intermediário</h2>
+            <p className="capitulo-texto">Autores independentes sobem a obra e ganham uma página própria, sem fila de editora.</p>
+          </article>
+
+          <article className="jornada-capitulo" data-revelar>
+            <p className="capitulo-rotulo">Pertença</p>
+            <h2>A conversa continua depois da última página</h2>
+            <p className="capitulo-texto">Comunidades por gênero e por obra — o livro fechado é onde a discussão começa.</p>
+          </article>
+
+          {/* ATO 3 — o convite. Fecha a jornada ainda sobre o cenário,
+              com entrada própria: é o clímax, não mais um capítulo. */}
+          <div className="jornada-convite" data-revelar>
+            <h2>Sua obra é o próximo capítulo</h2>
+            <p className="capitulo-texto">
+              A publicação é gratuita e leva minutos. O resto é com os leitores.
+            </p>
+
+            <Link to="/publicar" className="btn-primary convite-cta">
+              <i className="fa-solid fa-feather"></i> Publicar minha obra
+            </Link>
+          </div>
+          </div>
+        </section>
+      </div>
 
       <section className="features" data-revelar-cascata>
         <div className="feature-card" data-revelar>
@@ -177,14 +253,10 @@ function Home() {
           {novidades.length > 0 ? (
             novidades.map(livro => (
               <article className="book-card card-novidade-evolved" key={livro.id} data-revelar>
-                <Link
-                  to={`/livro/${livro.id}`}
-                  className="btn-info-livro"
-                  title="Ver Informações"
-                  style={{ zIndex: 20 }}
-                >
-                  <i className="fa-solid fa-info"></i>
-                </Link>
+                {/* Sem o atalho "i" aqui de propósito: nesta seção os cards
+                    são uma amostra, e quem leva ao acervo é o "Ver mais" do
+                    cabeçalho. O botão continua nos cards de /biblioteca e
+                    /biblioteca/novidade, onde a ação é abrir a obra. */}
                 <div className="book-capa-wrapper">
                   {livro.capa_url ? (
                     <img
@@ -260,11 +332,10 @@ function Home() {
           )}
         </div>
 
-        <div className="cta" data-revelar>
-          <h2>Tem uma história para contar?</h2>
-          <p>Compartilhe sua obra gratuitamente e alcance novos leitores através da comunidade ParaBook.</p>
-          <Link to="/publicar" className="btn-primary">Publicar Minha Obra</Link>
-        </div>
+        {/* O CTA de publicar que ficava aqui saiu: o convite ao fim da
+            jornada (.jornada-convite) faz o mesmo pedido, com mais
+            destaque e no momento certo da narrativa. Dois convites para
+            a mesma ação na mesma página competiam entre si. */}
       </section>
     </main>
   )

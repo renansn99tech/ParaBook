@@ -196,6 +196,14 @@ body{
     --ease-standard:ease;
     --ease-out:cubic-bezier(0.16, 1, 0.3, 1);
 
+    /* A entrada por scroll tem tempo próprio, separado de --dur-slow.
+       Ela pode se dar ao luxo de ser mais longa que o resto do motion do
+       app: acontece uma vez por seção, enquanto o leitor está rolando, e
+       ninguém fica esperando por ela. Já --dur-slow é compartilhado com o
+       cross-fade de troca de rota (motion.css) — ali o mesmo alongamento
+       viraria atraso percebido a cada navegação. */
+    --dur-revelacao:800ms;
+
     /* Quanto um elemento sobe no hover. Estava em dez valores diferentes
        (-2, -3, -4, -5, -6, -7, -8, -10...), às vezes dois deles na mesma
        tela — o olho lê isso como instabilidade, não como profundidade.
@@ -328,6 +336,60 @@ html,
     --bs-table-bg:transparent;
     --bs-table-color:var(--text);
     --bs-table-border-color:var(--border);
+}
+
+/* ===============================
+   REVELAÇÃO POR SCROLL
+
+   Par visual do hook useRevelacao.js: as seções sobem alguns pixels e
+   ganham opacidade quando entram na tela. Quem decide o QUANDO é o
+   IntersectionObserver lá; aqui fica só o COMO.
+
+   O estado escondido depende de [data-revelacao-ativa], que só existe se
+   o hook rodou. Sem JS, nada é escondido — a entrada animada é um
+   acréscimo, nunca a condição para o conteúdo aparecer.
+
+   O deslocamento usa `translate`, a propriedade independente, e não
+   `transform`. Não é preciosismo: quase todo card do app já tem um
+   `transform:translateY(...)` no :hover, e o seletor daqui
+   ([data-revelacao-ativa] [data-revelar][data-revelado], 3 classes) vence
+   um `.feature-card:hover` (2 classes) por especificidade — ou seja,
+   animar `transform` aqui MATARIA o lift de hover de todo card revelado.
+   Como `translate` e `transform` são propriedades distintas e se
+   compõem, as duas animações convivem sem uma anular a outra.
+================================ */
+
+[data-revelacao-ativa] [data-revelar]{
+    opacity:0;
+
+    translate:0 20px;
+}
+
+[data-revelacao-ativa] [data-revelar][data-revelado]{
+    opacity:1;
+
+    translate:none;
+
+    transition:opacity var(--dur-revelacao) var(--ease-out),
+               translate var(--dur-revelacao) var(--ease-out);
+}
+
+/* Escalonamento dentro de uma grade: os itens da mesma linha entram em
+   cascata curta em vez de aparecerem em bloco. Só os três primeiros —
+   passando disso a espera vira lentidão, não elegância.
+
+   O atraso é uma FRAÇÃO da duração, não um valor fixo: o que o olho lê
+   como cascata é a defasagem relativa entre os cards, então um atraso
+   cravado em ms deixa de funcionar assim que a duração muda. Foi o que
+   aconteceu ao passar de 450ms para 800ms — os mesmos 90/180ms caíram de
+   20%/40% para 11%/22% do percurso e os três cards viraram quase
+   simultâneos. Com calc() a proporção fica presa ao token. */
+[data-revelacao-ativa] [data-revelar-cascata] > [data-revelar]:nth-child(2){
+    transition-delay:calc(var(--dur-revelacao) * .2);
+}
+
+[data-revelacao-ativa] [data-revelar-cascata] > [data-revelar]:nth-child(3){
+    transition-delay:calc(var(--dur-revelacao) * .4);
 }
 
 /* ===============================

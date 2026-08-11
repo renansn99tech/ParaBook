@@ -23,6 +23,8 @@
    mexe em layout, não em cor — vale conferir tela a tela antes. */
 
 .hero{
+    position:relative;
+
     display:grid;
     grid-template-columns:45% 55%;
     align-items:center;
@@ -30,36 +32,48 @@
 
     max-width:1400px;
     margin:0 auto;
-    padding:90px 60px 60px;
+    padding:90px 60px 70px;
 
     min-height:720px;
     background:none;
-}
 
-.hero::before{
-    content:"";
+    /* Recorte do painel de fundo (.hero-cosmos), declarado aqui porque
+       muda por breakpoint: no desktop o painel varre a section inteira e
+       precisa sumir sob a coluna de TEXTO, à esquerda; quando o grid vira
+       uma coluna só, o texto passa a ficar ACIMA do livro e o fade tem de
+       virar vertical. Deixar o valor no container evita repetir o bloco
+       inteiro do painel em cada media query.
 
-    position:absolute;
-
-    top:-300px;
-    left:50%;
-
-    width:800px;
-    height:800px;
-
-    transform:translateX(-50%);
-
-    background:
-    radial-gradient(
-        circle,
-        rgba(var(--purple-rgb),.35),
-        transparent 70%
+       Os pontos de parada não são estéticos: o texto do hero termina em
+       ~43% da largura da section, e o painel só pode escurecer até onde
+       o texto ESCURO do tema claro ainda passe em AA por cima dele
+       (medido: até ~.30 de alfa o contraste fica acima de 8:1; passando
+       de ~.55 ele desaba abaixo de 4.5:1). Por isso a rampa forte só
+       começa depois dos 44%, já na metade do livro. */
+    --cosmos-fade:linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0,0,0,.07) 14%,
+        rgba(0,0,0,.18) 30%,
+        rgba(0,0,0,.30) 44%,
+        rgba(0,0,0,.64) 56%,
+        rgba(0,0,0,.9) 68%,
+        #000 76%
     );
-
-    z-index:-1;
 }
+
+/* Aqui vivia um `.hero::before` de 800x800 com o brilho roxo do topo.
+   Ele era posicionado contra o bloco inicial (nem .hero nem .home-page
+   eram `position:relative` até agora) e tinha z-index:-1, o que o
+   colocava atrás até do fundo da .home-page — ou seja, já não pintava
+   nada. Agora que .hero é positioned, ele passaria a ficar atrás do
+   painel opaco de qualquer forma. O brilho que ele tentava dar virou o
+   primeiro gradiente de .hero-cosmos, que é quem desenha o ambiente. */
 
 .hero-content{
+    position:relative;
+    z-index:1;
+
     max-width:650px;
 }
 
@@ -97,13 +111,58 @@
    base.css e reescrevia os botões do app inteiro — não só os da Home.
    As definições agora são só de base.css. */
 
+/* .hero-image é a coluna do livro: os anéis, o livro e os floating-card
+   moram aqui. É ela quem define a ALTURA do hero (o painel de fundo só
+   acompanha), e é ela também que ancora o núcleo da nebulosa — ver o
+   ::before logo abaixo. */
 .hero-image{
     position:relative;
-    min-height:560px;
+    z-index:1;
+
+    min-height:800px;
     display:flex;
     align-items:center;
     justify-content:center;
     overflow:visible;
+}
+
+/* Núcleo da nebulosa: o brilho roxo + a textura de estrelas, ancorados
+   NESTA coluna e não no painel largo.
+
+   É de propósito, e resolve duas coisas de uma vez. Primeiro, o centro
+   da nebulosa continua exatamente atrás do livro em qualquer largura,
+   sem precisar de um `circle at 73%` calibrado à mão que sairia do lugar
+   assim que o grid virasse uma coluna só. Segundo, stars-bg.png segue
+   cobrindo uma caixa do tamanho de antes em vez de ser esticada pela
+   section inteira — o `cover` nunca amplia a imagem além do que já
+   ampliava hoje, então não borra nem repete, e não foi preciso gerar
+   um asset novo.
+
+   A máscara radial dissolve a borda da textura no painel escuro. Era
+   isto que ficava feio antes da existência do painel: a borda esmaecida
+   caía direto no fundo da PÁGINA, o que sumia no tema escuro mas
+   desenhava um retângulo cinza no claro. */
+.hero-image::before{
+    content:"";
+    position:absolute;
+    z-index:0;
+
+    width:min(115%, 900px);
+    aspect-ratio:1 / .92;
+
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+
+    background:
+        radial-gradient(circle at center, rgba(var(--purple-rgb),.42), transparent 52%),
+        url("../img/stars-bg.png") center/cover no-repeat;
+
+    -webkit-mask-image:radial-gradient(circle at center, #000 30%, transparent 72%);
+    mask-image:radial-gradient(circle at center, #000 30%, transparent 72%);
+
+    opacity:.95;
+    pointer-events:none;
 }
 
 .hero-image img{
@@ -117,50 +176,165 @@
         drop-shadow(0 0 100px rgba(var(--purple-rgb),.35));
 }
 
-.hero-image::before{
-    content:"";
+/* O ambiente escuro atrás do hero inteiro.
+
+   Ele NÃO carrega mais conteúdo: é um plano de fundo puro, enquanto o
+   livro, os anéis e o núcleo da nebulosa seguem na coluna .hero-image.
+   Essa separação é o que permite esticar o painel para os dois lados sem
+   arrastar o centro da nebulosa junto — antes, como o gradiente era
+   pintado NESTE elemento, alargá-lo puxava o `circle at 50%` para o meio
+   da caixa nova.
+
+   Vertical continua preso a .hero (top/bottom:0 — o painel só cobre a
+   altura do hero, não a página). Horizontal quebra o max-width:1400px de
+   .hero de propósito: left:50% + width:100vw + translateX(-50%) é o
+   truque padrão de full-bleed dentro de container centralizado — ancora
+   no meio de .hero (que é o meio da própria viewport, já que .hero é
+   centralizado com margin:0 auto) e cresce 50vw pra cada lado a partir
+   dali, ignorando o padding e o teto de largura do pai. Sem raio nem
+   borda lateral: um painel de ambiente encostado nas duas bordas da tela
+   não devia ler como "cartão flutuando", e uma borda de 1px bem na
+   quina da janela ficaria parecendo um risco de tela, não um contorno
+   intencional — troquei por hairlines só em cima/embaixo.
+
+   Continua escuro nos dois temas de propósito — nebulosa não devia
+   clarear. Mesmo precedente de .livro-info-page .livro-info-container
+   (livro-info.css), que também trava um fundo escuro independente do
+   tema. Como ele passa POR BAIXO do texto do hero, e no tema claro esse
+   texto é escuro, a --cosmos-fade (definida em .hero) dissolve o painel
+   antes de chegar na coluna de texto em vez de recolorir o texto — e
+   continua segura mesmo com a caixa mais larga: os stops da máscara são
+   % do PRÓPRIO elemento, então alargar para 100vw só empurra o início da
+   rampa pra mais longe do texto (mais faixa transparente à esquerda),
+   nunca pra mais perto. */
+.hero-cosmos{
     position:absolute;
-    width:780px;
-    height:560px;
+    top:0;
+    bottom:0;
+    left:50%;
+
+    width:100vw;
+    transform:translateX(-50%);
+
+    z-index:0;
+
+    background:
+        radial-gradient(ellipse 78% 62% at 72% 44%, rgba(var(--purple-dark-rgb),.34), transparent 68%),
+        linear-gradient(165deg, #100f24, #05060f);
+
+    border-top:1px solid rgba(255,255,255,.07);
+    border-bottom:1px solid rgba(255,255,255,.07);
+
+    -webkit-mask-image:var(--cosmos-fade);
+    mask-image:var(--cosmos-fade);
+
+    pointer-events:none;
+}
+
+/* Anéis orbitando o livro — mesma ideia de DOM da Reflect (divs aninhadas
+   girando via transform), sem canvas/WebGL. .hero-orbit é só o ponto
+   âncora (0x0, centralizado igual à nebulosa acima); cada anel se
+   autocentraliza com translate(-50%,-50%) baseado no PRÓPRIO tamanho, então
+   redimensionar um anel nunca desalinha o centro. Os pontos usam o mesmo
+   truque (translate de autocentralização + rotate + translateX do raio) —
+   o padrão clássico de distribuir N elementos num círculo em CSS puro.
+
+   Zoom inteiro por breakpoint em vez de recalcular cada anel/ponto: como
+   .hero-orbit não tem tamanho próprio, um transform:scale() nele encolhe
+   tudo (anéis, pontos, a animação) proporcionalmente, sempre em torno do
+   mesmo centro. */
+.hero-orbit{
+    position:absolute;
     left:50%;
     top:50%;
+    width:0;
+    height:0;
+    z-index:1;
+    pointer-events:none;
+}
+
+.hero-orbit-ring{
+    position:absolute;
+    left:0;
+    top:0;
+    border-radius:var(--radius-circle);
+    border:1px solid rgba(var(--purple-rgb),.16);
+
+    /* Estático de propósito: enquanto a animação roda, o valor de cada
+       keyframe (que já inclui este mesmo translate) vence e este aqui
+       fica ocioso. Mas se prefers-reduced-motion desligar a animação
+       (animation:none, logo abaixo), é este translate que sobra e
+       mantém o anel centralizado — sem ele, o anel perderia a
+       centralização e apareceria deslocado pelo próprio raio. */
     transform:translate(-50%,-50%);
-
-    background:
-        radial-gradient(circle at center, rgba(var(--purple-rgb),.35), transparent 45%),
-        url("../img/stars-bg.png") center/cover no-repeat;
-
-    mask-image:radial-gradient(circle at center, black 35%, transparent 75%);
-    -webkit-mask-image:radial-gradient(circle at center, black 35%, transparent 75%);
-
-    opacity:.95;
-    z-index:0;
 }
 
-.hero-image::after{
-    content:"";
+.hero-orbit-ring-1{
+    width:380px;
+    height:380px;
+    animation:hero-orbit-spin 22s linear infinite;
+}
 
+.hero-orbit-ring-2{
+    width:520px;
+    height:520px;
+    border-color:rgba(var(--purple-light-rgb),.13);
+    animation:hero-orbit-spin-reverse 34s linear infinite;
+}
+
+.hero-orbit-ring-3{
+    width:680px;
+    height:680px;
+    animation:hero-orbit-spin 48s linear infinite;
+}
+
+.hero-orbit-dot{
     position:absolute;
-
-    width:500px;
-    height:500px;
-
-    left:50%;
     top:50%;
-
-    transform:translate(-50%, -50%);
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(var(--purple-rgb),.35),
-            transparent 70%
-        );
-
-    filter:blur(50px);
-
-    z-index:0;
+    left:50%;
+    width:6px;
+    height:6px;
+    border-radius:var(--radius-circle);
+    background:var(--purple-light);
+    box-shadow:0 0 10px 2px rgba(var(--purple-rgb),.85);
 }
+
+.hero-orbit-ring-1 .hero-orbit-dot:nth-child(1){ transform:translate(-50%,-50%) rotate(20deg)  translateX(190px); }
+.hero-orbit-ring-1 .hero-orbit-dot:nth-child(2){ transform:translate(-50%,-50%) rotate(200deg) translateX(190px); }
+
+.hero-orbit-ring-2 .hero-orbit-dot:nth-child(1){ transform:translate(-50%,-50%) rotate(60deg)  translateX(260px); }
+.hero-orbit-ring-2 .hero-orbit-dot:nth-child(2){ transform:translate(-50%,-50%) rotate(180deg) translateX(260px); }
+.hero-orbit-ring-2 .hero-orbit-dot:nth-child(3){ transform:translate(-50%,-50%) rotate(300deg) translateX(260px); }
+
+.hero-orbit-ring-3 .hero-orbit-dot:nth-child(1){ transform:translate(-50%,-50%) rotate(0deg)   translateX(340px); }
+.hero-orbit-ring-3 .hero-orbit-dot:nth-child(2){ transform:translate(-50%,-50%) rotate(90deg)  translateX(340px); }
+.hero-orbit-ring-3 .hero-orbit-dot:nth-child(3){ transform:translate(-50%,-50%) rotate(180deg) translateX(340px); }
+.hero-orbit-ring-3 .hero-orbit-dot:nth-child(4){ transform:translate(-50%,-50%) rotate(270deg) translateX(340px); }
+
+@keyframes hero-orbit-spin{
+    from{ transform:translate(-50%,-50%) rotate(0deg); }
+    to{ transform:translate(-50%,-50%) rotate(360deg); }
+}
+
+@keyframes hero-orbit-spin-reverse{
+    from{ transform:translate(-50%,-50%) rotate(360deg); }
+    to{ transform:translate(-50%,-50%) rotate(0deg); }
+}
+
+/* Quem prefere menos movimento na tela ganha os anéis parados, não
+   escondidos — o desenho (o círculo, os pontos) continua comunicando a
+   ideia, só sem a rotação contínua. */
+@media (prefers-reduced-motion: reduce){
+    .hero-orbit-ring{
+        animation:none;
+    }
+}
+
+/* Não existe mais um bloco de tema claro pros anéis: agora que eles
+   vivem dentro de .hero-cosmos (fundo escuro travado nos dois temas,
+   ver acima), o mesmo roxo baixo-alfa calibrado pro escuro já tem contra
+   o que contrastar em qualquer tema do app — o painel é que muda de
+   "flutuando sobre branco" pra "sempre escuro", não os anéis. */
 
 .floating-card{
     position:absolute;
@@ -200,7 +374,7 @@
 .floating-card h4{
     margin:0 0 4px;
     font-size:.95rem;
-    color:#fff;
+    color:var(--text);
 }
 
 .floating-card span{
@@ -249,7 +423,7 @@
 
     border-radius:var(--radius-sm);
 
-    color:white;
+    color:var(--purple-text);
     background:rgba(var(--purple-rgb),.55);
 }
 
@@ -304,7 +478,7 @@
     display:block;
     margin-top:8px;
     font-size:1.35rem;
-    color:white;
+    color:var(--text);
 }
 
 .mini-chart{
@@ -569,7 +743,7 @@
 
 .book-info h3{
     font-size:1rem;
-    color:white;
+    color:var(--text);
     margin-bottom:6px;
     line-height:1.2;
 }
@@ -612,7 +786,7 @@
 
 .section-header h2{
     font-size:1.7rem;
-    color:white;
+    color:var(--text);
     position:relative;
     padding-left:18px;
 }
@@ -891,6 +1065,23 @@
         grid-template-columns:1fr;
         text-align:center;
         padding:80px 32px 40px;
+
+        /* Uma coluna só: o texto deixa de estar À ESQUERDA do livro e
+           passa a ficar ACIMA dele, então o fade do painel acompanha e
+           vira vertical — some no topo (onde está o texto) e ganha corpo
+           embaixo (onde está o livro). */
+        /* Mesma regra do desktop, medida no eixo certo: aqui o bloco de
+           texto termina em ~39% da ALTURA da section, então a rampa forte
+           só entra depois dos 40%. */
+        --cosmos-fade:linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(0,0,0,.07) 12%,
+            rgba(0,0,0,.18) 26%,
+            rgba(0,0,0,.30) 40%,
+            rgba(0,0,0,.68) 54%,
+            #000 66%
+        );
     }
 
     .hero-content{
@@ -917,9 +1108,9 @@
         width:100%;
     }
 
-    .hero-image::before{
-        width:680px;
-        height:520px;
+    /* Acompanha o encolhimento da coluna acima (800px -> 520px). */
+    .hero-orbit{
+        transform:scale(.85);
     }
 
     .hero-book{
@@ -1017,9 +1208,8 @@
         margin-top:20px;
     }
 
-    .hero-image::before{
-        width:520px;
-        height:430px;
+    .hero-orbit{
+        transform:scale(.68);
     }
 
     .hero-book{
@@ -1119,13 +1309,29 @@
         font-size:2.25rem;
     }
 
+    /* No celular o hero encolhe mas o texto não: ele passa a ocupar ~45%
+       da altura (contra ~36% no tablet), e a rampa herdada do breakpoint
+       de cima já chegava em .44 de alfa ali — 5.5:1, dentro de AA mas
+       sem folga. Empurrar a rampa devolve a mesma margem dos outros
+       tamanhos. */
+    .hero{
+        --cosmos-fade:linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(0,0,0,.07) 14%,
+            rgba(0,0,0,.18) 30%,
+            rgba(0,0,0,.30) 48%,
+            rgba(0,0,0,.68) 60%,
+            #000 70%
+        );
+    }
+
     .hero-image{
         min-height:360px;
     }
 
-    .hero-image::before{
-        width:420px;
-        height:360px;
+    .hero-orbit{
+        transform:scale(.55);
     }
 
     .hero-book{

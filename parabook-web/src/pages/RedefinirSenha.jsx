@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import swal from '../services/swal';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/password-reset.css';
 
 function RedefinirSenha() {
   const { uid, token } = useParams();
   const navigate = useNavigate();
+  const paginaRef = useRevelacao([]);
 
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -48,8 +50,8 @@ function RedefinirSenha() {
   };
 
   return (
-    <div className="reset-page">
-      <div className="reset-container">
+    <div className="reset-page" ref={paginaRef}>
+      <div className="reset-container" data-revelar>
         <h2>Criar Nova Senha</h2>
         <p className="reset-text">
           Escolha uma nova senha forte e segura para acessar sua conta.

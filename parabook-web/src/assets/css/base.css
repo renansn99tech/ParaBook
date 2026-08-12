@@ -89,6 +89,24 @@ body{
     --white-rgb:255,255,255;
     --black-rgb:0,0,0;
 
+    /* "Luz de vela": o único âmbar quente do sistema, contraponto
+       pontual ao roxo frio que domina o app. Reservado para momentos de
+       leitura/autoria (rótulo do hero, clímax do CTA de publicar) — não
+       é cor de base de nada, e não substitui --warning, que continua
+       significando alerta.
+
+       Par canal + hex escrito à mão nos dois temas pelo mesmo motivo das
+       superfícies (ver bloco acima): o âmbar precisa escurecer no tema
+       claro para não sumir sobre branco, e um `rgb(var(--vela-rgb))`
+       derivado uma vez só não recalcularia na troca de tema. */
+    --vela-rgb:232,162,72;
+    --vela:#E8A248;
+
+    /* Serifada só para o título do hero — o resto do app segue em Inter.
+       Pilha de sistema de propósito: sem @font-face e sem CDN, então não
+       há webfont para baixar nem risco de fallback silencioso. */
+    --fonte-editorial:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+
     /* Superfícies: hex literal, não `rgb(var(--*-rgb))`.
 
        A derivação seria mais elegante e foi a primeira tentativa, mas na
@@ -252,6 +270,12 @@ body{
 
     --bg-card-hover:#F1F5F9;
     --bg-input:#FFFFFF;
+
+    /* O âmbar do tema escuro (#E8A248) tem ~2:1 contra branco — some.
+       Esta versão mais funda mantém a mesma família quente com contraste
+       utilizável sobre --bg-main claro. */
+    --vela-rgb:176,106,16;
+    --vela:#B06A10;
 
     /* A escala de texto inverte a ordem: --text é o mais escuro. */
     --text:#0F172A;

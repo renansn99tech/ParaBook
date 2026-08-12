@@ -1,9 +1,12 @@
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/backlog.css';
 
 function Backlog() {
+  const paginaRef = useRevelacao([]);
+
   return (
-    <main className="backlog-page-main" id="topo">
-      <section className="news-hero-section">
+    <main className="backlog-page-main" id="topo" ref={paginaRef}>
+      <section className="news-hero-section" data-revelar>
         <div className="scroll-ticker-container">
           <span className="ticker-item">
             NOVIDADES • ROADMAP • CHANGELOG • NOVIDADES • ROADMAP • CHANGELOG •
@@ -19,7 +22,7 @@ function Backlog() {
       <section className="timeline-container">
         <div className="timeline-vertical-bar"></div>
 
-        <article className="timeline-entry inverse">
+        <article className="timeline-entry inverse" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -31,7 +34,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry">
+        <article className="timeline-entry" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -43,7 +46,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry inverse">
+        <article className="timeline-entry inverse" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -55,19 +58,19 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry">
+        <article className="timeline-entry" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
-              <span class="date-tag">Mai 2026</span>
-              <span class="status-badge">Deploy</span>
+              <span className="date-tag">Mai 2026</span>
+              <span className="status-badge">Deploy</span>
             </div>
             <h3>Publicação no GitHub Pages</h3>
             <p>Primeiro deploy público do protótipo estático para testes e demonstração estrutural inicial.</p>
           </div>
         </article>
 
-        <article className="timeline-entry inverse">
+        <article className="timeline-entry inverse" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -79,7 +82,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry">
+        <article className="timeline-entry" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -91,7 +94,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry inverse">
+        <article className="timeline-entry inverse" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -103,7 +106,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry">
+        <article className="timeline-entry" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -115,7 +118,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry inverse">
+        <article className="timeline-entry inverse" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -128,7 +131,7 @@ function Backlog() {
         </article>
         
         {/* NOVOS CARDS DE JULHO */}
-        <article className="timeline-entry">
+        <article className="timeline-entry" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -140,7 +143,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry inverse">
+        <article className="timeline-entry inverse" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -152,7 +155,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry">
+        <article className="timeline-entry" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -164,7 +167,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry inverse warning-milestone">
+        <article className="timeline-entry inverse warning-milestone" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -176,7 +179,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry current-milestone">
+        <article className="timeline-entry current-milestone" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">

@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import Skeleton from '../components/Skeleton';
 import CardComunidade from '../components/CardComunidade';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/comunidade.css';
 
 const cardSkeleton = (key) => (
@@ -24,6 +25,7 @@ function Comunidades() {
   const [comunidadesOficiais, setComunidadesOficiais] = useState([]);
   const [comunidadesDaGalera, setComunidadesDaGalera] = useState([]);
   const [loading, setLoading] = useState(true);
+  const paginaRef = useRevelacao([comunidadesOficiais, comunidadesDaGalera, loading]);
 
   useEffect(() => {
     api.get('/comunidades/comunidades/')
@@ -87,7 +89,7 @@ function Comunidades() {
   // Sair é reversível (dá pra reentrar num clique), então usa o ghost
   // neutro — vermelho fica reservado para o que não tem volta.
   const renderCard = (comunidade) => (
-    <CardComunidade key={comunidade.id} comunidade={comunidade}>
+    <CardComunidade key={comunidade.id} comunidade={comunidade} data-revelar>
       {comunidade.em_manutencao && !user?.is_superuser ? (
         <button className="btn-ghost w-100" disabled>
           <i className="fa-solid fa-power-off"></i>Desativada
@@ -110,18 +112,20 @@ function Comunidades() {
   );
 
   return (
-    <main className="container py-4">
+    <main className="container py-4" ref={paginaRef}>
       <section className="pagina-comunidade">
-        <h1 className="pagina-comunidade-titulo mb-3">
-          Comunidades
-        </h1>
-        <p className="pagina-comunidade-lead">
-          Sinta-se livre para escolher uma comunidade para participar. <br />
-          Aqui você poderá fazer amigos e participar de discussões relevantes ao seu interesse.
-        </p>
+        <div data-revelar>
+          <h1 className="pagina-comunidade-titulo mb-3">
+            Comunidades
+          </h1>
+          <p className="pagina-comunidade-lead">
+            Sinta-se livre para escolher uma comunidade para participar. <br />
+            Aqui você poderá fazer amigos e participar de discussões relevantes ao seu interesse.
+          </p>
+        </div>
 
         {/* Comunidades Oficiais */}
-        <div className="secao-comunidades oficiais">
+        <div className="secao-comunidades oficiais" data-revelar>
           <h3>
             <i className="fa-solid fa-bookmark"></i> Espaços Oficiais
           </h3>
@@ -130,18 +134,18 @@ function Comunidades() {
           </p>
         </div>
 
-        <div className="grid-comunidades com-folga">
+        <div className="grid-comunidades com-folga" data-revelar-cascata>
           {comunidadesOficiais.length > 0 ? (
             comunidadesOficiais.map(renderCard)
           ) : (
-            <div className="empty-state">
+            <div className="empty-state" data-revelar>
               <p>Nenhuma comunidade oficial configurada no momento.</p>
             </div>
           )}
         </div>
 
         {/* Comunidades da Galera */}
-        <div className="secao-comunidades da-galera separada">
+        <div className="secao-comunidades da-galera separada" data-revelar>
           <h3>
             <i className="fa-solid fa-users"></i> Comunidades da Galera
           </h3>
@@ -150,11 +154,11 @@ function Comunidades() {
           </p>
         </div>
 
-        <div className="grid-comunidades">
+        <div className="grid-comunidades" data-revelar-cascata>
           {comunidadesDaGalera.length > 0 ? (
             comunidadesDaGalera.map(renderCard)
           ) : (
-            <div className="empty-state">
+            <div className="empty-state" data-revelar>
               <i className="fa-solid fa-ghost"></i>
               <p>Nenhuma comunidade criada ou encontrada.</p>
               <p>Seja o primeiro a criar um espaço para discussão!</p>
@@ -163,7 +167,7 @@ function Comunidades() {
 
           {/* Botão de Criar Comunidade (Visível apenas para usuários comuns/autores, não superuser) */}
           {user && !user.is_superuser && (
-            <Link to="/comunidades/criar" className="card-criar-comunidade-link">
+            <Link to="/comunidades/criar" className="card-criar-comunidade-link" data-revelar>
               <div className="card-criar-comunidade">
                 <div className="card-criar-icone mb-3">
                   <i className="fas fa-plus"></i>

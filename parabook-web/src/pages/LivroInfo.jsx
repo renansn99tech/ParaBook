@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/livro-info.css';
 
 function LivroInfo() {
@@ -15,6 +16,7 @@ function LivroInfo() {
   const [notaForm, setNotaForm] = useState('');
   const [resenhaForm, setResenhaForm] = useState('');
   const [loading, setLoading] = useState(true);
+  const paginaRef = useRevelacao([livro, avaliacoes, minhaAvaliacao, loading]);
 
   useEffect(() => {
     const fetchLivroInfo = async () => {
@@ -163,8 +165,8 @@ function LivroInfo() {
   }
 
   return (
-    <main className="container livro-info-page">
-      <section className="livro-info-container glass-card">
+    <main className="container livro-info-page" ref={paginaRef}>
+      <section className="livro-info-container glass-card" data-revelar>
         <div className="livro-capa-col">
           {livro.capa_url ? (
             <img src={livro.capa_url} alt={livro.titulo} className="livro-capa-img" />
@@ -244,12 +246,12 @@ function LivroInfo() {
       </section>
 
       <section className="avaliacoes-section">
-        <h2 className="avaliacoes-titulo">
+        <h2 className="avaliacoes-titulo" data-revelar>
           <i className="fa-solid fa-comments"></i> Avaliações da Comunidade
         </h2>
 
         {user && (
-          <div className="minha-avaliacao-card glass-card">
+          <div className="minha-avaliacao-card glass-card" data-revelar>
             {minhaAvaliacao ? (
               <div className="minha-avaliacao-header">
                 <div>
@@ -309,10 +311,10 @@ function LivroInfo() {
           </div>
         )}
 
-        <div className="avaliacoes-grid">
+        <div className="avaliacoes-grid" data-revelar-cascata>
           {avaliacoes.length > 0 ? (
             avaliacoes.map((ava) => (
-              <div key={ava.id} className="avaliacao-card glass-card">
+              <div key={ava.id} className="avaliacao-card glass-card" data-revelar>
                 <div className="avaliacao-header">
                   <strong className="avaliacao-user">
                     {ava.usuario_foto ? (
@@ -333,7 +335,7 @@ function LivroInfo() {
               </div>
             ))
           ) : (
-            <div className="empty-avaliacoes">
+            <div className="empty-avaliacoes" data-revelar>
               <i className="fa-solid fa-star-half-stroke"></i>
               <p>
                 Nenhuma avaliação para esta obra ainda. Seja o primeiro a avaliar!

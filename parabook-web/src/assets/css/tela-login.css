@@ -545,6 +545,67 @@
     gap:8px;
 }
 
+/* Tarde Mode - Sunset Palette */
+:root[data-tema="tarde"] .auth-body{
+    --bg-main: #191238;
+    --bg-main-rgb: 25, 18, 56;
+
+    --bg-card: #301A42;
+    --bg-card-rgb: 48, 26, 66;
+
+    --bg-input: rgba(25,18,56,.4);
+
+    --purple: #C77DFF;
+    --purple-rgb: 199, 125, 255;
+
+    --purple-light: #F0855A;
+    --purple-light-rgb: 240, 133, 90;
+
+    --purple-dark: #B14A86;
+    --purple-text: #F0855A;
+
+    --text: #FFF3E6;
+    --text-secondary: #C6A8BF;
+    --text-soft: #9C82A0;
+
+    --border: rgba(255,214,180,.12);
+    --border-strong: rgba(255,205,165,.3);
+
+    --focus-ring: 0 0 0 3px rgba(240, 133, 90, .25);
+}
+
+:root[data-tema="tarde"] .auth-image-side{
+    background-image:
+        linear-gradient(
+            180deg,
+            rgba(var(--bg-main-rgb),.15),
+            rgba(var(--bg-main-rgb),.92)
+        ),
+        url("../img/logo-parabook-bg.png");
+
+    /* Fundo sólido que simula 20% de opacidade do laranja morno (#FFC46B) sobre branco. */
+    background-color: #FFF3E1;
+
+    /* A camada 0 (gradiente) fica 'normal'. A camada 1 (imagem) fica em 'multiply'. 
+       Isso faz o fundo branco da imagem absorver o fundo laranja, mas preserva a logo escura intacta. */
+    background-blend-mode: normal, multiply;
+
+    background-position:
+        center,
+        right center;
+        
+    filter: none; /* Removemos o filtro para não manchar a logo */
+}
+
+:root[data-tema="tarde"] .auth-image-overlay{
+    background:
+        linear-gradient(
+            180deg,
+            transparent 35%,
+            rgba(var(--bg-main-rgb),.92) 100%
+        );
+}
+
 /* Light mode simples */
 
 /* Responsivo */

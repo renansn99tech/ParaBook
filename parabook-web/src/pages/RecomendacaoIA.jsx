@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/painel.css';
 
 function RecomendacaoIA() {
@@ -9,6 +10,7 @@ function RecomendacaoIA() {
   const [loading, setLoading] = useState(true);
   const [requerPremium, setRequerPremium] = useState(false);
   const [erro, setErro] = useState('');
+  const paginaRef = useRevelacao([recomendacoes, loading, requerPremium]);
 
   useEffect(() => {
     api.get('/biblioteca/recomendacoes-ia/')
@@ -37,10 +39,10 @@ function RecomendacaoIA() {
 
   if (requerPremium) {
     return (
-      <div className="container py-5 painel-page alta">
+      <div className="container py-5 painel-page alta" ref={paginaRef}>
         <div className="row justify-content-center">
           <div className="col-lg-7">
-            <div className="painel-card text-center">
+            <div className="painel-card text-center" data-revelar>
               <div className="card-body p-4 p-md-5">
                 <span className="badge bg-warning bg-opacity-25 text-warning rounded-circle p-3 fs-3 mb-3">✨</span>
                 <h3 className="fw-bold text-white mb-3">Recurso exclusivo Premium</h3>
@@ -60,8 +62,8 @@ function RecomendacaoIA() {
   }
 
   return (
-    <div className="container py-5 painel-page alta">
-      <div className="text-center mb-5">
+    <div className="container py-5 painel-page alta" ref={paginaRef}>
+      <div className="text-center mb-5" data-revelar>
         <h1 className="fw-bold text-white mb-2">
           <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
           Recomendações para Você
@@ -72,7 +74,7 @@ function RecomendacaoIA() {
       {erro && <div className="alert alert-danger text-center">{erro}</div>}
 
       {!erro && recomendacoes.length === 0 ? (
-        <div className="text-center py-5">
+        <div className="text-center py-5" data-revelar>
           <i className="fa-solid fa-book-open text-white-50 fs-1 mb-3 d-block"></i>
           <h4 className="text-white">Ainda não temos sugestões novas para você</h4>
           <p className="text-white-50 mb-4">
@@ -83,9 +85,9 @@ function RecomendacaoIA() {
           </Link>
         </div>
       ) : (
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4" data-revelar-cascata>
           {recomendacoes.map((livro) => (
-            <div className="col" key={livro.id}>
+            <div className="col" key={livro.id} data-revelar>
               <div
                 className="painel-card h-100 position-relative"
               >

@@ -16,9 +16,18 @@ const CHAVE = 'parabookTema';
  * da preferência do sistema. Enquanto ele não escolher nada, o app
  * acompanha o sistema, inclusive se a pessoa trocar com o app aberto.
  */
+/**
+ * Ordem do rodízio. `tarde` é, por enquanto, um céu da JORNADA (Home) e
+ * não um tema completo de UI: como o base.css só tem bloco para `claro`,
+ * o resto do app fica no visual escuro quando ele está ativo — que é o
+ * comportamento desejado até existirem tokens próprios de superfície.
+ */
+const ORDEM = ['escuro', 'tarde', 'claro'];
+
 function lerTemaAtual() {
   if (typeof document === 'undefined') return 'escuro';
-  return document.documentElement.getAttribute('data-tema') === 'claro' ? 'claro' : 'escuro';
+  const atual = document.documentElement.getAttribute('data-tema');
+  return ORDEM.includes(atual) ? atual : 'escuro';
 }
 
 export default function useTema() {
@@ -36,7 +45,8 @@ export default function useTema() {
   }, []);
 
   const alternar = useCallback(() => {
-    aplicar(lerTemaAtual() === 'claro' ? 'escuro' : 'claro');
+    const atual = lerTemaAtual();
+    aplicar(ORDEM[(ORDEM.indexOf(atual) + 1) % ORDEM.length]);
   }, [aplicar]);
 
   // Acompanha o sistema enquanto o usuário não tiver escolhido um tema.
@@ -61,5 +71,19 @@ export default function useTema() {
     return () => consulta.removeEventListener('change', aoMudar);
   }, []);
 
-  return { tema, alternar, ehClaro: tema === 'claro' };
+  // O ícone mostra o tema ATUAL (lua = está de noite); o rótulo anuncia o
+  // PRÓXIMO. São coisas diferentes de propósito: o desenho serve de
+  // indicador de estado, e o texto — que é o que o leitor de tela lê ao
+  // focar o botão — precisa dizer o que o clique vai fazer. Fica aqui
+  // para os três lugares que trocam tema (navbar, login, registro) não
+  // reimplementarem o rodízio cada um.
+  const proximo = ORDEM[(ORDEM.indexOf(tema) + 1) % ORDEM.length];
+  const icone = { escuro: 'fa-moon', tarde: 'fa-cloud-sun', claro: 'fa-sun' }[tema];
+  const rotulo = {
+    escuro: 'Mudar para o tema escuro',
+    tarde: 'Mudar para o tema de fim de tarde',
+    claro: 'Mudar para o tema claro',
+  }[proximo];
+
+  return { tema, alternar, ehClaro: tema === 'claro', icone, rotulo };
 }

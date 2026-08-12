@@ -33,10 +33,13 @@
       (function () {
         try {
           var salvo = localStorage.getItem('parabookTema');
-          var claro = salvo
-            ? salvo === 'claro'
-            : window.matchMedia('(prefers-color-scheme: light)').matches;
-          document.documentElement.setAttribute('data-tema', claro ? 'claro' : 'escuro');
+          var tema;
+          if (salvo === 'claro' || salvo === 'tarde' || salvo === 'escuro') {
+            tema = salvo;
+          } else {
+            tema = window.matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'escuro';
+          }
+          document.documentElement.setAttribute('data-tema', tema);
         } catch (e) {
           document.documentElement.setAttribute('data-tema', 'escuro');
         }

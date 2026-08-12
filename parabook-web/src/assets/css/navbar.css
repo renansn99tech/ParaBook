@@ -3,88 +3,88 @@ html {
     scrollbar-gutter: stable;
 }
 
-.navbar{
+.navbar {
 
-    position:sticky;
-    top:0;
+    position: sticky;
+    top: 0;
 
-    z-index:1000;
+    z-index: 1000;
 
     background:
-    rgba(var(--bg-main-rgb),.85);
+        rgba(var(--bg-main-rgb), .85);
 
-    backdrop-filter:blur(15px);
+    backdrop-filter: blur(15px);
 
     border-bottom:
-    1px solid rgba(var(--white-rgb),.05);
+        1px solid rgba(var(--white-rgb), .05);
 }
 
-.navbar-container{
+.navbar-container {
 
-    max-width:1400px;
+    max-width: 1400px;
 
-    margin:auto;
+    margin: auto;
 
-    padding:20px 60px;
+    padding: 20px 60px;
 
-    display:flex;
+    display: flex;
 
-    justify-content:space-between;
+    justify-content: space-between;
 
-    align-items:center;
+    align-items: center;
 }
 
-.logo-container{
+.logo-container {
 
-    display:flex;
-    align-items:center;
-    gap:10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.logo-img{
+.logo-img {
     width: 95px;
     margin-right: -1.75rem;
     margin-bottom: 0.3rem;
 }
 
-.logo{
-    font-size:2rem;
+.logo {
+    font-size: 2rem;
 }
 
-.para{
-    color:var(--text);
+.para {
+    color: var(--text);
 }
 
-.book{
-    color:var(--purple);
+.book {
+    color: var(--purple);
     margin-left: 2px;
 }
 
-.menu{
+.menu {
 
-    display:flex;
-    gap:45px;
+    display: flex;
+    gap: 45px;
     margin-bottom: 0.35rem !important;
-    list-style:none;
+    list-style: none;
 }
 
-.menu a{
-    text-decoration:none;
-    color:var(--text-soft);
-    transition:.3s;
+.menu a {
+    text-decoration: none;
+    color: var(--text-soft);
+    transition: .3s;
 }
 
-.menu a:hover{
-    color:var(--purple);
+.menu a:hover {
+    color: var(--purple);
 }
 
 .nav-actions {
     display: flex;
     align-items: center;
-    justify-content: flex-end; 
+    justify-content: flex-end;
     gap: 15px;
     /* Trava a área dos botões para que a renderização de fontes diferentes não os empurre */
-    min-width: 300px; 
+    min-width: 300px;
 }
 
 .search-btn {
@@ -95,7 +95,7 @@ html {
     color: white;
     cursor: pointer;
     font-size: 1.1rem;
-    
+
     /* Centraliza o ícone da lupa perfeitamente no próprio eixo */
     display: flex;
     align-items: center;
@@ -104,23 +104,26 @@ html {
 
 .btn-nav {
     text-decoration: none;
-    padding: 0 24px; /* O padding vertical agora é controlado de forma rígida pelo height */
+    padding: 0 24px;
+    /* O padding vertical agora é controlado de forma rígida pelo height */
     border-radius: var(--radius-md);
     transition: .3s;
-    
+
     /* O SEGREDO DO ALINHAMENTO: Força os botões a se comportarem como blocos idênticos */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 44px; /* Altura cravada e idêntica para todos */
-    min-width: 120px; /* Largura mínima para manter a simetria visual */
+    height: 44px;
+    /* Altura cravada e idêntica para todos */
+    min-width: 120px;
+    /* Largura mínima para manter a simetria visual */
     font-weight: 500;
 }
 
 /* Escopado ao .btn-nav de propósito: .btn-outline também existe global
    (base.css) e a navbar tem altura própria de 44px a preservar. */
 .btn-nav.btn-outline {
-    border: 1px solid rgba(var(--white-rgb),.12);
+    border: 1px solid rgba(var(--white-rgb), .12);
     color: var(--text);
     background: transparent;
     padding: 0 24px;
@@ -134,14 +137,14 @@ html {
 .btn-primary-nav {
     background: linear-gradient(135deg, var(--purple), var(--purple-dark));
     color: white;
-    
+
     /* A COMPENSAÇÃO DE BOX-MODEL: Uma borda transparente para igualar a matemática do .btn-outline */
-    border: 1px solid transparent; 
+    border: 1px solid transparent;
 }
 
 .btn-primary-nav:hover {
     transform: translateY(var(--lift-sm));
-    box-shadow: 0 10px 30px rgba(var(--purple-rgb),.4);
+    box-shadow: 0 10px 30px rgba(var(--purple-rgb), .4);
 }
 
 /* No desktop, garante o alinhamento correto usando flexbox nativo */
@@ -151,8 +154,9 @@ html {
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        margin-left: 40px;
+        margin-left: 10px;
     }
+
     .nav-actions {
         margin-left: auto;
     }
@@ -182,24 +186,24 @@ html {
         padding: 15px 24px !important;
     }
 
-    .logo { 
-        font-size: 2.2rem !important; 
+    .logo {
+        font-size: 2.2rem !important;
     }
 
     .navbar-collapse {
         width: 100%;
-        display: none; 
+        display: none;
         flex-direction: column;
         align-items: stretch;
         /* Adiciona um fundo escuro translúcido ao abrir o menu para leitura perfeita */
-        background: rgba(var(--bg-main-rgb),0.98); 
+        background: rgba(var(--bg-main-rgb), 0.98);
         padding: 20px;
         border-radius: var(--radius);
         margin-top: 15px;
-        border: 1px solid rgba(var(--purple-rgb),0.15);
-        box-shadow: 0 15px 40px rgba(var(--black-rgb),0.5);
+        border: 1px solid rgba(var(--purple-rgb), 0.15);
+        box-shadow: 0 15px 40px rgba(var(--black-rgb), 0.5);
     }
-    
+
     .navbar-collapse.show {
         display: flex !important;
     }
@@ -208,7 +212,7 @@ html {
     .menu {
         display: flex !important;
         flex-direction: column !important;
-        flex-wrap: nowrap !important; 
+        flex-wrap: nowrap !important;
         gap: 10px !important;
         padding: 10px 0 !important;
         margin: 0 !important;
@@ -216,13 +220,15 @@ html {
 
     .menu li {
         width: 100%;
-        text-align: center; /* Menu centralizado fica mais premium no touch */
+        text-align: center;
+        /* Menu centralizado fica mais premium no touch */
     }
 
     .menu a {
         display: block;
         padding: 14px 0 !important;
-        font-size: 1.35rem !important; /* Aumento equilibrado */
+        font-size: 1.35rem !important;
+        /* Aumento equilibrado */
         font-weight: 500;
     }
 
@@ -234,7 +240,8 @@ html {
         width: 100%;
         margin-top: 15px !important;
         padding-top: 25px !important;
-        border-top: 1px dashed rgba(var(--white-rgb),0.1); /* Linha divisória sutil */
+        border-top: 1px dashed rgba(var(--white-rgb), 0.1);
+        /* Linha divisória sutil */
     }
 
     .btn-nav {
@@ -246,56 +253,57 @@ html {
         border-radius: var(--radius-md) !important;
     }
 }
+
 /* Link do logotipo — era textDecoration/color inline. */
-.logo-link{
-    text-decoration:none;
-    color:inherit;
+.logo-link {
+    text-decoration: none;
+    color: inherit;
 }
 
-/* Botão de troca de tema. Mesma caixa dos outros .btn-nav, mas quadrado
-   para o ícone ficar centrado. */
-.btn-tema{
-    min-width:44px;
-
-    justify-content:center;
+/* Botões de ação só-ícone da navbar (tema, notificações). Mesma caixa
+   dos outros .btn-nav, mas sem o min-width:120px pensado para texto —
+   um ícone sozinho não precisa da mesma largura de "Meu Perfil". */
+.btn-nav-icone {
+    min-width: 44px;
+    padding: 0 14px;
 }
 
 /* O ícone do menu hambúrguer do Bootstrap é desenhado escuro. No tema
    escuro ele precisa ser invertido para aparecer; no claro, não — e o
    filtro estava cravado inline, então ficaria invisível no tema claro. */
-.navbar-toggler-icon{
-    filter:invert(1);
+.navbar-toggler-icon {
+    filter: invert(1);
 }
 
-:root[data-tema="claro"] .navbar-toggler-icon{
-    filter:none;
+:root[data-tema="claro"] .navbar-toggler-icon {
+    filter: none;
 }
 
-.badge-contador{
-    font-size:.65rem;
+.badge-contador {
+    font-size: .65rem;
 }
 
 /* Atalho da Recomendação IA no menu lateral: âmbar para se destacar da
    lista, mas vindo do token de aviso, não de um hex solto. */
-.link-ia{
-    color:var(--warning);
-    font-weight:600;
+.link-ia {
+    color: var(--warning);
+    font-weight: 600;
 }
 
 /* Menu lateral (offcanvas). O fundo estava inline com dois hex fixos,
    então ele continuaria escuro no tema claro. */
-.offcanvas{
-    background:linear-gradient(145deg, var(--bg-deep) 0%, rgba(var(--purple-dark-rgb),.35) 100%);
-    color:var(--text);
+.offcanvas {
+    background: linear-gradient(145deg, var(--bg-deep) 0%, rgba(var(--purple-dark-rgb), .35) 100%);
+    color: var(--text);
 }
 
 .offcanvas .text-white,
-.offcanvas .text-white-50{
-    color:var(--text) !important;
+.offcanvas .text-white-50 {
+    color: var(--text) !important;
 }
 
 /* O X de fechar do Bootstrap é um SVG preto; a variante -white inverte.
    No tema claro queremos o preto de volta. */
-:root[data-tema="claro"] .btn-close-white{
-    filter:none;
+:root[data-tema="claro"] .btn-close-white {
+    filter: none;
 }

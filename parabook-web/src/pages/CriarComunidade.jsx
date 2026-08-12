@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 
 const inputEstilo = {
   background: 'rgba(0,0,0,0.25)',
@@ -17,6 +18,7 @@ function CriarComunidade() {
   const [cota, setCota] = useState(null); // { total, limite, pode_criar }
   const [carregandoCota, setCarregandoCota] = useState(true);
   const [enviando, setEnviando] = useState(false);
+  const paginaRef = useRevelacao([carregandoUsuario, user, carregandoCota]);
 
   // A cota vem da API para não duplicar a REGRA 10 (limite de 5) no cliente.
   useEffect(() => {
@@ -39,10 +41,10 @@ function CriarComunidade() {
   // REGRA 5: administradores criam salas oficiais pelo Dashboard, não por aqui.
   if (user.is_superuser) {
     return (
-      <main className="container py-5" style={{ minHeight: '70vh' }}>
+      <main className="container py-5" ref={paginaRef} style={{ minHeight: '70vh' }}>
         <div className="row justify-content-center">
           <div className="col-lg-6 text-center">
-            <div className="card border-0 shadow-lg rounded-4 text-white" style={{ background: '#12131C' }}>
+            <div className="card border-0 shadow-lg rounded-4 text-white" data-revelar style={{ background: '#12131C' }}>
               <div className="card-body p-5">
                 <i className="fa-solid fa-shield-halved fs-1 mb-3" style={{ color: '#f59e0b' }}></i>
                 <h3 className="fw-bold mb-3">Área destinada a leitores e autores</h3>
@@ -97,10 +99,10 @@ function CriarComunidade() {
   };
 
   return (
-    <main className="container py-5" style={{ minHeight: '70vh' }}>
+    <main className="container py-5" ref={paginaRef} style={{ minHeight: '70vh' }}>
       <div className="row justify-content-center">
         <div className="col-lg-7">
-          <div className="card border-0 shadow-lg rounded-4 text-white" style={{ background: '#12131C' }}>
+          <div className="card border-0 shadow-lg rounded-4 text-white" data-revelar style={{ background: '#12131C' }}>
             <div className="card-body p-4 p-md-5">
               <div className="text-center mb-4">
                 <i className="fa-solid fa-circle-plus fs-1 mb-3" style={{ color: '#8b5cf6' }}></i>

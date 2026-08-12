@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import swal, { BOTAO } from '../services/swal';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/conteudo-comunidade.css';
 
 function ConteudoComunidade() {
@@ -15,7 +16,8 @@ function ConteudoComunidade() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [busca, setBusca] = useState('');
-  
+  const paginaRef = useRevelacao([comunidade, postagens, busca, loading]);
+
   // Form state
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
@@ -269,8 +271,8 @@ function ConteudoComunidade() {
   }
 
   return (
-    <main id="topo" className="pagina-comunidade">
-      <section className="banner-comunidade">
+    <main id="topo" className="pagina-comunidade" ref={paginaRef}>
+      <section className="banner-comunidade" data-revelar>
         <div>
           <h2>
             {comunidade.nome}
@@ -285,7 +287,7 @@ function ConteudoComunidade() {
       </section>
 
       <section className="posts-section">
-        <div className="linha-titulo">
+        <div className="linha-titulo" data-revelar>
           <h3>Postagens</h3>
           <div className="acoes">
             {user && (user.is_superuser || (!comunidade.criada_por_sistema && comunidade.criador === user.usuario)) && (
@@ -306,7 +308,7 @@ function ConteudoComunidade() {
           </div>
         </div>
 
-        <div className="search-box">
+        <div className="search-box" data-revelar>
           <input
             type="text"
             placeholder="Buscar posts..."
@@ -440,10 +442,10 @@ function ConteudoComunidade() {
           </section>
         )}
 
-        <div id="lista-posts">
+        <div id="lista-posts" data-revelar-cascata>
           {postsFiltrados.length > 0 ? (
             postsFiltrados.map(post => (
-              <div className="post-card" key={post.id}>
+              <div className="post-card" key={post.id} data-revelar>
                 <div className="post-header">
                   <div>
                     <h4 className="post-title">{post.titulo}</h4>
@@ -471,7 +473,7 @@ function ConteudoComunidade() {
               </div>
             ))
           ) : (
-            <div className="empty-state text-center p-5">
+            <div className="empty-state text-center p-5" data-revelar>
               <i className="fas fa-comments fs-2 text-muted mb-3"></i>
               <p className="text-muted m-0">Nenhuma postagem encontrada.</p>
             </div>

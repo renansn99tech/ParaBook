@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/password-reset.css';
 
 function EsqueciSenha() {
@@ -8,6 +9,7 @@ function EsqueciSenha() {
   const [loading, setLoading] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [erro, setErro] = useState('');
+  const paginaRef = useRevelacao([enviado]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,8 +31,8 @@ function EsqueciSenha() {
 
   if (enviado) {
     return (
-      <div className="reset-page">
-        <div className="reset-container">
+      <div className="reset-page" ref={paginaRef}>
+        <div className="reset-container" data-revelar>
           <div style={{ textAlign: 'center' }}>
             <i className="fa-solid fa-envelope-circle-check" style={{ fontSize: '3rem', color: '#8b5cf6', marginBottom: '20px' }}></i>
             <h2>Verifique seu e-mail</h2>
@@ -48,8 +50,8 @@ function EsqueciSenha() {
   }
 
   return (
-    <div className="reset-page">
-      <div className="reset-container">
+    <div className="reset-page" ref={paginaRef}>
+      <div className="reset-container" data-revelar>
         <h2>Recuperar Senha</h2>
         <p className="reset-text">
           Informe o e-mail cadastrado na sua conta e enviaremos um link para você criar uma nova senha.

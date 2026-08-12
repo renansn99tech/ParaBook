@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/obras-autores.css';
 
 // Campos opcionais: se vazios, são removidos do envio para a API aplicar seus defaults
@@ -31,6 +32,7 @@ function PublicarLivro() {
 
   const [categorias, setCategorias] = useState([]);
   const [enviando, setEnviando] = useState(false);
+  const paginaRef = useRevelacao([loading, user]);
 
   useEffect(() => {
     if (user) {
@@ -57,8 +59,8 @@ function PublicarLivro() {
 
   if (!isAuthorized) {
     return (
-      <div className="publicar-container" style={{ paddingTop: '100px' }}>
-        <div className="form-box text-center" style={{ maxWidth: '500px', padding: '40px' }}>
+      <div className="publicar-container" ref={paginaRef} style={{ paddingTop: '100px' }}>
+        <div className="form-box text-center" data-revelar style={{ maxWidth: '500px', padding: '40px' }}>
           <i className="fa-solid fa-lock mb-3" style={{ fontSize: '3rem', color: '#f87171' }}></i>
           <h2 style={{ color: 'var(--text)', marginBottom: '15px' }}>Acesso Restrito</h2>
           <p style={{ color: '#94a3b8', marginBottom: '30px' }}>
@@ -126,8 +128,8 @@ function PublicarLivro() {
   };
 
   return (
-    <div className="publicar-container" style={{ paddingTop: '100px', paddingBottom: '40px' }}>
-      <div className="form-box">
+    <div className="publicar-container" ref={paginaRef} style={{ paddingTop: '100px', paddingBottom: '40px' }}>
+      <div className="form-box" data-revelar>
         <h1>Enviar Nova Obra</h1>
         <p>Preencha os dados abaixo para enviar seu manuscrito para análise de publicação.</p>
 

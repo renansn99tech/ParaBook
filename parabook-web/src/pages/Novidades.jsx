@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/novidade.css';
 
 function Novidades() {
   const [livros, setLivros] = useState([]);
   const [loading, setLoading] = useState(true);
+  const paginaRef = useRevelacao([livros, loading]);
 
   useEffect(() => {
     const fetchLivros = async () => {
@@ -25,7 +27,7 @@ function Novidades() {
   }, []);
 
   return (
-    <main className="news-marketing-page" id="topo" style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+    <main className="news-marketing-page" id="topo" ref={paginaRef} style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
       
       <div className="novidade-scroll-ticker-container">
         <span className="novidade-ticker-item">
@@ -34,7 +36,7 @@ function Novidades() {
         </span>
       </div>
 
-      <section className="news-hero-section" style={{ padding: '30px 20px', textAlign: 'center' }}>
+      <section className="news-hero-section" data-revelar style={{ padding: '30px 20px', textAlign: 'center' }}>
         <div className="news-intro-content" style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h1 className="display-5 fw-bold mb-2" style={{ color: 'var(--text)', fontSize: '2.5rem' }}>
             Novidades da Plataforma
@@ -54,9 +56,9 @@ function Novidades() {
             </div>
           </div>
         ) : livros.length > 0 ? (
-          <div className="novidades-grid" style={{ justifyContent: 'center' }}>
+          <div className="novidades-grid" data-revelar-cascata style={{ justifyContent: 'center' }}>
             {livros.map(livro => (
-              <article className="book-card card-novidade-evolved" key={livro.id}>
+              <article className="book-card card-novidade-evolved" key={livro.id} data-revelar>
                 <Link
                   to={`/livro/${livro.id}`}
                   className="btn-info-livro"

@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/minha-biblioteca.css';
 
 function MinhaBiblioteca() {
@@ -14,6 +15,7 @@ function MinhaBiblioteca() {
   const [busca, setBusca] = useState('');
   const [filtroGenero, setFiltroGenero] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('');
+  const paginaRef = useRevelacao([livros, busca, filtroStatus, loading]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -78,10 +80,10 @@ function MinhaBiblioteca() {
   };
 
   return (
-    <main className="minha-biblioteca-page">
+    <main className="minha-biblioteca-page" ref={paginaRef}>
       <div className="container-biblioteca">
-        
-        <header className="banner-biblioteca">
+
+        <header className="banner-biblioteca" data-revelar>
           <div className="banner-content">
             <h1 className="titulo-biblioteca">Minha Biblioteca</h1>
             <p>Organize sua coleção, acompanhe seus status e gerencie seu progresso de leitura em tempo real.</p>
@@ -89,22 +91,22 @@ function MinhaBiblioteca() {
         </header>
 
         <section className="biblioteca-stats" aria-label="Estatísticas de leitura">
-          <div className="stats-grid">
-            <div className="stat-card">
+          <div className="stats-grid" data-revelar-cascata>
+            <div className="stat-card" data-revelar>
               <div className="stat-icon"><i className="fa-solid fa-book" style={{ color: '#3b82f6' }}></i></div>
               <div className="stat-content">
                 <p className="stat-label">Total de Livros</p>
                 <p className="stat-value">{livros.length}</p>
               </div>
             </div>
-            <div className="stat-card">
+            <div className="stat-card" data-revelar>
               <div className="stat-icon"><i className="fa-solid fa-circle-check" style={{ color: '#10b981' }}></i></div>
               <div className="stat-content">
                 <p className="stat-label">Concluídos</p>
                 <p className="stat-value">{totalLidos}</p>
               </div>
             </div>
-            <div className="stat-card">
+            <div className="stat-card" data-revelar>
               <div className="stat-icon"><i className="fa-solid fa-book-open" style={{ color: '#f59e0b' }}></i></div>
               <div className="stat-content">
                 <p className="stat-label">Lendo Agora</p>
@@ -114,7 +116,7 @@ function MinhaBiblioteca() {
           </div>
         </section>
 
-        <section className="biblioteca-filters" aria-label="Filtros da coleção">
+        <section className="biblioteca-filters" aria-label="Filtros da coleção" data-revelar>
           <div className="filter-group">
             <input 
               type="text" 
@@ -148,9 +150,9 @@ function MinhaBiblioteca() {
           </div>
         </section>
 
-        <section className="books-grid" aria-label="Listagem de livros da coleção">
+        <section className="books-grid" aria-label="Listagem de livros da coleção" data-revelar-cascata>
           {livrosFiltrados.map((item) => (
-            <article key={item.id} className="card-livro">
+            <article key={item.id} className="card-livro" data-revelar>
               <Link to={`/livro/${item.livro}`} style={{ textDecoration: 'none' }}>
                 <div className="capa-container">
                   {item.livro_capa ? (
@@ -190,7 +192,7 @@ function MinhaBiblioteca() {
           ))}
 
           {livrosFiltrados.length === 0 && (
-            <div className="empty-state">
+            <div className="empty-state" data-revelar>
               <i className="fa-solid fa-box-open fs-1 d-block mb-3"></i>
               Nenhum livro encontrado nesta seleção.
             </div>

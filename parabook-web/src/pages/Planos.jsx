@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 
 function Planos() {
   const [planos, setPlanos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+  const paginaRef = useRevelacao([planos, loading]);
 
   useEffect(() => {
     api.get('/assinaturas/planos/')
@@ -34,20 +36,20 @@ function Planos() {
   }
 
   return (
-    <div className="container py-5" style={{ minHeight: '80vh' }}>
+    <div className="container py-5" ref={paginaRef} style={{ minHeight: '80vh' }}>
       {/* Cabeçalho */}
-      <div className="text-center mb-5">
+      <div className="text-center mb-5" data-revelar>
         <h1 className="fw-bold text-white mb-2">
           Escolha o plano ideal para sua jornada
         </h1>
         <p className="text-white-50 fs-5">Desbloqueie todo o potencial da sua biblioteca e recursos exclusivos de leitura.</p>
       </div>
 
-      <div className="row justify-content-center align-items-stretch g-4">
+      <div className="row justify-content-center align-items-stretch g-4" data-revelar-cascata>
         {planos.map((plano) => {
           const preco = Number(plano.preco);
           return (
-            <div key={plano.id} className="col-lg-5 col-md-6">
+            <div key={plano.id} className="col-lg-5 col-md-6" data-revelar>
               <div
                 className={`card h-100 border-0 shadow-lg position-relative rounded-4 text-white ${preco > 0 ? 'bg-dark border border-primary border-2' : 'bg-dark bg-opacity-75 border border-secondary border-opacity-25'}`}
                 style={{ background: '#12131C', backdropFilter: 'blur(10px)' }}

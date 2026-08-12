@@ -15,7 +15,7 @@ function Register() {
 
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { alternar, ehClaro } = useTema();
+  const { alternar, icone, rotulo } = useTema();
   const paginaRef = useRevelacao([]);
 
   const handleChange = (e) => {
@@ -44,11 +44,10 @@ function Register() {
         id="theme-toggle"
         type="button"
         onClick={alternar}
-        aria-pressed={ehClaro}
-        title={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
-        aria-label={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
+        title={rotulo}
+        aria-label={rotulo}
       >
-        <i className={`fa-solid ${ehClaro ? 'fa-moon' : 'fa-sun'}`}></i>
+        <i className={`fa-solid ${icone}`}></i>
       </button>
 
       <main className="auth-container auth-container-register">

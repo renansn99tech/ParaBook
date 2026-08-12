@@ -13,7 +13,7 @@ function Login() {
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { alternar, ehClaro } = useTema();
+  const { alternar, icone, rotulo } = useTema();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,11 +37,10 @@ function Login() {
         id="theme-toggle"
         type="button"
         onClick={alternar}
-        aria-pressed={ehClaro}
-        title={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
-        aria-label={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
+        title={rotulo}
+        aria-label={rotulo}
       >
-        <i className={`fa-solid ${ehClaro ? 'fa-moon' : 'fa-sun'}`}></i>
+        <i className={`fa-solid ${icone}`}></i>
       </button>
 
       <main className="auth-container">

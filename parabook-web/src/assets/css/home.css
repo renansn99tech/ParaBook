@@ -510,18 +510,26 @@
     color:var(--text-secondary);
 }
 
+/* Ancorados nas órbitas, não "no topo": o palco tem min-height:800px
+   (centro em y 400) e os anéis raio 190/260/340 (.hero-orbit-ring-1/2/3
+   de 380/520/680px). Este e o .stats-card roçam o anel 2 — na abscissa
+   de cada card, dx≈146 → dy=√(260²−146²)≈215 → y≈615, arredondado para
+   496 porque o card tem altura própria a descontar do topo. Mudando a
+   altura do palco, recalcule a partir do centro, não no olho. */
 .author-card{
-    top:55px;
-    left:-15px;
+    top:536px;
+    left:24px;
     width:210px;
 }
 
+/* Abaixo do livro, na faixa entre o anel 1 (y≈590) e o anel 3 (y≈740) —
+   mesmo raciocínio do .author-card acima. */
 .story-card{
-    top:25px;
+    top:112px;
     left:50%;
     transform:translateX(-50%);
 
-    width:290px;
+    width:274px;
     min-height:115px;
 
     display:grid;
@@ -593,8 +601,8 @@
 }
 
 .stats-card{
-    top:95px;
-    right:-15px;
+    top:524px;
+    right:24px;
     width:210px;
 }
 
@@ -699,6 +707,12 @@
 .jornada{
     --progresso:0;
 
+    /* Qual céu está no ar. Só um vale 1 por vez, então noite é o que
+       sobra: (1 - dia - tarde). Quem vira a chave é o tema do app — o
+       modo claro não ESCURECE esta cena, troca o céu dela. */
+    --dia:0;
+    --tarde:0;
+
     position:relative;
     z-index:1;
 
@@ -707,6 +721,11 @@
        acrescentar ou tirar um capítulo não exige lembrar de reajustar um
        `height:400vh` aqui. */
 }
+
+/* O céu segue o tema do app: nenhum JS novo, o data-tema que o useTema
+   já escreve no <html> é o que vira a chave. */
+:root[data-tema="claro"] .jornada{ --dia:1; }
+:root[data-tema="tarde"] .jornada{ --tarde:1; }
 
 .jornada-cena{
     position:sticky;
@@ -722,19 +741,81 @@
 }
 
 /* Nebulosa alternativa: mesma família de roxos do hero, arranjo
-   diferente e um toque de --vela ao fundo. Entra por cima da nebulosa
-   do topo conforme o progresso avança — a troca de cenário sem trocar
-   a paleta. Escura nos dois temas, mesmo precedente do .hero-cosmos. */
+   diferente e focos de --vela ao fundo ("Campo Profundo + Espinha de
+   Aurora"). Entra por cima da nebulosa do topo conforme o progresso
+   avança — a troca de cenário sem trocar a paleta. Escura nos dois
+   temas, mesmo precedente do .hero-cosmos.
+
+   Opacidade entra rápido (cheia por ~.2 de progresso, não ao longo da
+   jornada inteira): o resto do avanço é para o que acontece DENTRO da
+   cena já revelada — estrelas, cometa, arcos —, não para a cena
+   continuar clareando. */
 .cena-nebulosa{
     position:absolute;
     inset:0;
 
     background:
-        radial-gradient(ellipse 55% 45% at 28% 30%, rgba(var(--purple-light-rgb),.30), transparent 70%),
-        radial-gradient(ellipse 65% 50% at 78% 72%, rgba(var(--vela-rgb),.14), transparent 72%),
-        linear-gradient(200deg, #140f2e, #04050d);
+        radial-gradient(ellipse 58% 42% at 32% 26%, rgba(var(--purple-light-rgb),.38), transparent 68%),
+        radial-gradient(ellipse 34% 26% at 74% 42%, rgba(var(--vela-rgb),.18), transparent 72%),
+        radial-gradient(ellipse 62% 34% at 56% 88%, rgba(var(--vela-rgb),.22), transparent 74%),
+        radial-gradient(ellipse 42% 30% at 84% 68%, rgba(217,70,239,.16), transparent 72%),
+        linear-gradient(200deg,#170f31,#050310);
 
-    opacity:calc(var(--progresso) * 1.6);
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 6, 1) * (1 - var(--dia) - var(--tarde)));
+}
+
+/* Starfield denso — mesma textura do hero (stars-bg.png), aqui bem
+   visível e com a borda dissolvida pela máscara em vez de recortada. */
+.cena-estrelas{
+    position:absolute;
+    inset:0;
+
+    background:url("../img/stars-bg.png") center/cover no-repeat;
+    mix-blend-mode:screen;
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 5, .9) * (1 - var(--dia) - var(--tarde)));
+
+    -webkit-mask-image:radial-gradient(ellipse 92% 92% at 50% 45%, #000 45%, transparent 90%);
+            mask-image:radial-gradient(ellipse 92% 92% at 50% 45%, #000 45%, transparent 90%);
+}
+
+/* Cometa: atravessa o quadro no primeiro terço da jornada e some — um
+   evento, não um elemento permanente da cena. */
+.cena-cometa{
+    position:absolute;
+    top:14%;
+    left:6%;
+
+    width:36%;
+    height:2px;
+
+    /* Um rastro branco sobre céu claro simplesmente não existe: de dia
+       ele vira um risco escuro, como um contrail contra a luz. */
+    background:linear-gradient(90deg, transparent,
+        color-mix(in oklab, rgba(var(--white-rgb),.95), rgba(58,28,124,.85) calc(var(--dia) * 100%)),
+        transparent);
+    filter:blur(1px);
+
+    transform:rotate(-22deg) translateX(calc(var(--progresso) * 55vw));
+
+    opacity:min(calc((var(--progresso) - .1) * 5), calc((.62 - var(--progresso)) * 4));
+}
+
+/* Horizonte âmbar — chega antes da paisagem (.cena-paisagem, mais
+   adiante no progresso), preparando visualmente o amanhecer que a
+   próxima entrega vai completar. */
+.cena-horizonte{
+    position:absolute;
+    inset:auto 0 0 0;
+
+    height:34%;
+
+    background:linear-gradient(180deg, transparent, rgba(var(--vela-rgb),.26));
+
+    transition:opacity .8s ease;
+    opacity:calc((var(--progresso) - .22) * 2 * (1 - var(--dia) - var(--tarde)));
 }
 
 /* O "astro" que nasce atrás da paisagem — é ele que justifica a luz
@@ -755,49 +836,177 @@
        horizonte. */
     translate:-50% calc(60px - var(--progresso) * 150px);
 
-    opacity:calc((var(--progresso) - .35) * 2.2);
+    transition:opacity .8s ease;
+    opacity:calc((var(--progresso) - .35) * 2.2 * (1 - var(--dia) - var(--tarde)));
 }
 
-/* Anéis da cena: decidi que eles SE ABREM em vez de ficarem parados.
-   No hero eles orbitam o livro (é o que faz a composição ler como
-   "livro no centro de uma órbita"); aqui o livro deixa de ser o assunto
-   e vira paisagem, então prendê-los a um centro que sumiu ficaria sem
-   leitura. Afastando-se e desbotando, eles fazem o papel de "a órbita
-   se desfaz para abrir espaço" — a mesma ideia da transição. */
-.cena-orbita{
+/* Arcos da cena: decidi que eles SE ABREM em vez de ficarem parados —
+   mesma decisão de sempre, agora em forma elíptica. No hero os anéis
+   orbitam o livro (é o que faz a composição ler como "livro no centro
+   de uma órbita"); aqui o livro deixa de ser o assunto e vira paisagem,
+   então prendê-los a um centro que sumiu ficaria sem leitura.
+   Afastando-se e desbotando, eles fazem o papel de "a órbita se desfaz
+   para abrir espaço" — a mesma ideia da transição, só que como arcos
+   finos de luz com um ponto de brilho em vez de anéis fechados. */
+.cena-arcos{
     position:absolute;
     left:50%;
-    top:50%;
+    top:54%;
 
     width:0;
     height:0;
 
-    scale:calc(1 + var(--progresso) * 1.35);
-    opacity:calc(1 - var(--progresso) * 1.5);
+    scale:calc(1 + var(--progresso) * .85);
+    opacity:calc(.9 - var(--progresso) * .75);
 }
 
-.cena-anel{
+.cena-arco{
     position:absolute;
     left:0;
     top:0;
 
-    border:1px solid rgba(var(--purple-rgb),.20);
     border-radius:var(--radius-circle);
-
     transform:translate(-50%,-50%);
 }
 
-.cena-anel-1{
-    width:360px;
-    height:360px;
-    animation:hero-orbit-spin 30s linear infinite;
+.cena-arco span{
+    position:absolute;
+    top:50%;
+
+    width:5px;
+    height:5px;
+
+    border-radius:var(--radius-circle);
+    transform:translate(-50%,-50%);
 }
 
-.cena-anel-2{
-    width:520px;
-    height:520px;
-    border-color:rgba(var(--purple-light-rgb),.15);
-    animation:hero-orbit-spin-reverse 44s linear infinite;
+.cena-arco-1{ width:660px; height:200px; border:1px solid rgba(var(--purple-light-rgb),.38); border-color:color-mix(in oklab, rgba(var(--purple-light-rgb),.38), rgba(70,32,146,.55) calc(var(--dia) * 100%)); rotate:-6deg; }
+.cena-arco-1 span{ left:100%; background:var(--purple-light); box-shadow:0 0 10px 3px rgba(var(--purple-light-rgb),.85); }
+
+.cena-arco-2{ width:850px; height:250px; border:1px solid rgba(var(--vela-rgb),.24); border-color:color-mix(in oklab, rgba(var(--vela-rgb),.24), rgba(176,102,18,.5) calc(var(--dia) * 100%)); rotate:4deg; }
+.cena-arco-2 span{ left:0; background:#E8A248; box-shadow:0 0 10px 3px rgba(var(--vela-rgb),.75); }
+
+.cena-arco-3{ width:1060px; height:310px; border:1px solid rgba(var(--purple-rgb),.18); border-color:color-mix(in oklab, rgba(var(--purple-rgb),.18), rgba(70,32,146,.34) calc(var(--dia) * 100%)); rotate:-2deg; }
+
+/* Aurora que sobe da lombada do livro — some junto com ele, como se a
+   dobra do livro fosse a origem da luz. */
+.cena-aurora{
+    position:absolute;
+    left:50%;
+    top:34%;
+
+    width:120px;
+    height:42vh;
+
+    transform:translateX(-50%);
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 2, 1) * (1 - (var(--progresso) - .6) * 2.2) * (1 - var(--dia) - var(--tarde)));
+}
+
+.cena-fita{
+    position:absolute;
+    top:0;
+    height:100%;
+}
+
+.cena-fita-roxa{
+    left:22%;
+    width:44px;
+
+    background:linear-gradient(180deg, transparent, rgba(var(--purple-light-rgb),.42) 70%, rgba(var(--purple-light-rgb),.55));
+    filter:blur(18px);
+    transform:skewX(-7deg);
+}
+
+.cena-fita-vela{
+    left:52%;
+    top:6%;
+
+    width:36px;
+    height:94%;
+
+    background:linear-gradient(180deg, transparent, rgba(var(--vela-rgb),.32) 72%, rgba(var(--vela-rgb),.42));
+    filter:blur(20px);
+    transform:skewX(6deg);
+}
+
+/* Estrela cadente ambiente: diferente de .cena-cometa (que É a
+   narrativa — cruza no primeiro terço da JORNADA e nunca mais volta),
+   esta é atmosfera contínua, um loop que se repete sozinho enquanto a
+   cena estiver visível. Só lê --progresso para SE pode aparecer (mesmo
+   portão de opacidade das estrelas), não para o movimento em si.
+
+   Uma direção só, do começo ao fim, sem o "recuo" que a versão anterior
+   tinha ao animar top/left de volta ao ponto de partida ainda dentro do
+   trecho visível: a rotação aponta o rastro e o translateX corre sobre
+   esse eixo já girado, então a trajetória é reta. Todo o ciclo é
+   transform+opacity (sem top/left, que forçam layout a cada frame); o
+   "volta pro começo" acontece só depois do fade, com opacidade 0.
+
+   A rota já foi validada geometricamente contra o livro (~29.5%–70.5%
+   de largura, ~25.9%–74.1% de altura da cena): nasce fora do quadro,
+   desce a 148° raspando o .cena-arco-3 do lado direito, e some ainda em
+   movimento antes de chegar perto do livro. */
+.cena-cadente-camada{
+    position:absolute;
+    inset:0;
+
+    opacity:min(calc(var(--progresso) * 6), 1);
+}
+
+.cena-estrela-cadente{
+    position:absolute;
+    top:-6%;
+    left:104%;
+
+    width:132px;
+    height:2px;
+    border-radius:2px;
+
+    /* Cabeça adiante, cauda atrás: o brilho fica no fim do gradiente
+       porque é essa ponta que vai na frente com a rotação aplicada. */
+    background:linear-gradient(90deg, transparent,
+        color-mix(in oklab, rgba(var(--white-rgb),.95), rgba(58,28,124,.9) calc(var(--dia) * 100%)) 78%,
+        transparent);
+    filter:blur(.6px);
+
+    opacity:0;
+    will-change:transform, opacity;
+
+    animation:cena-passagem-cadente 12s linear infinite 1.8s;
+}
+
+/* Segunda passagem, do outro canto e mais rara — duas trajetórias
+   diferentes evitam o loop de uma estrela só, que fica óbvio depois de
+   meia dúzia de repetições. */
+.cena-estrela-cadente-b{
+    top:-10%;
+    left:-14%;
+
+    width:94px;
+
+    background:linear-gradient(90deg, transparent, rgba(var(--white-rgb),.8) 76%, transparent);
+    filter:blur(.7px);
+
+    animation:cena-passagem-cadente-b 17s linear infinite 7.5s;
+}
+
+@keyframes cena-passagem-cadente{
+    0%{ transform:rotate(148deg) translateX(0); opacity:0; }
+    13%{ opacity:1; }
+    24%{ opacity:1; }
+    33%{ transform:rotate(148deg) translateX(64vh); opacity:0; }
+    /* Segura fora de vista até o próximo ciclo: a pausa entre passagens. */
+    100%{ transform:rotate(148deg) translateX(64vh); opacity:0; }
+}
+
+@keyframes cena-passagem-cadente-b{
+    0%{ transform:rotate(31deg) translateX(0); opacity:0; }
+    15%{ opacity:.85; }
+    27%{ opacity:.85; }
+    36%{ transform:rotate(31deg) translateX(52vh); opacity:0; }
+    100%{ transform:rotate(31deg) translateX(52vh); opacity:0; }
 }
 
 /* O MESMO livro do hero, agora protagonista da transformação. */
@@ -821,40 +1030,27 @@
     height:auto;
 }
 
-/* A folha que vira. Ancorada na lombada (à esquerda do miolo), girando
-   até deitar do outro lado conforme o progresso avança. */
-.cena-pagina{
-    position:absolute;
-    left:50%;
-    top:8%;
-
-    width:44%;
-    height:80%;
-
-    transform-origin:left center;
-    transform:rotateY(calc(var(--progresso) * -165deg));
-
-    background:
-        linear-gradient(100deg, rgba(var(--white-rgb),.16), rgba(var(--white-rgb),.05));
-
-    border:1px solid rgba(var(--white-rgb),.14);
-    border-radius:2px 8px 8px 2px;
-
-    /* A folha só existe enquanto o livro existe. */
-    opacity:calc(1 - (var(--progresso) - .55) * 2.6);
-}
-
 /* Paisagem: silhuetas em camadas, puro gradiente + border-radius. Não é
    ilustração literal — é o horizonte sugerido em que a leitura
    desemboca. */
-.cena-paisagem{
+/* CAMPOS: as MESMAS três cúpulas nos três céus, mesma posição e mesmo
+   gatilho de progresso — o que muda de céu para céu é só a luz que cai
+   nelas. O translateY esconde a base: o assunto é o céu, não o relevo. */
+.cena-paisagem-noite,
+.cena-paisagem-tarde,
+.cena-paisagem-dia{
     position:absolute;
     inset:auto 0 0 0;
 
     height:46%;
 
-    opacity:calc((var(--progresso) - .6) * 3);
+    transform:translateY(30%);
+    transition:opacity .8s ease;
 }
+
+.cena-paisagem-noite{ opacity:calc((var(--progresso) - .6) * 3 * (1 - var(--dia) - var(--tarde))); }
+.cena-paisagem-tarde{ opacity:calc((var(--progresso) - .6) * 3 * var(--tarde)); }
+.cena-paisagem-dia{   opacity:calc((var(--progresso) - .6) * 3 * var(--dia)); }
 
 .cena-morro{
     position:absolute;
@@ -863,25 +1059,245 @@
     border-radius:50% 50% 0 0 / 100% 100% 0 0;
 }
 
-.cena-morro-1{
-    left:-10%;
-    width:70%;
-    height:58%;
-    background:linear-gradient(180deg, #241a3f, #0b0817);
+/* Noite: azul-violeta de luar. A crista de cada cúpula recebe um inset
+   que acompanha a curva do border-radius — é o contorno que um
+   border-top não conseguiria fazer. */
+.cena-campo-noite-3{ left:20%;   width:64%; height:100%; background:linear-gradient(180deg,#5B4C9E,#322861); box-shadow:inset 0 6px 16px -6px rgba(198,172,255,.85); }
+.cena-campo-noite-2{ right:-14%; width:78%; height:76%;  background:linear-gradient(180deg,#453C8A,#221D4C); box-shadow:inset 0 6px 16px -6px rgba(176,152,255,.8); }
+.cena-campo-noite-1{ left:-10%;  width:72%; height:56%;  background:linear-gradient(180deg,#2E2A6B,#13112F); box-shadow:inset 0 6px 16px -6px rgba(150,132,240,.72); overflow:hidden; }
+
+/* Tarde: não é silhueta em contraluz, é campo sob sol raso — a clorofila
+   sob luz quente perde o azul e o verde vira ocre. */
+.cena-campo-tarde-3{ left:20%;   width:64%; height:100%; background:linear-gradient(180deg,#D2A159,#96943F); box-shadow:inset 0 6px 16px -6px rgba(255,226,176,.9); }
+.cena-campo-tarde-2{ right:-14%; width:78%; height:76%;  background:linear-gradient(180deg,#A9832F,#5E7331); box-shadow:inset 0 6px 16px -6px rgba(255,198,132,.85); }
+.cena-campo-tarde-1{ left:-10%;  width:72%; height:56%;  background:linear-gradient(180deg,#7A5B24,#3A4A1C); box-shadow:inset 0 6px 16px -6px rgba(255,172,104,.8); overflow:hidden; }
+
+/* Dia: perspectiva atmosférica — o mais distante é o mais claro. */
+.cena-campo-3{ left:20%;   width:64%; height:100%; background:linear-gradient(180deg,#C2D7A2,#93B877); }
+.cena-campo-2{ right:-14%; width:78%; height:76%;  background:linear-gradient(180deg,#8CC06A,#5C9450); }
+.cena-campo-1{ left:-10%;  width:72%; height:56%;  background:linear-gradient(180deg,#57944A,#2F6234); overflow:hidden; }
+
+/* Listrado quase imperceptível na cúpula da frente: sugere plantação sem
+   virar textura desenhada. */
+.cena-campo-linhas,
+.cena-campo-linhas-tarde,
+.cena-campo-linhas-noite{
+    position:absolute;
+    inset:0;
 }
 
-.cena-morro-2{
-    right:-14%;
-    width:78%;
-    height:78%;
-    background:linear-gradient(180deg, #1b1435, #080611);
+.cena-campo-linhas{       opacity:.16; background:repeating-linear-gradient(96deg, rgba(var(--white-rgb),.32) 0 2px, transparent 2px 18px); }
+.cena-campo-linhas-tarde{ opacity:.14; background:repeating-linear-gradient(96deg, rgba(255,222,180,.4) 0 2px, transparent 2px 18px); }
+.cena-campo-linhas-noite{ opacity:.13; background:repeating-linear-gradient(96deg, rgba(206,192,255,.42) 0 2px, transparent 2px 18px); }
+
+/* ===========================================================
+   OS OUTROS DOIS CÉUS
+   ===========================================================
+   Não é inversão de cor: é outro céu com a mesma geometria. Cada camada
+   é gated por --dia ou --tarde, e as de noite descontam as duas. Como só
+   uma das variáveis é 1 por vez, não existe combinação inválida.
+   A transition de .8s faz a troca ler como amanhecer, não como corte. */
+
+/* Céu diurno: azul profundo no zênite (onde as estrelas ainda aparecem,
+   como em grande altitude) descendo para creme no horizonte. */
+.cena-ceu-dia{
+    position:absolute;
+    inset:0;
+
+    background:
+        radial-gradient(ellipse 46% 34% at 50% 3%, rgba(255,246,220,.95), transparent 62%),
+        radial-gradient(ellipse 54% 38% at 20% 32%, rgba(var(--purple-light-rgb),.34), transparent 72%),
+        radial-gradient(ellipse 72% 42% at 52% 98%, rgba(253,224,186,.8), transparent 74%),
+        linear-gradient(190deg,#42589F 0%,#7F9AD9 24%,#B7C9EC 50%,#E6DBD4 78%,#F6E0C2 100%);
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 6, 1) * var(--dia));
 }
 
-.cena-morro-3{
-    left:22%;
-    width:60%;
-    height:100%;
-    background:linear-gradient(180deg, rgba(var(--purple-dark-rgb),.55), #0d0a1d);
+/* O "estrelado diurno": mesma textura, mascarada só no topo. É o que faz
+   a cena continuar sendo A MESMA cena, em vez de virar um fundo claro
+   qualquer. */
+.cena-estrelas-dia{
+    position:absolute;
+    inset:0;
+
+    background:url("../img/stars-bg.png") center/cover no-repeat;
+    mix-blend-mode:screen;
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 5, .45) * var(--dia));
+
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 24%, transparent 44%);
+            mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 24%, transparent 44%);
+}
+
+/* Cirros no lugar da aurora: de dia uma faixa de luz vertical não teria
+   explicação física nenhuma, e as nuvens finas fazem o mesmo trabalho de
+   dar textura ao meio do quadro. */
+.cena-cirros{
+    position:absolute;
+    left:0;
+    right:0;
+    top:15%;
+
+    height:28%;
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 3, 1) * var(--dia));
+}
+
+.cena-cirro{
+    position:absolute;
+    border-radius:var(--radius-pill, 999px);
+}
+
+.cena-cirro-1{ left:6%;  top:12%; width:54%; height:13px; background:linear-gradient(90deg, transparent, rgba(var(--white-rgb),.78), transparent); filter:blur(10px); rotate:-3deg; }
+.cena-cirro-2{ left:36%; top:46%; width:50%; height:10px; background:linear-gradient(90deg, transparent, rgba(255,244,226,.82), transparent); filter:blur(9px);  rotate:2deg; }
+.cena-cirro-3{ left:18%; top:76%; width:42%; height:8px;  background:linear-gradient(90deg, transparent, rgba(232,224,255,.6), transparent);  filter:blur(8px);  rotate:-1.5deg; }
+
+/* Sol a pino — e o foco quente do .cena-ceu-dia migrou para o zênite
+   junto com ele, senão a luz do gradiente contradiz a posição. */
+.cena-sol-dia{
+    position:absolute;
+    left:50%;
+    top:7%;
+
+    width:min(130px,11vw);
+    aspect-ratio:1;
+
+    transform:translateX(-50%);
+    border-radius:var(--radius-circle);
+    background:radial-gradient(circle, #FFFFFF 0 34%, #FFF3C4 54%, rgba(255,236,170,.35) 72%, transparent 82%);
+    box-shadow:0 0 90px 36px rgba(255,244,200,.5);
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 4, 1) * var(--dia));
+}
+
+/* Céu de fim de tarde: índigo no alto, magenta no meio, brasa embaixo.
+   Não é o céu diurno escurecido — a faixa quente é baixa e larga, e é
+   dela que sai a luz que contorna os campos. */
+.cena-ceu-tarde{
+    position:absolute;
+    inset:0;
+
+    background:
+        radial-gradient(ellipse 38% 26% at 62% 74%, rgba(255,214,140,.9), transparent 64%),
+        radial-gradient(ellipse 56% 38% at 24% 18%, rgba(94,58,150,.5), transparent 70%),
+        radial-gradient(ellipse 70% 30% at 58% 100%, rgba(226,118,72,.5), transparent 72%),
+        linear-gradient(186deg,#141A46 0%,#3A2764 20%,#7A3C6E 44%,#C05F58 68%,#EE9A5C 86%,#F9C883 100%);
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 6, 1) * var(--tarde));
+}
+
+/* As primeiras estrelas já aparecem no alto — é o que data a hora. */
+.cena-estrelas-tarde{
+    position:absolute;
+    inset:0;
+
+    background:url("../img/stars-bg.png") center/cover no-repeat;
+    mix-blend-mode:screen;
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 5, .38) * var(--tarde));
+
+    -webkit-mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.45) 22%, transparent 40%);
+            mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.45) 22%, transparent 40%);
+}
+
+/* Sol quase se pondo. Vem ANTES dos campos no DOM, e o top segue a curva
+   da cúpula da direita (right:-14%; width:78%; height:76% → apex em
+   x 75%/y 78.8%, e em x 87% a superfície já desceu para ~80.6%): com
+   translate(-50%,-50%) o centro cai na curva, metade de cima visível e
+   metade de baixo coberta pelo campo. */
+.cena-sol-tarde{
+    position:absolute;
+    left:87%;
+    top:80.6%;
+
+    width:min(196px,17vw);
+    aspect-ratio:1;
+    border-radius:var(--radius-circle);
+    transform:translate(-50%,-50%);
+
+    background:radial-gradient(circle, #FFF3CE 0 34%, #FFC167 56%, rgba(255,146,74,.34) 74%, transparent 82%);
+    box-shadow:0 0 110px 40px rgba(255,142,72,.3);
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 4, 1) * var(--tarde));
+}
+
+/* Nuvens iluminadas por baixo — o detalhe que separa "fim de tarde" de
+   "filtro laranja". */
+.cena-nuvens-tarde{
+    position:absolute;
+    left:0;
+    right:0;
+    top:38%;
+
+    height:26%;
+
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 3, 1) * var(--tarde));
+}
+
+.cena-nuvem{ position:absolute; border-radius:var(--radius-pill, 999px); }
+.cena-nuvem-1{ left:4%;  top:10%; width:46%; height:14px; background:linear-gradient(90deg, transparent, rgba(255,196,150,.7), transparent);  filter:blur(11px); rotate:-2deg; }
+.cena-nuvem-2{ left:40%; top:44%; width:54%; height:11px; background:linear-gradient(90deg, transparent, rgba(255,168,120,.78), transparent); filter:blur(9px);  rotate:1.5deg; }
+.cena-nuvem-3{ left:14%; top:78%; width:48%; height:9px;  background:linear-gradient(90deg, transparent, rgba(255,222,184,.62), transparent); filter:blur(8px);  rotate:-1deg; }
+
+/* LUA CRESCENTE NEON (noite): é ela que justifica o azul-violeta dos
+   campos. O crescente sai de um mask de círculo deslocado, não de dois
+   nós sobrepostos — com um só elemento, o drop-shadow empilhado segue a
+   SILHUETA do crescente e não o quadrado do contêiner, que é o que dá o
+   neon. Regra prática da geometria: espessura = 0.5 + (distância − raio);
+   aproximar distância e raio engorda a lua, afastá-los afina as pontas. */
+.cena-lua-crescente{
+    position:absolute;
+    left:50%;
+    top:6%;
+
+    width:min(136px,11.5vw);
+    aspect-ratio:1;
+
+    transform:translateX(-50%);
+    transition:opacity .8s ease;
+    opacity:calc(min(var(--progresso) * 4, 1) * (1 - var(--dia) - var(--tarde)));
+}
+
+/* Halo à parte: o mask do crescente cortaria qualquer box-shadow
+   desenhado no mesmo nó. */
+.cena-lua-crescente-halo{
+    position:absolute;
+    inset:-85%;
+
+    border-radius:var(--radius-circle);
+    background:radial-gradient(circle,
+        rgba(178,140,255,.5) 0 18%, rgba(124,92,255,.34) 38%,
+        rgba(88,60,232,.18) 58%, transparent 76%);
+    filter:blur(26px);
+}
+
+.cena-lua-crescente-disco{
+    position:absolute;
+    inset:0;
+    border-radius:var(--radius-circle);
+
+    background:radial-gradient(circle at 22% 76%,
+        #FFFFFF 0 16%, #F3ECFF 30%, #C9AEFF 52%, #9A78FF 74%, #7C5CFF 100%);
+
+    -webkit-mask-image:radial-gradient(ellipse 47% 47% at 62% 38%, transparent 98%, #000 100%);
+            mask-image:radial-gradient(ellipse 47% 47% at 62% 38%, transparent 98%, #000 100%);
+
+    /* Cinco camadas em rampa: é o empilhamento — não o blur de uma só —
+       que dá o bloom. Cada uma segura alfa alto até o violeta; só as duas
+       últimas caem. */
+    filter:drop-shadow(0 0 5px rgba(240,232,255,.98))
+           drop-shadow(0 0 14px rgba(178,140,255,.95))
+           drop-shadow(0 0 34px rgba(124,92,255,.9))
+           drop-shadow(0 0 74px rgba(106,63,255,.6))
+           drop-shadow(0 0 130px rgba(88,52,240,.36));
 }
 
 /* --- Capítulos: o texto que rola POR CIMA do cenário --- */
@@ -933,8 +1349,11 @@
        uma versão funda no tema claro — o que é certo sobre fundo claro e
        errado aqui, porque a cena atrás é escura nos dois temas. Mesmo
        precedente dos anéis do hero, que também abrem mão do bloco de
-       tema claro por viverem sobre o .hero-cosmos. */
-    color:#E8A248;
+       tema claro por viverem sobre o .hero-cosmos. Com o céu diurno o
+       fundo deixa de ser escuro, então aí sim ele escurece — por --dia,
+       não por --tarde (o céu de tarde continua escuro). */
+    transition:color .8s ease;
+    color:color-mix(in oklab, #E8A248, #8A4E0C calc(var(--dia) * 100%));
 }
 
 .capitulo-rotulo::before{
@@ -943,7 +1362,8 @@
     height:2px;
     flex-shrink:0;
     border-radius:2px;
-    background:#E8A248;
+    transition:background .8s ease;
+    background:color-mix(in oklab, #E8A248, #8A4E0C calc(var(--dia) * 100%));
 }
 
 .jornada-capitulo h2{
@@ -1047,6 +1467,57 @@
     50%{ box-shadow:0 0 28px 4px rgba(232,162,72,.22); }
 }
 
+/* Véu de legibilidade: a cena ficou mais rica (nebulosa mais cheia,
+   arcos, aurora) e o texto branco puro perdia contraste em cima dela.
+   Uma sombra atrás da coluna de leitura, sem borda visível — o
+   gradiente termina em transparent ainda DENTRO da própria coluna, e
+   o retângulo que o contém (`inset` negativo) ultrapassa a largura do
+   texto de propósito, para não desenhar uma quina reta sobre a cena. */
+.jornada-capitulo::before,
+.jornada-convite::before{
+    content:"";
+    position:absolute;
+    inset:8% -48% 8% -40%;
+    z-index:-1;
+    pointer-events:none;
+
+    /* Fade longo até 100% (não 74%): terminar cedo deixava a borda da
+       elipse visível como uma sombra redonda contra a nebulosa.
+
+       Vira junto com o céu — no dia o véu escuro apagaria o texto que
+       também escureceu. Só --dia entra na conta: o céu de tarde é escuro
+       o bastante para o tratamento da noite servir igual. */
+    transition:background .8s ease;
+    background:radial-gradient(ellipse 52% 46% at 46% 50%,
+        color-mix(in oklab, rgba(5,8,22,.94), rgba(248,244,255,.94) calc(var(--dia) * 100%)),
+        color-mix(in oklab, rgba(5,8,22,.5), rgba(248,244,255,.68) calc(var(--dia) * 100%)) 45%,
+        transparent 100%);
+}
+
+/* O convite é centralizado (não alinhado a uma borda como os capítulos),
+   então o véu também centraliza em vez de esticar para um lado. */
+.jornada-convite::before{
+    inset:10% -30%;
+    background-position:center;
+}
+
+/* Vem depois das regras individuais de cada h2, então esta cor vence as
+   duas — é o ponto único onde o texto da jornada acompanha o céu. */
+.jornada-capitulo h2,
+.jornada-convite h2{
+    transition:color .8s ease, text-shadow .8s ease;
+    color:color-mix(in oklab, #F8FAFC, #23193C calc(var(--dia) * 100%));
+    text-shadow:
+        0 2px 20px color-mix(in oklab, rgba(5,8,22,.95), rgba(255,255,255,.92) calc(var(--dia) * 100%)),
+        0 0 6px color-mix(in oklab, rgba(5,8,22,.8), rgba(255,255,255,.8) calc(var(--dia) * 100%));
+}
+
+.capitulo-texto{
+    transition:color .8s ease, text-shadow .8s ease;
+    color:color-mix(in oklab, #B8C0D4, #3A3358 calc(var(--dia) * 100%));
+    text-shadow:0 1px 14px color-mix(in oklab, rgba(5,8,22,.95), rgba(255,255,255,.88) calc(var(--dia) * 100%));
+}
+
 @media (max-width:900px){
     .jornada-convite h2{
         font-size:1.8rem;
@@ -1072,12 +1543,29 @@
     }
 
     .cena-nebulosa{ opacity:1; }
+    .cena-estrelas{ opacity:.9; }
+    .cena-cometa{ opacity:0; }
+    .cena-horizonte{ opacity:1; }
     .cena-astro{ opacity:1; translate:-50% -60px; }
-    .cena-orbita{ opacity:.35; scale:1.2; }
-    .cena-anel{ animation:none; }
-    .cena-livro,
-    .cena-pagina{ opacity:0; }
-    .cena-paisagem{ opacity:1; }
+    .cena-arcos{ opacity:.35; scale:1.2; }
+    .cena-aurora{ opacity:0; }
+    .cena-estrela-cadente{ animation:none; opacity:0; }
+    .cena-livro{ opacity:0; }
+
+    /* Cada céu monta seu estado final; as camadas continuam gated pelas
+       mesmas variáveis, então só o do céu ativo fica visível. */
+    .cena-lua-crescente{ opacity:calc(1 - var(--dia) - var(--tarde)); }
+    .cena-ceu-dia,
+    .cena-sol-dia{ opacity:var(--dia); }
+    .cena-estrelas-dia{ opacity:calc(.45 * var(--dia)); }
+    .cena-cirros{ opacity:var(--dia); }
+    .cena-ceu-tarde,
+    .cena-sol-tarde{ opacity:var(--tarde); }
+    .cena-estrelas-tarde{ opacity:calc(.38 * var(--tarde)); }
+    .cena-nuvens-tarde{ opacity:var(--tarde); }
+    .cena-paisagem-noite{ opacity:calc(1 - var(--dia) - var(--tarde)); }
+    .cena-paisagem-tarde{ opacity:var(--tarde); }
+    .cena-paisagem-dia{ opacity:var(--dia); }
 
     .jornada-capitulo,
     .jornada-convite{
@@ -1201,7 +1689,7 @@
     position:absolute;
     right:0;
     bottom:0;
-    width:52%;
+    width:56%;
     height:100%;
     z-index:1;
 }
@@ -1225,6 +1713,23 @@
     height:100%;
     object-fit:cover;
     border-radius:0;
+
+    /* Duas máscaras cruzadas: horizontal fecha os dois lados (entrada do
+       texto à esquerda, borda reta à direita — sem a segunda parada em
+       82% a foto terminava em corte visível contra a lateral do card) e
+       vertical dissolve topo/base. mask-composite:intersect mantém só
+       onde as duas são opacas. */
+    -webkit-mask-image:
+        linear-gradient(90deg, transparent 0%, #000 26%, #000 82%, transparent 100%),
+        linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+            mask-image:
+        linear-gradient(90deg, transparent 0%, #000 26%, #000 82%, transparent 100%),
+        linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+
+    /* Nomes diferentes nas duas sintaxes: sem o prefixado o Safari
+       aplica só a última máscara da lista. */
+    -webkit-mask-composite:source-in;
+            mask-composite:intersect;
 }
 
 .feature-card p{

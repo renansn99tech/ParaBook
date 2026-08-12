@@ -5,6 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 import useRevelacao from '../hooks/useRevelacao';
 import useProgressoScroll from '../hooks/useProgressoScroll';
 import '../assets/css/home.css';
+import '../assets/css/home-ceus.css';
 import openBookImg from '../assets/img/open-book.png';
 import leitoraImg from '../assets/img/leitora.png';
 import autorImg from '../assets/img/autor.png';
@@ -23,6 +24,15 @@ function Home() {
 
   // Publica --progresso (0 a 1) na .jornada conforme ela atravessa a tela.
   const jornadaRef = useProgressoScroll();
+
+  // Marca o <html> enquanto a landing está no ar. É o que autoriza as
+  // regras de home-ceus.css a valerem — e a remoção no cleanup é o que
+  // impede o tema da Home de sobreviver à navegação para /biblioteca,
+  // /perfil e demais telas, que continuam só com o data-tema.
+  useEffect(() => {
+    document.documentElement.setAttribute('data-home', '');
+    return () => document.documentElement.removeAttribute('data-home');
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -149,22 +159,78 @@ function Home() {
         <section className="jornada" ref={jornadaRef}>
           <div className="jornada-cena" aria-hidden="true">
             <div className="cena-nebulosa"></div>
+            <div className="cena-ceu-dia"></div>
+            <div className="cena-ceu-tarde"></div>
+
+            <div className="cena-estrelas"></div>
+            <div className="cena-estrelas-dia"></div>
+            <div className="cena-estrelas-tarde"></div>
+
+            <div className="cena-cometa"></div>
+            <div className="cena-horizonte"></div>
             <div className="cena-astro"></div>
 
-            <div className="cena-orbita">
-              <div className="cena-anel cena-anel-1"></div>
-              <div className="cena-anel cena-anel-2"></div>
+            <div className="cena-lua-crescente">
+              <div className="cena-lua-crescente-halo"></div>
+              <div className="cena-lua-crescente-disco"></div>
             </div>
+
+            <div className="cena-sol-dia"></div>
+
+            <div className="cena-cirros">
+              <div className="cena-cirro cena-cirro-1"></div>
+              <div className="cena-cirro cena-cirro-2"></div>
+              <div className="cena-cirro cena-cirro-3"></div>
+            </div>
+
+            <div className="cena-nuvens-tarde">
+              <div className="cena-nuvem cena-nuvem-1"></div>
+              <div className="cena-nuvem cena-nuvem-2"></div>
+              <div className="cena-nuvem cena-nuvem-3"></div>
+            </div>
+
+            <div className="cena-arcos">
+              <div className="cena-arco cena-arco-1"><span></span></div>
+              <div className="cena-arco cena-arco-2"><span></span></div>
+              <div className="cena-arco cena-arco-3"></div>
+            </div>
+            <div className="cena-aurora">
+              <div className="cena-fita cena-fita-roxa"></div>
+              <div className="cena-fita cena-fita-vela"></div>
+            </div>
+
+            {/* Camada só para o gate de visibilidade (--progresso): a
+                estrela cadente em si roda num loop ambiente que não sabe
+                nada de scroll — ver comentário em .cena-estrela-cadente. */}
+            <div className="cena-cadente-camada">
+              <div className="cena-estrela-cadente"></div>
+              <div className="cena-estrela-cadente cena-estrela-cadente-b"></div>
+            </div>
+
+            {/* Antes dos campos no DOM: é isso que faz o sol se pôr ATRÁS
+                do relevo em vez de flutuar sobre ele. */}
+            <div className="cena-sol-tarde"></div>
 
             <div className="cena-livro">
               <img src={openBookImg} alt="" />
-              <div className="cena-pagina"></div>
             </div>
 
-            <div className="cena-paisagem">
-              <div className="cena-morro cena-morro-3"></div>
-              <div className="cena-morro cena-morro-2"></div>
-              <div className="cena-morro cena-morro-1"></div>
+            <div className="cena-paisagem-noite">
+              <div className="cena-morro cena-campo-noite-3"></div>
+              <div className="cena-morro cena-campo-noite-2"></div>
+              <div className="cena-morro cena-campo-noite-1"><div className="cena-campo-linhas-noite"></div></div>
+            </div>
+
+            <div className="cena-paisagem-tarde">
+              <div className="cena-morro cena-campo-tarde-3"></div>
+              <div className="cena-morro cena-campo-tarde-2"></div>
+              <div className="cena-morro cena-campo-tarde-1"><div className="cena-campo-linhas-tarde"></div></div>
+            </div>
+
+            <div className="cena-paisagem-dia">
+              <div className="cena-morro cena-campo-3"></div>
+              <div className="cena-morro cena-campo-2"></div>
+              <div className="cena-morro cena-campo-1"><div className="cena-campo-linhas"></div></div>
             </div>
           </div>
 

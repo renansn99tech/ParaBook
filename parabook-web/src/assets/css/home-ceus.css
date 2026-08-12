@@ -220,6 +220,8 @@ html[data-home][data-tema="tarde"] .pb-beta-badge {
     align-self: center;
 
     padding: 4px 10px;
+    margin-left: 10px;
+    margin-bottom: 4px;
     border-radius: var(--radius-pill, 999px);
 
     font-size: .62rem;

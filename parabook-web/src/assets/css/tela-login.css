@@ -1,22 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* A fonte Inter e o reset saíram daqui: viviam neste arquivo, mas valem
+   para o app inteiro. A fonte foi para o <link> do index.html e o reset
+   já existe em base.css.
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-:root{
-    --bg-main:#050816;
-    --bg-card:#10192d;
-    --purple:#8B5CF6;
-    --purple-light:#A855F7;
-    --purple-dark:#6D28D9;
-    --text:#F8FAFC;
-    --text-secondary:#9CA3AF;
-    --border:rgba(255,255,255,.08);
-    --shadow:0 25px 70px rgba(0,0,0,.35);
-}
+   O :root que ficava aqui era o problema sério: redefinia a paleta
+   global (--purple, --text, --shadow...) a partir de uma tela. Como
+   :root não tem escopo, quem carregasse por último vencia — e o
+   --shadow daqui era 0 25px 70px, diferente do 0 20px 50px de base.css.
+   Ou seja: abrir o login mudava a sombra de Autores, Perfil e Sobre.
+   Mesma armadilha do .btn-primary que home.css e perfil.css vazavam.
+   A sombra maior que esta tela realmente quer virou --shadow-lg. */
 
 .auth-body{
     width:100vw;
@@ -28,13 +20,17 @@
     color:var(--text);
 
     background:
-        radial-gradient(circle at 20% 20%, rgba(139,92,246,.18), transparent 28%),
-        radial-gradient(circle at 80% 80%, rgba(168,85,247,.12), transparent 26%),
-        #050816;
+        radial-gradient(circle at 20% 20%, rgba(var(--purple-rgb),.18), transparent 28%),
+        radial-gradient(circle at 80% 80%, rgba(var(--purple-light-rgb),.12), transparent 26%),
+        var(--bg-main);
 }
 
 /* Botões topo */
 
+/* Par de botões circulares no topo: mesma caixa (46px), mesmo raio, e um
+   espaçamento de 24px entre os dois — não os 176px que sobravam antes
+   quando só o de voltar tinha medida própria (herdada de um inline) e o
+   de tema usava o `right` avulso de um botão com texto. */
 .btn-voltar-fixo,
 #theme-toggle{
     position:absolute;
@@ -44,16 +40,16 @@
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:8px;
 
-    padding:10px 16px;
+    width:46px;
+    height:46px;
 
-    border-radius:999px;
+    border-radius:var(--radius-circle);
 
     color:var(--text-secondary);
     text-decoration:none;
 
-    background:rgba(255,255,255,.04);
+    background:rgba(var(--white-rgb),.04);
 
     border:1px solid var(--border);
 
@@ -67,16 +63,17 @@
     right:24px;
 }
 
+/* 24px à direita do botão de voltar (24 + 46 de largura + 24 de vão). */
 #theme-toggle{
-    right:200px;
+    right:94px;
     cursor:pointer;
 }
 
 .btn-voltar-fixo:hover,
 #theme-toggle:hover{
-    color:white;
-    border-color:rgba(139,92,246,.45);
-    background:rgba(139,92,246,.1);
+    color:var(--purple-text);
+    border-color:rgba(var(--purple-rgb),.45);
+    background:rgba(var(--purple-rgb),.1);
 }
 
 /* Layout */
@@ -115,8 +112,8 @@
     background-image:
         linear-gradient(
             180deg,
-            rgba(5,8,22,.15),
-            rgba(5,8,22,.92)
+            rgba(var(--bg-main-rgb),.15),
+            rgba(var(--bg-main-rgb),.92)
         ),
         url("../img/logo-parabook-bg.png");
 
@@ -132,7 +129,7 @@
         center,
         left center;
 
-    background-color:#050816;
+    background-color:var(--bg-main);
 
     transition:
         background-position .6s ease,
@@ -140,37 +137,12 @@
         filter .6s ease;
 }
 
-body.light-mode #theme-toggle, body.light-mode .btn-voltar-fixo{
-    color:var(--purple-dark);
-    text-decoration:none;
-
-    background:rgba(255, 255, 255, 0.135);
-    border:1px solid var(--border);
-    border-color: rgb(169, 128, 217);
-
-    transition:.3s;
-}
-
-body.light-mode #theme-toggle:hover, body.light-mode .btn-voltar-fixo:hover{
-    color:var(--bg-main);
-    border-color:rgba(171, 152, 214, 0.45);
-    background:rgba(139,92,246,.1);
-}
-
-body.dark-mode .auth-image-side{
-    background-position:
-        center,
-        left center;
-
-    filter:none;
-}
-
-body.light-mode .auth-image-side{
+:root[data-tema="claro"] .auth-image-side{
     background-position:
         center,
         right center;
 
-    background-color:#f8fafc;
+    background-color:var(--bg-main);
 
     filter:none;
 }
@@ -190,12 +162,12 @@ body.light-mode .auth-image-side{
     right:-120px;
     top:-130px;
 
-    border-radius:50%;
+    border-radius:var(--radius-circle);
 
     background:
         radial-gradient(
             circle,
-            rgba(139,92,246,.38),
+            rgba(var(--purple-rgb),.38),
             transparent 70%
         );
 
@@ -213,12 +185,12 @@ body.light-mode .auth-image-side{
     left:-100px;
     bottom:120px;
 
-    border-radius:50%;
+    border-radius:var(--radius-circle);
 
     background:
         radial-gradient(
             circle,
-            rgba(168,85,247,.22),
+            rgba(var(--purple-light-rgb),.22),
             transparent 70%
         );
 
@@ -233,7 +205,7 @@ body.light-mode .auth-image-side{
         linear-gradient(
             180deg,
             transparent 35%,
-            rgba(5,8,22,.92) 100%
+            rgba(var(--bg-main-rgb),.92) 100%
         );
 
     z-index:1;
@@ -241,29 +213,13 @@ body.light-mode .auth-image-side{
     transition:.6s ease;
 }
 
-body.light-mode .auth-image-overlay{
+:root[data-tema="claro"] .auth-image-overlay{
     background:
         linear-gradient(
             180deg,
             transparent 35%,
-            rgba(248,250,252,.92) 100%
+            rgba(var(--bg-main-rgb),.92) 100%
         );
-}
-
-body.light-mode .auth-brand-info p{
-    color:#374151;
-}
-
-body.light-mode .logo-text{
-    color:#111827;
-}   
-body.light-mode .auth-image-text h2{
-    color:#8a70fc;
-    margin-bottom:.5rem;
-}
-
-body.light-mode .auth-image-text p{
-    color:#646e7c;
 }
 
 .abstract-glow-1,
@@ -292,14 +248,14 @@ body.light-mode .auth-image-text p{
     color:var(--purple-light);
 
     filter:
-        drop-shadow(0 0 18px rgba(139,92,246,.55));
+        drop-shadow(0 0 18px rgba(var(--purple-rgb),.55));
 }
 
 .logo-text{
     font-size:3rem;
     font-weight:800;
     letter-spacing:-1.5px;
-    color:white;
+    color:var(--text);
 }
 
 .logo-text span{
@@ -316,7 +272,7 @@ body.light-mode .auth-image-text p{
 
 .auth-image-text p,
 .auth-brand-info p{
-    color:#cbd5e1;
+    color:var(--text-soft);
 
     font-size:1.05rem;
     line-height:1.8;
@@ -329,7 +285,7 @@ body.light-mode .auth-image-text p{
     font-weight:800;
     letter-spacing:-1px;
 
-    color:white;
+    color:var(--text);
 
     margin-bottom:18px;
 }
@@ -345,14 +301,17 @@ body.light-mode .auth-image-text p{
 
     padding:60px;
 
+    /* Os dois pontos da diagonal usam tokens de propósito: com o primeiro
+       cravado em hex, o canto do painel ficava azul-marinho fixo mesmo no
+       tema claro, brigando com o vidro branco do .auth-box por cima. */
     background:
         linear-gradient(
             145deg,
-            rgba(11,16,35,.96),
-            rgba(5,8,22,.98)
+            rgba(var(--bg-card-rgb),.96),
+            rgba(var(--bg-main-rgb),.98)
         );
 
-    border-left:1px solid rgba(255,255,255,.06);
+    border-left:1px solid rgba(var(--white-rgb),.06);
 }
 
 .auth-form-side::before{
@@ -366,12 +325,12 @@ body.light-mode .auth-image-text p{
     right:-120px;
     top:20%;
 
-    border-radius:50%;
+    border-radius:var(--radius-circle);
 
     background:
         radial-gradient(
             circle,
-            rgba(139,92,246,.15),
+            rgba(var(--purple-rgb),.15),
             transparent 70%
         );
 }
@@ -386,26 +345,33 @@ body.light-mode .auth-image-text p{
 
     padding:38px;
 
-    border-radius:26px;
+    border-radius:var(--radius-lg);
 
+    /* Mais opaco que o .card padrão do app (.95/.75): é a única tela onde
+       login/senha precisam ficar 100% legíveis contra qualquer fundo, sem
+       depender do que estiver atrás do vidro. Ainda é vidro — blur e
+       gradiente continuam — só menos transparente que o resto do design
+       system. */
     background:
         linear-gradient(
             145deg,
-            rgba(16,25,45,.9),
-            rgba(16,25,45,.62)
+            rgba(var(--bg-card-rgb),.97),
+            rgba(var(--bg-card-rgb),.86)
         );
 
-    border:1px solid var(--border);
+    border:1px solid var(--border-strong);
 
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
 
-    box-shadow:var(--shadow);
+    /* O card de autenticação flutua sozinho na tela, então pede o degrau
+       de cima da escala — era o que o --shadow local fazia antes. */
+    box-shadow:var(--shadow-lg);
 }
 
 .pure-form h2,
 .auth-form-header h2{
-    color:white;
+    color:var(--text);
 
     font-size:2rem;
     font-weight:800;
@@ -435,13 +401,13 @@ body.light-mode .auth-image-text p{
 
     padding:15px 16px;
 
-    border-radius:14px;
+    border-radius:var(--radius-md);
 
     border:1px solid var(--border);
 
-    background:#0d1427;
+    background:var(--bg-input);
 
-    color:white;
+    color:var(--text);
 
     font-size:.95rem;
 
@@ -454,7 +420,7 @@ body.light-mode .auth-image-text p{
     border-color:var(--purple);
 
     box-shadow:
-        0 0 0 3px rgba(139,92,246,.16);
+        var(--focus-ring);
 }
 
 .auth-input-group label{
@@ -482,7 +448,7 @@ body.light-mode .auth-image-text p{
 
     color:var(--purple-light);
 
-    background:#10192d;
+    background:var(--bg-card);
 }
 
 /* Utilidades */
@@ -497,7 +463,7 @@ body.light-mode .auth-image-text p{
 
 .auth-forgot-link,
 .auth-footer-text a{
-    color:#c4b5fd;
+    color:var(--purple-text);
 
     text-decoration:none;
 
@@ -508,7 +474,7 @@ body.light-mode .auth-image-text p{
 
 .auth-forgot-link:hover,
 .auth-footer-text a:hover{
-    color:white;
+    color:var(--purple-text);
 }
 
 .auth-footer-text{
@@ -530,7 +496,7 @@ body.light-mode .auth-image-text p{
     padding:15px 24px;
 
     border:none;
-    border-radius:15px;
+    border-radius:var(--radius-md);
 
     color:white;
 
@@ -550,23 +516,23 @@ body.light-mode .auth-image-text p{
 }
 
 .auth-btn-submit:hover{
-    transform:translateY(-3px);
+    transform:translateY(var(--lift-md));
 
     box-shadow:
-        0 15px 35px rgba(139,92,246,.38);
+        var(--shadow-glow);
 }
 
 /* Erros */
 
 .auth-error-alert,
 .field-error-message{
-    color:#fecaca !important;
+    color:var(--danger-soft) !important;
 
-    background:rgba(239,68,68,.12);
+    background:rgba(var(--danger-rgb),.12);
 
-    border:1px solid rgba(239,68,68,.28);
+    border:1px solid rgba(var(--danger-rgb),.28);
 
-    border-radius:12px;
+    border-radius:var(--radius-md);
 
     padding:8px 10px;
 
@@ -579,61 +545,68 @@ body.light-mode .auth-image-text p{
     gap:8px;
 }
 
+/* Tarde Mode - Sunset Palette */
+:root[data-tema="tarde"] .auth-body{
+    --bg-main: #191238;
+    --bg-main-rgb: 25, 18, 56;
+
+    --bg-card: #301A42;
+    --bg-card-rgb: 48, 26, 66;
+
+    --bg-input: rgba(25,18,56,.4);
+
+    --purple: #C77DFF;
+    --purple-rgb: 199, 125, 255;
+
+    --purple-light: #F0855A;
+    --purple-light-rgb: 240, 133, 90;
+
+    --purple-dark: #B14A86;
+    --purple-text: #F0855A;
+
+    --text: #FFF3E6;
+    --text-secondary: #C6A8BF;
+    --text-soft: #9C82A0;
+
+    --border: rgba(255,214,180,.12);
+    --border-strong: rgba(255,205,165,.3);
+
+    --focus-ring: 0 0 0 3px rgba(240, 133, 90, .25);
+}
+
+:root[data-tema="tarde"] .auth-image-side{
+    background-image:
+        linear-gradient(
+            180deg,
+            rgba(var(--bg-main-rgb),.15),
+            rgba(var(--bg-main-rgb),.92)
+        ),
+        url("../img/logo-parabook-bg.png");
+
+    /* Fundo sólido que simula 20% de opacidade do laranja morno (#FFC46B) sobre branco. */
+    background-color: #FFF3E1;
+
+    /* A camada 0 (gradiente) fica 'normal'. A camada 1 (imagem) fica em 'multiply'. 
+       Isso faz o fundo branco da imagem absorver o fundo laranja, mas preserva a logo escura intacta. */
+    background-blend-mode: normal, multiply;
+
+    background-position:
+        center,
+        right center;
+        
+    filter: none; /* Removemos o filtro para não manchar a logo */
+}
+
+:root[data-tema="tarde"] .auth-image-overlay{
+    background:
+        linear-gradient(
+            180deg,
+            transparent 35%,
+            rgba(var(--bg-main-rgb),.92) 100%
+        );
+}
+
 /* Light mode simples */
-
-body.light-mode{
-    background:#f8fafc;
-    color:#111827;
-}
-
-body.light-mode .auth-forgot-link {
-    color: rgb(171, 111, 240);
-}
-
-body.light-mode .auth-forgot-link:hover {
-    color: rgb(94, 39, 156);
-}
-
-body.light-mode .auth-footer-text a {
-    color: rgb(171, 111, 240);
-}
-
-body.light-mode .auth-footer-text a:hover {
-    color: rgb(94, 39, 156);
-}
-
-body.light-mode .auth-error-alert,
-body.light-mode .field-error-message{
-    color: #b91c1c !important;
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.28);
-}
-
-body.light-mode .auth-form-side{
-    background:#f8fafc;
-}
-
-body.light-mode .auth-box,
-body.light-mode .auth-form-box{
-    background:white;
-    border-color:#e5e7eb;
-}
-
-body.light-mode .pure-form h2,
-body.light-mode .auth-form-header h2{
-    color:#111827;
-}
-
-body.light-mode .auth-input-group input{
-    background:#fff;
-    border-color:#d1d5db;
-    color:#111827;
-}
-
-body.light-mode .auth-input-group input:focus ~ label,
-body.light-mode .auth-input-group input:not(:placeholder-shown) ~ label{
-    background:white;
-}
 
 /* Responsivo */
 
@@ -675,7 +648,7 @@ body.light-mode .auth-input-group input:not(:placeholder-shown) ~ label{
     .auth-box,
     .auth-form-box{
         padding:28px 22px;
-        border-radius:22px;
+        border-radius:var(--radius-lg);
     }
 
     .pure-form h2,

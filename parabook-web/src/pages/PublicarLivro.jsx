@@ -1,15 +1,10 @@
 import { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/obras-autores.css';
-
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
 
 // Campos opcionais: se vazios, são removidos do envio para a API aplicar seus defaults
 // em vez de gravar string vazia (evita colidir com a unicidade do ISBN, por exemplo).
@@ -37,6 +32,7 @@ function PublicarLivro() {
 
   const [categorias, setCategorias] = useState([]);
   const [enviando, setEnviando] = useState(false);
+  const paginaRef = useRevelacao([loading, user]);
 
   useEffect(() => {
     if (user) {
@@ -55,7 +51,7 @@ function PublicarLivro() {
   }, []);
 
   if (loading) {
-    return <div className="text-center mt-5"><h2 style={{ color: 'white' }}>Carregando...</h2></div>;
+    return <div className="text-center mt-5"><h2 style={{ color: 'var(--text)' }}>Carregando...</h2></div>;
   }
 
   // Verifica se está logado e se tem permissão (autor ou admin)
@@ -63,10 +59,10 @@ function PublicarLivro() {
 
   if (!isAuthorized) {
     return (
-      <div className="publicar-container" style={{ paddingTop: '100px' }}>
-        <div className="form-box text-center" style={{ maxWidth: '500px', padding: '40px' }}>
+      <div className="publicar-container" ref={paginaRef} style={{ paddingTop: '100px' }}>
+        <div className="form-box text-center" data-revelar style={{ maxWidth: '500px', padding: '40px' }}>
           <i className="fa-solid fa-lock mb-3" style={{ fontSize: '3rem', color: '#f87171' }}></i>
-          <h2 style={{ color: 'white', marginBottom: '15px' }}>Acesso Restrito</h2>
+          <h2 style={{ color: 'var(--text)', marginBottom: '15px' }}>Acesso Restrito</h2>
           <p style={{ color: '#94a3b8', marginBottom: '30px' }}>
             Esta página é exclusiva para Autores Independentes aprovados e Administradores do ParaBook.
           </p>
@@ -104,11 +100,10 @@ function PublicarLivro() {
         headers: { 'Content-Type': undefined }
       });
 
-      await Swal.fire({
+      await swal.fire({
         icon: 'success',
         title: 'Obra enviada!',
-        text: 'Sua obra foi enviada com sucesso para análise de publicação.',
-        ...swalTema
+        text: 'Sua obra foi enviada com sucesso para análise de publicação.'
       });
       navigate('/biblioteca');
     } catch (error) {
@@ -123,20 +118,18 @@ function PublicarLivro() {
         }
       }
 
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Erro ao enviar obra',
-        text: mensagem,
-        ...swalTema
-      });
+        text: mensagem});
     } finally {
       setEnviando(false);
     }
   };
 
   return (
-    <div className="publicar-container" style={{ paddingTop: '100px', paddingBottom: '40px' }}>
-      <div className="form-box">
+    <div className="publicar-container" ref={paginaRef} style={{ paddingTop: '100px', paddingBottom: '40px' }}>
+      <div className="form-box" data-revelar>
         <h1>Enviar Nova Obra</h1>
         <p>Preencha os dados abaixo para enviar seu manuscrito para análise de publicação.</p>
 

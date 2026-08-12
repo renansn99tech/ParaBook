@@ -12,7 +12,7 @@
 .pagina-comunidade-titulo {
     font-size: 3rem;
     font-weight: 800;
-    color: white;
+    color: var(--text);
     margin-bottom: 12px;
     letter-spacing: -1px;
 }
@@ -25,10 +25,10 @@
     padding: 26px;
     display: flex;
     flex-direction: column;
-    border-radius: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: linear-gradient(145deg, rgba(16,25,45,.95), rgba(16,25,45,.72));
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(var(--white-rgb),0.1);
+    background: linear-gradient(145deg, rgba(var(--bg-card-rgb),.95), rgba(var(--bg-card-rgb),.72));
+    box-shadow: 0 10px 30px rgba(var(--black-rgb),0.2);
     transition: .35s ease-in-out;
 }
 
@@ -39,15 +39,15 @@
     height: 160px;
     right: -70px;
     top: -70px;
-    background: radial-gradient(circle, rgba(139,92,246,.22), transparent 70%);
+    background: radial-gradient(circle, rgba(var(--purple-rgb),.22), transparent 70%);
     opacity: 0;
     transition: .35s;
 }
 
 .card-comunidade:hover {
-    transform: translateY(-7px);
-    border-color: rgba(139,92,246,.45);
-    box-shadow: 0 22px 55px rgba(0,0,0,.38), 0 0 35px rgba(139,92,246,.12);
+    transform: translateY(var(--lift-md));
+    border-color: rgba(var(--purple-rgb),.45);
+    box-shadow: 0 22px 55px rgba(var(--black-rgb),.38), 0 0 35px rgba(var(--purple-rgb),.12);
 }
 
 .card-comunidade:hover::before {
@@ -64,7 +64,7 @@
 }
 
 .comunidade-nome {
-    color: white;
+    color: var(--text);
     font-size: 1.35rem;
     margin-bottom: 8px;
     font-weight: 700;
@@ -91,27 +91,27 @@
     padding: 6px 10px;
     border-radius: var(--radius-pill);
 
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--white-rgb),0.08);
     border: 1px solid var(--border);
     color: var(--text-secondary);
 }
 
 .comunidade-badge--oficial {
-    background: rgba(139, 92, 246, 0.15);
-    border-color: rgba(139, 92, 246, 0.4);
+    background: rgba(var(--purple-rgb),0.15);
+    border-color: rgba(var(--purple-rgb),0.4);
     color: var(--purple-text);
 }
 
 .comunidade-badge--inativa {
-    background: rgba(239, 68, 68, 0.12);
-    border-color: rgba(239, 68, 68, 0.35);
+    background: rgba(var(--danger-rgb),0.12);
+    border-color: rgba(var(--danger-rgb),0.35);
     color: var(--danger-soft);
 }
 
 .comunidade-descricao {
     position: relative;
     z-index: 2;
-    color: var(--text-secondary, #94a3b8);
+    color: var(--text-secondary, var(--text-secondary));
     line-height: 1.7;
     margin-bottom: 20px;
     flex: 1;
@@ -126,6 +126,102 @@
     flex-wrap: wrap;
     gap: 10px;
     margin-top: auto;
+}
+
+/* ==========================================================
+   LISTAGEM DE COMUNIDADES
+   Estava tudo em style={{...}} no JSX: o grid, o cabeçalho de cada
+   seção e os estados vazios. Vira classe, com os tokens.
+========================================================== */
+
+.pagina-comunidade-lead{
+    margin-bottom:40px;
+
+    font-size:1.1rem;
+    color:var(--text-soft);
+}
+
+/* Grade das duas listagens (oficiais e da galera). */
+.grid-comunidades{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+    gap:20px;
+}
+
+.grid-comunidades.com-folga{
+    margin-bottom:60px;
+}
+
+/* Cabeçalho de cada seção da página. */
+.secao-comunidades{
+    margin-bottom:30px;
+
+    text-align:left;
+}
+
+/* A segunda seção é separada da primeira por uma linha. */
+.secao-comunidades.separada{
+    padding-top:40px;
+
+    border-top:1px solid rgba(var(--white-rgb),.1);
+}
+
+.secao-comunidades h3{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin-bottom:5px;
+
+    font-size:1.5rem;
+    color:var(--text);
+}
+
+/* Roxo = espaço da casa, azul = espaço de usuário. Mesma leitura que o
+   painel admin usa na coluna "Tipo". */
+.secao-comunidades.oficiais h3 i{
+    color:var(--purple);
+}
+
+.secao-comunidades.da-galera h3 i{
+    color:var(--info);
+}
+
+.secao-comunidades p{
+    margin:0 0 20px;
+
+    font-size:.95rem;
+    color:var(--text-secondary);
+}
+
+/* Estado vazio ocupando a largura toda da grade. */
+.grid-comunidades .empty-state{
+    grid-column:1 / -1;
+
+    padding:40px;
+
+    text-align:center;
+}
+
+.grid-comunidades .empty-state i{
+    display:block;
+
+    margin-bottom:15px;
+
+    font-size:2.5rem;
+    color:var(--text-dim);
+}
+
+.grid-comunidades .empty-state p{
+    margin:0 auto;
+
+    font-size:1.1rem;
+}
+
+.grid-comunidades .empty-state p + p{
+    margin-top:5px;
+
+    font-size:.9rem;
 }
 
 /* CARD ESPECIAL: CRIAR COMUNIDADE */
@@ -145,29 +241,29 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    border-radius: 22px;
-    border: 2px dashed rgba(139, 92, 246, 0.4);
-    background: rgba(16, 25, 45, 0.4);
+    border-radius: var(--radius-lg);
+    border: 2px dashed rgba(var(--purple-rgb),0.4);
+    background: rgba(var(--bg-card-rgb),0.4);
     transition: transform 0.35s ease-in-out, border-color 0.35s, background 0.35s;
     cursor: pointer;
 }
 
 .card-criar-comunidade:hover {
-    transform: translateY(-7px);
-    border-color: rgba(139, 92, 246, 0.8);
-    background: rgba(139, 92, 246, 0.1);
+    transform: translateY(var(--lift-md));
+    border-color: rgba(var(--purple-rgb),0.8);
+    background: rgba(var(--purple-rgb),0.1);
 }
 
 .card-criar-icone {
     width: 60px;
     height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    border-radius: var(--radius-circle);
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 16px;
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 8px 20px rgba(var(--purple-rgb),0.2);
     transition: transform 0.35s;
 }
 
@@ -181,14 +277,14 @@
 }
 
 .card-criar-content h4 {
-    color: white;
+    color: var(--text);
     font-size: 1.35rem;
     font-weight: 700;
     margin-bottom: 8px;
 }
 
 .card-criar-content p {
-    color: var(--text-secondary, #94a3b8);
+    color: var(--text-secondary, var(--text-secondary));
     font-size: 0.95rem;
     line-height: 1.5;
     margin: 0;
@@ -197,8 +293,8 @@
 .empty-state {
     text-align: center;
     padding: 40px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 16px;
-    border: 1px dashed rgba(255, 255, 255, 0.1);
-    color: var(--text-secondary, #94a3b8);
+    background: rgba(var(--white-rgb),0.02);
+    border-radius: var(--radius);
+    border: 1px dashed rgba(var(--white-rgb),0.1);
+    color: var(--text-secondary, var(--text-secondary));
 }

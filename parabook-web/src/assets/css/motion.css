@@ -30,13 +30,13 @@
 
 .skeleton-text {
     height: 0.85em;
-    border-radius: 4px;
+    border-radius: var(--radius-xs);
 }
 
 .skeleton-title {
     height: 1.3em;
     width: 60%;
-    border-radius: 6px;
+    border-radius: var(--radius-xs);
 }
 
 .skeleton-avatar {
@@ -48,26 +48,46 @@
     border-radius: var(--radius);
 }
 
+/* Placeholder de badge/chip — as telas pediam isso passando
+   `style={{ borderRadius: 'var(--radius-pill)' }}` na mão. */
+.skeleton-pill {
+    border-radius: var(--radius-pill);
+}
+
 .skeleton-line + .skeleton-line {
     margin-top: 0.5rem;
 }
 
-/* ---- Item 04 — preparado, ainda não aplicado em massa ----
-   Utilitário de micro-interação para a próxima etapa: hover levanta e
-   brilha, press assenta. Usa os mesmos tokens de --dur-fast/--ease-out
-   do resto do motion system, para já nascer consistente quando for
-   adotado nos cards/CTAs do app. */
+/* ---- Item 04 — micro-interação ----
+   Dá a assinatura de movimento do app (sobe e brilha no hover, assenta
+   no clique) a qualquer elemento clicável que ainda não tenha hover
+   próprio: botões do Bootstrap, cards que funcionam como link.
+
+   REGRA: só entra em coisa que responde a clique. Levantar um painel
+   estático promete uma interação que não existe — o movimento aqui é
+   sinal de afordância, não enfeite.
+
+   A altura do salto vem de --lift, que por padrão é o degrau de botão.
+   Um card que use a classe pode pedir outro degrau sem classe nova:
+       <article class="interactive" style="--lift: var(--lift-md)"> */
 .interactive {
+    --lift: var(--lift-sm);
     transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .interactive:hover {
-    transform: translateY(-2px);
+    transform: translateY(var(--lift));
     box-shadow: var(--shadow-glow);
 }
 
+/* Mesmo press dos botões de base.css: zera o salto e afunda um pouco. */
 .interactive:active {
-    transform: scale(0.98);
+    transform: translateY(0) scale(0.98);
+}
+
+.interactive:focus-visible {
+    outline: 2px solid var(--purple-light);
+    outline-offset: 2px;
 }
 
 /* ---- Item 05 — rede de segurança global ----

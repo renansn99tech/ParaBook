@@ -1,19 +1,13 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
-
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
+import useRevelacao from '../hooks/useRevelacao';
 
 const inputEstilo = {
   background: 'rgba(0,0,0,0.25)',
   border: '1px solid rgba(255,255,255,0.12)',
-  color: '#fff'
 };
 
 function CriarComunidade() {
@@ -24,6 +18,7 @@ function CriarComunidade() {
   const [cota, setCota] = useState(null); // { total, limite, pode_criar }
   const [carregandoCota, setCarregandoCota] = useState(true);
   const [enviando, setEnviando] = useState(false);
+  const paginaRef = useRevelacao([carregandoUsuario, user, carregandoCota]);
 
   // A cota vem da API para não duplicar a REGRA 10 (limite de 5) no cliente.
   useEffect(() => {
@@ -36,7 +31,7 @@ function CriarComunidade() {
   }, [user]);
 
   if (carregandoUsuario) {
-    return <div className="text-center mt-5"><h2 style={{ color: 'white' }}>Carregando...</h2></div>;
+    return <div className="text-center mt-5"><h2 style={{ color: 'var(--text)' }}>Carregando...</h2></div>;
   }
 
   if (!user) {
@@ -46,10 +41,10 @@ function CriarComunidade() {
   // REGRA 5: administradores criam salas oficiais pelo Dashboard, não por aqui.
   if (user.is_superuser) {
     return (
-      <main className="container py-5" style={{ minHeight: '70vh' }}>
+      <main className="container py-5" ref={paginaRef} style={{ minHeight: '70vh' }}>
         <div className="row justify-content-center">
           <div className="col-lg-6 text-center">
-            <div className="card border-0 shadow-lg rounded-4 text-white" style={{ background: '#12131C' }}>
+            <div className="card border-0 shadow-lg rounded-4 text-white" data-revelar style={{ background: '#12131C' }}>
               <div className="card-body p-5">
                 <i className="fa-solid fa-shield-halved fs-1 mb-3" style={{ color: '#f59e0b' }}></i>
                 <h3 className="fw-bold mb-3">Área destinada a leitores e autores</h3>
@@ -83,11 +78,10 @@ function CriarComunidade() {
         descricao: form.descricao.trim()
       });
 
-      await Swal.fire({
+      await swal.fire({
         icon: 'success',
         title: 'Comunidade criada!',
-        text: `"${res.data.nome}" já está disponível e você é o primeiro membro.`,
-        ...swalTema
+        text: `"${res.data.nome}" já está disponível e você é o primeiro membro.`
       });
 
       navigate(`/comunidade/${res.data.id}/conteudo`);
@@ -99,16 +93,16 @@ function CriarComunidade() {
         || Object.values(dados || {}).flat()[0]
         || 'Não foi possível criar a comunidade. Tente novamente.';
 
-      Swal.fire({ icon: 'error', title: 'Ops', text: mensagem, ...swalTema });
+      swal.fire({ icon: 'error', title: 'Ops', text: mensagem});
       setEnviando(false);
     }
   };
 
   return (
-    <main className="container py-5" style={{ minHeight: '70vh' }}>
+    <main className="container py-5" ref={paginaRef} style={{ minHeight: '70vh' }}>
       <div className="row justify-content-center">
         <div className="col-lg-7">
-          <div className="card border-0 shadow-lg rounded-4 text-white" style={{ background: '#12131C' }}>
+          <div className="card border-0 shadow-lg rounded-4 text-white" data-revelar style={{ background: '#12131C' }}>
             <div className="card-body p-4 p-md-5">
               <div className="text-center mb-4">
                 <i className="fa-solid fa-circle-plus fs-1 mb-3" style={{ color: '#8b5cf6' }}></i>

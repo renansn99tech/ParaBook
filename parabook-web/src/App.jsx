@@ -65,20 +65,26 @@ function App() {
   }
 
   return (
-    <>
+    // .app-shell é quem pinta o fundo do app (ver base.css): o <body>
+    // não reage à troca de tema em tempo de execução, um descendente sim.
+    <div className="app-shell">
       {!hideNavAndFooter && <Navbar />}
-      
+
       {/* Banner de anúncio global, igual ao base.html do Django */}
       {!hideNavAndFooter && (
         <div className="container my-3">
-            <div className="p-3 text-center rounded-3 border border-secondary border-opacity-25" style={{ background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(8px)' }}>
+            <div className="p-3 text-center rounded-3 border border-secondary border-opacity-25 caixa-anuncio">
                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <small className="text-white-50"><i className="fa-solid fa-rectangle-ad me-1"></i> Espaço de Anúncio</small>
                     {/* Ia para /assinatura, que não é rota declarada e caía no
                         catch-all. O destino certo do CTA é a página de planos. */}
                     <Link
                         to="/planos"
-                        className="btn btn-sm btn-outline-warning rounded-pill px-3 d-inline-flex align-items-center"
+                        // O âmbar aqui é intencional: chama atenção dentro do
+                        // espaço de anúncio sem virar a primária da tela.
+                        // .interactive dá a ele o mesmo movimento dos outros
+                        // CTAs do app, que o botão do Bootstrap não tem.
+                        className="btn btn-sm btn-outline-warning interactive rounded-pill px-3 d-inline-flex align-items-center"
                         style={{ minHeight: '44px' }}
                     >
                         Remover anúncios com o Premium ✨
@@ -133,7 +139,7 @@ function App() {
           <Route path="*" element={<div className="text-center mt-5"><h2 className="text-white">Página em Construção</h2></div>} />
         </Routes>
       {!hideNavAndFooter && <Footer />}
-    </>
+    </div>
   )
 }
 

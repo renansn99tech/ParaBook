@@ -1,6 +1,8 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import useTema from '../hooks/useTema';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/tela-login.css';
 
 function Register() {
@@ -10,9 +12,11 @@ function Register() {
     password: '',
   });
   const [error, setError] = useState('');
-  
+
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { alternar, icone, rotulo } = useTema();
+  const paginaRef = useRevelacao([]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,28 +35,31 @@ function Register() {
   };
 
   return (
-    <div className="auth-body">
-      <Link to="/" className="btn-voltar-fixo" title="Voltar ao Menu" style={{ 
-          position: 'fixed', top: '20px', right: '20px', width: '50px', height: '50px',
-          background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(10px)', 
-          border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '50%', 
-          color: '#94a3b8', textDecoration: 'none', display: 'flex', 
-          alignItems: 'center', justifyContent: 'center', zIndex: 1000, transition: 'all 0.3s ease',
-          fontSize: '1.2rem'
-      }}>
+    <div className="auth-body" ref={paginaRef}>
+      <Link to="/" className="btn-voltar-fixo" title="Voltar ao Menu">
         <i className="fa-solid fa-arrow-left"></i>
       </Link>
 
+      <button
+        id="theme-toggle"
+        type="button"
+        onClick={alternar}
+        title={rotulo}
+        aria-label={rotulo}
+      >
+        <i className={`fa-solid ${icone}`}></i>
+      </button>
+
       <main className="auth-container auth-container-register">
         <section className="auth-image-side">
-          <div className="auth-image-text">
+          <div className="auth-image-text" data-revelar>
             <h2>Junte-se ao ParaBook</h2>
             <p>Crie sua conta para gerenciar sua biblioteca digital, interagir com comunidades e expandir seu conhecimento.</p>
           </div>
         </section>
 
         <section className="auth-form-side">
-          <div className="auth-form-box login-box">
+          <div className="auth-form-box login-box" data-revelar>
             <div className="auth-form-header">
               <h2>Criar Conta</h2>
               <p>Preencha os dados abaixo para começar sua jornada</p>

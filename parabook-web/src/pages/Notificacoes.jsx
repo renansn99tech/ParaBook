@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 
 function Notificacoes() {
   const [notificacoes, setNotificacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+  const paginaRef = useRevelacao([notificacoes.length, loading]);
 
   useEffect(() => {
     api.get('/notificacoes/')
@@ -56,11 +58,11 @@ function Notificacoes() {
   }
 
   return (
-    <div className="container my-5" style={{ minHeight: '60vh' }}>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="container my-5" ref={paginaRef} style={{ minHeight: '60vh' }}>
+      <div className="d-flex justify-content-between align-items-center mb-4" data-revelar>
         <h2>Minhas Notificações</h2>
         {notificacoes.length > 0 && (
-          <button onClick={marcarTodasComoLidas} className="btn btn-sm btn-outline-secondary">
+          <button onClick={marcarTodasComoLidas} className="btn-ghost btn-sm">
             Marcar todas como lidas
           </button>
         )}
@@ -68,11 +70,12 @@ function Notificacoes() {
 
       {erro && <div className="alert alert-danger">{erro}</div>}
 
-      <div className="list-group shadow-sm">
+      <div className="list-group shadow-sm" data-revelar-cascata>
         {notificacoes.length > 0 ? (
           notificacoes.map((n) => (
             <button
               key={n.id}
+              data-revelar
               onClick={() => marcarComoLida(n.id)}
               className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 border-secondary border-opacity-25 ${!n.lida ? 'fw-bold' : ''}`}
               style={{
@@ -97,7 +100,7 @@ function Notificacoes() {
           ))
         ) : (
           !erro && (
-            <div className="alert alert-info text-center py-4">
+            <div className="alert alert-info text-center py-4" data-revelar>
               <i className="fa-solid fa-bell-slash fs-3 mb-2 d-block"></i>
               Você não possui notificações no momento.
             </div>

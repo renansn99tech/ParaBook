@@ -14,8 +14,8 @@
   display: flex;
   gap: 40px;
   background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border: 1px solid rgba(var(--white-rgb),0.1);
+  border-radius: var(--radius);
   flex-wrap: wrap;
 }
 
@@ -30,8 +30,8 @@
   width: 100%;
   height: 450px;
   object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px -5px rgba(var(--black-rgb),0.5);
 }
 
 .livro-info-page .livro-capa-placeholder {
@@ -40,22 +40,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1e293b;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px -5px rgba(var(--black-rgb),0.5);
 }
 
+/* Era um azul sólido (#2563eb), a mesma primária fora do padrão que
+   Minha Biblioteca tinha. Passa a usar o gradiente roxo do .btn-primary. */
 .livro-info-page .btn-preview {
   width: 100%;
   padding: 12px;
-  background: #2563eb;
-  color: white;
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  color: #fff;
   border: none;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: var(--btn-radius);
+  font-weight: 600;
   text-align: center;
   text-decoration: none;
-  transition: background 0.2s ease;
+  transition: transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,8 +66,12 @@
 }
 
 .livro-info-page .btn-preview:hover {
-  background: #1d4ed8;
+  transform: translateY(var(--lift-sm));
+  box-shadow: var(--shadow-glow);
+  color: #fff;
 }
+
+.livro-info-page .btn-preview:active { transform: translateY(0) scale(0.98); }
 
 .livro-info-page .livro-dados-col {
   flex: 1;
@@ -88,23 +95,23 @@
 
 .livro-info-page .autor-destaque {
   font-size: 1.1rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   margin-bottom: 2rem;
 }
 
 .livro-info-page .btn-denuncia {
   background: transparent;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  border: 1px solid rgba(var(--danger-rgb),0.3);
+  color: var(--danger-soft);
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 .livro-info-page .btn-denuncia:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(var(--danger-rgb),0.1);
+  border-color: rgba(var(--danger-rgb),0.6);
 }
 
 .livro-info-page .metadata-grid {
@@ -122,14 +129,14 @@
 
 .livro-info-page .meta-titulo {
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .livro-info-page .meta-valor {
   font-size: 1.05rem;
-  color: #f8fafc;
+  color: var(--text);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -138,14 +145,14 @@
 
 .livro-info-page .sinopse-titulo {
   font-size: 1.2rem;
-  color: #e2e8f0;
+  color: var(--text-soft);
   margin-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(var(--white-rgb),0.1);
   padding-bottom: 10px;
 }
 
 .livro-info-page .sinopse-texto {
-  color: #94a3b8;
+  color: var(--text-secondary);
   line-height: 1.8;
   text-align: justify;
 }
@@ -155,7 +162,7 @@
 ========================================= */
 .livro-info-page .avaliacoes-section {
   margin-top: 60px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(var(--white-rgb),0.1);
   padding-top: 40px;
 }
 
@@ -171,9 +178,9 @@
 .livro-info-page .minha-avaliacao-card {
   padding: 25px;
   margin-bottom: 40px;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  background: rgba(16, 25, 45, 0.6);
-  border-radius: 16px;
+  border: 1px solid rgba(var(--purple-rgb),0.3);
+  background: rgba(var(--bg-card-rgb),0.6);
+  border-radius: var(--radius);
 }
 
 .livro-info-page .minha-avaliacao-header {
@@ -192,9 +199,9 @@
 
 .livro-info-page .avaliacao-card {
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 16px;
+  border: 1px solid rgba(var(--white-rgb),0.05);
+  background: rgba(var(--black-rgb),0.2);
+  border-radius: var(--radius);
 }
 
 .livro-info-page .avaliacao-header {
@@ -205,17 +212,17 @@
 }
 
 .livro-info-page .avaliacao-user {
-  color: #e2e8f0;
+  color: var(--text-soft);
   font-weight: bold;
 }
 
 .livro-info-page .avaliacao-nota {
-  color: #fbbf24;
+  color: var(--warning-soft);
   font-size: 0.9rem;
 }
 
 .livro-info-page .avaliacao-texto {
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0;
@@ -223,11 +230,11 @@
 }
 
 .livro-info-page .avaliacao-data {
-  color: #475569;
+  color: var(--text-dim);
   display: block;
   margin-top: 15px;
   font-size: 0.8rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(var(--white-rgb),0.05);
   padding-top: 10px;
 }
 
@@ -239,21 +246,21 @@
 }
 
 .livro-info-page .form-avaliacao-select {
-  background: #0f172a;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--bg-deep);
+  color: var(--text);
+  border: 1px solid rgba(var(--white-rgb),0.2);
   padding: 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   outline: none;
   cursor: pointer;
 }
 
 .livro-info-page .form-avaliacao-textarea {
   width: 100%;
-  background: #0f172a;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  background: var(--bg-deep);
+  color: var(--text);
+  border: 1px solid rgba(var(--white-rgb),0.2);
+  border-radius: var(--radius-md);
   padding: 15px;
   resize: none;
   height: 100px;
@@ -262,24 +269,132 @@
 
 .livro-info-page .btn-avaliar {
   align-self: flex-end;
-  padding: 12px 24px;
-  border-radius: 10px;
-  background: #2563eb;
-  color: white;
+  padding: var(--btn-padding);
+  border-radius: var(--btn-radius);
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  color: #fff;
   border: none;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
 }
 .livro-info-page .btn-avaliar:hover {
-  background: #1d4ed8;
+  transform: translateY(var(--lift-sm));
+  box-shadow: var(--shadow-glow);
 }
+.livro-info-page .btn-avaliar:active { transform: translateY(0) scale(0.98); }
 
 .livro-info-page .empty-avaliacoes {
   grid-column: 1 / -1;
   text-align: center;
   padding: 40px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 16px;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: rgba(var(--white-rgb),0.02);
+  border-radius: var(--radius);
+  border: 1px dashed rgba(var(--white-rgb),0.1);
   margin-bottom: 2rem;
+}
+
+/* ==========================================================
+   MIGRADO DO INLINE — ícones, avaliações e estados vazios.
+   Eram ~18 `style={{...}}`, quase todos repetindo `color:'#8b5cf6'`
+   num ícone de metadado.
+========================================================== */
+
+/* Todo ícone de metadado é roxo; a estrela da nota é âmbar. */
+.livro-info-page .meta-valor i{
+    color:var(--purple);
+}
+
+.livro-info-page .meta-valor i.fa-star{
+    color:var(--warning-soft);
+}
+
+.livro-info-page .avaliacoes-titulo i{
+    color:var(--purple);
+}
+
+.livro-info-page .capa-vazia i{
+    font-size:5rem;
+    color:var(--text-dim);
+}
+
+/* Bloco da avaliação do próprio usuário. */
+.livro-info-page .minha-avaliacao-card h4{
+    margin-bottom:10px;
+
+    color:var(--purple-text);
+}
+
+.livro-info-page .minha-avaliacao-nota{
+    margin-bottom:10px;
+
+    font-size:1.2rem;
+    color:var(--warning-soft);
+}
+
+.livro-info-page .minha-avaliacao-texto{
+    margin:0;
+
+    font-style:italic;
+    color:var(--text-soft);
+}
+
+/* Formulário de avaliação. */
+.livro-info-page .form-avaliacao h4{
+    margin-bottom:20px;
+
+    color:var(--text);
+}
+
+.livro-info-page .form-avaliacao-linha{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.livro-info-page .form-avaliacao-linha label{
+    color:var(--text-soft);
+    font-weight:700;
+}
+
+/* Autor de uma avaliação: foto pequena ou ícone genérico. */
+.livro-info-page .avaliacao-avatar{
+    width:24px;
+    height:24px;
+
+    margin-right:8px;
+
+    border-radius:var(--radius-circle);
+
+    object-fit:cover;
+
+    vertical-align:middle;
+}
+
+.livro-info-page .avaliacao-avatar-vazio{
+    margin-right:8px;
+
+    font-size:1.2rem;
+    color:var(--text-secondary);
+
+    vertical-align:middle;
+}
+
+/* Nenhuma avaliação ainda. */
+.livro-info-page .empty-avaliacoes i{
+    display:block;
+
+    margin-bottom:15px;
+
+    font-size:2.5rem;
+    color:var(--text-dim);
+}
+
+.livro-info-page .empty-avaliacoes p{
+    margin:0;
+
+    font-size:1.1rem;
+    color:var(--text-dim);
 }

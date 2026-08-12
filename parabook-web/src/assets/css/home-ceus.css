@@ -1,0 +1,262 @@
+/* ============================================================
+   TEMA DA LANDING — três céus (noite / tarde / dia)
+   ============================================================
+   Vale SÓ enquanto a Home está montada, porque o atributo `data-home`
+   no <html> só existe nesse período (ver o efeito em Home.jsx). Toda
+   regra daqui começa por `html[data-home]`, então em /biblioteca,
+   /perfil e nas demais telas nenhum seletor casa e o CSS original vale
+   sem alteração nenhuma — é essa a garantia de não-vazamento.
+
+   Por que não editar navbar.css/footer.css com fallback: sobrescrever
+   aqui, num arquivo que só a Home importa, deixa os arquivos
+   compartilhados intocados. Um erro neste arquivo não tem como
+   aparecer fora da landing.
+
+   Quem escolhe o céu continua sendo o `data-tema` de três estados
+   (useTema) — o mesmo botão da navbar, não um segundo controle. Este
+   arquivo é a camada de SUPERFÍCIE; a cena do Ato 2 lê --dia/--tarde
+   direto do data-tema, em home.css.
+
+   Os três blocos declaram o MESMO conjunto de chaves de propósito:
+   trocar de céu tem de ser sempre "sobrescrever tudo", nunca "limpar o
+   que não é padrão e torcer para a noite reaparecer". */
+
+/* NOITE — é o visual atual do site. Declarado explicitamente (em vez de
+   deixar o CSS original valer por omissão) para que os outros dois céus
+   sejam uma troca de valores, e não um jogo de adivinhação sobre o que
+   era o padrão. */
+html[data-home][data-tema="escuro"] {
+    --pb-bg: #050816;
+    --pb-nav: rgba(var(--bg-main-rgb), .85);
+    --pb-text: #F8FAFC;
+    --pb-muted: #9CA3AF;
+
+    --pb-accent: #8B5CF6;
+    --pb-warm: #E8A248;
+
+    --pb-border: rgba(255, 255, 255, .08);
+    --pb-border-2: rgba(255, 255, 255, .12);
+
+    --pb-card: rgba(15, 23, 42, .75);
+    --pb-card-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+
+    --pb-glass: linear-gradient(145deg, rgba(40, 25, 88, .86), rgba(15, 23, 42, .78));
+    --pb-glass-border: rgba(139, 92, 246, .35);
+
+    --pb-btn: linear-gradient(135deg, #8B5CF6, #6D28D9);
+    --pb-btn-text: #fff;
+
+    --pb-footer-bg: rgba(255, 255, 255, .02);
+
+    --pb-feature-bg: linear-gradient(90deg, rgba(15, 23, 42, .96) 0%, rgba(15, 23, 42, .9) 46%, rgba(46, 26, 74, .72) 74%, rgba(15, 23, 42, .8) 100%);
+    --pb-feature-scrim: linear-gradient(90deg, rgba(15, 23, 42, .92) 0%, rgba(15, 23, 42, .55) 16%, transparent 34%);
+    --pb-feature-photo-filter: none;
+
+    --pb-cosmos-op: .95;
+}
+
+/* TARDE — sol se pondo. O roxo da marca vira orquídea (sobrevive ao
+   fundo ameixa) e o CTA vai para coral→magenta. O texto NUNCA é branco
+   puro: é creme, senão a página lê como "noite com o fundo errado". */
+html[data-home][data-tema="tarde"] {
+    --pb-bg: #191238;
+    --pb-nav: rgba(25, 18, 56, .82);
+    --pb-text: #FFF3E6;
+    --pb-muted: #C6A8BF;
+
+    --pb-accent: #C77DFF;
+    --pb-warm: #FFC46B;
+
+    --pb-border: rgba(255, 214, 180, .12);
+    --pb-border-2: rgba(255, 214, 180, .18);
+
+    --pb-card: rgba(48, 26, 66, .62);
+    --pb-card-shadow: 0 18px 44px rgba(28, 10, 40, .45);
+
+    --pb-glass: linear-gradient(145deg, rgba(96, 44, 92, .72), rgba(40, 22, 62, .72));
+    --pb-glass-border: rgba(255, 176, 120, .32);
+
+    --pb-btn: linear-gradient(135deg, #F0855A, #B14A86);
+    --pb-btn-text: #2A1230;
+
+    --pb-footer-bg: rgba(255, 196, 150, .04);
+
+    --pb-feature-bg: linear-gradient(90deg, rgba(44, 24, 62, .94) 0%, rgba(44, 24, 62, .88) 46%, rgba(72, 36, 66, .76) 74%, rgba(44, 24, 62, .78) 100%);
+    --pb-feature-scrim: linear-gradient(90deg, rgba(44, 24, 62, .92) 0%, rgba(44, 24, 62, .55) 16%, transparent 34%);
+    --pb-feature-photo-filter: brightness(1.04) saturate(1.05);
+
+    --pb-cosmos-op: .72;
+}
+
+/* DIA — claro. Fundo lilás-branco e não branco puro: é ele que conversa
+   com o céu diurno da cena sem emenda visível. O roxo escurece para
+   manter contraste de texto sobre fundo claro. */
+html[data-home][data-tema="claro"] {
+    --pb-bg: #F3F1FB;
+    --pb-nav: rgba(248, 246, 255, .82);
+    --pb-text: #231B3C;
+    --pb-muted: #615A7C;
+
+    --pb-accent: #6D28D9;
+    --pb-warm: #A85B0B;
+
+    --pb-border: rgba(35, 27, 60, .1);
+    --pb-border-2: rgba(35, 27, 60, .14);
+
+    --pb-card: rgba(255, 255, 255, .82);
+    --pb-card-shadow: 0 16px 38px rgba(60, 45, 110, .12);
+
+    --pb-glass: linear-gradient(145deg, rgba(255, 255, 255, .92), rgba(238, 234, 252, .84));
+    --pb-glass-border: rgba(109, 40, 217, .18);
+
+    --pb-btn: linear-gradient(135deg, #7C3AED, #5B21B6);
+    --pb-btn-text: #fff;
+
+    --pb-footer-bg: rgba(35, 27, 60, .03);
+
+    --pb-feature-bg: linear-gradient(90deg, rgba(255, 255, 255, .96) 0%, rgba(255, 255, 255, .92) 46%, rgba(243, 240, 253, .9) 74%, rgba(248, 246, 255, .9) 100%);
+    --pb-feature-scrim: linear-gradient(90deg, rgba(255, 255, 255, .92) 0%, rgba(255, 255, 255, .55) 16%, transparent 34%);
+    --pb-feature-photo-filter: brightness(1.14) contrast(.9) saturate(.96);
+
+    --pb-cosmos-op: .85;
+}
+
+/* ------------------------------------------------------------
+   APLICAÇÃO
+   Cada regra exige `html[data-home]`, então especificidade e escopo
+   vêm juntos: (0,2,x) vence a regra original (0,1,x) e só casa na Home.
+   ------------------------------------------------------------ */
+
+/* Sem isto, o overscroll no topo mostra um retângulo escuro atrás de uma
+   página clara — a emenda mais visível de todas. */
+html[data-home] body {
+    background: var(--pb-bg);
+}
+
+html[data-home] .navbar {
+    background: var(--pb-nav);
+    border-bottom-color: var(--pb-border);
+}
+
+html[data-home] .footer {
+    background: var(--pb-footer-bg);
+    border-top-color: var(--pb-border);
+}
+
+/* No escuro quem separa o card do fundo é a borda; no claro, só a
+   sombra consegue — sem ela o modo dia vira retângulos brancos
+   flutuando sem apoio. */
+html[data-home] .home-page .book-card {
+    background: var(--pb-card);
+    border-color: var(--pb-border-2);
+    box-shadow: var(--pb-card-shadow);
+}
+
+html[data-home] .home-page .floating-card {
+    background: var(--pb-glass);
+    border-color: var(--pb-glass-border);
+}
+
+html[data-home] .home-page .btn-primary {
+    background: var(--pb-btn);
+    color: var(--pb-btn-text);
+}
+
+/* O card e o scrim da foto precisam do MESMO tom, senão a foto descola
+   do card. O filtro entra porque a arte é escura: no card claro ela
+   continuaria parecendo colada por cima. */
+html[data-home] .home-page .feature-card {
+    background: var(--pb-feature-bg);
+    box-shadow: var(--pb-card-shadow);
+}
+
+html[data-home] .home-page .feature-photo::before {
+    background: var(--pb-feature-scrim);
+}
+
+html[data-home] .home-page .feature-photo img {
+    filter: var(--pb-feature-photo-filter);
+}
+
+/* De dia o stars-bg.png sai de cena: a textura é escura e, sobre fundo
+   claro, não fica "discreta" — fica suja. É exatamente aí que uma página
+   denuncia que o claro é só uma inversão do escuro. O papel dela (dar
+   densidade ao centro do hero) passa para o glow morno. */
+html[data-home] .hero-cosmos {
+    opacity: var(--pb-cosmos-op);
+}
+
+html[data-home][data-tema="claro"] .hero-cosmos {
+    background:
+        radial-gradient(circle at center, rgba(255, 214, 150, .62), transparent 54%),
+        radial-gradient(circle at 50% 50%, rgba(139, 92, 246, .16), transparent 64%);
+}
+
+html[data-home][data-tema="tarde"] .hero-cosmos {
+    background:
+        radial-gradient(circle at center, rgba(240, 133, 90, .42), transparent 54%),
+        url('../img/stars-bg.png') center/cover no-repeat;
+}
+
+/* Mesma composição da tarde — glow radial sobre o starfield —, agora em
+   roxo. O padrão do home.css era um par de gradientes sem textura, e era
+   isso que fazia a noite parecer mais chapada que a tarde apesar de ser
+   o céu mais escuro dos três. O full-bleed de 100vw e a --cosmos-fade
+   continuam vindo do home.css: aqui só o background muda. */
+html[data-home][data-tema="escuro"] .hero-cosmos {
+    background:
+        radial-gradient(circle at center, rgba(var(--purple-rgb), .42), transparent 52%),
+        url('../img/stars-bg.png') center/cover no-repeat;
+}
+
+/* Badge "Beta": existe sempre no DOM e só a tarde o revela — sem JS,
+   sem nó condicional. Noite e dia são o ParaBook padrão. */
+.pb-beta-badge {
+    display: none;
+}
+
+html[data-home][data-tema="tarde"] .pb-beta-badge {
+    display: inline-flex;
+    align-self: center;
+
+    padding: 4px 10px;
+    margin-left: 10px;
+    margin-bottom: 4px;
+    border-radius: var(--radius-pill, 999px);
+
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+
+    color: #2A1230;
+    background: linear-gradient(135deg, #FFC46B, #F0855A);
+    box-shadow: 0 0 18px rgba(240, 133, 90, .45);
+}
+
+/* A troca de céu é uma dissolvência, não um corte. */
+html[data-home] body,
+html[data-home] .navbar,
+html[data-home] .footer,
+html[data-home] .home-page .book-card,
+html[data-home] .home-page .feature-card,
+html[data-home] .home-page .floating-card,
+html[data-home] .hero-cosmos {
+    transition: background .8s ease, background-color .8s ease,
+        border-color .8s ease, box-shadow .8s ease, color .8s ease;
+}
+
+/* Quem pediu menos movimento recebe a troca instantânea: a dissolvência
+   de 800ms é decorativa, o conteúdo é o mesmo dos dois lados. */
+@media (prefers-reduced-motion: reduce) {
+
+    html[data-home] body,
+    html[data-home] .navbar,
+    html[data-home] .footer,
+    html[data-home] .home-page .book-card,
+    html[data-home] .home-page .feature-card,
+    html[data-home] .home-page .floating-card,
+    html[data-home] .hero-cosmos {
+        transition: none;
+    }
+}

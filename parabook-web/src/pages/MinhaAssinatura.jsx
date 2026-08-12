@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 
 function MinhaAssinatura() {
   const [assinatura, setAssinatura] = useState(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [abrindoPortal, setAbrindoPortal] = useState(false);
+  const paginaRef = useRevelacao([assinatura, loading]);
 
   useEffect(() => {
     api.get('/assinaturas/minha-assinatura/')
@@ -38,13 +40,10 @@ function MinhaAssinatura() {
     } catch (err) {
       console.error("Erro ao abrir portal de gerenciamento:", err);
       const mensagem = err.response?.data?.detail || 'Não foi possível abrir o portal de gerenciamento. Tente novamente.';
-      Swal.fire({
+      swal.fire({
         icon: 'error',
         title: 'Erro',
         text: mensagem,
-        background: '#1e293b',
-        color: '#fff',
-        confirmButtonColor: '#8b5cf6'
       });
       setAbrindoPortal(false);
     }
@@ -59,14 +58,14 @@ function MinhaAssinatura() {
   }
 
   return (
-    <div className="container py-5" style={{ minHeight: '80vh' }}>
+    <div className="container py-5" ref={paginaRef} style={{ minHeight: '80vh' }}>
       <div className="row justify-content-center">
         <div className="col-lg-8">
-          <h2 className="fw-bold text-white mb-4">
+          <h2 className="fw-bold text-white mb-4" data-revelar>
             Minha Assinatura
           </h2>
 
-          <div className="card border-0 shadow-lg rounded-4 text-white" style={{ background: '#12131C', backdropFilter: 'blur(10px)' }}>
+          <div className="card border-0 shadow-lg rounded-4 text-white" data-revelar style={{ background: '#12131C', backdropFilter: 'blur(10px)' }}>
             <div className="card-body p-4 p-md-5">
 
               {erro ? (

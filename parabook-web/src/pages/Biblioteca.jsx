@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import Skeleton from '../components/Skeleton';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/biblioteca.css';
 
 const TOTAL_SKELETONS = 8;
@@ -14,6 +15,7 @@ function Biblioteca() {
   const [livros, setLivros] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
+  const paginaRef = useRevelacao([livros, categorias, loading]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +59,7 @@ function Biblioteca() {
   const renderLivros = (livrosDaCategoria, nomeGenero) => {
     if (livrosDaCategoria.length === 0) {
       return (
-        <div className="col-12">
+        <div className="col-12" data-revelar>
           <p className="text-muted fst-italic">
             <i className="fa-solid fa-circle-info me-2"></i>Nenhum livro de {nomeGenero.toLowerCase()} encontrado.
           </p>
@@ -68,7 +70,7 @@ function Biblioteca() {
     return livrosDaCategoria.map(livro => {
       const fallbackImage = 'https://via.placeholder.com/150x200?text=Sem+Capa';
       return (
-        <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={livro.id}>
+        <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={livro.id} data-revelar>
           <article className="card h-100 card-livro-publico" style={{ position: 'relative' }}>
             <Link to={`/livro/${livro.id}`} className="btn-info-livro" title="Ver Informações" style={{ zIndex: 20 }}>
               <i className="fa-solid fa-info"></i>
@@ -151,8 +153,8 @@ function Biblioteca() {
 
     return (
       <section className="secao-genero" key={cat.id}>
-        <h2 className="titulo-genero-linha"><i className={`fa-solid ${icon} me-2 text-primary`}></i>{cat.nome}</h2>
-        <div className="row g-4">{renderLivros(livrosDaCat, cat.nome)}</div>
+        <h2 className="titulo-genero-linha" data-revelar><i className={`fa-solid ${icon} me-2 text-primary`}></i>{cat.nome}</h2>
+        <div className="row g-4" data-revelar-cascata>{renderLivros(livrosDaCat, cat.nome)}</div>
       </section>
     );
   });
@@ -160,8 +162,8 @@ function Biblioteca() {
   const obrasIndependentes = livros.filter(l => !l.categoria); // Livros sem categoria definida (se houver)
 
   return (
-    <div className="container py-4" id="topo">
-      <header className="banner-biblioteca-publica p-5 mb-5 text-center text-md-start">
+    <div className="container py-4" id="topo" ref={paginaRef}>
+      <header className="banner-biblioteca-publica p-5 mb-5 text-center text-md-start" data-revelar>
         <div className="row align-items-center">
           <div className="col-12 col-md-8">
             <h1 className="display-5 fw-bold mb-3">Todos os Títulos</h1>
@@ -170,7 +172,10 @@ function Biblioteca() {
           </div>
           <div className="col-12 col-md-4 text-center text-md-end mt-4 mt-md-0">
             {user && (
-              <Link to="/minha-biblioteca" className="btn btn-light btn-lg fw-semibold shadow-sm">
+              /* Era `btn btn-light`: um botão branco do Bootstrap sobre o
+                 banner roxo escuro. .btn-ghost é a ação secundária do
+                 design system e já traz hover, foco e press prontos. */
+              <Link to="/minha-biblioteca" className="btn-ghost">
                 <i className="fa-solid fa-bookmark me-2 text-primary"></i>Minha Estante
               </Link>
             )}
@@ -182,8 +187,8 @@ function Biblioteca() {
 
       {obrasIndependentes.length > 0 && (
         <section className="secao-genero" id="secao-independentes">
-          <h2 className="titulo-genero-linha"><i className="fa-solid fa-pen-nib me-2 text-primary"></i>Outros / Independentes</h2>
-          <div className="row g-4">{renderLivros(obrasIndependentes, 'obra independente')}</div>
+          <h2 className="titulo-genero-linha" data-revelar><i className="fa-solid fa-pen-nib me-2 text-primary"></i>Outros / Independentes</h2>
+          <div className="row g-4" data-revelar-cascata>{renderLivros(obrasIndependentes, 'obra independente')}</div>
         </section>
       )}
     </div>

@@ -15,13 +15,13 @@
     margin: 0 auto; 
 }
 
-.minha-biblioteca-page .banner-biblioteca { 
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
-    color: #fff; 
+.minha-biblioteca-page .banner-biblioteca {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-deep) 100%);
+    color: var(--text);
     padding: 3rem 2rem; 
-    border-radius: 12px; 
+    border-radius: var(--radius-md); 
     margin-bottom: 2rem; 
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+    box-shadow: 0 4px 6px -1px rgba(var(--black-rgb),0.1); 
 }
 
 .minha-biblioteca-page .titulo-biblioteca { 
@@ -38,28 +38,31 @@
     margin-bottom: 2rem; 
 }
 
-.minha-biblioteca-page .stat-card { 
-    background: #1e293b; 
-    border: 1px solid #334155; 
-    color: #f8fafc;
-    border-radius: 8px; 
-    padding: 1.25rem; 
-    display: flex; 
-    align-items: center; 
-    gap: 1rem; 
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+.minha-biblioteca-page .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-sm);
 }
 
-.minha-biblioteca-page .stat-icon { 
-    font-size: 1.5rem; 
-    background: #334155; 
-    padding: 0.5rem; 
-    border-radius: 6px; 
+/* Chip de ícone no padrão do resto do app (mesmo do card de comunidade
+   na Home): tinta roxa translúcida em vez do slate sólido herdado. */
+.minha-biblioteca-page .stat-icon {
+    font-size: 1.5rem;
+    background: rgba(var(--purple-rgb),.15);
+    color: var(--purple);
+    padding: 0.5rem;
+    border-radius: var(--radius-xs);
 }
 
 .minha-biblioteca-page .stat-label { 
     font-size: 0.875rem; 
-    color: #94a3b8; 
+    color: var(--text-secondary); 
     margin: 0; 
 }
 
@@ -77,14 +80,14 @@
     flex-wrap: wrap; 
 }
 
-.minha-biblioteca-page .filter-input, 
-.minha-biblioteca-page .filter-select { 
-    padding: 0.75rem 1rem; 
-    border: 1px solid #334155; 
-    border-radius: 6px; 
-    background: #1e293b; 
-    color: #fff;
-    font-size: 0.95rem; 
+.minha-biblioteca-page .filter-input,
+.minha-biblioteca-page .filter-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-input);
+    color: var(--text);
+    font-size: 0.95rem;
 }
 
 .minha-biblioteca-page .filter-input { 
@@ -103,27 +106,30 @@
     gap: 2rem; 
 }
 
-.minha-biblioteca-page .card-livro { 
-    background: #1e293b; 
-    border: 1px solid #334155; 
-    border-radius: 12px; 
-    overflow: hidden; 
-    display: flex; 
-    flex-direction: column; 
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
-    position: relative; 
+.minha-biblioteca-page .card-livro {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--dur-base) var(--ease-out),
+                box-shadow var(--dur-base) var(--ease-out),
+                border-color var(--dur-base) var(--ease-standard);
+    box-shadow: var(--shadow-sm);
+    position: relative;
 }
 
-.minha-biblioteca-page .card-livro:hover { 
-    transform: translateY(-5px); 
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
+.minha-biblioteca-page .card-livro:hover {
+    transform: translateY(var(--lift-md));
+    border-color: rgba(var(--purple-rgb),.35);
+    box-shadow: var(--shadow-md);
 }
 
 .minha-biblioteca-page .capa-container { 
     width: 100%; 
     height: 280px; 
-    background: #0f172a; 
+    background: var(--bg-deep); 
     display: flex; 
     align-items: center; 
     justify-content: center; 
@@ -137,21 +143,42 @@
     object-fit: cover; 
 }
 
-/* Badges de Status Modernos */
-.minha-biblioteca-page .status-badge { 
-    position: absolute; 
-    top: 12px; 
-    right: 12px; 
-    padding: 0.25rem 0.75rem; 
-    border-radius: 20px; 
-    font-size: 0.75rem; 
-    font-weight: 600; 
-    text-transform: uppercase; 
-    letter-spacing: 0.05em; 
+/* Badges de status.
+
+   Eram três chips CLAROS (fundo #e2e8f0/#dbeafe/#dcfce7) pousados em cima
+   da capa, num app de fundo escuro — destoavam de todos os outros badges.
+   Viraram o mesmo idioma usado no resto do ParaBook: tinta translúcida da
+   cor semântica + texto na versão -soft dela. A leitura de estado fica
+   mais clara, não menos: neutro = quero ler, azul = lendo, verde = lido. */
+.minha-biblioteca-page .status-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid transparent;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
-.minha-biblioteca-page .status-quero_ler { background: #e2e8f0; color: #475569; }
-.minha-biblioteca-page .status-lendo { background: #dbeafe; color: #1d4ed8; }
-.minha-biblioteca-page .status-lido { background: #dcfce7; color: #15803d; }
+.minha-biblioteca-page .status-quero_ler {
+    background: rgba(var(--white-rgb),.10);
+    border-color: var(--border-strong);
+    color: var(--text-soft);
+}
+.minha-biblioteca-page .status-lendo {
+    background: rgba(var(--info-rgb),.18);
+    border-color: rgba(var(--info-rgb),.40);
+    color: var(--info-soft);
+}
+.minha-biblioteca-page .status-lido {
+    background: rgba(var(--success-rgb),.18);
+    border-color: rgba(var(--success-rgb),.40);
+    color: var(--success-soft);
+}
 
 .minha-biblioteca-page .card-info { 
     padding: 1.25rem; 
@@ -165,62 +192,84 @@
     font-weight: 600; 
     margin: 0 0 0.25rem 0; 
     line-height: 1.4; 
-    color: #f8fafc;
+    color: var(--text);
 }
 
 .minha-biblioteca-page .book-author { 
     font-size: 0.875rem; 
-    color: #94a3b8; 
+    color: var(--text-secondary); 
     margin: 0 0 1rem 0; 
 }
 
-/* Botões Modernos e Profissionais */
-.minha-biblioteca-page .card-actions { 
-    display: flex; 
-    gap: 0.5rem; 
-    margin-top: auto; 
-    border-top: 1px solid #334155; 
-    padding-top: 1rem; 
+/* Ações do card.
+
+   "Ler" era um botão azul sólido (#2563eb) — a única primária azul do
+   app inteiro, competindo com o roxo da marca. Agora usa o mesmo
+   gradiente do .btn-primary de base.css. "Remover" segue a regra de cor
+   do design system para ação destrutiva: vermelho translúcido em
+   repouso, sólido só no hover, para não gritar dentro de cada card. */
+.minha-biblioteca-page .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
 }
 
-.minha-biblioteca-page .btn-ler { 
-    flex: 2; 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 0.5rem; 
-    background: #2563eb; 
-    color: #fff; 
-    padding: 0.625rem; 
-    border-radius: 6px; 
-    font-weight: 500; 
-    font-size: 0.9rem; 
-    text-decoration: none; 
-    transition: background 0.2s ease; 
-    border: none; 
-    cursor: pointer; 
+.minha-biblioteca-page .btn-ler,
+.minha-biblioteca-page .btn-remover {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-standard),
+                border-color var(--dur-fast) var(--ease-standard);
 }
-.minha-biblioteca-page .btn-ler:hover { background: #1d4ed8; }
 
-.minha-biblioteca-page .btn-remover { 
-    flex: 1; 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center; 
-    background: #ef4444; 
-    color: #fff; 
-    padding: 0.625rem; 
-    border-radius: 6px; 
-    transition: background 0.2s ease, transform 0.1s ease; 
-    border: none; 
-    cursor: pointer; 
+.minha-biblioteca-page .btn-ler {
+    flex: 2;
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    color: #fff;
 }
-.minha-biblioteca-page .btn-remover:hover { background: #dc2626; }
-.minha-biblioteca-page .btn-remover:active { transform: scale(0.95); }
+.minha-biblioteca-page .btn-ler:hover {
+    transform: translateY(var(--lift-sm));
+    box-shadow: var(--shadow-glow-sm);
+    color: #fff;
+}
+
+.minha-biblioteca-page .btn-remover {
+    flex: 1;
+    background: rgba(var(--danger-rgb),.12);
+    border-color: rgba(var(--danger-rgb),.35);
+    color: var(--danger-soft);
+}
+.minha-biblioteca-page .btn-remover:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
+
+.minha-biblioteca-page .btn-ler:active,
+.minha-biblioteca-page .btn-remover:active { transform: translateY(0) scale(0.98); }
+
+.minha-biblioteca-page .btn-ler:focus-visible,
+.minha-biblioteca-page .btn-remover:focus-visible {
+    outline: 2px solid var(--purple-light);
+    outline-offset: 2px;
+}
 
 .minha-biblioteca-page .empty-state { 
     grid-column: 1 / -1; 
     text-align: center; 
     padding: 4rem 2rem; 
-    color: #64748b; 
+    color: var(--text-dim); 
 }

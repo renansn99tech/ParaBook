@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/autores.css';
 
 function Autores() {
   const [termoBusca, setTermoBusca] = useState('');
   const [autores, setAutores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const paginaRef = useRevelacao([autores, termoBusca, loading]);
 
   useEffect(() => {
     api.get('/perfis/autores/')
@@ -21,9 +23,9 @@ function Autores() {
   );
 
   return (
-    <main className="container-autores" id="conteudo-principal" style={{ paddingTop: '80px', paddingBottom: '40px' }}>
-      
-      <header className="header-autores">
+    <main className="container-autores" id="conteudo-principal" ref={paginaRef} style={{ paddingTop: '80px', paddingBottom: '40px' }}>
+
+      <header className="header-autores" data-revelar>
         <div className="header-content">
           <span className="header-badge">Comunidade Literária</span>
           <h1>Conheça Nossos Autores</h1>
@@ -31,7 +33,7 @@ function Autores() {
         </div>
       </header>
 
-      <section className="acoes-barra-container" aria-label="Filtros e Ações">
+      <section className="acoes-barra-container" aria-label="Filtros e Ações" data-revelar>
         <form onSubmit={(e) => e.preventDefault()} className="form-busca-autores">
           <div className="input-grupo-busca">
             <i className="fa-solid fa-magnifying-glass icone-busca"></i>
@@ -54,10 +56,10 @@ function Autores() {
         </form>
       </section>
 
-      <section className="grid-autores" aria-label="Lista de autores">
+      <section className="grid-autores" aria-label="Lista de autores" data-revelar-cascata>
         {autoresFiltrados.length > 0 ? (
           autoresFiltrados.map(autor => (
-            <article key={autor.id} className="card-autor">
+            <article key={autor.id} className="card-autor" data-revelar>
               <div className="card-header-decoracao"></div>
               
               <div className="avatar-autor-container">
@@ -94,7 +96,7 @@ function Autores() {
             </article>
           ))
         ) : (
-          <div className="empty-state-autores" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px' }}>
+          <div className="empty-state-autores" data-revelar style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px' }}>
             <i className="fa-solid fa-feather" style={{ fontSize: '3rem', color: '#64748b', marginBottom: '15px' }}></i>
             <h3>Nenhum escritor encontrado</h3>
             <p>Não encontramos autores correspondentes ao termo "{termoBusca}".</p>

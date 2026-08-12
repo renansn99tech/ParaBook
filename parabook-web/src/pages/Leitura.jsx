@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/leitura.css';
 
 function Leitura() {
@@ -29,6 +30,11 @@ function Leitura() {
   const [favorito, setFavorito] = useState(false);
   
   const [inputPag, setInputPag] = useState('');
+
+  // Só a moldura do leitor entra animada: o <article> do canvas fica de
+  // fora de propósito, para não animar o elemento que o PDF.js mede e
+  // pinta enquanto a página monta.
+  const paginaRef = useRevelacao([loading]);
 
   // Initial load
   useEffect(() => {
@@ -158,27 +164,24 @@ function Leitura() {
   };
 
   const handleMarcarLido = () => {
-    Swal.fire({
+    swal.fire({
       title: 'Concluir Livro?',
       text: "Deseja marcar este livro como concluído em sua estante?",
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#10b981',
-      cancelButtonColor: '#64748b',
+      confirmButtonColor: BOTAO.sucesso,
+      cancelButtonColor: BOTAO.neutro,
       confirmButtonText: 'Sim, concluído!',
       cancelButtonText: 'Ainda não',
-      background: '#1e293b',
       color: '#f8fafc'
     }).then(async (result) => {
       if (result.isConfirmed) {
         await syncEstante({ status: 'lido' });
         setLido(true);
-        Swal.fire({
+        swal.fire({
           title: 'Parabéns! 🎉',
           text: 'Mais uma obra concluída. Seu progresso foi atualizado!',
           icon: 'success',
-          confirmButtonColor: '#2563eb',
-          background: '#1e293b',
           color: '#f8fafc'
         });
       }
@@ -191,14 +194,14 @@ function Leitura() {
     setFavorito(novoStatus);
     
     if (novoStatus) {
-      Swal.fire({
+      swal.fire({
         title: 'Favoritado! ❤️',
         text: 'Este livro foi adicionado à sua aba de favoritos.',
         icon: 'success',
         background: '#1e293b', color: '#f8fafc', timer: 2000, showConfirmButton: false
       });
     } else {
-      Swal.fire({
+      swal.fire({
         title: 'Removido! 💔',
         text: 'O livro foi removido dos seus favoritos.',
         icon: 'info',
@@ -208,7 +211,7 @@ function Leitura() {
   };
 
   const handleAvaliar = () => {
-    Swal.fire({
+    swal.fire({
       title: '⭐ Avalie este Livro',
       text: 'Que nota você dá para esta obra?',
       icon: 'question',
@@ -235,7 +238,7 @@ function Leitura() {
     }).then(async (result) => {
       if (result.isConfirmed && result.value) {
         await syncEstante({ nota: parseInt(result.value) });
-        Swal.fire({
+        swal.fire({
           title: 'Avaliação Salva!',
           text: 'Sua nota foi registrada com sucesso.',
           icon: 'success',
@@ -259,14 +262,14 @@ function Leitura() {
   const progressoSeguro = totalPaginas > 0 ? Math.min(Math.max((paginaAtual / totalPaginas) * 100, 0), 100) : 0;
 
   return (
-    <main className="leitura-page" tabIndex="-1">
+    <main className="leitura-page" tabIndex="-1" ref={paginaRef}>
       <section className="container leitura-container">
         
         <header className="leitura-acessivel-header">
           <h1 className="sr-only">Lendo: Obra de Teste</h1>
         </header>
 
-        <nav className="barra-ferramentas-leitura" aria-label="Ferramentas de customização da leitura">
+        <nav className="barra-ferramentas-leitura" aria-label="Ferramentas de customização da leitura" data-revelar>
           <div className="grupo-controle">
             <span className="label-controle" id="label-zoom">Zoom Canvas:</span>
             <button className="btn-tool" onClick={() => setZoomAtual(z => Math.min(z + 0.1, 3.0))} title="Aumentar zoom">
@@ -345,14 +348,20 @@ function Leitura() {
           </button>
         </nav>
 
-        <div className="acoes">
+        <div className="acoes" data-revelar>
           <Link to="/minha-biblioteca" className="btn secondary">
             Voltar à Biblioteca
           </Link>
 
           <button
-            className="btn btn-success"
-            style={{ backgroundColor: lido ? '#059669' : '#10b981', color: 'white' }}
+            className="btn btn-success interactive"
+            /* O verde vem de --success agora; era #10b981/#059669, um
+               emerald de outra paleta. Concluído fica na versão apagada,
+               que já comunica "não há mais o que fazer aqui". */
+            style={{
+              backgroundColor: lido ? 'rgba(var(--success-rgb),.35)' : 'var(--success)',
+              borderColor: 'transparent',
+            }}
             onClick={handleMarcarLido}
             disabled={lido}
           >

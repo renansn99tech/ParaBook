@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import CardComunidade from '../components/CardComunidade';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/comunidade.css';
 
 function MinhasComunidades() {
   const [comunidades, setComunidades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
+  const paginaRef = useRevelacao([comunidades, loading]);
 
   useEffect(() => {
     api.get('/comunidades/comunidades/minhas/')
@@ -37,21 +39,24 @@ function MinhasComunidades() {
   }
 
   return (
-    <main className="container py-4" style={{ minHeight: '60vh' }}>
+    <main className="container py-4" ref={paginaRef} style={{ minHeight: '60vh' }}>
       <section className="pagina-comunidade">
-        <h1 className="pagina-comunidade-titulo mb-3" style={{ color: 'white' }}>
-          Minhas Comunidades
-        </h1>
-        <p style={{ fontSize: '1.1rem', color: '#d8d9e6', marginBottom: '40px' }}>
-          Todos os espaços em que você participa, reunidos em um só lugar.
-        </p>
+        <div data-revelar>
+          <h1 className="pagina-comunidade-titulo mb-3">
+            Minhas Comunidades
+          </h1>
+          <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '40px' }}>
+            Todos os espaços em que você participa, reunidos em um só lugar.
+          </p>
+        </div>
 
         {erro && <div className="alert alert-danger">{erro}</div>}
 
         {!erro && comunidades.length === 0 ? (
           <div
+            data-revelar
             className="empty-state text-center"
-            style={{ padding: '50px', border: '2px dashed rgba(255,255,255,0.15)', borderRadius: '12px', color: 'white' }}
+            style={{ padding: '50px', border: '2px dashed var(--border-strong)', borderRadius: '12px', color: 'var(--text)' }}
           >
             <i className="fa-solid fa-users-slash" style={{ fontSize: '2.5rem', color: '#6b7280', marginBottom: '15px' }}></i>
             <h3>Você ainda não participa de nenhuma comunidade</h3>
@@ -65,10 +70,11 @@ function MinhasComunidades() {
         ) : (
           <div
             className="grid"
+            data-revelar-cascata
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}
           >
             {comunidades.map((comunidade) => (
-              <CardComunidade key={comunidade.id} comunidade={comunidade}>
+              <CardComunidade key={comunidade.id} comunidade={comunidade} data-revelar>
                 <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-primary flex-grow-1">
                   Acessar
                 </Link>

@@ -1,18 +1,14 @@
 import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import swal from '../services/swal';
 import api from '../services/api';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/password-reset.css';
-
-const swalTema = {
-  background: '#1e293b',
-  color: '#fff',
-  confirmButtonColor: '#8b5cf6'
-};
 
 function RedefinirSenha() {
   const { uid, token } = useParams();
   const navigate = useNavigate();
+  const paginaRef = useRevelacao([]);
 
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -37,11 +33,10 @@ function RedefinirSenha() {
         nova_senha: novaSenha
       });
 
-      await Swal.fire({
+      await swal.fire({
         icon: 'success',
         title: 'Senha redefinida!',
-        text: 'Sua senha foi alterada com sucesso. Faça login para continuar.',
-        ...swalTema
+        text: 'Sua senha foi alterada com sucesso. Faça login para continuar.'
       });
       navigate('/login');
     } catch (error) {
@@ -55,8 +50,8 @@ function RedefinirSenha() {
   };
 
   return (
-    <div className="reset-page">
-      <div className="reset-container">
+    <div className="reset-page" ref={paginaRef}>
+      <div className="reset-container" data-revelar>
         <h2>Criar Nova Senha</h2>
         <p className="reset-text">
           Escolha uma nova senha forte e segura para acessar sua conta.

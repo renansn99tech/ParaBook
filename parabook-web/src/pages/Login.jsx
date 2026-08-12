@@ -1,15 +1,19 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import useTema from '../hooks/useTema';
+import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/tela-login.css';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  
+  const paginaRef = useRevelacao([]);
+
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { alternar, icone, rotulo } = useTema();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,24 +28,27 @@ function Login() {
   };
 
   return (
-    <div className="auth-body">
-      <Link to="/" className="btn-voltar-fixo" title="Voltar ao Menu" style={{ 
-          position: 'fixed', top: '20px', right: '20px', width: '50px', height: '50px',
-          background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(10px)', 
-          border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '50%', 
-          color: '#94a3b8', textDecoration: 'none', display: 'flex', 
-          alignItems: 'center', justifyContent: 'center', zIndex: 1000, transition: 'all 0.3s ease',
-          fontSize: '1.2rem'
-      }}>
+    <div className="auth-body" ref={paginaRef}>
+      <Link to="/" className="btn-voltar-fixo" title="Voltar ao Menu">
         <i className="fa-solid fa-arrow-left"></i>
       </Link>
+
+      <button
+        id="theme-toggle"
+        type="button"
+        onClick={alternar}
+        title={rotulo}
+        aria-label={rotulo}
+      >
+        <i className={`fa-solid ${icone}`}></i>
+      </button>
 
       <main className="auth-container">
         <section className="auth-image-side">
           <div className="auth-image-overlay"></div>
           <div className="abstract-glow-1"></div>
           <div className="abstract-glow-2"></div>
-          <div className="auth-image-text">
+          <div className="auth-image-text" data-revelar>
             <div className="brand-logo-login">
               <i className="fa-solid fa-book-open-reader animate-book"></i>
               <h1 className="logo-text">Para<span>Book</span></h1>
@@ -51,7 +58,7 @@ function Login() {
         </section>
 
         <section className="auth-form-side">
-          <div className="auth-box login-box">
+          <div className="auth-box login-box" data-revelar>
             <form onSubmit={handleSubmit} noValidate className="pure-form">
               <h2>Entrar no ParaBook</h2>
               <p className="auth-subtitle">Seja bem-vindo de volta!</p>

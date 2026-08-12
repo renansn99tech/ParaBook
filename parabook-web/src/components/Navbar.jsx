@@ -6,7 +6,7 @@ import logoNova from '../assets/img/logo-nova.png'
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
-  const { alternar, ehClaro } = useTema();
+  const { alternar, icone, rotulo } = useTema();
 
   return (
     <>
@@ -19,6 +19,10 @@ function Navbar() {
             <h1 className="logo">
               <span className="para">Para</span><span className="book">Book</span>
             </h1>
+            {/* Só o céu de tarde revela (ver home-ceus.css): é o modo
+                experimental, e o badge é o que avisa isso antes da
+                pessoa reparar na troca de paleta. */}
+            <span className="pb-beta-badge">Beta</span>
           </div>
         </Link>
 
@@ -38,17 +42,17 @@ function Navbar() {
               <i className="fa-solid fa-magnifying-glass"></i>
             </button>
 
-            {/* aria-pressed comunica o estado ao leitor de tela; o title e
-                o aria-label dizem o que o clique VAI fazer, não o que está
-                ativo — é o que se espera de um botão. */}
+            {/* O title e o aria-label dizem o que o clique VAI fazer, não o
+                que está ativo. Sem aria-pressed: com três temas em rodízio
+                isto deixou de ser um botão de dois estados, e "pressionado"
+                não descreveria mais nada. */}
             <button
               className="btn-nav btn-outline btn-nav-icone"
               onClick={alternar}
-              aria-pressed={ehClaro}
-              title={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
-              aria-label={ehClaro ? 'Mudar para o tema escuro' : 'Mudar para o tema claro'}
+              title={rotulo}
+              aria-label={rotulo}
             >
-              <i className={`fa-solid ${ehClaro ? 'fa-moon' : 'fa-sun'}`}></i>
+              <i className={`fa-solid ${icone}`}></i>
             </button>
 
             {user ? (

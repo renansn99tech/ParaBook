@@ -19,6 +19,16 @@
   flex-wrap: wrap;
 }
 
+:root[data-tema="claro"] .livro-info-page .livro-info-container {
+  background:linear-gradient(145deg, rgba(224,242,254,.96), rgba(240,249,255,.9));
+  border-color:rgba(var(--info-rgb),.2);
+}
+
+:root[data-tema="claro"] .livro-info-page .livro-titulo,
+:root[data-tema="claro"] .livro-info-page .avaliacoes-titulo {
+  color:var(--text);
+}
+
 .livro-info-page .livro-capa-col {
   flex: 0 0 300px;
   display: flex;

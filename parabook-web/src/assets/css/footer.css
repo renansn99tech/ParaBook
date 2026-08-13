@@ -1,6 +1,8 @@
 .footer{
 
-    margin-top:auto;
+    /* O app-shell já organiza o fluxo vertical; margem automática criava
+       uma faixa vazia entre páginas curtas e o rodapé. */
+    margin-top:0;
 
     padding:50px 8% 30px;
 
@@ -8,10 +10,13 @@
     1px solid rgba(var(--white-rgb),.08);
 
     background:
-    rgba(var(--white-rgb),.02);
+    rgba(var(--bg-main-rgb),.85);
 
     backdrop-filter:
-    blur(10px);
+    blur(15px);
+
+    -webkit-backdrop-filter:
+    blur(15px);
 }
 
 .footer-content{

@@ -29,7 +29,29 @@
 
 /* Ajusta o alinhamento do número para o topo em cards com textos longos */
 .glass-rule-card {
-    align-items: flex-start !important; 
+    align-items: flex-start !important;
+    padding:30px;
+    display:flex;
+    gap:24px;
+    background:linear-gradient(145deg, rgba(var(--bg-card-rgb),.94), rgba(var(--bg-card-rgb),.72));
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-md);
+    color:var(--text-secondary);
+}
+
+.glass-rule-card h3 { color:var(--text); }
+.rule-number { color:var(--purple-text); font-weight:800; }
+
+:root[data-tema="claro"] .guidelines-main {
+    background:
+        radial-gradient(circle at 50% 8%, rgba(var(--purple-rgb),.09), transparent 58%),
+        var(--bg-main);
+}
+
+:root[data-tema="claro"] .glass-rule-card {
+    background:linear-gradient(145deg, rgba(255,255,255,.97), rgba(241,245,249,.88));
+    border-color:rgba(var(--purple-rgb),.14);
 }
 
 /* Container do texto interno para isolar o fluxo do flex principal */

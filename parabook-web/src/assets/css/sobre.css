@@ -446,6 +446,17 @@
             rgba(var(--bg-deep-rgb),.78));
 }
 
+:root[data-tema="claro"] .timeline-item.active .timeline-content {
+    background:
+        linear-gradient(135deg, rgba(var(--purple-rgb),.16), rgba(255,255,255,.96) 58%);
+    border-color:rgba(var(--purple-rgb),.45);
+    box-shadow:0 12px 30px rgba(var(--purple-rgb),.12);
+}
+
+:root[data-tema="claro"] .timeline-item.active .timeline-content p {
+    color:var(--text-secondary);
+}
+
 .timeline-item.future {
     opacity: .65;
 }

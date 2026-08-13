@@ -73,7 +73,7 @@ function App() {
 
       {/* Banner de anúncio global, igual ao base.html do Django */}
       {!hideNavAndFooter && (
-        <div className="container my-3">
+        <div className="container my-3 ad-container">
             <div className="p-3 text-center rounded-3 border border-secondary border-opacity-25 caixa-anuncio">
                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <small className="text-white-50"><i className="fa-solid fa-rectangle-ad me-1"></i> Espaço de Anúncio</small>

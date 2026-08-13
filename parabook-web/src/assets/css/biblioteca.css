@@ -26,8 +26,8 @@
     background:
         radial-gradient(
             circle at 80% 30%,
-            rgba(var(--purple-rgb),.35),
-            transparent 35%
+            rgba(var(--purple-rgb),.42),
+            transparent 48%
         ),
         linear-gradient(
             145deg,
@@ -75,7 +75,7 @@
 
     font-size:8rem;
 
-    opacity:.08;
+    opacity:.18;
 
     transform:rotate(-12deg);
 

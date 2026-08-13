@@ -5,7 +5,7 @@
 .news-page-main {
     min-height: 100vh;
     overflow-x: hidden;
-    padding-bottom: 80px;
+    padding-bottom: 0;
 }
 
 /* ================= HERO SECTION E LETREIRO (TICKER) ================= */
@@ -72,7 +72,7 @@
     position: relative;
     max-width: 1000px;
     margin: 0 auto;
-    padding: 60px 20px;
+    padding: 60px 20px 0;
 }
 
 /* A linha central em tons de azul */
@@ -285,4 +285,36 @@
         width: 85%; 
         padding: 25px;
     }
+}
+
+.timeline-entry:last-child {
+    margin-bottom:0;
+}
+
+/* O tema claro preserva os acentos sem carregar os fundos quase pretos
+   desenhados para a noite. */
+:root[data-tema="claro"] .news-hero-section {
+    background:radial-gradient(circle at top, rgba(var(--info-rgb),.12), transparent 68%);
+}
+
+:root[data-tema="claro"] .glass-card-news {
+    background:linear-gradient(145deg, rgba(239,246,255,.98), rgba(255,255,255,.94));
+    border-color:rgba(var(--info-rgb),.28);
+    box-shadow:var(--shadow-md);
+}
+
+:root[data-tema="claro"] .glass-card-news h3 { color:var(--text); }
+
+:root[data-tema="claro"] .current-milestone .glass-card-news {
+    background:linear-gradient(145deg, rgba(254,242,242,.98), rgba(255,255,255,.95));
+    border-color:rgba(var(--danger-rgb),.38);
+}
+
+:root[data-tema="claro"] .warning-milestone .glass-card-news {
+    background:linear-gradient(145deg, rgba(255,247,237,.98), rgba(255,255,255,.95));
+    border-color:rgba(var(--warning-rgb),.42);
+}
+
+:root[data-tema="claro"] .timeline-pointer {
+    border-color:var(--bg-main);
 }

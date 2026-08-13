@@ -50,6 +50,9 @@ body{
 .app-shell{
     min-height:100vh;
 
+    display:flex;
+    flex-direction:column;
+
     background:var(--bg-main);
 
     color:var(--text);
@@ -278,8 +281,8 @@ body{
     --vela:#B06A10;
 
     /* A escala de texto inverte a ordem: --text é o mais escuro. */
-    --text:#0F172A;
-    --text-soft:#1E293B;
+    --text:#172033;
+    --text-soft:#273449;
     --text-secondary:#475569;
     --text-dim:#64748B;
 
@@ -809,9 +812,19 @@ select:focus{
 }
 /* Caixa do espaço de anúncio no topo. Era um rgba escuro inline, que
    ficaria preto sobre o tema claro. */
+.ad-container,
 .caixa-anuncio{
-    background:rgba(var(--bg-deep-rgb),.6);
+    /* Mesma superfície translúcida da navbar em qualquer tema. */
+    background:rgba(var(--bg-main-rgb),.85);
+}
 
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
+.ad-container{
+    border-radius:var(--radius-md);
+    backdrop-filter:blur(15px);
+    -webkit-backdrop-filter:blur(15px);
+}
+
+.caixa-anuncio{
+    /* Evita escurecer o miolo ao sobrepor duas superfícies translúcidas. */
+    background:transparent;
 }

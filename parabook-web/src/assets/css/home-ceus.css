@@ -46,7 +46,6 @@ html[data-home][data-tema="escuro"] {
     --pb-btn: linear-gradient(135deg, #8B5CF6, #6D28D9);
     --pb-btn-text: #fff;
 
-    --pb-footer-bg: rgba(255, 255, 255, .02);
 
     --pb-feature-bg: linear-gradient(90deg, rgba(15, 23, 42, .96) 0%, rgba(15, 23, 42, .9) 46%, rgba(46, 26, 74, .72) 74%, rgba(15, 23, 42, .8) 100%);
     --pb-feature-scrim: linear-gradient(90deg, rgba(15, 23, 42, .92) 0%, rgba(15, 23, 42, .55) 16%, transparent 34%);
@@ -87,7 +86,6 @@ html[data-home][data-tema="tarde"] {
     --pb-btn: linear-gradient(135deg, #F0855A, #B14A86);
     --pb-btn-text: #2A1230;
 
-    --pb-footer-bg: rgba(255, 196, 150, .04);
 
     --pb-feature-bg: linear-gradient(90deg, rgba(44, 24, 62, .94) 0%, rgba(44, 24, 62, .88) 46%, rgba(72, 36, 66, .76) 74%, rgba(44, 24, 62, .78) 100%);
     --pb-feature-scrim: linear-gradient(90deg, rgba(44, 24, 62, .92) 0%, rgba(44, 24, 62, .55) 16%, transparent 34%);
@@ -126,7 +124,6 @@ html[data-home][data-tema="claro"] {
     --pb-btn: linear-gradient(135deg, #7C3AED, #5B21B6);
     --pb-btn-text: #fff;
 
-    --pb-footer-bg: rgba(35, 27, 60, .03);
 
     --pb-feature-bg: linear-gradient(90deg, rgba(255, 255, 255, .96) 0%, rgba(255, 255, 255, .92) 46%, rgba(243, 240, 253, .9) 74%, rgba(248, 246, 255, .9) 100%);
     --pb-feature-scrim: linear-gradient(90deg, rgba(255, 255, 255, .92) 0%, rgba(255, 255, 255, .55) 16%, transparent 34%);
@@ -175,8 +172,16 @@ html[data-home] .navbar {
     border-bottom-color: var(--pb-border);
 }
 
+html[data-home] .app-shell {
+    background: var(--pb-bg);
+}
+
+html[data-home] .ad-container {
+    background: var(--pb-nav);
+}
+
 html[data-home] .footer {
-    background: var(--pb-footer-bg);
+    background: var(--pb-nav);
     border-top-color: var(--pb-border);
 }
 

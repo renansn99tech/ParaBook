@@ -1478,11 +1478,20 @@
    texto de propósito, para não desenhar uma quina reta sobre a cena. */
 .jornada-capitulo::before,
 .jornada-convite::before{
+    --veu-centro-x:46%;
+    --veu-raio-x:44%;
+
     content:"";
     position:absolute;
     inset:8% -48% 8% -40%;
     z-index:-1;
     pointer-events:none;
+
+    /* O contêiner também é uma elipse. Além disso, o raio do gradiente
+       termina alguns pontos percentuais antes das quatro extremidades:
+       assim ainda existe transparência total antes do limite da caixa e
+       nenhum tema consegue revelar um corte vertical ou horizontal. */
+    border-radius:50%;
 
     /* Fade longo até 100% (não 74%): terminar cedo deixava a borda da
        elipse visível como uma sombra redonda contra a nebulosa.
@@ -1491,7 +1500,7 @@
        também escureceu. Só --dia entra na conta: o céu de tarde é escuro
        o bastante para o tratamento da noite servir igual. */
     transition:background .8s ease;
-    background:radial-gradient(ellipse 52% 46% at 46% 50%,
+    background:radial-gradient(ellipse var(--veu-raio-x) 42% at var(--veu-centro-x) 50%,
         color-mix(in oklab, rgba(5,8,22,.94), rgba(248,244,255,.94) calc(var(--dia) * 100%)),
         color-mix(in oklab, rgba(5,8,22,.5), rgba(248,244,255,.68) calc(var(--dia) * 100%)) 45%,
         transparent 100%);
@@ -1500,8 +1509,10 @@
 /* O convite é centralizado (não alinhado a uma borda como os capítulos),
    então o véu também centraliza em vez de esticar para um lado. */
 .jornada-convite::before{
+    --veu-centro-x:50%;
+    --veu-raio-x:46%;
+
     inset:10% -30%;
-    background-position:center;
 }
 
 /* Vem depois das regras individuais de cada h2, então esta cor vence as

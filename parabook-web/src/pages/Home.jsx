@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/auth-context';
 import useRevelacao from '../hooks/useRevelacao';
 import useProgressoScroll from '../hooks/useProgressoScroll';
 import '../assets/css/home.css';

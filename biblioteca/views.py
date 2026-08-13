@@ -10,11 +10,13 @@ from django.db.models import Count, Avg
 from django.db import transaction
 from django.core.paginator import Paginator
 from django.http import Http404
+from django.conf import settings
+from django.utils.crypto import salted_hmac
 
 from comunidades.models import Comunidade
 from usuarios.models import Usuario
 from assinaturas.decorators import requer_premium
-from .models import Categoria, Livro, Biblioteca, Denuncia, SolicitacaoPublicacao
+from .models import Categoria, Livro, Biblioteca, Denuncia, SolicitacaoPublicacao, DeclaracaoAutoria
 from .forms import ObraAutorForm
 from .querysets import livros_por_categorias, livros_independentes
 from .constants import StatusBiblioteca
@@ -230,10 +232,20 @@ def solicitacoes_publicacao(request):
                 livro.status = "pendente"
                 livro.save()
 
-                SolicitacaoPublicacao.objects.create(
+                solicitacao = SolicitacaoPublicacao.objects.create(
                     usuario=request.user,
                     livro=livro,
                     status="pendente"
+                )
+                cpf = ''.join(filter(str.isdigit, form.cleaned_data['cpf_autor']))
+                DeclaracaoAutoria.objects.create(
+                    solicitacao=solicitacao,
+                    cpf_digest=salted_hmac('parabook.declaracao.cpf', cpf).hexdigest(),
+                    cpf_final=cpf[-4:],
+                    registro_autoral=form.cleaned_data.get('registro_autoral', ''),
+                    numero_registro=form.cleaned_data.get('numero_registro', ''),
+                    versao_termos=settings.TERMS_VERSION,
+                    ip_origem=request.META.get('REMOTE_ADDR'),
                 )
 
                 if perfil_customizado:

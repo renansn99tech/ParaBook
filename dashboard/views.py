@@ -1,5 +1,5 @@
 # dashboard/views.py
-import PyPDF2
+from pypdf import PdfReader
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -129,7 +129,7 @@ def painel_admin(request):
         # --- MOTOR DE LEITURA SILENCIOSA DE PDF ---
         if pdf:
             try:
-                leitor_pdf = PyPDF2.PdfReader(pdf)
+                leitor_pdf = PdfReader(pdf)
                 paginas = len(leitor_pdf.pages)
                 pdf.seek(0) # Rebobina o arquivo para o Django conseguir salvar a mídia corretamente
             except Exception as e:

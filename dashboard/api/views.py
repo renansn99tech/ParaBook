@@ -3,10 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from django.contrib.auth import get_user_model
-from django.utils import timezone
-from datetime import timedelta
 from comunidades.models import Comunidade, DenunciaComunidade
 from biblioteca.models import Livro, Perfil, Denuncia, SolicitacaoPublicacao
+from usuarios.audit import registrar_acao
 
 User = get_user_model()
 
@@ -109,14 +108,6 @@ class DashboardLixeiraAPIView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request, *args, **kwargs):
-        agora = timezone.now()
-        limite_livros = agora - timedelta(days=7)
-        limite_denuncias = agora - timedelta(days=30)
-
-        # Garbage collection silenciosa
-        Livro.objects.filter(status='removido', data_remocao__lt=limite_livros).delete()
-        Denuncia.objects.filter(arquivada=True, data_arquivamento__lt=limite_denuncias).delete()
-
         livros_removidos = Livro.objects.filter(status='removido').order_by('-data_remocao')
         denuncias_arquivadas = Denuncia.objects.filter(arquivada=True).select_related('livro').order_by('-data_arquivamento')
 
@@ -151,6 +142,12 @@ class DashboardLixeiraAPIView(APIView):
                 livro.status = 'publicado'
                 livro.data_remocao = None
                 livro.save()
+                registrar_acao(
+                    ator=request.user,
+                    acao='livro.restaurado',
+                    recurso='Livro',
+                    recurso_id=livro.pk,
+                )
                 return Response({"sucesso": f"Livro {livro.titulo} restaurado."})
             except Livro.DoesNotExist:
                 return Response({"erro": "Livro não encontrado."}, status=404)
@@ -158,7 +155,14 @@ class DashboardLixeiraAPIView(APIView):
         elif acao == 'excluir_livro_permanente':
             try:
                 livro = Livro.objects.get(id=item_id)
+                livro_id = livro.pk
                 livro.delete()
+                registrar_acao(
+                    ator=request.user,
+                    acao='livro.excluido_permanente',
+                    recurso='Livro',
+                    recurso_id=livro_id,
+                )
                 return Response({"sucesso": "Livro apagado permanentemente."})
             except Livro.DoesNotExist:
                 return Response({"erro": "Livro não encontrado."}, status=404)
@@ -166,7 +170,14 @@ class DashboardLixeiraAPIView(APIView):
         elif acao == 'excluir_denuncia_permanente':
             try:
                 denuncia = Denuncia.objects.get(id=item_id)
+                denuncia_id = denuncia.pk
                 denuncia.delete()
+                registrar_acao(
+                    ator=request.user,
+                    acao='denuncia.excluida_permanente',
+                    recurso='Denuncia',
+                    recurso_id=denuncia_id,
+                )
                 return Response({"sucesso": "Denúncia apagada permanentemente."})
             except Denuncia.DoesNotExist:
                 return Response({"erro": "Denúncia não encontrada."}, status=404)

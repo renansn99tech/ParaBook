@@ -85,3 +85,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             raise serializers.ValidationError(list(e.messages))
         return value
 
+
+class ReauthenticateSerializer(serializers.Serializer):
+    senha_atual = serializers.CharField(write_only=True)
+

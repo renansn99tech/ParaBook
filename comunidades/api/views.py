@@ -20,6 +20,7 @@ from .serializers import (
     MembroComunidadeSerializer,
     PostagemComunidadeSerializer,
 )
+from usuarios.audit import registrar_acao
 
 # REGRA 10: teto de comunidades criadas por um leitor/autor.
 LIMITE_COMUNIDADES_POR_USUARIO = 5
@@ -84,7 +85,17 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
                     'faltam': faltam,
                 })
 
-        return super().destroy(request, *args, **kwargs)
+        comunidade_id = comunidade.pk
+        forcar = str(request.query_params.get('forcar', '')).lower() == 'true'
+        response = super().destroy(request, *args, **kwargs)
+        registrar_acao(
+            ator=request.user,
+            acao='comunidade.excluida',
+            recurso='Comunidade',
+            recurso_id=comunidade_id,
+            metadados={'forcada': forcar},
+        )
+        return response
 
     def perform_create(self, serializer):
         usuario = self.request.user
@@ -172,6 +183,13 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
 
         comunidade.em_manutencao = not comunidade.em_manutencao
         comunidade.save(update_fields=['em_manutencao'])
+        registrar_acao(
+            ator=request.user,
+            acao='comunidade.status_alterado',
+            recurso='Comunidade',
+            recurso_id=comunidade.pk,
+            metadados={'em_manutencao': comunidade.em_manutencao},
+        )
 
         return Response({
             'em_manutencao': comunidade.em_manutencao,

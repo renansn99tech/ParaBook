@@ -1,40 +1,41 @@
-import { useContext } from 'react'
+import { lazy, Suspense, useContext } from 'react'
 import { Routes, Route, useLocation, Link, Navigate } from 'react-router-dom'
-import { AuthContext } from './context/AuthContext'
+import { AuthContext } from './context/auth-context'
 import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Profile from './pages/Profile'
-import Biblioteca from './pages/Biblioteca'
-import Comunidades from './pages/Comunidades'
-import Dashboard from './pages/Dashboard'
-import Sobre from './pages/Sobre'
-import Backlog from './pages/Backlog'
-import Diretrizes from './pages/Diretrizes'
-import Autores from './pages/Autores'
-import PublicarLivro from './pages/PublicarLivro'
-import MinhaBiblioteca from './pages/MinhaBiblioteca'
-import LivroInfo from './pages/LivroInfo'
-import Leitura from './pages/Leitura'
-import PerfilPublico from './pages/PerfilPublico'
-import Novidades from './pages/Novidades'
-import ConteudoComunidade from './pages/ConteudoComunidade'
-import AlterarSenha from './pages/AlterarSenha'
-import Notificacoes from './pages/Notificacoes'
-import Planos from './pages/Planos'
-import MinhaAssinatura from './pages/MinhaAssinatura'
-import EsqueciSenha from './pages/EsqueciSenha'
-import RedefinirSenha from './pages/RedefinirSenha'
-import AceitarTermos from './pages/AceitarTermos'
-import OnboardingAutor from './pages/OnboardingAutor'
-import RecomendacaoIA from './pages/RecomendacaoIA'
-import MinhasComunidades from './pages/MinhasComunidades'
-import CriarComunidade from './pages/CriarComunidade'
-import Ranking from './pages/Ranking'
-import MinhasConquistas from './pages/MinhasConquistas'
+
+const Home = lazy(() => import('./pages/Home'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const Profile = lazy(() => import('./pages/Profile'))
+const Biblioteca = lazy(() => import('./pages/Biblioteca'))
+const Comunidades = lazy(() => import('./pages/Comunidades'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const Sobre = lazy(() => import('./pages/Sobre'))
+const Backlog = lazy(() => import('./pages/Backlog'))
+const Diretrizes = lazy(() => import('./pages/Diretrizes'))
+const Autores = lazy(() => import('./pages/Autores'))
+const PublicarLivro = lazy(() => import('./pages/PublicarLivro'))
+const MinhaBiblioteca = lazy(() => import('./pages/MinhaBiblioteca'))
+const LivroInfo = lazy(() => import('./pages/LivroInfo'))
+const Leitura = lazy(() => import('./pages/Leitura'))
+const PerfilPublico = lazy(() => import('./pages/PerfilPublico'))
+const Novidades = lazy(() => import('./pages/Novidades'))
+const ConteudoComunidade = lazy(() => import('./pages/ConteudoComunidade'))
+const AlterarSenha = lazy(() => import('./pages/AlterarSenha'))
+const Notificacoes = lazy(() => import('./pages/Notificacoes'))
+const Planos = lazy(() => import('./pages/Planos'))
+const MinhaAssinatura = lazy(() => import('./pages/MinhaAssinatura'))
+const EsqueciSenha = lazy(() => import('./pages/EsqueciSenha'))
+const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha'))
+const AceitarTermos = lazy(() => import('./pages/AceitarTermos'))
+const OnboardingAutor = lazy(() => import('./pages/OnboardingAutor'))
+const RecomendacaoIA = lazy(() => import('./pages/RecomendacaoIA'))
+const MinhasComunidades = lazy(() => import('./pages/MinhasComunidades'))
+const CriarComunidade = lazy(() => import('./pages/CriarComunidade'))
+const Ranking = lazy(() => import('./pages/Ranking'))
+const MinhasConquistas = lazy(() => import('./pages/MinhasConquistas'))
 
 // Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
 const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', '/diretrizes', '/login', '/register', '/esqueci-senha'];
@@ -94,6 +95,7 @@ function App() {
         </div>
       )}
 
+        <Suspense fallback={<div className="text-center p-5">Carregando...</div>}>
         <Routes location={displayLocation}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -138,6 +140,7 @@ function App() {
           {/* Rotas secundárias que ainda não foram migradas podem exibir uma página temporária ou redirecionar */}
           <Route path="*" element={<div className="text-center mt-5"><h2 className="text-white">Página em Construção</h2></div>} />
         </Routes>
+        </Suspense>
       {!hideNavAndFooter && <Footer />}
     </div>
   )

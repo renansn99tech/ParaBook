@@ -1,7 +1,7 @@
 # forms.py
 from django import forms
-from django.conf import settings
 from .models import Livro, Categoria
+from .validators import validar_pdf_livro
 
 
 class ObraAutorForm(forms.ModelForm):
@@ -52,14 +52,13 @@ class ObraAutorForm(forms.ModelForm):
         if not pdf:
             raise forms.ValidationError("O arquivo PDF do livro é obrigatório.")
 
-        if pdf.size > settings.MAX_BOOK_UPLOAD_SIZE:
-            # Converte bytes para MB para uma mensagem mais amigável
-            max_mb = settings.MAX_BOOK_UPLOAD_SIZE / (1024 * 1024)
-            raise forms.ValidationError(
-                f"O arquivo enviado é muito grande. O tamanho máximo permitido é de {max_mb:.1f}MB."
-            )
+        return validar_pdf_livro(pdf)
 
-        return pdf
+    def clean_cpf_autor(self):
+        digitos = ''.join(filter(str.isdigit, self.cleaned_data['cpf_autor']))
+        if len(digitos) != 11 or len(set(digitos)) == 1:
+            raise forms.ValidationError('Informe um CPF válido.')
+        return digitos
 
     def clean_capa(self):
         # Opcional: Garante que se houver capa, ela seja uma imagem válida

@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext'
+import { AuthContext } from '../context/auth-context'
 import useTema from '../hooks/useTema'
 import logoNova from '../assets/img/logo-nova.png'
 

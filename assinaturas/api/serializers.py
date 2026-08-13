@@ -11,4 +11,4 @@ class AssinaturaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Assinatura
-        fields = ['id', 'plano', 'ativa', 'data_inicio', 'data_fim', 'stripe_customer_id', 'stripe_subscription_id']
+        fields = ['id', 'plano', 'ativa', 'data_inicio', 'data_fim']

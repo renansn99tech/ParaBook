@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/auth-context';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import '../assets/css/admin.css';
@@ -116,7 +116,7 @@ function Dashboard() {
         {abaAtiva === 'comunidades' && <AdminComunidades />}
         {abaAtiva === 'usuarios' && <AdminUsuarios />}
         {abaAtiva === 'aprovacoes' && <AdminAprovacoes />}
-        {abaAtiva === 'denuncias' && <AdminDenuncias setAbaAtiva={setAbaAtiva} />}
+        {abaAtiva === 'denuncias' && <AdminDenuncias />}
         {abaAtiva === 'lixeira' && <AdminLixeira />}
 
       </main>

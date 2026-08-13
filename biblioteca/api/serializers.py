@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao
 from django.contrib.auth.models import User
+from biblioteca.validators import validar_pdf_livro
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,6 +22,7 @@ class LivroSerializer(serializers.ModelSerializer):
             'origem', 'status', 'ano_publicacao', 'paginas', 
             'avaliacao', 'isbn', 'capa_url'
         ]
+        read_only_fields = ['origem', 'status', 'avaliacao']
 
     def get_capa_url(self, obj):
         if obj.capa:
@@ -97,9 +99,10 @@ class SolicitacaoPublicacaoSerializer(serializers.ModelSerializer):
         return value
 
     def validate_pdf(self, value):
-        if value.size > settings.MAX_BOOK_UPLOAD_SIZE:
-            max_mb = settings.MAX_BOOK_UPLOAD_SIZE / (1024 * 1024)
-            raise serializers.ValidationError(
-                f"O arquivo enviado é muito grande. O tamanho máximo permitido é de {max_mb:.1f}MB."
-            )
-        return value
+        return validar_pdf_livro(value)
+
+    def validate_cpf_autor(self, value):
+        digitos = ''.join(filter(str.isdigit, value))
+        if len(digitos) != 11 or len(set(digitos)) == 1:
+            raise serializers.ValidationError('Informe um CPF válido.')
+        return digitos

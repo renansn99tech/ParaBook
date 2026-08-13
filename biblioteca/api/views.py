@@ -5,22 +5,39 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
-from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao
+from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao, DeclaracaoAutoria
 from assinaturas.utils import usuario_eh_premium
 from .serializers import (
     LivroSerializer, CategoriaSerializer, EstanteSerializer, ResenhaSerializer,
     SolicitacaoPublicacaoSerializer,
 )
 from django.http import FileResponse
+from usuarios.api.throttles import UploadRateThrottle
+from django.conf import settings
+from django.utils.crypto import salted_hmac
+from usuarios.audit import registrar_acao
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
     permission_classes = [permissions.AllowAny]
 
+class IsAdminOrReadOnly(permissions.BasePermission):
+    """Catálogo público para leitura; escrita direta somente pela moderação."""
+
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and (request.user.is_staff or request.user.is_superuser)
+        )
+
+
 class LivroViewSet(viewsets.ModelViewSet):
     serializer_class = LivroSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['titulo', 'autor']
 
@@ -60,8 +77,12 @@ class LivroViewSet(viewsets.ModelViewSet):
         
         try:
             return FileResponse(livro.pdf.open('rb'), content_type='application/pdf')
-        except Exception as e:
-            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception:
+            logger.exception('Falha ao abrir PDF do livro %s', livro.pk)
+            return Response(
+                {"detail": "Não foi possível abrir este livro."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 from django.db import transaction
 from gamificacao.services import GamificacaoService
@@ -207,6 +228,7 @@ class SolicitacaoPublicacaoCreateAPIView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
+    throttle_classes = [UploadRateThrottle]
 
     def post(self, request, *args, **kwargs):
         perfil_customizado = getattr(request.user, 'perfil_customizado', None)
@@ -220,8 +242,11 @@ class SolicitacaoPublicacaoCreateAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         dados_livro = dict(serializer.validated_data)
-        for campo_extra in ['cpf_autor', 'registro_autoral', 'numero_registro', 'declaracao_autoria', 'aceitou_termos']:
-            dados_livro.pop(campo_extra, None)
+        cpf = dados_livro.pop('cpf_autor')
+        registro = dados_livro.pop('registro_autoral', '')
+        numero_registro = dados_livro.pop('numero_registro', '')
+        dados_livro.pop('declaracao_autoria')
+        dados_livro.pop('aceitou_termos')
 
         with transaction.atomic():
             livro = Livro.objects.create(
@@ -230,11 +255,28 @@ class SolicitacaoPublicacaoCreateAPIView(APIView):
                 status='pendente',
                 **dados_livro
             )
-            SolicitacaoPublicacao.objects.create(
+            solicitacao = SolicitacaoPublicacao.objects.create(
                 usuario=request.user,
                 livro=livro,
                 status='pendente'
             )
+            DeclaracaoAutoria.objects.create(
+                solicitacao=solicitacao,
+                cpf_digest=salted_hmac('parabook.declaracao.cpf', cpf).hexdigest(),
+                cpf_final=cpf[-4:],
+                registro_autoral=registro,
+                numero_registro=numero_registro,
+                versao_termos=settings.TERMS_VERSION,
+                ip_origem=request.META.get('REMOTE_ADDR'),
+            )
+
+        registrar_acao(
+            ator=request.user,
+            acao='publicacao.enviada',
+            recurso='SolicitacaoPublicacao',
+            recurso_id=solicitacao.pk,
+            metadados={'livro_id': livro.pk},
+        )
 
         return Response(
             {"detail": "Sua obra foi enviada com sucesso para aprovação!", "livro_id": livro.id},
@@ -276,8 +318,8 @@ class RecomendacoesIAAPIView(APIView):
                 .values_list('id', flat=True)[:8]
             )
             motivo_geral = (
-                "Cruzamos seu histórico de leituras para encontrar estas obras "
-                "perfeitamente alinhadas ao seu perfil!"
+                "Priorizamos categorias presentes na sua estante e, em seguida, "
+                "a avaliação média das obras disponíveis."
             )
         else:
             motivo_geral = (
@@ -324,5 +366,11 @@ class RecomendacoesIAAPIView(APIView):
 
         return Response({
             "motivo_geral": motivo_geral,
+            "metodologia": {
+                "tipo": "heuristica",
+                "versao": "categorias-avaliacao-v1",
+                "usa_ia_generativa": False,
+                "sinais": ["categorias da estante", "avaliação média", "obras já adicionadas"],
+            },
             "recomendacoes": recomendacoes,
         })

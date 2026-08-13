@@ -53,6 +53,14 @@ html[data-home][data-tema="escuro"] {
     --pb-feature-photo-filter: none;
 
     --pb-cosmos-op: .95;
+
+    /* Anéis, pontos e brilho do livro. Noite e tarde só formalizam o que
+       já renderizava — é refatoração, não mudança visual. */
+    --pb-orbit-ring: rgba(139, 92, 246, .16);
+    --pb-orbit-ring-2: rgba(168, 85, 247, .13);
+    --pb-orbit-dot: #A855F7;
+    --pb-orbit-dot-glow: rgba(139, 92, 246, .85);
+    --pb-book-glow: rgba(139, 92, 246, .7);
 }
 
 /* TARDE — sol se pondo. O roxo da marca vira orquídea (sobrevive ao
@@ -86,6 +94,12 @@ html[data-home][data-tema="tarde"] {
     --pb-feature-photo-filter: brightness(1.04) saturate(1.05);
 
     --pb-cosmos-op: .72;
+
+    --pb-orbit-ring: rgba(226, 118, 72, .2);
+    --pb-orbit-ring-2: rgba(168, 85, 247, .16);
+    --pb-orbit-dot: #F0855A;
+    --pb-orbit-dot-glow: rgba(240, 133, 90, .8);
+    --pb-book-glow: rgba(226, 118, 72, .6);
 }
 
 /* DIA — claro. Fundo lilás-branco e não branco puro: é ele que conversa
@@ -118,7 +132,16 @@ html[data-home][data-tema="claro"] {
     --pb-feature-scrim: linear-gradient(90deg, rgba(255, 255, 255, .92) 0%, rgba(255, 255, 255, .55) 16%, transparent 34%);
     --pb-feature-photo-filter: brightness(1.14) contrast(.9) saturate(.96);
 
-    --pb-cosmos-op: .85;
+    --pb-cosmos-op: .9;
+
+    /* Azul escuro levemente roxeado, não o roxo profundo da noite. Alfa
+       mais alto que o da noite (.34 vs .16) porque aqui os anéis
+       desenham ESCURO sobre fundo claro — na noite era o inverso. */
+    --pb-orbit-ring: rgba(52, 60, 150, .34);
+    --pb-orbit-ring-2: rgba(66, 66, 158, .28);
+    --pb-orbit-dot: #39408F;
+    --pb-orbit-dot-glow: rgba(57, 64, 143, .55);
+    --pb-book-glow: rgba(104, 138, 226, .55);
 }
 
 /* ------------------------------------------------------------
@@ -131,6 +154,20 @@ html[data-home][data-tema="claro"] {
    página clara — a emenda mais visível de todas. */
 html[data-home] body {
     background: var(--pb-bg);
+}
+
+/* O MESMO chão do body. A .home-page trazia var(--bg-main) do base.css
+   (#F8FAFC no claro) enquanto o body passou a usar --pb-bg (#F3F1FB):
+   dois brancos quase iguais, mas não iguais — e "quase" é justamente o
+   que produz a emenda visível, porque as camadas do .hero-cosmos morrem
+   em `transparent` contando que o que aparece atrás seja um só valor.
+   O brilho roxo do topo continua, só o chão passa a ser o token. */
+html[data-home] .home-page {
+    background:
+        radial-gradient(circle at center,
+            rgba(var(--purple-dark-rgb), .15),
+            transparent 40%),
+        var(--pb-bg);
 }
 
 html[data-home] .navbar {
@@ -186,10 +223,51 @@ html[data-home] .hero-cosmos {
     opacity: var(--pb-cosmos-op);
 }
 
+/* O equivalente diurno do starfield. Noite e tarde apoiam tudo numa
+   imagem OPACA (stars-bg.png), que cobre o que está atrás; de dia isso
+   não existe — uma textura escura sobre fundo claro não fica discreta,
+   fica suja. Então aqui nenhuma camada é opaca: todas terminam em
+   `transparent`, e o chão é o próprio fundo da página aparecendo.
+
+   É essa a garantia contra a emenda: a base não é uma cor PARECIDA com a
+   do body, é o body. Não há valor para desencontrar quando o token do
+   fundo mudar.
+
+   No lugar das estrelas entram cirros — elipses muito achatadas, de alfa
+   baixo. É a textura que um céu diurno realmente tem, e ela some contra
+   o claro em vez de sujá-lo. O sol alto à direita repete o canto quente
+   do .cena-ceu-dia, para o hero e a cena lerem como o mesmo céu. */
+/* O PAINEL largo atrás do hero inteiro (o que o design chama de
+   "hero-panel"). A elipse creme que estava aqui ficava exatamente sobre
+   o disco da nebulosa e engolia o azul — trocar só o núcleo sem esfriar
+   este painel deixaria o hero continuar lendo bege. O gradiente de base
+   sai do lilás para azul-neutro pelo mesmo motivo. */
 html[data-home][data-tema="claro"] .hero-cosmos {
     background:
-        radial-gradient(circle at center, rgba(255, 214, 150, .62), transparent 54%),
-        radial-gradient(circle at 50% 50%, rgba(139, 92, 246, .16), transparent 64%);
+        radial-gradient(ellipse 78% 62% at 72% 44%, rgba(203, 227, 255, .78), transparent 68%),
+        linear-gradient(165deg, #E7ECFA, #F6F8FE);
+}
+
+/* O NÚCLEO da nebulosa, ancorado na coluna do livro (.hero-image::before).
+   Três paradas de propósito: branco-azulado no centro, azul médio no
+   meio e um azul-violeta bem sutil só na borda externa — é ele que
+   amarra a nebulosa aos anéis #39408F sem escurecer o miolo.
+
+   Sem starfield: a textura é escura e sobre fundo claro leria como
+   sujeira. A máscara radial do elemento não muda. */
+html[data-home][data-tema="claro"] .hero-image::before {
+    background:
+        radial-gradient(circle at center, rgba(191, 222, 255, .78), transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(120, 152, 230, .32), transparent 66%),
+        radial-gradient(circle at 50% 50%, rgba(66, 74, 166, .14), transparent 76%);
+    opacity: .9;
+}
+
+/* A camada grudada que acompanha hero + jornada, também em azul. */
+html[data-home][data-tema="claro"] .home-cosmos-layer {
+    background:
+        radial-gradient(ellipse 68% 52% at 72% 38%, rgba(198, 224, 255, .55), transparent 72%),
+        radial-gradient(ellipse 40% 34% at 24% 82%, rgba(139, 160, 235, .18), transparent 76%);
 }
 
 html[data-home][data-tema="tarde"] .hero-cosmos {

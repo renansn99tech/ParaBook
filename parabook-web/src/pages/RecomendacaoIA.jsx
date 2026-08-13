@@ -69,6 +69,10 @@ function RecomendacaoIA() {
           Recomendações para Você
         </h1>
         <p className="fs-5 mx-auto painel-lead larga">{motivoGeral}</p>
+        <p className="small text-white-50 mx-auto painel-lead larga">
+          Metodologia: regra transparente por categorias da estante e avaliação média.
+          Não utiliza IA generativa.
+        </p>
       </div>
 
       {erro && <div className="alert alert-danger text-center">{erro}</div>}
@@ -94,9 +98,9 @@ function RecomendacaoIA() {
                 <div className="position-absolute top-0 end-0 m-2">
                   <span
                     className="badge rounded-pill px-3 py-2 fw-semibold"
-                    title="Índice de afinidade com o seu perfil de leitura"
+                    title="Estimativa heurística, não uma probabilidade"
                   >
-                    {livro.afinidade}% match
+                    Afinidade estimada: {livro.afinidade}%
                   </span>
                 </div>
 

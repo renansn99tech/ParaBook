@@ -104,7 +104,7 @@ function Planos() {
                       <>
                         <li className="d-flex align-items-center mb-3">
                           <span className="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
-                          <span className="text-white">Recomendações Personalizadas por <strong>IA</strong></span>
+                          <span className="text-white">Recomendações transparentes por preferências de leitura</span>
                         </li>
                         <li className="d-flex align-items-center mb-3">
                           <span className="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>

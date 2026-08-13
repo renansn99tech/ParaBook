@@ -23,8 +23,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 # pyrefly: ignore [missing-import]
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from config.views import health, readiness
 
 urlpatterns = [
+    path('health/', health, name='health'),
+    path('ready/', readiness, name='readiness'),
     path('admin/', admin.site.urls),
     # Templates globais
     path('', index, name='home'), # Página inicial

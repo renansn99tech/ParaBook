@@ -41,5 +41,6 @@ media/.env
 # parabook-mobile/.claude e parabook-mobile/AGENTS.md continuam
 # versionados (setup do Rodrigo pro mobile, fora desta pasta).
 /CLAUDE.md
+/AGENTS.md
 /.claude/
 /.agents/

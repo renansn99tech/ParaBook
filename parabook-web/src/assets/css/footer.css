@@ -80,6 +80,13 @@
     transform:translateX(4px);
 }
 
+.footer-coming-soon {
+    max-width:190px;
+    margin:0;
+    color:var(--text-secondary);
+    line-height:1.6;
+}
+
 /* Redes sociais em linha, fugindo do empilhamento vertical da coluna. */
 .footer-social{
 
@@ -131,6 +138,8 @@
     justify-content: center;
     font-size: 1rem;
     text-decoration: none;
+    padding: 0;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 

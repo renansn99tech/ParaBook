@@ -23,7 +23,7 @@ function Autores() {
   );
 
   return (
-    <main className="container-autores" id="conteudo-principal" ref={paginaRef} style={{ paddingTop: '80px', paddingBottom: '40px' }}>
+    <main className="container-autores authors-page" id="conteudo-principal" ref={paginaRef}>
 
       <header className="header-autores" data-revelar>
         <div className="header-content">
@@ -47,7 +47,7 @@ function Autores() {
               aria-label="Buscar autor por nome" 
             />
             {termoBusca && (
-              <button type="button" className="btn-limpar-busca" title="Limpar busca" onClick={() => setTermoBusca('')} style={{ border: 'none', background: 'transparent' }}>
+              <button type="button" className="btn-limpar-busca" title="Limpar busca" aria-label="Limpar busca" onClick={() => setTermoBusca('')}>
                 <i className="fa-solid fa-xmark"></i>
               </button>
             )}
@@ -96,11 +96,11 @@ function Autores() {
             </article>
           ))
         ) : (
-          <div className="empty-state-autores" data-revelar style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px' }}>
-            <i className="fa-solid fa-feather" style={{ fontSize: '3rem', color: '#64748b', marginBottom: '15px' }}></i>
+          <div className="empty-state-autores authors-empty" data-revelar>
+            <i className="fa-solid fa-feather"></i>
             <h3>Nenhum escritor encontrado</h3>
             <p>Não encontramos autores correspondentes ao termo "{termoBusca}".</p>
-            <button className="btn-voltar-lista" onClick={() => setTermoBusca('')} style={{ background: 'transparent', border: '1px solid #8b5cf6', color: '#8b5cf6', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', marginTop: '15px' }}>
+            <button className="btn-ghost mt-3" onClick={() => setTermoBusca('')}>
               Ver todos os autores
             </button>
           </div>

@@ -1,0 +1,151 @@
+/* ==========================================================
+   ACABAMENTO GLOBAL — superfícies e controles compartilhados
+   pelas páginas públicas. O Dashboard mantém seu CSS próprio.
+========================================================== */
+
+.page-center {
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    min-height:75vh;
+    padding:clamp(3rem, 7vw, 5rem) 1.25rem;
+}
+
+.surface-card {
+    width:100%;
+    background:linear-gradient(145deg, rgba(var(--purple-rgb),.07), transparent 42%), var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-md);
+    color:var(--text);
+    backdrop-filter:blur(14px);
+}
+
+.surface-card--sm { max-width:600px; }
+.surface-card--md { max-width:750px; }
+
+.surface-inset {
+    padding:1.5rem;
+    background:var(--bg-input);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    color:var(--text-secondary);
+}
+
+.surface-icon {
+    margin-bottom:1.25rem;
+    color:var(--purple-text);
+    font-size:3rem;
+}
+
+.surface-card h1,
+.surface-card h2,
+.surface-card h3,
+.surface-card h4,
+.surface-card h5 { color:var(--text); }
+
+.surface-card p,
+.surface-card li,
+.page-lead { color:var(--text-secondary); }
+
+.surface-card .text-white,
+.painel-page .text-white { color:var(--text) !important; }
+
+.surface-card .text-white-50,
+.painel-page .text-white-50 { color:var(--text-secondary) !important; }
+
+.surface-card a:not([class^="btn-"]):not([class*=" btn-"]) {
+    color:var(--purple-text);
+}
+
+.app-shell .form-control,
+.app-shell .form-select {
+    min-height:48px;
+    background:var(--bg-input);
+    border:1px solid var(--border-strong);
+    border-radius:var(--radius-md);
+    color:var(--text);
+}
+
+.app-shell textarea.form-control { min-height:140px; }
+
+.app-shell .form-control::placeholder { color:var(--text-dim); }
+
+.app-shell .form-control:focus,
+.app-shell .form-select:focus {
+    background:var(--bg-input);
+    border-color:var(--purple);
+    color:var(--text);
+    box-shadow:0 0 0 3px rgba(var(--purple-rgb),.16);
+}
+
+.app-shell .form-label { color:var(--text-secondary); }
+
+.app-shell .btn-primary,
+.app-shell .btn-ghost,
+.app-shell .btn-outline,
+.app-shell .btn-primary-action {
+    min-height:46px;
+}
+
+.subscription-card { height:100%; }
+.subscription-card--featured { border-color:rgba(var(--purple-rgb),.55); }
+
+.subscription-metric,
+.subscription-benefit {
+    background:var(--bg-input);
+    border:1px solid var(--border);
+    color:var(--text);
+}
+
+.notification-list { gap:.65rem; }
+
+.notification-item {
+    width:100%;
+    padding:1rem 1.1rem;
+    text-align:left;
+    cursor:pointer;
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md) !important;
+    color:var(--text);
+    transition:transform var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard);
+}
+
+.notification-item:hover {
+    transform:translateY(-2px);
+    border-color:rgba(var(--purple-rgb),.4);
+}
+
+.notification-item--unread {
+    background:linear-gradient(145deg, rgba(var(--purple-rgb),.16), var(--bg-card));
+    border-color:rgba(var(--purple-rgb),.3);
+}
+
+.notification-item h6 { color:var(--text); }
+.notification-item p,
+.notification-item small { color:var(--text-secondary); }
+.notification-type { font-size:.7rem; }
+.plan-label { letter-spacing:1px; }
+
+.guidelines-main { padding-top:clamp(3rem, 7vw, 5rem); padding-bottom:2.5rem; }
+.guidelines-lead { max-width:650px; margin:0 auto; color:var(--text-secondary); font-size:1.1rem; line-height:1.6; }
+.guidelines-updated { display:block; margin-top:.9rem; color:var(--text-dim); }
+
+.authors-page { padding-top:clamp(3rem, 7vw, 5rem); padding-bottom:2.5rem; }
+.authors-empty { grid-column:1 / -1; padding:clamp(2rem, 7vw, 3.25rem); text-align:center; }
+.authors-empty > i { margin-bottom:1rem; color:var(--text-dim); font-size:3rem; }
+.btn-limpar-busca { background:transparent; border:0; color:var(--text-secondary); }
+
+.caixa-anuncio .btn-outline-warning {
+    color:var(--warning-soft);
+    border-color:rgba(var(--warning-rgb),.55);
+}
+
+:root[data-tema="claro"] .caixa-anuncio .text-white-50 { color:var(--text-secondary) !important; }
+
+@media (max-width:575.98px) {
+    .page-center { padding:2.5rem 1rem; }
+    .surface-inset { padding:1.1rem; }
+    .notification-item { align-items:flex-start !important; gap:1rem; }
+}

@@ -45,12 +45,12 @@ function RecomendacaoIA() {
             <div className="painel-card text-center" data-revelar>
               <div className="card-body p-4 p-md-5">
                 <span className="badge bg-warning bg-opacity-25 text-warning rounded-circle p-3 fs-3 mb-3">✨</span>
-                <h3 className="fw-bold text-white mb-3">Recurso exclusivo Premium</h3>
+                <h3 className="fw-bold mb-3">Recurso exclusivo Premium</h3>
                 <p className="painel-lead estreita mx-auto mb-4">
                   As recomendações personalizadas analisam seu histórico de leituras para sugerir
                   obras alinhadas ao seu gosto. Assine o ParaBook Premium para desbloquear.
                 </p>
-                <Link to="/planos" className="btn btn-primary btn-lg px-5 py-3 rounded-3 fw-bold shadow-lg">
+                <Link to="/planos" className="btn-primary">
                   Conhecer os Planos
                 </Link>
               </div>
@@ -65,7 +65,7 @@ function RecomendacaoIA() {
     <div className="container py-5 painel-page alta" ref={paginaRef}>
       <div className="text-center mb-5" data-revelar>
         <h1 className="fw-bold text-white mb-2">
-          <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
+          <i className="fa-solid fa-compass me-2"></i>
           Recomendações para Você
         </h1>
         <p className="fs-5 mx-auto painel-lead larga">{motivoGeral}</p>
@@ -128,7 +128,7 @@ function RecomendacaoIA() {
                     <i className="fa-solid fa-sparkles me-1"></i>{livro.motivo_card}
                   </p>
 
-                  <Link to={`/livro/${livro.id}`} className="btn btn-primary w-100 rounded-3 fw-medium mt-auto">
+                  <Link to={`/livro/${livro.id}`} className="btn-primary w-100 mt-auto">
                     Ver detalhes
                   </Link>
                 </div>

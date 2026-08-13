@@ -115,13 +115,6 @@ function Profile() {
           <div className="perfil-sidebar">
             <div className="perfil-avatar-box">
               <img src={fullProfile?.perfil?.foto || user?.foto || userImg} alt="Avatar do Usuário" className="perfil-avatar" />
-              <input type="file" id="inputFotoOculto" accept="image/*" hidden />
-
-              <div className="perfil-avatar-acoes">
-                <button className="btn-editar-avatar" id="btnTrocarFoto" title="Trocar Foto">
-                  <i className="fa-solid fa-camera"></i>
-                </button>
-              </div>
             </div>
           </div>
 
@@ -195,9 +188,6 @@ function Profile() {
         <div className="tabs-nav">
           <button className={`tab-btn ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>
             <i className="fa-solid fa-circle-info"></i> Informações
-          </button>
-          <button className={`tab-btn ${activeTab === 'historico' ? 'active' : ''}`} onClick={() => setActiveTab('historico')} hidden>
-            <i className="fa-solid fa-clock-rotate-left"></i> Histórico
           </button>
           <button className={`tab-btn ${activeTab === 'favoritos' ? 'active' : ''}`} onClick={() => setActiveTab('favoritos')}>
             <i className="fa-solid fa-heart"></i> Favoritos
@@ -277,9 +267,6 @@ function Profile() {
                   <div className="favorito-info">
                     <h4>{livro.titulo}</h4>
                     <p>{livro.autor}</p>
-                    <button className="btn-danger-outline btn-remover-favorito">
-                      <i className="fa-solid fa-xmark"></i> Remover
-                    </button>
                   </div>
                 </div>
               ))}
@@ -419,7 +406,7 @@ function Profile() {
             <h3><i className="fa-solid fa-wand-magic-sparkles"></i> Painel do Autor Independente</h3>
             <p>Gerencie suas publicações e veja o alcance das suas obras.</p>
           </div>
-          <button className="btn-primary-action"><i className="fa-solid fa-plus"></i> Publicar Novo Livro</button>
+          <Link to="/publicar" className="btn-primary-action"><i className="fa-solid fa-plus"></i> Publicar Novo Livro</Link>
         </section>
       )}
 

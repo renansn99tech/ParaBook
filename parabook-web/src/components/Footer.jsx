@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom'
 
 function Footer() {
-  const scrollToTop = (e) => {
-    e.preventDefault();
+  const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -35,26 +34,15 @@ function Footer() {
 
         <div className="footer-column">
           <h4>Contato</h4>
-          {/* Redes lado a lado: a coluna empilha os filhos por padrão. */}
-          <div className="footer-social">
-            <a href="#" aria-label="Instagram do ParaBook" title="Instagram">
-              <i className="fa-brands fa-instagram"></i>
-            </a>
-            <a href="#" aria-label="LinkedIn do ParaBook" title="LinkedIn">
-              <i className="fa-brands fa-linkedin"></i>
-            </a>
-            <a href="#" aria-label="GitHub do ParaBook" title="GitHub">
-              <i className="fa-brands fa-github"></i>
-            </a>
-          </div>
+          <p className="footer-coming-soon">Canais oficiais em preparação.</p>
         </div>
       </div>
 
       <div className="footer-bottom">
         <p>© 2026 ParaBook • Todos os direitos reservados</p>
-        <a href="#" className="btn-scroll-top" title="Voltar ao topo" onClick={scrollToTop}>
+        <button type="button" className="btn-scroll-top" title="Voltar ao topo" aria-label="Voltar ao topo" onClick={scrollToTop}>
           <i className="fa-solid fa-arrow-up"></i>
-        </a>
+        </button>
       </div>
     </footer>
   )

@@ -22,7 +22,7 @@ function Planos() {
   if (loading) {
     return (
       <div className="container py-5 text-center" style={{ minHeight: '80vh' }}>
-        <h2 className="text-white-50">Carregando planos...</h2>
+        <h2 className="page-lead">Carregando planos...</h2>
       </div>
     );
   }
@@ -39,10 +39,10 @@ function Planos() {
     <div className="container py-5" ref={paginaRef} style={{ minHeight: '80vh' }}>
       {/* Cabeçalho */}
       <div className="text-center mb-5" data-revelar>
-        <h1 className="fw-bold text-white mb-2">
+        <h1 className="fw-bold mb-2">
           Escolha o plano ideal para sua jornada
         </h1>
-        <p className="text-white-50 fs-5">Desbloqueie todo o potencial da sua biblioteca e recursos exclusivos de leitura.</p>
+        <p className="page-lead fs-5 mx-auto">Desbloqueie todo o potencial da sua biblioteca e recursos exclusivos de leitura.</p>
       </div>
 
       <div className="row justify-content-center align-items-stretch g-4" data-revelar-cascata>
@@ -50,10 +50,7 @@ function Planos() {
           const preco = Number(plano.preco);
           return (
             <div key={plano.id} className="col-lg-5 col-md-6" data-revelar>
-              <div
-                className={`card h-100 border-0 shadow-lg position-relative rounded-4 text-white ${preco > 0 ? 'bg-dark border border-primary border-2' : 'bg-dark bg-opacity-75 border border-secondary border-opacity-25'}`}
-                style={{ background: '#12131C', backdropFilter: 'blur(10px)' }}
-              >
+              <div className={`surface-card subscription-card position-relative ${preco > 0 ? 'subscription-card--featured' : ''}`}>
 
                 {preco > 0 && (
                   <div className="position-absolute top-0 end-0 m-3">
@@ -64,16 +61,16 @@ function Planos() {
                 )}
 
                 <div className="card-body p-4 p-xl-5 d-flex flex-column">
-                  <h3 className="fw-bold text-white mb-1">{plano.nome}</h3>
-                  <p className="text-white-50 small mb-4">
+                  <h3 className="fw-bold mb-1">{plano.nome}</h3>
+                  <p className="page-lead small mb-4">
                     {preco === 0
                       ? 'Ideal para leitores casuais iniciando na plataforma.'
                       : 'A experiência completa para leitores exigentes e autores.'}
                   </p>
 
                   <div className="mb-4 pb-3 border-bottom border-secondary border-opacity-25">
-                    <span className="display-5 fw-bold text-white">R$ {preco.toFixed(2).replace('.', ',')}</span>
-                    <span className="text-white-50 fs-6">/ mês</span>
+                    <span className="display-5 fw-bold">R$ {preco.toFixed(2).replace('.', ',')}</span>
+                    <span className="page-lead fs-6">/ mês</span>
                   </div>
 
                   <ul className="list-unstyled mb-5 flex-grow-1">
@@ -81,12 +78,12 @@ function Planos() {
                       {plano.anuncios ? (
                         <>
                           <span className="badge bg-secondary bg-opacity-25 text-white-50 rounded-circle p-2 me-3">✕</span>
-                          <span className="text-white-50">Exibição de anúncios na interface</span>
+                          <span className="page-lead">Exibição de anúncios na interface</span>
                         </>
                       ) : (
                         <>
                           <span className="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
-                          <strong className="text-white">Navegação 100% sem anúncios</strong>
+                          <strong>Navegação 100% sem anúncios</strong>
                         </>
                       )}
                     </li>
@@ -94,9 +91,9 @@ function Planos() {
                     <li className="d-flex align-items-center mb-3">
                       <span className="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
                       {plano.limite_livros === 0 ? (
-                        <strong className="text-white">Biblioteca Ilimitada</strong>
+                        <strong>Biblioteca Ilimitada</strong>
                       ) : (
-                        <span className="text-white-50">Até <strong className="text-white">{plano.limite_livros} livros</strong> na biblioteca</span>
+                        <span className="page-lead">Até <strong>{plano.limite_livros} livros</strong> na biblioteca</span>
                       )}
                     </li>
 
@@ -104,11 +101,11 @@ function Planos() {
                       <>
                         <li className="d-flex align-items-center mb-3">
                           <span className="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
-                          <span className="text-white">Recomendações transparentes por preferências de leitura</span>
+                          <span>Recomendações transparentes por preferências de leitura</span>
                         </li>
                         <li className="d-flex align-items-center mb-3">
                           <span className="badge bg-success bg-opacity-25 text-success rounded-circle p-2 me-3">✓</span>
-                          <span className="text-white">Selo de Membro <strong>Premium</strong> no Perfil</span>
+                          <span>Selo de Membro <strong>Premium</strong> no Perfil</span>
                         </li>
                       </>
                     )}

@@ -45,30 +45,26 @@ function OnboardingAutor() {
   };
 
   return (
-    <main className="container" ref={paginaRef} style={{ display: 'flex', justifyContent: 'center', padding: '60px 20px', minHeight: '75vh' }}>
+    <main className="page-center" ref={paginaRef}>
       <div
         data-revelar
-        className="card border-0 shadow-lg rounded-4 text-white"
-        style={{ maxWidth: '750px', width: '100%', background: '#12131C', backdropFilter: 'blur(10px)' }}
+        className="surface-card surface-card--md"
       >
         <div className="card-body p-4 p-md-5">
           <div className="text-center mb-4">
-            <i className="fa-solid fa-feather-pointed" style={{ fontSize: '3.5rem', color: '#8b5cf6', marginBottom: '20px' }}></i>
-            <h2 className="fw-bold text-white mb-2">Programa de Autores Independentes</h2>
-            <p className="text-white-50 fs-5">
+            <i className="fa-solid fa-feather-pointed surface-icon"></i>
+            <h2 className="fw-bold mb-2">Programa de Autores Independentes</h2>
+            <p className="page-lead fs-5">
               Antes de habilitarmos seu painel de publicação, você precisa conhecer suas responsabilidades legais.
             </p>
           </div>
 
-          <div
-            className="p-4 rounded-4 mb-4"
-            style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(139,92,246,0.15)' }}
-          >
-            <h5 className="mb-3" style={{ color: '#c4b5fd' }}>
+          <div className="surface-inset mb-4">
+            <h5 className="mb-3">
               <i className="fa-solid fa-scale-balanced me-2"></i>Termos de Responsabilidade Autoral
             </h5>
 
-            <ul style={{ color: '#cbd5e1', lineHeight: '1.7', paddingLeft: '20px', marginBottom: 0 }}>
+            <ul className="mb-0 ps-3">
               <li className="mb-3">
                 <strong>Propriedade Intelectual:</strong> Você só pode publicar obras das quais é o
                 autor original ou possui os direitos legais expressos de distribuição.

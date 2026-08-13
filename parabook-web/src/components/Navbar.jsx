@@ -38,10 +38,6 @@ function Navbar() {
           </ul>
 
           <div className="nav-actions">
-            <button className="search-btn">
-              <i className="fa-solid fa-magnifying-glass"></i>
-            </button>
-
             {/* O title e o aria-label dizem o que o clique VAI fazer, não o
                 que está ativo. Sem aria-pressed: com três temas em rodízio
                 isto deixou de ser um botão de dois estados, e "pressionado"
@@ -97,7 +93,7 @@ function Navbar() {
         <ul className="list-unstyled d-flex flex-column gap-3 fs-5 mt-3">
           <li>
             <Link to="/recomendacao-ia" className="link-ia">
-              <i className="fa-solid fa-wand-magic-sparkles me-2"></i> Recomendação IA
+              <i className="fa-solid fa-compass me-2"></i> Recomendações para você
             </Link>
           </li>
           <li>

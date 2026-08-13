@@ -5,15 +5,15 @@ function Diretrizes() {
   const paginaRef = useRevelacao([]);
 
   return (
-    <main className="guidelines-main" ref={paginaRef} style={{ paddingTop: '80px', paddingBottom: '40px' }}>
+    <main className="guidelines-main" ref={paginaRef}>
 
       {/* Hero Section */}
       <div className="hero-guidelines" data-revelar>
         <h1 className="gradient-text">Termos e Políticas</h1>
-        <p style={{ color: '#94a3b8', maxWidth: '650px', margin: '0 auto', fontSize: '1.1rem', lineHeight: 1.5 }}>
+        <p className="guidelines-lead">
           Governança, privacidade e regras comunitárias da plataforma ParaBook. Conheça seus direitos e deveres antes de criar sua conta.
         </p>
-        <small style={{ color: '#64748b', display: 'block', marginTop: '15px' }}>Última atualização: 10 de julho de 2026</small>
+        <small className="guidelines-updated">Última atualização: 10 de julho de 2026</small>
       </div>
 
       {/* Container dos Cards */}

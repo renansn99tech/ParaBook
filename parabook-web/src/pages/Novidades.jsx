@@ -27,28 +27,28 @@ function Novidades() {
   }, []);
 
   return (
-    <main className="news-marketing-page" id="topo" ref={paginaRef} style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+    <main className="news-marketing-page" id="topo" ref={paginaRef}>
       
       <div className="novidade-scroll-ticker-container">
-        <span className="novidade-ticker-item">
-          🔥 NOVAS OBRAS INDEPENDENTES • 📚 LANÇAMENTOS NO ACERVO • 🚀 CONECTANDO ESCRITORES • 
-          🔥 NOVAS OBRAS INDEPENDENTES • 📚 LANÇAMENTOS NO ACERVO • 🚀 CONECTANDO ESCRITORES •
-        </span>
+        <div className="novidade-ticker-track">
+          <span>🔥 NOVAS OBRAS INDEPENDENTES • 📚 LANÇAMENTOS NO ACERVO • 🚀 CONECTANDO ESCRITORES •</span>
+          <span aria-hidden="true">🔥 NOVAS OBRAS INDEPENDENTES • 📚 LANÇAMENTOS NO ACERVO • 🚀 CONECTANDO ESCRITORES •</span>
+        </div>
       </div>
 
-      <section className="news-hero-section" data-revelar style={{ padding: '30px 20px', textAlign: 'center' }}>
-        <div className="news-intro-content" style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h1 className="display-5 fw-bold mb-2" style={{ color: 'var(--text)', fontSize: '2.5rem' }}>
+      <section className="news-hero-section" data-revelar>
+        <div className="news-intro-content">
+          <h1 className="display-5 fw-bold mb-2">
             Novidades da Plataforma
           </h1>
-          <p className="lead" style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
+          <p className="lead">
             Fique por dentro das últimas joias literárias adicionadas ao ParaBook e
             descubra novos autores antes de todo mundo.
           </p>
         </div>
       </section>
 
-      <div className="container py-2" style={{ maxWidth: '1400px', flex: 1 }}>
+      <div className="container py-2 news-content">
         {loading ? (
           <div className="text-center py-5">
             <div className="spinner-border text-primary" role="status">
@@ -56,14 +56,13 @@ function Novidades() {
             </div>
           </div>
         ) : livros.length > 0 ? (
-          <div className="novidades-grid" data-revelar-cascata style={{ justifyContent: 'center' }}>
+          <div className="novidades-grid" data-revelar-cascata>
             {livros.map(livro => (
               <article className="book-card card-novidade-evolved" key={livro.id} data-revelar>
                 <Link
                   to={`/livro/${livro.id}`}
                   className="btn-info-livro"
                   title="Ver Informações"
-                  style={{ zIndex: 20 }}
                 >
                   <i className="fa-solid fa-info"></i>
                 </Link>
@@ -96,7 +95,7 @@ function Novidades() {
           </div>
         ) : (
           <div className="text-center py-5">
-            <p className="text-muted fst-italic">Nenhum lançamento catalogado nas últimas horas.</p>
+            <p className="page-lead fst-italic">Nenhum lançamento disponível no momento.</p>
           </div>
         )}
       </div>

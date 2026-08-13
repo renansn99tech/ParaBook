@@ -3,9 +3,23 @@
 ========================================================== */
 
 .news-marketing-page {
+    display:flex;
+    flex-direction:column;
     min-height: calc(100vh - 260px);
     padding-bottom: 80px;
 }
+
+.news-hero-section {
+    padding:clamp(2rem, 6vw, 4.5rem) 1.25rem 2rem;
+    text-align:center;
+}
+
+.news-intro-content { max-width:800px; margin:0 auto; }
+.news-intro-content h1 { color:var(--text); font-size:clamp(2rem, 5vw, 3.25rem); }
+.news-intro-content .lead { color:var(--text-secondary); font-size:1.1rem; }
+.news-content { max-width:1400px; flex:1; }
+.novidades-grid { justify-content:center; }
+.card-novidade-evolved .btn-info-livro { z-index:20; }
 
 /* Efeito Glow nos Cards de Lançamento */
 .news-marketing-page .book-card:hover {
@@ -18,7 +32,7 @@
 .novidade-scroll-ticker-container {
     width: 100%;
     overflow: hidden;
-    background: rgba(10, 15, 30, 0.95);
+    background:rgba(var(--bg-deep-rgb),.9);
     border-top: 1px solid rgba(var(--purple-rgb),0.4);
     border-bottom: 1px solid rgba(var(--purple-rgb),0.4);
     padding: 14px 0;
@@ -26,10 +40,15 @@
     box-shadow: 0 4px 15px rgba(var(--black-rgb),0.3);
 }
 
-.novidade-ticker-item {
-    display: inline-block;
-    padding-left: 100%;
-    animation: tickerAnimation 25s linear infinite;
+.novidade-ticker-track {
+    display:flex;
+    width:max-content;
+    animation:tickerAnimation 24s linear infinite;
+    will-change:transform;
+}
+
+.novidade-ticker-track span {
+    padding-right:3rem;
     color: var(--text-soft) !important;
     font-weight: 700;
     font-size: 0.95rem;
@@ -39,5 +58,11 @@
 
 @keyframes tickerAnimation {
     0% { transform: translate3d(0, 0, 0); }
-    100% { transform: translate3d(-100%, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.novidade-scroll-ticker-container:hover .novidade-ticker-track { animation-play-state:paused; }
+
+@media (prefers-reduced-motion:reduce) {
+    .novidade-ticker-track { animation:none; }
 }

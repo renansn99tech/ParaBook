@@ -87,21 +87,6 @@ html {
     min-width: 300px;
 }
 
-.search-btn {
-    width: 45px;
-    height: 45px;
-    border: none;
-    background: transparent;
-    color: white;
-    cursor: pointer;
-    font-size: 1.1rem;
-
-    /* Centraliza o ícone da lupa perfeitamente no próprio eixo */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .btn-nav {
     text-decoration: none;
     padding: 0 24px;
@@ -160,13 +145,6 @@ html {
     .nav-actions {
         margin-left: auto;
     }
-}
-
-/* =======================================================
-   OCULTAR LUPA (Sem função no momento)
-======================================================= */
-.search-btn {
-    display: none !important;
 }
 
 /* =======================================================

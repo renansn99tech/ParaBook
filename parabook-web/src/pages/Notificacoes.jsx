@@ -52,7 +52,7 @@ function Notificacoes() {
   if (loading) {
     return (
       <div className="container my-5 text-center" style={{ minHeight: '60vh' }}>
-        <h2 className="text-white-50">Carregando notificações...</h2>
+        <h2 className="page-lead">Carregando notificações...</h2>
       </div>
     );
   }
@@ -70,28 +70,22 @@ function Notificacoes() {
 
       {erro && <div className="alert alert-danger">{erro}</div>}
 
-      <div className="list-group shadow-sm" data-revelar-cascata>
+      <div className="list-group notification-list" data-revelar-cascata>
         {notificacoes.length > 0 ? (
           notificacoes.map((n) => (
             <button
               key={n.id}
               data-revelar
               onClick={() => marcarComoLida(n.id)}
-              className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 border-secondary border-opacity-25 ${!n.lida ? 'fw-bold' : ''}`}
-              style={{
-                textAlign: 'left',
-                cursor: 'pointer',
-                background: !n.lida ? 'linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%)' : '#12131C',
-                color: '#fff'
-              }}
+              className={`notification-item d-flex justify-content-between align-items-center ${!n.lida ? 'notification-item--unread fw-bold' : ''}`}
             >
               <div>
                 <div className="d-flex align-items-center gap-2 mb-1">
-                  <h6 className="mb-0 text-white">{n.titulo}</h6>
-                  <span className="badge bg-secondary" style={{ fontSize: '0.7rem' }}>{n.tipo_display}</span>
+                  <h6 className="mb-0">{n.titulo}</h6>
+                  <span className="badge bg-secondary notification-type">{n.tipo_display}</span>
                 </div>
-                <p className="mb-1 text-muted fw-normal" style={{ fontSize: '0.95rem' }}>{n.mensagem}</p>
-                <small className="text-muted" style={{ fontSize: '0.8rem' }}>{formatarData(n.data_criacao)}</small>
+                <p className="mb-1 fw-normal">{n.mensagem}</p>
+                <small>{formatarData(n.data_criacao)}</small>
               </div>
               {!n.lida && (
                 <span className="badge bg-danger rounded-pill">Nova</span>

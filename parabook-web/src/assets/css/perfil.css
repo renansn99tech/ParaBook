@@ -69,29 +69,6 @@
     background: linear-gradient(145deg, var(--bg-card), var(--bg-deep));
 }
 
-.btn-editar-avatar {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    width: 45px;
-    height: 45px;
-    border-radius: var(--radius-circle);
-    border: 3px solid var(--bg-main);
-    background: var(--purple);
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-editar-avatar:hover {
-    transform: scale(1.1);
-    background: var(--purple-dark);
-    box-shadow: 0 0 15px rgba(var(--purple-rgb),0.6);
-}
-
 /* ================= CARDS DE GLASSMORPHISM PADRÃO (Igual à Home) ================= */
 .glass-card,
 .stat-glass-card,
@@ -808,21 +785,6 @@
 .switch-ui input:focus-visible + .slider-ui{
     outline:2px solid var(--purple-light);
     outline-offset:2px;
-}
-
-/* Grupo de botões sobre o avatar (trocar foto). Dentro dele o botão
-   volta a ser estático, senão cada um se posicionaria sozinho. */
-.perfil-avatar-acoes{
-    position:absolute;
-    right:-15px;
-    bottom:5px;
-
-    display:flex;
-    gap:8px;
-}
-
-.perfil-avatar-acoes .btn-editar-avatar{
-    position:static;
 }
 
 .perfil-analise-titulo{

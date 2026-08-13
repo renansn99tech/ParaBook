@@ -5,11 +5,6 @@ import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
 import useRevelacao from '../hooks/useRevelacao';
 
-const inputEstilo = {
-  background: 'rgba(0,0,0,0.25)',
-  border: '1px solid rgba(255,255,255,0.12)',
-};
-
 function CriarComunidade() {
   const { user, loading: carregandoUsuario } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -41,17 +36,17 @@ function CriarComunidade() {
   // REGRA 5: administradores criam salas oficiais pelo Dashboard, não por aqui.
   if (user.is_superuser) {
     return (
-      <main className="container py-5" ref={paginaRef} style={{ minHeight: '70vh' }}>
+      <main className="container py-5 painel-page" ref={paginaRef}>
         <div className="row justify-content-center">
           <div className="col-lg-6 text-center">
-            <div className="card border-0 shadow-lg rounded-4 text-white" data-revelar style={{ background: '#12131C' }}>
+            <div className="surface-card" data-revelar>
               <div className="card-body p-5">
-                <i className="fa-solid fa-shield-halved fs-1 mb-3" style={{ color: '#f59e0b' }}></i>
+                <i className="fa-solid fa-shield-halved fs-1 mb-3 text-warning"></i>
                 <h3 className="fw-bold mb-3">Área destinada a leitores e autores</h3>
-                <p className="text-white-50 mb-4">
+                <p className="page-lead mb-4">
                   Administradores criam salas oficiais pelo Dashboard, com lotação e moderação próprias.
                 </p>
-                <Link to="/dashboard" className="btn btn-primary px-4 py-2 rounded-3">
+                <Link to="/dashboard" className="btn-primary">
                   Ir para o Dashboard
                 </Link>
               </div>
@@ -99,15 +94,15 @@ function CriarComunidade() {
   };
 
   return (
-    <main className="container py-5" ref={paginaRef} style={{ minHeight: '70vh' }}>
+    <main className="container py-5 painel-page" ref={paginaRef}>
       <div className="row justify-content-center">
         <div className="col-lg-7">
-          <div className="card border-0 shadow-lg rounded-4 text-white" data-revelar style={{ background: '#12131C' }}>
+          <div className="surface-card" data-revelar>
             <div className="card-body p-4 p-md-5">
               <div className="text-center mb-4">
-                <i className="fa-solid fa-circle-plus fs-1 mb-3" style={{ color: '#8b5cf6' }}></i>
+                <i className="fa-solid fa-circle-plus surface-icon"></i>
                 <h2 className="fw-bold mb-2">Criar Comunidade</h2>
-                <p className="text-white-50 mb-0">
+                <p className="page-lead mb-0">
                   Abra um novo espaço de discussão para os livros e temas que você ama.
                 </p>
               </div>
@@ -132,13 +127,12 @@ function CriarComunidade() {
               ) : (
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
-                    <label htmlFor="nome" className="form-label text-white-50">Nome da comunidade</label>
+                    <label htmlFor="nome" className="form-label">Nome da comunidade</label>
                     <input
                       id="nome"
                       name="nome"
                       type="text"
                       className="form-control form-control-lg rounded-3"
-                      style={inputEstilo}
                       value={form.nome}
                       onChange={handleChange}
                       maxLength={100}
@@ -148,12 +142,11 @@ function CriarComunidade() {
                   </div>
 
                   <div className="mb-4">
-                    <label htmlFor="descricao" className="form-label text-white-50">Descrição</label>
+                    <label htmlFor="descricao" className="form-label">Descrição</label>
                     <textarea
                       id="descricao"
                       name="descricao"
                       className="form-control rounded-3"
-                      style={{ ...inputEstilo, minHeight: '140px' }}
                       value={form.descricao}
                       onChange={handleChange}
                       placeholder="Explique sobre o que é a comunidade e quem deveria participar."
@@ -167,7 +160,7 @@ function CriarComunidade() {
                     </Link>
                     <button
                       type="submit"
-                      className="btn btn-primary px-4 py-2 rounded-3 fw-bold"
+                      className="btn-primary"
                       disabled={enviando}
                     >
                       <i className="fa-solid fa-plus me-2"></i>

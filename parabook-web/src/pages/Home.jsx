@@ -145,7 +145,7 @@ function Home() {
           <div className="floating-card stats-card">
             <h4>Estatísticas</h4>
             <span>Leituras</span>
-            <strong>+500</strong>
+            <strong>Em evolução</strong>
             <div className="mini-chart chart-large"><span></span></div>
           </div>
         </div>
@@ -237,8 +237,8 @@ function Home() {
           <div className="jornada-textos">
           <article className="jornada-capitulo" data-revelar>
             <p className="capitulo-rotulo">Descubra</p>
-            <h2>O acervo aprende com o que você lê</h2>
-            <p className="capitulo-texto">Sem formulário de preferências — cada obra aberta afina a próxima recomendação.</p>
+            <h2>O acervo acompanha o que você lê</h2>
+            <p className="capitulo-texto">As categorias da sua estante orientam sugestões transparentes para a próxima leitura.</p>
           </article>
 
           <article className="jornada-capitulo alinhado-direita" data-revelar>

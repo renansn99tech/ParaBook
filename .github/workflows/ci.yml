@@ -1,0 +1,70 @@
+name: ParaBook CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: parabook_ci
+          POSTGRES_USER: parabook
+          POSTGRES_PASSWORD: parabook
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U parabook -d parabook_ci"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DEBUG: 'True'
+      DATABASE_URL: postgres://parabook:parabook@127.0.0.1:5432/parabook_ci
+      SECRET_KEY: ci-only-secret-not-for-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements.txt pip-audit
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py test
+      - run: pip-audit -r requirements.txt
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: parabook-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: parabook-web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high
+
+  mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: parabook-mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: parabook-mobile/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      # Auditoria informativa até a decisão de upgrade do Expo SDK 54.
+      - run: npm audit --omit=dev --audit-level=high || true

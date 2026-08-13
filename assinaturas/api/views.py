@@ -57,9 +57,8 @@ class PortalSessionAPIView(APIView):
             )
 
         stripe.api_key = stripe_key
-        # O React manda de volta pra onde ele mesmo quer voltar (funciona tanto em localhost:5173
-        # quanto no domínio de produção, sem o backend precisar saber a origem do front-end).
-        return_url = request.query_params.get('return_url') or request.build_absolute_uri('/')
+        # Destino definido pelo servidor: impede redirecionamento aberto via query string.
+        return_url = f"{settings.FRONTEND_URL.rstrip('/')}/minha-assinatura"
 
         portal_session = stripe.billing_portal.Session.create(
             customer=assinatura.stripe_customer_id,

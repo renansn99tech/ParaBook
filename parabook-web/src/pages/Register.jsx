@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/auth-context';
 import useTema from '../hooks/useTema';
 import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/tela-login.css';

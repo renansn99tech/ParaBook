@@ -246,3 +246,24 @@ class SolicitacaoPublicacao(models.Model):
     @property
     def pdf(self):
         return self.livro.pdf if self.livro else None
+
+
+class DeclaracaoAutoria(models.Model):
+    solicitacao = models.OneToOneField(
+        SolicitacaoPublicacao,
+        on_delete=models.CASCADE,
+        related_name='declaracao',
+    )
+    cpf_digest = models.CharField(max_length=64)
+    cpf_final = models.CharField(max_length=4)
+    registro_autoral = models.CharField(max_length=100, blank=True)
+    numero_registro = models.CharField(max_length=20, blank=True)
+    versao_termos = models.CharField(max_length=30)
+    declarado_em = models.DateTimeField(auto_now_add=True)
+    ip_origem = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'declaracoes_autoria'
+
+    def __str__(self):
+        return f'Declaração da solicitação {self.solicitacao_id}'

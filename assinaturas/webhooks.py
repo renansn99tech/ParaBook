@@ -2,10 +2,11 @@ import os
 from datetime import datetime, timezone
 import stripe
 from django.conf import settings
+from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
-from .models import Plano, Assinatura
+from .models import Plano, Assinatura, EventoStripeProcessado
 from notificacoes.models import Notificacao
 
 User = get_user_model()
@@ -32,8 +33,9 @@ def stripe_webhook(request):
     stripe_key = getattr(settings, 'STRIPE_SECRET_KEY', None) or os.getenv('STRIPE_SECRET_KEY')
     webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None) or os.getenv('STRIPE_WEBHOOK_SECRET')
 
-    if stripe_key:
-        stripe.api_key = stripe_key
+    if not stripe_key or not webhook_secret:
+        return HttpResponse(status=503)
+    stripe.api_key = stripe_key
 
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
@@ -46,7 +48,27 @@ def stripe_webhook(request):
         return HttpResponse(status=400)
 
     event_type = _get_val(event, 'type')
-    data_obj = _get_val(_get_val(event, 'data'), 'object')
+    event_id = _get_val(event, 'id')
+    if not event_id or not event_type:
+        return HttpResponse(status=400)
+
+    with transaction.atomic():
+        try:
+            with transaction.atomic():
+                EventoStripeProcessado.objects.create(evento_id=event_id, tipo=event_type)
+        except IntegrityError:
+            return HttpResponse(status=200)
+
+        response = _processar_evento(
+            event_type,
+            _get_val(_get_val(event, 'data'), 'object'),
+        )
+        if response.status_code >= 400:
+            transaction.set_rollback(True)
+        return response
+
+
+def _processar_evento(event_type, data_obj):
 
     # 1. EVENTO: Fatura Paga (Renovação ou Pagamento de Assinatura)
     if event_type == 'invoice.paid':
@@ -68,7 +90,7 @@ def stripe_webhook(request):
                 if period_end:
                     data_fim_dt = datetime.fromtimestamp(period_end, tz=timezone.utc)
             except Exception:
-                pass
+                return HttpResponse(status=502)
 
         if user_id and plano_id:
             try:

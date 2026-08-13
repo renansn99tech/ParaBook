@@ -95,3 +95,17 @@ class Notificacao(models.Model):
 
     def __str__(self):
         return f"[{self.tipo}] {self.titulo} - {self.usuario.username}"
+
+
+class AuditoriaAcao(models.Model):
+    ator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    acao = models.CharField(max_length=80, db_index=True)
+    recurso = models.CharField(max_length=120)
+    recurso_id = models.CharField(max_length=64, blank=True)
+    sucesso = models.BooleanField(default=True)
+    metadados = models.JSONField(default=dict, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'auditoria_acoes'
+        ordering = ['-criado_em']

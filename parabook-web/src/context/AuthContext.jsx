@@ -1,44 +1,24 @@
-import { createContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api';
-
-export const AuthContext = createContext();
+import { AuthContext } from './auth-context';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Executa assim que a aplicação abre para checar se já há um token salvo
+  // A sessão é validada no backend; JWTs não ficam acessíveis ao JavaScript.
   useEffect(() => {
-    const storedTokens = localStorage.getItem('parabookTokens');
-    if (storedTokens) {
-      // Se existe token, tentamos buscar o perfil do usuário
-      api.get('/perfis/meu-perfil/')
-        .then((response) => {
-          setUser(response.data);
-        })
-        .catch((error) => {
-          console.error("Token inválido ou expirado", error);
-          logout(); // Limpa o estado se deu erro
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
+    api.get('/perfis/meu-perfil/')
+      .then((response) => setUser(response.data))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (username, password) => {
     try {
-      // 1. Obtém os tokens (Access e Refresh) da rota de login
-      const response = await api.post('/auth/login/', { username, password });
-      const tokens = response.data;
-      
-      // 2. Salva no navegador
-      localStorage.setItem('parabookTokens', JSON.stringify(tokens));
-      
-      // 3. Puxa os dados do usuário para preencher a tela
-      // Como o interceptor já pega o token do localStorage, a próxima requisição já vai autenticada
+      // Cria a sessão HttpOnly e carrega o perfil autenticado.
+      await api.post('/auth/login/', { username, password });
+
       const userResponse = await api.get('/perfis/meu-perfil/');
       setUser(userResponse.data);
       
@@ -51,11 +31,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await api.post('/auth/register/', userData);
-      const tokens = response.data;
-
-      // A API já retorna os tokens JWT no registro
-      localStorage.setItem('parabookTokens', JSON.stringify(tokens));
+      await api.post('/auth/register/', userData);
 
       // Busca os dados do perfil do usuário recém-criado
       const userResponse = await api.get('/perfis/meu-perfil/');
@@ -78,8 +54,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('parabookTokens');
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout/');
+    } catch {
+      // O estado local deve ser limpo mesmo se a sessão já expirou.
+    }
     setUser(null);
   };
 

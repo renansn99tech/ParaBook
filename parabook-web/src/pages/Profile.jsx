@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/auth-context';
 import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
 import userImg from '../assets/img/user.png';
@@ -61,30 +61,32 @@ function Profile() {
     return null;
   }
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
   // Mesmo fluxo do template legado: confirma, chama a exclusão transacional
   // da API e derruba a sessão local.
   const handleExcluirConta = async () => {
     const confirmacao = await swal.fire({
-      title: 'Você tem certeza?',
-      text: 'Esta ação é irreversível! Sua conta, perfil e histórico serão apagados.',
+      title: 'Confirme sua senha',
+      text: 'Esta ação é irreversível. Sua conta, perfil e histórico serão apagados.',
       icon: 'warning',
+      input: 'password',
+      inputLabel: 'Senha atual',
+      inputPlaceholder: 'Digite sua senha para confirmar',
+      inputAttributes: { autocomplete: 'current-password' },
       showCancelButton: true,
-      confirmButtonText: 'Sim, excluir!',
+      confirmButtonText: 'Excluir definitivamente',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: BOTAO.perigo,
-      cancelButtonColor: BOTAO.neutro
+      cancelButtonColor: BOTAO.neutro,
+      inputValidator: (value) => !value && 'Informe sua senha atual.'
     });
 
     if (!confirmacao.isConfirmed) return;
 
     try {
-      await api.delete('/auth/excluir-conta/');
-      logout();
+      await api.delete('/auth/excluir-conta/', {
+        data: { senha_atual: confirmacao.value }
+      });
+      await logout();
       await swal.fire({
         icon: 'success',
         title: 'Conta excluída',
@@ -235,7 +237,7 @@ function Profile() {
                         title: 'Atualizado!',
                         text: 'Sua biografia foi atualizada com sucesso.',
                       }).then(() => window.location.reload());
-                    } catch (err) {
+                    } catch {
                       swal.fire({
                         icon: 'error',
                         title: 'Erro',

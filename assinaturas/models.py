@@ -32,4 +32,13 @@ class Assinatura(models.Model):
     def __str__(self):
         status = "Ativa" if self.ativa else "Inativa"
         return f"{self.usuario} - {self.plano.nome if self.plano else 'Sem Plano'} ({status})"
+
+
+class EventoStripeProcessado(models.Model):
+    evento_id = models.CharField(max_length=255, unique=True)
+    tipo = models.CharField(max_length=100)
+    processado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'eventos_stripe_processados'
     

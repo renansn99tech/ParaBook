@@ -3,22 +3,34 @@ import axios from 'axios';
 // Em produção, defina VITE_API_URL nas variáveis de ambiente do serviço
 // (ex: Render Static Site). Sem isso, cai no backend local de desenvolvimento.
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1';
+let csrfToken = null;
+let refreshPromise = null;
+
+export const ensureCsrfToken = async () => {
+  if (csrfToken) return csrfToken;
+  const response = await axios.get(`${API_BASE_URL}/auth/csrf/`, {
+    withCredentials: true,
+  });
+  csrfToken = response.data.csrfToken;
+  return csrfToken;
+};
 
 // Instância base do Axios apontando para a API do Django
 const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Interceptor para injetar o Token JWT em TODAS as requisições que precisarem
+// O JWT fica exclusivamente em cookies HttpOnly. Para métodos mutáveis, o
+// token CSRF retornado pelo backend vive apenas em memória.
 api.interceptors.request.use(
-  (config) => {
-    // Busca o token no armazenamento do navegador
-    const tokens = JSON.parse(localStorage.getItem('parabookTokens'));
-    if (tokens && tokens.access) {
-      config.headers.Authorization = `Bearer ${tokens.access}`;
+  async (config) => {
+    const method = (config.method || 'get').toLowerCase();
+    if (!['get', 'head', 'options'].includes(method)) {
+      config.headers['X-CSRFToken'] = await ensureCsrfToken();
     }
     return config;
   },
@@ -36,37 +48,24 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     
     // Se o erro for 401 (Não autorizado) e ainda não tentamos dar retry
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    const isAuthEndpoint = originalRequest?.url?.includes('/auth/login/')
+      || originalRequest?.url?.includes('/auth/refresh/')
+      || originalRequest?.url?.includes('/auth/register/');
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
       
       try {
-        const tokensString = localStorage.getItem('parabookTokens');
-        if (tokensString) {
-          const tokens = JSON.parse(tokensString);
-          
-          if (tokens.refresh) {
-            // Tenta obter um novo access token usando o refresh token
-            const response = await axios.post(`${API_BASE_URL}/auth/refresh/`, {
-              refresh: tokens.refresh
-            });
-            
-            // Atualiza os tokens no localStorage
-            const newTokens = {
-              ...tokens,
-              access: response.data.access
-            };
-            localStorage.setItem('parabookTokens', JSON.stringify(newTokens));
-            
-            // Atualiza o header da requisição original e a refaz
-            originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
-            return api(originalRequest);
-          }
+        if (!refreshPromise) {
+          refreshPromise = ensureCsrfToken().then((token) => axios.post(
+            `${API_BASE_URL}/auth/refresh/`,
+            {},
+            { withCredentials: true, headers: { 'X-CSRFToken': token } },
+          )).finally(() => { refreshPromise = null; });
         }
+        await refreshPromise;
+        return api(originalRequest);
       } catch (refreshError) {
-        // Se falhar o refresh (ex: refresh token expirado também), desloga o usuário
-        localStorage.removeItem('parabookTokens');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
 import swal, { BOTAO } from '../services/swal';
 import useRevelacao from '../hooks/useRevelacao';
@@ -71,7 +71,7 @@ function ConteudoComunidade() {
       }
     };
     fetchDados();
-  }, [id, carregandoUsuario]);
+  }, [id, carregandoUsuario, navigate, user?.is_superuser]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

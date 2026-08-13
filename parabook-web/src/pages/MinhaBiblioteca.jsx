@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
 import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/minha-biblioteca.css';

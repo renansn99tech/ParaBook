@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/auth-context';
 import Skeleton from '../components/Skeleton';
 import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/biblioteca.css';

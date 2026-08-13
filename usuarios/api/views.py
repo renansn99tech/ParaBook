@@ -2,6 +2,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -10,6 +12,9 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
 from usuarios.models import Usuario
 from usuarios.services import obter_ou_criar_usuario_customizado
 from .serializers import (
@@ -17,12 +22,110 @@ from .serializers import (
     RegisterSerializer,
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
+    ReauthenticateSerializer,
 )
 from drf_spectacular.utils import extend_schema
+from .throttles import AuthRateThrottle, PasswordResetRateThrottle
+from usuarios.audit import registrar_acao
 
 
+def _set_auth_cookies(response, refresh):
+    access = str(refresh.access_token)
+    common = {
+        'httponly': True,
+        'secure': settings.JWT_COOKIE_SECURE,
+        'samesite': settings.JWT_COOKIE_SAMESITE,
+        'path': '/',
+    }
+    response.set_cookie(
+        settings.JWT_ACCESS_COOKIE_NAME,
+        access,
+        max_age=int(settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'].total_seconds()),
+        **common,
+    )
+    response.set_cookie(
+        settings.JWT_REFRESH_COOKIE_NAME,
+        str(refresh),
+        max_age=int(settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds()),
+        **common,
+    )
+    return response
+
+
+def _clear_auth_cookies(response):
+    common = {
+        'path': '/',
+        'samesite': settings.JWT_COOKIE_SAMESITE,
+    }
+    response.delete_cookie(settings.JWT_ACCESS_COOKIE_NAME, **common)
+    response.delete_cookie(settings.JWT_REFRESH_COOKIE_NAME, **common)
+    return response
+
+
+class CsrfTokenAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    def get(self, request):
+        return Response({'csrfToken': get_token(request)})
+
+
+@method_decorator(csrf_protect, name='dispatch')
+class CookieTokenObtainPairAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    throttle_classes = [AuthRateThrottle]
+
+    def post(self, request):
+        serializer = TokenObtainPairSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        refresh = RefreshToken(serializer.validated_data['refresh'])
+        return _set_auth_cookies(Response({'detail': 'Login realizado com sucesso.'}), refresh)
+
+
+@method_decorator(csrf_protect, name='dispatch')
+class CookieTokenRefreshAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    throttle_classes = [AuthRateThrottle]
+
+    def post(self, request):
+        raw_refresh = request.COOKIES.get(settings.JWT_REFRESH_COOKIE_NAME)
+        if not raw_refresh:
+            return Response({'detail': 'Sessão expirada.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            old_refresh = RefreshToken(raw_refresh)
+            user = User.objects.get(pk=old_refresh['user_id'], is_active=True)
+            old_refresh.blacklist()
+            new_refresh = RefreshToken.for_user(user)
+        except (TokenError, User.DoesNotExist):
+            return _clear_auth_cookies(
+                Response({'detail': 'Sessão inválida.'}, status=status.HTTP_401_UNAUTHORIZED)
+            )
+
+        return _set_auth_cookies(Response({'detail': 'Sessão renovada.'}), new_refresh)
+
+
+@method_decorator(csrf_protect, name='dispatch')
+class LogoutAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        raw_refresh = request.COOKIES.get(settings.JWT_REFRESH_COOKIE_NAME)
+        if raw_refresh:
+            try:
+                RefreshToken(raw_refresh).blacklist()
+            except TokenError:
+                pass
+        return _clear_auth_cookies(Response({'detail': 'Sessão encerrada.'}))
+
+
+@method_decorator(csrf_protect, name='dispatch')
 class RegisterAPIView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [AuthRateThrottle]
 
     @extend_schema(request=RegisterSerializer, responses={201: None})
     def post(self, request):
@@ -32,12 +135,13 @@ class RegisterAPIView(APIView):
         with transaction.atomic():
             auth_user = serializer.save()
 
-        # Gera tokens JWT para login automático após o cadastro
+        # Gera sessão em cookies HttpOnly para login automático após o cadastro.
         refresh = RefreshToken.for_user(auth_user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+        response = Response(
+            {'detail': 'Cadastro realizado com sucesso.'},
+            status=status.HTTP_201_CREATED,
+        )
+        return _set_auth_cookies(response, refresh)
 
 
 class UserProfileAPIView(generics.RetrieveAPIView):
@@ -59,9 +163,17 @@ class ExcluirContaAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    @extend_schema(request=None, responses={204: None})
+    @extend_schema(request=ReauthenticateSerializer, responses={204: None})
     def delete(self, request):
         user = request.user
+
+        serializer = ReauthenticateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if not user.check_password(serializer.validated_data['senha_atual']):
+            return Response(
+                {'detail': 'Senha atual incorreta.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if user.is_superuser:
             return Response(
@@ -80,9 +192,17 @@ class ExcluirContaAPIView(APIView):
             except Usuario.DoesNotExist:
                 pass
 
+            user_id = user.pk
             user.delete()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        registrar_acao(
+            ator=None,
+            acao='conta.excluida',
+            recurso='User',
+            recurso_id=user_id,
+        )
+
+        return _clear_auth_cookies(Response(status=status.HTTP_204_NO_CONTENT))
 
 
 class ChangePasswordAPIView(APIView):
@@ -101,13 +221,21 @@ class ChangePasswordAPIView(APIView):
 
         user.set_password(nova_senha)
         user.save()
+        registrar_acao(
+            ator=user,
+            acao='senha.alterada',
+            recurso='User',
+            recurso_id=user.pk,
+        )
 
         return Response({"message": "Senha atualizada com sucesso!"})
 
 
+@method_decorator(csrf_protect, name='dispatch')
 class PasswordResetRequestAPIView(APIView):
     """Dispara o email de redefinicao de senha com um link para o front-end React."""
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [PasswordResetRateThrottle]
 
     # Resposta unica para email existente ou nao: evita que a rota vire um
     # oraculo para descobrir quais emails possuem conta no ParaBook.
@@ -145,6 +273,7 @@ class PasswordResetRequestAPIView(APIView):
         return Response({"detail": self.MENSAGEM_GENERICA})
 
 
+@method_decorator(csrf_protect, name='dispatch')
 class PasswordResetConfirmAPIView(APIView):
     """Valida o par uid/token do email e efetiva a nova senha."""
     permission_classes = [permissions.AllowAny]

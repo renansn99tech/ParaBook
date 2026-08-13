@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/auth-context';
 import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
 import useRevelacao from '../hooks/useRevelacao';

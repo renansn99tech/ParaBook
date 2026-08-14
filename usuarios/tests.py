@@ -1,7 +1,11 @@
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.test import TestCase
 
 from usuarios.models import Usuario
+from usuarios.api.serializers import RegisterSerializer
+from perfis.api.serializers import PerfilSerializer
+from perfis.models import Perfil
 from usuarios.services import obter_ou_criar_usuario_customizado
 from rest_framework.test import APIClient
 
@@ -61,3 +65,65 @@ class CookieAuthenticationTests(TestCase):
             format='json',
         )
         self.assertEqual(sem_csrf_mutavel.status_code, 403)
+
+
+class AceiteTermosVersionadoTests(TestCase):
+    def test_cadastro_api_rejeita_aceite_ausente(self):
+        serializer = RegisterSerializer(data={
+            'username': 'sem-aceite',
+            'email': 'sem-aceite@example.com',
+            'password': 'SenhaForte123!',
+            'termos_aceitos': False,
+        })
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('termos_aceitos', serializer.errors)
+
+    def test_cadastro_registra_versao_vigente(self):
+        serializer = RegisterSerializer(data={
+            'username': 'com-aceite',
+            'email': 'com-aceite@example.com',
+            'password': 'SenhaForte123!',
+            'termos_aceitos': True,
+        })
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        self.assertEqual(
+            user.perfil_customizado.versao_termos_aceita,
+            settings.TERMS_VERSION,
+        )
+
+    def test_novo_aceite_substitui_versao_antiga(self):
+        user = User.objects.create_user(username='aceite-antigo', password='x')
+        usuario = Usuario.objects.create(
+            user_auth=user,
+            termos_aceitos=True,
+            versao_termos_aceita='versao-antiga',
+        )
+        self.client.force_login(user)
+
+        response = self.client.post('/api/v1/auth/aceitar-termos/')
+        usuario.refresh_from_db()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(usuario.versao_termos_aceita, settings.TERMS_VERSION)
+
+    def test_perfil_trata_versao_antiga_como_aceite_pendente(self):
+        user = User.objects.create_user(username='perfil-antigo', password='x')
+        perfil = Perfil.objects.create(usuario=user)
+        Usuario.objects.create(
+            user_auth=user,
+            perfil=perfil,
+            termos_aceitos=True,
+            versao_termos_aceita='versao-antiga',
+        )
+
+        self.assertFalse(PerfilSerializer(perfil).data['termos_aceitos'])
+
+    def test_governanca_publica_versao_e_jurisdicao(self):
+        response = self.client.get('/api/v1/auth/governanca/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['versao_termos'], settings.TERMS_VERSION)
+        self.assertEqual(response.data['jurisdicao'], 'Brasil')

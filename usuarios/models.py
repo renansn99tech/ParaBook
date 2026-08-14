@@ -31,6 +31,7 @@ class Usuario(models.Model):
     # NOVOS CAMPOS DE AUDITORIA (LGPD)
     termos_aceitos = models.BooleanField(default=False)
     data_aceite_termos = models.DateTimeField(null=True, blank=True)
+    versao_termos_aceita = models.CharField(max_length=30, blank=True, default='')
 
     # Novo campo CPF para atender a LGPD, com validação de formato
     cpf = models.CharField(max_length=14, blank=True, null=True, unique=True)

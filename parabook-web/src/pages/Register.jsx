@@ -10,6 +10,7 @@ function Register() {
     username: '',
     email: '',
     password: '',
+    termos_aceitos: false,
   });
   const [error, setError] = useState('');
 
@@ -19,7 +20,8 @@ function Register() {
   const paginaRef = useRevelacao([]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -112,12 +114,14 @@ function Register() {
                 <input 
                   type="checkbox" 
                   name="termos_aceitos" 
+                  checked={formData.termos_aceitos}
+                  onChange={handleChange}
                   required 
                   style={{ width: '18px', height: '18px', accentColor: '#8b5cf6', marginTop: '3px', cursor: 'pointer' }} 
                 />
                 <div>
                   <label style={{ fontSize: '0.85rem', color: '#aeb3c7', lineHeight: '1.5', cursor: 'pointer', display: 'block' }}>
-                    Li, compreendo e concordo com a <Link to="/diretrizes" target="_blank" style={{ color: '#c084fc', textDecoration: 'underline', fontWeight: '600' }}>Política de Privacidade e Termos de Uso</Link>.
+                    Li, compreendo e concordo com a <Link to="/diretrizes" target="_blank" rel="noreferrer" style={{ color: '#c084fc', textDecoration: 'underline', fontWeight: '600' }}>Política de Privacidade e Termos de Uso vigente</Link>.
                   </label>
                 </div>
               </div>

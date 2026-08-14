@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import swal from '../services/swal';
 import { AuthContext } from '../context/auth-context';
@@ -10,7 +10,14 @@ function AceitarTermos() {
   const { user, loading, recarregarUsuario } = useContext(AuthContext);
   const navigate = useNavigate();
   const [enviando, setEnviando] = useState(false);
+  const [versaoTermos, setVersaoTermos] = useState('2026-08-13');
   const paginaRef = useRevelacao([loading, user]);
+
+  useEffect(() => {
+    api.get('/auth/governanca/')
+      .then(({ data }) => setVersaoTermos(data.versao_termos))
+      .catch(() => {});
+  }, []);
 
   if (loading) {
     return <div className="text-center mt-5"><h2 style={{ color: 'var(--text)' }}>Carregando...</h2></div>;
@@ -62,6 +69,7 @@ function AceitarTermos() {
               </Link>{' '}
               completa.
             </p>
+            <p className="mb-0 mt-2"><strong>Versão:</strong> {versaoTermos}</p>
           </div>
 
           <button

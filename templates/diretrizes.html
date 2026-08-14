@@ -16,7 +16,7 @@
         <p style="color: #94a3b8; max-width: 650px; margin: 0 auto; font-size: 1.1rem; line-height: 1.5;">
             Governança, privacidade e regras comunitárias da plataforma ParaBook. Conheça seus direitos e deveres antes de criar sua conta.
         </p>
-        <small style="color: #64748b; display: block; margin-top: 15px;">Última atualização: 10 de julho de 2026</small>
+        <small style="color: #64748b; display: block; margin-top: 15px;">Versão vigente: {{ terms_version }}</small>
     </div>
 
     <!-- Container dos Cards -->
@@ -27,13 +27,19 @@
             <div class="rule-number">01</div>
             <div class="card-legal-content">
                 <h3>Política de Privacidade e Proteção de Dados (LGPD)</h3>
-                <p>O ParaBook valoriza a sua privacidade. Esta política explica de forma transparente como lidamos com as suas informações na nossa plataforma de redes sociais e gerenciamento de leituras.</p>
+                <p>Esta política descreve como os dados pessoais são usados para autenticação, perfis, leitura, publicação, comunidades, pagamentos, segurança e cumprimento de obrigações legais.</p>
                 
                 <h4>Coleta e Uso das Informações</h4>
-                <p>Coletamos dados fornecidos diretamente por você no momento do cadastro (nome completo, e-mail, nome de usuário e senha criptografada). Também registramos dados de interação com a plataforma, tais como histórico de leitura, livros adicionados às estantes, resenhas, notas e comentários, utilizados exclusivamente para personalizar sua experiência e manter a integridade do sistema.</p>
+                <p>Podemos tratar dados cadastrais, credenciais protegidas, histórico de leitura, estante, avaliações, publicações, registros de segurança e dados necessários a assinaturas. Cada tratamento deve possuir finalidade, necessidade e base legal documentadas.</p>
                 
                 <h4>Política de Retenção e Exclusão de Dados (LGPD)</h4>
-                <p>Nossa arquitetura de banco de dados utiliza deleção em cascata (Atomic Transactions). Isso significa que, ao solicitar a exclusão de sua conta através do painel de Configurações, todos os seus dados pessoais, históricos de leitura e metadados associados são destruídos permanentemente e de forma irreversível de nossos servidores ativos, cumprindo integralmente com o Direito ao Esquecimento previsto na legislação brasileira.</p>
+                <p>O titular pode solicitar confirmação, acesso, correção, portabilidade quando aplicável, informação, oposição, revogação de consentimento e eliminação nos limites da LGPD. A exclusão da conta remove os dados ativos vinculados, ressalvadas retenções legalmente obrigatórias, prevenção a fraude, exercício regular de direitos e ciclos técnicos de backup.</p>
+
+                <h4>Controlador e Canal de Privacidade</h4>
+                <p>A identificação civil completa do controlador, seu endereço e o canal responsável por solicitações LGPD deverão ser publicados antes da abertura do ParaBook em produção. Fornecedores de infraestrutura somente serão classificados após análise contratual e operacional.</p>
+                {% if legal_controller_address and legal_privacy_contact %}
+                    <p><strong>Controlador:</strong> {{ legal_controller_name }}. <strong>Endereço:</strong> {{ legal_controller_address }}. <strong>Privacidade:</strong> {{ legal_privacy_contact }}.</p>
+                {% endif %}
             </div>
         </div>
 
@@ -50,8 +56,8 @@
                 <h4>Publicação de Livros, Comentários e Avaliações</h4>
                 <p>A plataforma permite a catalogação de obras, inserção de resenhas literárias e notas textuais. Você retém a propriedade intelectual e direitos autorais dos textos originais das suas resenhas, mas concede ao ParaBook uma licença não exclusiva, mundial e gratuita para hospedar, exibir e processar esse conteúdo estritamente dentro da plataforma.</p>
                 
-                <h4>Direitos Autorais e Isenção de Responsabilidade (Uploads)</h4>
-                <p>O ParaBook atua estritamente como provedor de aplicação de internet (Art. 19, Lei 12.965/14). Ao fazer o upload de qualquer obra ou arquivo para a plataforma, o <strong>Autor Independente declara, sob as penas da lei, ser o titular legítimo dos direitos patrimoniais e morais da obra</strong>. A plataforma exime-se de qualquer responsabilidade por violações de direitos autorais cometidas por seus usuários. Qualquer conteúdo denunciado por infração de propriedade intelectual (pirataria) será sumariamente removido e a conta do infrator poderá ser banida preventivamente e os dados de IP e data de aceite de termos repassados às autoridades competentes.</p>
+                <h4>Direitos Autorais e Tratamento de Denúncias</h4>
+                <p>Ao enviar uma obra, o <strong>Autor Independente declara possuir os direitos ou autorizações necessários</strong>. Denúncias serão protocoladas, avaliadas e poderão gerar restrição cautelar proporcional ao risco. O autor terá oportunidade de apresentar esclarecimentos e recurso, salvo quando ordem válida ou risco urgente exigir providência imediata. Dados somente serão entregues a autoridades mediante base legal e solicitação válida.</p>
             </div>
         </div>
 
@@ -71,10 +77,22 @@
                 </ul>
                 
                 <h4>Responsabilidades do Usuário e do ParaBook</h4>
-                <p>O usuário é juridicamente responsável pelo conteúdo de suas publicações e opiniões emitidas. O ParaBook atua como provedor de aplicação de internet, eximindo-se de responsabilidade direta pelas opiniões pessoais dos usuários, mas comprometendo-se a manter ferramentas eficientes de moderação, segurança tecnológica e estabilidade do sistema.</p>
+                <p>O usuário responde pelo conteúdo que publica. O ParaBook mantém deveres próprios de segurança, transparência e cumprimento de ordens válidas, além de processo de moderação com motivo, registro, proporcionalidade e possibilidade de revisão quando cabível.</p>
                 
                 <h4>Atualizações desta Política</h4>
-                <p>Reservamo-nos o direito de atualizar este documento periodicamente para adequações legais. Mudanças materiais significativas serão notificadas aos usuários via e-mail cadastrado ou alertas visíveis na interface do sistema.</p>
+                <p>Cada versão possui identificador próprio. Mudanças materiais serão informadas e exigirão novo aceite antes da continuidade de uso das áreas autenticadas.</p>
+            </div>
+        </div>
+
+        <div class="glass-rule-card">
+            <div class="rule-number">04</div>
+            <div class="card-legal-content">
+                <h3>Legislação Aplicável e Solução de Controvérsias</h3>
+                <p>Os serviços destinados ao público brasileiro são regidos pela legislação da República Federativa do Brasil, incluindo, quando aplicáveis, o Marco Civil da Internet, a LGPD, o Código de Defesa do Consumidor e a legislação de direitos autorais.</p>
+                <h4>Jurisdição e Foro</h4>
+                <p>As partes buscarão primeiro uma solução pelos canais oficiais, sem impedir o acesso ao Judiciário ou às autoridades competentes. Relações de consumo preservam o foro e os direitos assegurados ao consumidor. Nas demais hipóteses, será competente o foro brasileiro determinado pela legislação processual aplicável.</p>
+                <h4>Infraestrutura Internacional</h4>
+                <p>A localização de servidores ou fornecedores não altera, por si só, a legislação aplicável. Eventual transferência internacional de dados dependerá de mecanismo permitido pela LGPD, transparência e salvaguardas adequadas.</p>
             </div>
         </div>
 

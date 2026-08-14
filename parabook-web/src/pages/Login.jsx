@@ -18,7 +18,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     const success = await login(username, password);
     if (success) {
       navigate('/perfil');
@@ -29,66 +29,80 @@ function Login() {
 
   return (
     <div className="auth-body" ref={paginaRef}>
-      <Link to="/" className="btn-voltar-fixo" title="Voltar ao Menu">
-        <i className="fa-solid fa-arrow-left"></i>
-      </Link>
-
-      <button
-        id="theme-toggle"
-        type="button"
-        onClick={alternar}
-        title={rotulo}
-        aria-label={rotulo}
-      >
-        <i className={`fa-solid ${icone}`}></i>
-      </button>
-
       <main className="auth-container">
+        {/* Filhos diretos do quadro, não de uma coluna: abaixo de 1000px o
+            lado visual some, e no cadastro os controles sumiriam junto. */}
+        <div className="auth-controls">
+          <button
+            type="button"
+            className="auth-ctrl"
+            onClick={alternar}
+            title={rotulo}
+            aria-label={rotulo}
+          >
+            <i className={`fa-solid ${icone}`}></i>
+          </button>
+
+          <Link to="/" className="auth-ctrl" title="Voltar ao Menu" aria-label="Voltar ao Menu">
+            <i className="fa-solid fa-arrow-left"></i>
+          </Link>
+        </div>
+
         <section className="auth-image-side">
-          <div className="auth-image-overlay"></div>
-          <div className="abstract-glow-1"></div>
-          <div className="abstract-glow-2"></div>
+          <div className="auth-sky"></div>
+          <div className="auth-glow"></div>
+          <div className="auth-stars"></div>
+          <div className="auth-watermark"></div>
+          <div className="auth-arc auth-arc-1"></div>
+          <div className="auth-arc auth-arc-2"></div>
+
           <div className="auth-image-text" data-revelar>
-            <div className="brand-logo-login">
-              <i className="fa-solid fa-book-open-reader animate-book"></i>
-              <h1 className="logo-text">Para<span>Book</span></h1>
+            <div className="auth-brand">
+              <i className="fa-solid fa-book-open-reader"></i>
+              <h1 className="auth-wordmark">Para<span>Book</span></h1>
+              <span className="auth-badge">Beta</span>
             </div>
             <p>Gerencie suas leituras, descubra novas comunidades e organize seu conhecimento em um ecossistema minimalista e performático.</p>
           </div>
         </section>
 
         <section className="auth-form-side">
-          <div className="auth-box login-box" data-revelar>
-            <form onSubmit={handleSubmit} noValidate className="pure-form">
-              <h2>Entrar no ParaBook</h2>
-              <p className="auth-subtitle">Seja bem-vindo de volta!</p>
+          <div className="auth-card" data-revelar>
+            <p className="auth-eyebrow">Bem-vindo de volta</p>
+            <h3>Entrar no ParaBook</h3>
+            <p className="auth-sub">Retome de onde parou.</p>
 
-              {error && (
-                <div className="auth-error-alert">
-                  <i className="fa-solid fa-triangle-exclamation"></i> {error}
-                </div>
-              )}
+            {error && (
+              <div className="auth-error-alert">
+                <i className="fa-solid fa-triangle-exclamation"></i> {error}
+              </div>
+            )}
 
-              <div className="auth-input-group">
-                <input 
-                  type="text" 
+            <form onSubmit={handleSubmit} noValidate>
+              <div className="auth-field">
+                <label htmlFor="login-usuario">Usuário</label>
+                <input
+                  id="login-usuario"
+                  type="text"
+                  autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  required 
-                  placeholder=" " 
+                  required
+                  placeholder="seu.usuario"
                 />
-                <label>Usuário</label>
               </div>
 
-              <div className="auth-input-group">
-                <input 
-                  type="password" 
+              <div className="auth-field">
+                <label htmlFor="login-senha">Senha</label>
+                <input
+                  id="login-senha"
+                  type="password"
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required 
-                  placeholder=" " 
+                  required
+                  placeholder="••••••••"
                 />
-                <label>Senha</label>
               </div>
 
               <Link to="/esqueci-senha" className="auth-forgot-link">Esqueceu a senha?</Link>

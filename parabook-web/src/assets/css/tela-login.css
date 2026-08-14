@@ -1,658 +1,859 @@
-/* A fonte Inter e o reset saíram daqui: viviam neste arquivo, mas valem
-   para o app inteiro. A fonte foi para o <link> do index.html e o reset
-   já existe em base.css.
+/* ============================================================
+   AUTENTICAÇÃO — Login e Cadastro nos três céus
+   ============================================================
+   As duas telas são irmãs e compartilham este arquivo. A gramática
+   visual é a mesma da landing: céu em camadas, campos em arco com a
+   crista acesa, vidro e serifada nos títulos.
 
-   O :root que ficava aqui era o problema sério: redefinia a paleta
-   global (--purple, --text, --shadow...) a partir de uma tela. Como
-   :root não tem escopo, quem carregasse por último vencia — e o
-   --shadow daqui era 0 25px 70px, diferente do 0 20px 50px de base.css.
-   Ou seja: abrir o login mudava a sombra de Autores, Perfil e Sobre.
-   Mesma armadilha do .btn-primary que home.css e perfil.css vazavam.
-   A sombra maior que esta tela realmente quer virou --shadow-lg. */
+   Todos os tokens são --pa-* e vivem escopados em .auth-body, NUNCA
+   em :root: uma tela redefinindo --purple/--text/--bg-main globais foi
+   justamente a armadilha que já mudou a sombra de outras telas neste
+   projeto. Prefixo próprio + escopo próprio = nada vaza.
 
+   Trocar de céu é escrever o MESMO conjunto de chaves, nunca "limpar o
+   que não é padrão e esperar a noite reaparecer".
+   ============================================================ */
+
+/* NOITE — padrão */
 .auth-body{
-    width:100vw;
-    min-height:100vh;
-    overflow:hidden;
-
-    font-family:'Inter',sans-serif;
-
-    color:var(--text);
-
-    background:
-        radial-gradient(circle at 20% 20%, rgba(var(--purple-rgb),.18), transparent 28%),
-        radial-gradient(circle at 80% 80%, rgba(var(--purple-light-rgb),.12), transparent 26%),
-        var(--bg-main);
+    --pa-frame-bg:#050816;
+    --pa-frame-bd:rgba(139,92,246,.24);
+    --pa-frame-shadow:0 40px 90px rgba(0,0,0,.6);
+    --pa-sky-login:linear-gradient(168deg,#1E1A47 0%,#100F24 44%,#05060F 100%);
+    --pa-sky-reg:linear-gradient(196deg,#1E1A47 0%,#100F24 46%,#05060F 100%);
+    --pa-glow-login:radial-gradient(ellipse 74% 52% at 76% 80%, rgba(109,40,217,.4), transparent 70%), radial-gradient(ellipse 46% 38% at 18% 16%, rgba(139,92,246,.24), transparent 74%);
+    --pa-glow-reg:radial-gradient(ellipse 62% 46% at 52% 34%, rgba(139,92,246,.34), transparent 70%), radial-gradient(ellipse 44% 36% at 84% 14%, rgba(168,85,247,.2), transparent 74%);
+    --pa-stars-op:.55;
+    --pa-logo-pos:left center;
+    --pa-logo-blend:soft-light;
+    --pa-logo-op:.34;
+    --pa-arc1-bg:linear-gradient(172deg,#463C7E 0%,#231F4C 44%,#13112F 100%);
+    --pa-arc1-bd:rgba(199,210,254,.28);
+    --pa-arc2-bg:linear-gradient(172deg,#5B4C9E 0%,#2C2560 42%,#15132F 100%);
+    --pa-arc2-bd:rgba(199,210,254,.44);
+    --pa-brand-icon:#A78BFA;
+    --pa-brand-icon-glow:rgba(139,92,246,.6);
+    --pa-brand-1:#F8FAFC;
+    --pa-brand-2:#A855F7;
+    --pa-badge-bg:linear-gradient(135deg,#A78BFA,#6D28D9);
+    --pa-badge-fg:#FFFFFF;
+    --pa-badge-glow:rgba(139,92,246,.5);
+    --pa-sky-copy:#E2E8F0;
+    --pa-copy-shadow:0 2px 18px rgba(3,4,12,.85);
+    --pa-h-shadow:0 2px 22px rgba(3,4,12,.9);
+    --pa-form-bg:linear-gradient(145deg, rgba(15,23,42,.96), rgba(5,8,22,.99));
+    --pa-form-divider:rgba(255,255,255,.07);
+    --pa-halo:rgba(139,92,246,.16);
+    --pa-ctrl-bg:rgba(255,255,255,.04);
+    --pa-ctrl-bd:rgba(255,255,255,.1);
+    --pa-ctrl-warm:#A78BFA;
+    --pa-ctrl-mut:#9CA3AF;
+    --pa-ctrl-bd-h:rgba(139,92,246,.45);
+    --pa-ctrl-bg-h:rgba(139,92,246,.12);
+    --pa-glass:linear-gradient(145deg, rgba(40,25,88,.86), rgba(15,23,42,.78));
+    --pa-glass-bd:rgba(139,92,246,.35);
+    --pa-glass-shadow:0 20px 45px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08), 0 0 35px rgba(139,92,246,.15);
+    --pa-eyebrow:#E8A248;
+    --pa-h3:#F8FAFC;
+    --pa-sub:#9CA3AF;
+    --pa-label:#C4B5FD;
+    --pa-input-bg:rgba(5,8,22,.55);
+    --pa-input-bd:rgba(255,255,255,.1);
+    --pa-input-fg:#F8FAFC;
+    --pa-focus-bd:#8B5CF6;
+    --pa-focus-ring:0 0 0 3px rgba(139,92,246,.28);
+    --pa-link:#A855F7;
+    --pa-btn:linear-gradient(135deg,#8B5CF6,#6D28D9);
+    --pa-btn-fg:#FFFFFF;
+    --pa-btn-shadow:0 10px 26px rgba(139,92,246,.24);
+    --pa-btn-shadow-h:0 14px 34px rgba(139,92,246,.4);
+    --pa-terms-bg:rgba(5,8,22,.45);
+    --pa-terms-bd:rgba(255,255,255,.08);
+    --pa-check:#8B5CF6;
+    --pa-ring1:rgba(139,92,246,.24);
+    --pa-ring2:rgba(168,85,247,.18);
+    --pa-dot1:#A78BFA;
+    --pa-dot1-glow:rgba(139,92,246,.85);
+    --pa-dot2:#C4B5FD;
+    --pa-dot2-glow:rgba(196,181,253,.7);
+    --pa-book-glow1:rgba(139,92,246,.7);
+    --pa-book-glow2:rgba(168,85,247,.32);
 }
 
-/* Botões topo */
+/* TARDE */
+:root[data-tema="tarde"] .auth-body{
+    --pa-frame-bg:#191238;
+    --pa-frame-bd:rgba(255,205,165,.2);
+    --pa-frame-shadow:0 40px 90px rgba(10,4,22,.6);
+    --pa-sky-login:linear-gradient(168deg,#40275F 0%,#2B1B4A 44%,#150E2C 100%);
+    --pa-sky-reg:linear-gradient(196deg,#40275F 0%,#2B1B4A 46%,#150E2C 100%);
+    --pa-glow-login:radial-gradient(ellipse 74% 52% at 76% 80%, rgba(240,133,90,.44), transparent 70%), radial-gradient(ellipse 46% 38% at 18% 16%, rgba(199,125,255,.22), transparent 74%);
+    --pa-glow-reg:radial-gradient(ellipse 62% 46% at 52% 34%, rgba(240,133,90,.34), transparent 70%), radial-gradient(ellipse 44% 36% at 84% 14%, rgba(199,125,255,.22), transparent 74%);
+    --pa-stars-op:.22;
+    --pa-logo-pos:left center;
+    --pa-logo-blend:soft-light;
+    --pa-logo-op:.3;
+    --pa-arc1-bg:linear-gradient(172deg,#6B6A38 0%,#3E3B22 44%,#1E1B14 100%);
+    --pa-arc1-bd:rgba(255,196,107,.34);
+    --pa-arc2-bg:linear-gradient(172deg,#8C8945 0%,#565229 42%,#241F16 100%);
+    --pa-arc2-bd:rgba(255,196,107,.46);
+    --pa-brand-icon:#FFC46B;
+    --pa-brand-icon-glow:rgba(240,133,90,.6);
+    --pa-brand-1:#FFF3E6;
+    --pa-brand-2:#F0855A;
+    --pa-badge-bg:linear-gradient(135deg,#FFC46B,#F0855A);
+    --pa-badge-fg:#2A1230;
+    --pa-badge-glow:rgba(240,133,90,.45);
+    --pa-sky-copy:#F3DECD;
+    --pa-copy-shadow:0 2px 18px rgba(24,12,38,.8);
+    --pa-h-shadow:0 2px 22px rgba(24,12,38,.85);
+    --pa-form-bg:linear-gradient(145deg, rgba(48,26,66,.96), rgba(21,14,44,.99));
+    --pa-form-divider:rgba(255,205,165,.1);
+    --pa-halo:rgba(199,125,255,.16);
+    --pa-ctrl-bg:rgba(255,243,230,.05);
+    --pa-ctrl-bd:rgba(255,214,180,.16);
+    --pa-ctrl-warm:#FFC46B;
+    --pa-ctrl-mut:#C6A8BF;
+    --pa-ctrl-bd-h:rgba(255,196,107,.5);
+    --pa-ctrl-bg-h:rgba(240,133,90,.14);
+    --pa-glass:linear-gradient(145deg, rgba(96,44,92,.72), rgba(40,22,62,.72));
+    --pa-glass-bd:rgba(255,176,120,.32);
+    --pa-glass-shadow:0 20px 45px rgba(24,8,34,.42), inset 0 1px 0 rgba(255,222,190,.14), 0 0 38px rgba(240,133,90,.16);
+    --pa-eyebrow:#FFC46B;
+    --pa-h3:#FFF3E6;
+    --pa-sub:#C6A8BF;
+    --pa-label:#F6C9A6;
+    --pa-input-bg:rgba(25,18,56,.55);
+    --pa-input-bd:rgba(255,214,180,.16);
+    --pa-input-fg:#FFF3E6;
+    --pa-focus-bd:#F0855A;
+    --pa-focus-ring:0 0 0 3px rgba(240,133,90,.25);
+    --pa-link:#F0855A;
+    --pa-btn:linear-gradient(135deg,#F0855A,#B14A86);
+    --pa-btn-fg:#2A1230;
+    --pa-btn-shadow:0 10px 26px rgba(240,133,90,.24);
+    --pa-btn-shadow-h:0 14px 34px rgba(240,133,90,.4);
+    --pa-terms-bg:rgba(25,18,56,.4);
+    --pa-terms-bd:rgba(255,214,180,.1);
+    --pa-check:#F0855A;
+    --pa-ring1:rgba(226,118,72,.24);
+    --pa-ring2:rgba(199,125,255,.18);
+    --pa-dot1:#F0855A;
+    --pa-dot1-glow:rgba(240,133,90,.8);
+    --pa-dot2:#FFC46B;
+    --pa-dot2-glow:rgba(255,196,107,.7);
+    --pa-book-glow1:rgba(226,118,72,.6);
+    --pa-book-glow2:rgba(255,176,120,.3);
+}
 
-/* Par de botões circulares no topo: mesma caixa (46px), mesmo raio, e um
-   espaçamento de 24px entre os dois — não os 176px que sobravam antes
-   quando só o de voltar tinha medida própria (herdada de um inline) e o
-   de tema usava o `right` avulso de um botão com texto. */
-.btn-voltar-fixo,
-#theme-toggle{
+/* DIA */
+:root[data-tema="claro"] .auth-body{
+    --pa-frame-bg:#F3F1FB;
+    --pa-frame-bd:rgba(35,27,60,.14);
+    --pa-frame-shadow:0 30px 70px rgba(60,45,110,.18);
+    --pa-sky-login:linear-gradient(168deg,#B8D4FF 0%,#D8E5FE 46%,#EFF1FD 100%);
+    --pa-sky-reg:linear-gradient(196deg,#B8D4FF 0%,#D8E5FE 48%,#EFF1FD 100%);
+    --pa-glow-login:radial-gradient(ellipse 74% 52% at 76% 80%, rgba(255,255,255,.72), transparent 70%), radial-gradient(ellipse 46% 38% at 18% 16%, rgba(191,222,255,.6), transparent 74%);
+    --pa-glow-reg:radial-gradient(ellipse 62% 46% at 52% 34%, rgba(255,255,255,.7), transparent 70%), radial-gradient(ellipse 44% 36% at 84% 14%, rgba(191,222,255,.55), transparent 74%);
+    --pa-stars-op:0;
+    --pa-logo-pos:right center;
+    --pa-logo-blend:multiply;
+    --pa-logo-op:.16;
+    --pa-arc1-bg:linear-gradient(172deg,#8FBA4C 0%,#5E8C31 44%,#3B6323 100%);
+    --pa-arc1-bd:rgba(255,255,255,.5);
+    --pa-arc2-bg:linear-gradient(172deg,#A3CE58 0%,#6D9E38 42%,#436E26 100%);
+    --pa-arc2-bd:rgba(255,255,255,.62);
+    --pa-brand-icon:#6D28D9;
+    --pa-brand-icon-glow:rgba(109,40,217,.28);
+    --pa-brand-1:#231B3C;
+    --pa-brand-2:#6D28D9;
+    --pa-badge-bg:linear-gradient(135deg,#7C3AED,#5B21B6);
+    --pa-badge-fg:#FFFFFF;
+    --pa-badge-glow:rgba(109,40,217,.32);
+    --pa-sky-copy:#2E2748;
+    --pa-copy-shadow:0 1px 12px rgba(255,255,255,.9);
+    --pa-h-shadow:0 1px 14px rgba(255,255,255,.92);
+    --pa-form-bg:linear-gradient(145deg, rgba(255,255,255,.97), rgba(243,241,251,.99));
+    --pa-form-divider:rgba(35,27,60,.1);
+    --pa-halo:rgba(109,40,217,.12);
+    --pa-ctrl-bg:rgba(255,255,255,.7);
+    --pa-ctrl-bd:rgba(35,27,60,.12);
+    --pa-ctrl-warm:#6D28D9;
+    --pa-ctrl-mut:#615A7C;
+    --pa-ctrl-bd-h:rgba(109,40,217,.4);
+    --pa-ctrl-bg-h:rgba(109,40,217,.08);
+    --pa-glass:linear-gradient(145deg, rgba(255,255,255,.92), rgba(238,234,252,.86));
+    --pa-glass-bd:rgba(109,40,217,.18);
+    --pa-glass-shadow:0 18px 40px rgba(60,45,110,.14), inset 0 1px 0 rgba(255,255,255,.9), 0 0 30px rgba(139,92,246,.1);
+    --pa-eyebrow:#A85B0B;
+    --pa-h3:#231B3C;
+    --pa-sub:#615A7C;
+    --pa-label:#6D28D9;
+    --pa-input-bg:rgba(255,255,255,.88);
+    --pa-input-bd:rgba(35,27,60,.14);
+    --pa-input-fg:#231B3C;
+    --pa-focus-bd:#7C3AED;
+    --pa-focus-ring:0 0 0 3px rgba(109,40,217,.18);
+    --pa-link:#6D28D9;
+    --pa-btn:linear-gradient(135deg,#7C3AED,#5B21B6);
+    --pa-btn-fg:#FFFFFF;
+    --pa-btn-shadow:0 10px 26px rgba(109,40,217,.22);
+    --pa-btn-shadow-h:0 14px 34px rgba(109,40,217,.34);
+    --pa-terms-bg:rgba(243,241,251,.9);
+    --pa-terms-bd:rgba(35,27,60,.1);
+    --pa-check:#7C3AED;
+    --pa-ring1:rgba(52,60,150,.34);
+    --pa-ring2:rgba(66,66,158,.28);
+    --pa-dot1:#39408F;
+    --pa-dot1-glow:rgba(57,64,143,.55);
+    --pa-dot2:#4C55A8;
+    --pa-dot2-glow:rgba(76,85,168,.5);
+    --pa-book-glow1:rgba(104,138,226,.55);
+    --pa-book-glow2:rgba(150,180,240,.35);
+}
+
+/* ------------------------------------------------------------
+   MOLDURA
+   ------------------------------------------------------------ */
+.auth-body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+
+    background:var(--pa-frame-bg);
+
+    /* A troca de céu é uma passagem, não um corte. */
+    transition:background .6s ease;
+}
+
+.auth-container{
+    position:relative;
+
+    width:100%;
+    max-width:1240px;
+    /* Nunca `height`: com altura fixa o cartão do cadastro é cortado em
+       telas estreitas. */
+    min-height:830px;
+
+    display:grid;
+    grid-template-columns:1.05fr .95fr;
+
+    border:1px solid var(--pa-frame-bd);
+    border-radius:26px;
+    overflow:hidden;
+
+    background:var(--pa-frame-bg);
+    box-shadow:var(--pa-frame-shadow);
+
+    transition:background .6s ease, border-color .6s ease, box-shadow .6s ease;
+}
+
+/* Cadastro: grid espelhado, formulário primeiro. */
+.auth-container-register{
+    grid-template-columns:.95fr 1.05fr;
+}
+
+/* ------------------------------------------------------------
+   CONTROLES (tema + voltar)
+   ------------------------------------------------------------
+   Sempre no topo direito da COLUNA DA DIREITA — que é o formulário no
+   login e o lado visual no cadastro. Como o grid é espelhado, é a mesma
+   posição na tela nas duas telas. Um flex container substitui o
+   `right:94px` que antes era calculado à mão. */
+.auth-controls{
     position:absolute;
     top:24px;
-    z-index:50;
+    right:24px;
+    z-index:9;
+
+    display:flex;
+    gap:12px;
+}
+
+.auth-ctrl{
+    width:46px;
+    height:46px;
 
     display:inline-flex;
     align-items:center;
     justify-content:center;
 
-    width:46px;
-    height:46px;
+    border-radius:var(--radius-circle, 50%);
+    border:1px solid var(--pa-ctrl-bd);
+    background:var(--pa-ctrl-bg);
+    backdrop-filter:blur(10px);
 
-    border-radius:var(--radius-circle);
-
-    color:var(--text-secondary);
+    color:var(--pa-ctrl-mut);
+    font-size:1rem;
     text-decoration:none;
-
-    background:rgba(var(--white-rgb),.04);
-
-    border:1px solid var(--border);
-
-    backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
-
-    transition:.3s;
-}
-
-.btn-voltar-fixo{
-    right:24px;
-}
-
-/* 24px à direita do botão de voltar (24 + 46 de largura + 24 de vão). */
-#theme-toggle{
-    right:94px;
     cursor:pointer;
+
+    transition:.25s;
 }
 
-.btn-voltar-fixo:hover,
-#theme-toggle:hover{
-    color:var(--purple-text);
-    border-color:rgba(var(--purple-rgb),.45);
-    background:rgba(var(--purple-rgb),.1);
+.auth-ctrl:hover{
+    color:var(--pa-ctrl-warm);
+    border-color:var(--pa-ctrl-bd-h);
+    background:var(--pa-ctrl-bg-h);
 }
 
-/* Layout */
-
-.auth-container{
-    width:100%;
-    min-height:100vh;
-
-    display:grid;
-    grid-template-columns:1.1fr .9fr;
+.auth-ctrl:focus-visible{
+    outline:2px solid var(--pa-focus-bd);
+    outline-offset:2px;
 }
 
-.auth-container-register{
-    grid-template-columns:.9fr 1.1fr;
-}
-
-.auth-container-register .auth-image-side{
-    order:2;
-}
-
-.auth-container-register .auth-form-side{
-    order:1;
-}
-
-/* Lado visual */
-
+/* ------------------------------------------------------------
+   LADO VISUAL — céu em camadas
+   ------------------------------------------------------------ */
 .auth-image-side{
     position:relative;
     overflow:hidden;
 
     display:flex;
     align-items:flex-end;
-
-    padding:70px;
-
-    background-image:
-        linear-gradient(
-            180deg,
-            rgba(var(--bg-main-rgb),.15),
-            rgba(var(--bg-main-rgb),.92)
-        ),
-        url("../img/logo-parabook-bg.png");
-
-    background-size:
-        cover,
-        201% 100%;
-
-    background-repeat:
-        no-repeat,
-        no-repeat;
-
-    background-position:
-        center,
-        left center;
-
-    background-color:var(--bg-main);
-
-    transition:
-        background-position .6s ease,
-        background-color .6s ease,
-        filter .6s ease;
+    /* O padding-bottom generoso é o que mantém a copy ACIMA do
+       horizonte dos arcos — é dele que vem o contraste do texto. */
+    padding:66px 66px 215px;
 }
 
-:root[data-tema="claro"] .auth-image-side{
-    background-position:
-        center,
-        right center;
-
-    background-color:var(--bg-main);
-
-    filter:none;
+.auth-container-register .auth-image-side{
+    padding:66px 66px 108px;
 }
 
-.auth-image-text h2{
-    margin-bottom: .5rem;
-}
-
-.auth-image-side::before{
-    content:"";
-
-    position:absolute;
-
-    width:520px;
-    height:520px;
-
-    right:-120px;
-    top:-130px;
-
-    border-radius:var(--radius-circle);
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(var(--purple-rgb),.38),
-            transparent 70%
-        );
-
-    filter:blur(20px);
-}
-
-.auth-image-side::after{
-    content:"";
-
-    position:absolute;
-
-    width:360px;
-    height:360px;
-
-    left:-100px;
-    bottom:120px;
-
-    border-radius:var(--radius-circle);
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(var(--purple-light-rgb),.22),
-            transparent 70%
-        );
-
-    filter:blur(20px);
-}
-
-.auth-image-overlay{
+.auth-sky,
+.auth-glow,
+.auth-stars,
+.auth-watermark{
     position:absolute;
     inset:0;
+    pointer-events:none;
+}
 
-    background:
-        linear-gradient(
-            180deg,
-            transparent 35%,
-            rgba(var(--bg-main-rgb),.92) 100%
-        );
+.auth-sky{
+    background:var(--pa-sky-login);
+    z-index:0;
+    transition:background .6s ease;
+}
 
+.auth-container-register .auth-sky{
+    background:var(--pa-sky-reg);
+}
+
+.auth-glow{
+    background:var(--pa-glow-login);
+    z-index:1;
+    transition:background .6s ease;
+}
+
+.auth-container-register .auth-glow{
+    background:var(--pa-glow-reg);
+}
+
+.auth-stars{
     z-index:1;
 
-    transition:.6s ease;
+    background:url("../img/stars-bg.png") center/cover;
+    mix-blend-mode:screen;
+    opacity:var(--pa-stars-op);
+
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 62%);
+            mask-image:linear-gradient(180deg,#000 0%,transparent 62%);
+
+    transition:opacity .6s ease;
 }
 
-:root[data-tema="claro"] .auth-image-overlay{
-    background:
-        linear-gradient(
-            180deg,
-            transparent 35%,
-            rgba(var(--bg-main-rgb),.92) 100%
-        );
+.auth-container-register .auth-stars{
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 66%);
+            mask-image:linear-gradient(180deg,#000 0%,transparent 66%);
 }
 
-.abstract-glow-1,
-.abstract-glow-2{
-    display:none;
+/* Marca d'água, só no login. `auto 128%` é obrigatório: o `201% 100%`
+   antigo achatava a logo. A posição é token porque a arte traz as duas
+   metades — escura à esquerda, clara à direita —, e cada céu escolhe a
+   que contrasta. */
+.auth-watermark{
+    z-index:1;
+
+    background-image:url("../img/logo-parabook-bg.png");
+    background-repeat:no-repeat;
+    background-size:auto 128%;
+    background-position:var(--pa-logo-pos);
+
+    mix-blend-mode:var(--pa-logo-blend);
+    opacity:var(--pa-logo-op);
+
+    transition:opacity .6s ease;
 }
 
-.auth-image-text,
-.auth-brand-info{
+/* Campos em arco: duas elipses cortadas pelo overflow da seção. A borda
+   de 2px é a crista acesa — a linha de luz onde o campo encontra o céu. */
+.auth-arc{
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+    transition:background .6s ease, border-color .6s ease;
+}
+
+.auth-arc-1{
+    left:-16%;
+    bottom:-58%;
+    width:88%;
+    height:66%;
+    z-index:4;
+
+    background:var(--pa-arc1-bg);
+    border:2px solid var(--pa-arc1-bd);
+}
+
+.auth-arc-2{
+    left:34%;
+    bottom:-66%;
+    width:90%;
+    height:72%;
+    z-index:5;
+
+    background:var(--pa-arc2-bg);
+    border:2px solid var(--pa-arc2-bd);
+}
+
+.auth-image-text{
     position:relative;
-    z-index:2;
-
-    max-width:620px;
-}
-
-.brand-logo-login{
-    display:flex;
-    align-items:center;
-    gap:16px;
-
-    margin-bottom:24px;
-}
-
-.brand-logo-login i{
-    font-size:2.7rem;
-    color:var(--purple-light);
-
-    filter:
-        drop-shadow(0 0 18px rgba(var(--purple-rgb),.55));
-}
-
-.logo-text{
-    font-size:3rem;
-    font-weight:800;
-    letter-spacing:-1.5px;
-    color:var(--text);
-}
-
-.logo-text span{
-    background:
-        linear-gradient(
-            135deg,
-            var(--purple-light),
-            var(--purple)
-        );
-
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-}
-
-.auth-image-text p,
-.auth-brand-info p{
-    color:var(--text-soft);
-
-    font-size:1.05rem;
-    line-height:1.8;
-
+    z-index:6;
     max-width:560px;
 }
 
-.auth-brand-info h2{
-    font-size:3rem;
-    font-weight:800;
-    letter-spacing:-1px;
-
-    color:var(--text);
-
-    margin-bottom:18px;
+.auth-image-text p{
+    margin:0;
+    font-size:1.05rem;
+    line-height:1.7;
+    color:var(--pa-sky-copy);
+    text-shadow:var(--pa-copy-shadow);
 }
 
-/* Lado formulário */
+/* Marca (login) */
+.auth-brand{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:22px;
+}
 
+.auth-brand i{
+    font-size:2.6rem;
+    color:var(--pa-brand-icon);
+    text-shadow:0 0 26px var(--pa-brand-icon-glow);
+}
+
+.auth-wordmark{
+    margin:0;
+    font-family:'Spectral', Georgia, serif;
+    font-size:3rem;
+    font-weight:700;
+    line-height:1;
+    color:var(--pa-brand-1);
+    text-shadow:var(--pa-h-shadow);
+}
+
+.auth-wordmark span{
+    color:var(--pa-brand-2);
+}
+
+/* "Beta" só no modo tarde — é o marcador do céu experimental, igual ao
+   da navbar na landing. Escondida por padrão; só o data-tema=tarde a
+   revela. Vale para login e cadastro (onde houver a badge). */
+.auth-badge{
+    display:none;
+
+    align-self:center;
+
+    padding:4px 12px;
+    border-radius:var(--radius-pill, 999px);
+
+    font-size:.62rem;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+
+    color:var(--pa-badge-fg);
+    background:var(--pa-badge-bg);
+    box-shadow:0 0 18px var(--pa-badge-glow);
+}
+
+:root[data-tema="tarde"] .auth-badge{
+    display:inline-flex;
+}
+
+/* Título do lado visual (cadastro) */
+.auth-image-text h2{
+    margin:0 0 18px;
+    font-family:'Spectral', Georgia, serif;
+    font-size:2.5rem;
+    font-weight:700;
+    line-height:1.15;
+    color:var(--pa-brand-1);
+    text-shadow:var(--pa-h-shadow);
+}
+
+.auth-image-text h2 span{
+    color:var(--pa-brand-2);
+}
+
+/* Livro e anéis (cadastro) — ancorados no mesmo ponto, o wrapper tem
+   tamanho zero para que cada filho se autocentralize pelo próprio raio. */
+.auth-orbit{
+    position:absolute;
+    left:52%;
+    top:42%;
+    width:0;
+    height:0;
+    z-index:2;
+    pointer-events:none;
+}
+
+.auth-ring{
+    position:absolute;
+    left:0;
+    top:0;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+}
+
+.auth-ring-1{
+    width:330px;
+    height:330px;
+    border:1px solid var(--pa-ring1);
+    animation:girasol 26s linear infinite;
+}
+
+.auth-ring-2{
+    width:470px;
+    height:470px;
+    border:1px solid var(--pa-ring2);
+    animation:girasolrev 40s linear infinite;
+}
+
+.auth-dot{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+}
+
+.auth-ring-1 .auth-dot:nth-child(1){ background:var(--pa-dot1); box-shadow:0 0 10px 2px var(--pa-dot1-glow); transform:translate(-50%,-50%) rotate(24deg) translateX(165px); }
+.auth-ring-1 .auth-dot:nth-child(2){ background:var(--pa-dot1); box-shadow:0 0 10px 2px var(--pa-dot1-glow); transform:translate(-50%,-50%) rotate(204deg) translateX(165px); }
+.auth-ring-2 .auth-dot:nth-child(1){ background:var(--pa-dot2); box-shadow:0 0 10px 2px var(--pa-dot2-glow); transform:translate(-50%,-50%) rotate(70deg) translateX(235px); }
+.auth-ring-2 .auth-dot:nth-child(2){ background:var(--pa-dot1); box-shadow:0 0 10px 2px var(--pa-dot1-glow); transform:translate(-50%,-50%) rotate(250deg) translateX(235px); }
+
+.auth-book{
+    position:absolute;
+    left:0;
+    top:0;
+    width:330px;
+    z-index:3;
+    transform:translate(-50%,-50%);
+
+    filter:
+        drop-shadow(0 0 34px var(--pa-book-glow1))
+        drop-shadow(0 0 80px var(--pa-book-glow2));
+}
+
+@keyframes girasol{
+    from{ transform:translate(-50%,-50%) rotate(0deg); }
+    to{ transform:translate(-50%,-50%) rotate(360deg); }
+}
+
+@keyframes girasolrev{
+    from{ transform:translate(-50%,-50%) rotate(360deg); }
+    to{ transform:translate(-50%,-50%) rotate(0deg); }
+}
+
+/* Mesmo tratamento dos anéis da landing: quem pede menos movimento
+   recebe o desenho parado, não escondido. */
+@media (prefers-reduced-motion: reduce){
+    .auth-ring{ animation:none; }
+}
+
+/* ------------------------------------------------------------
+   LADO FORMULÁRIO
+   ------------------------------------------------------------ */
 .auth-form-side{
     position:relative;
 
     display:flex;
     align-items:center;
     justify-content:center;
+    padding:56px 44px;
 
-    padding:60px;
+    background:var(--pa-form-bg);
+    border-left:1px solid var(--pa-form-divider);
 
-    /* Os dois pontos da diagonal usam tokens de propósito: com o primeiro
-       cravado em hex, o canto do painel ficava azul-marinho fixo mesmo no
-       tema claro, brigando com o vidro branco do .auth-box por cima. */
-    background:
-        linear-gradient(
-            145deg,
-            rgba(var(--bg-card-rgb),.96),
-            rgba(var(--bg-main-rgb),.98)
-        );
-
-    border-left:1px solid rgba(var(--white-rgb),.06);
+    transition:background .6s ease, border-color .6s ease;
 }
 
+.auth-container-register .auth-form-side{
+    border-left:none;
+    border-right:1px solid var(--pa-form-divider);
+}
+
+/* Halo que sangra para fora da coluna, amarrando o formulário ao céu. */
 .auth-form-side::before{
     content:"";
-
     position:absolute;
-
-    width:300px;
-    height:300px;
-
-    right:-120px;
-    top:20%;
-
-    border-radius:var(--radius-circle);
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(var(--purple-rgb),.15),
-            transparent 70%
-        );
-}
-
-.auth-box,
-.auth-form-box{
-    position:relative;
-    z-index:2;
-
-    width:100%;
-    max-width:430px;
-
-    padding:38px;
-
-    border-radius:var(--radius-lg);
-
-    /* Mais opaco que o .card padrão do app (.95/.75): é a única tela onde
-       login/senha precisam ficar 100% legíveis contra qualquer fundo, sem
-       depender do que estiver atrás do vidro. Ainda é vidro — blur e
-       gradiente continuam — só menos transparente que o resto do design
-       system. */
-    background:
-        linear-gradient(
-            145deg,
-            rgba(var(--bg-card-rgb),.97),
-            rgba(var(--bg-card-rgb),.86)
-        );
-
-    border:1px solid var(--border-strong);
-
-    backdrop-filter:blur(24px);
-    -webkit-backdrop-filter:blur(24px);
-
-    /* O card de autenticação flutua sozinho na tela, então pede o degrau
-       de cima da escala — era o que o --shadow local fazia antes. */
-    box-shadow:var(--shadow-lg);
-}
-
-.pure-form h2,
-.auth-form-header h2{
-    color:var(--text);
-
-    font-size:2rem;
-    font-weight:800;
-
-    letter-spacing:-.5px;
-
-    margin-bottom:8px;
-}
-
-.auth-subtitle,
-.auth-form-header p{
-    color:var(--text-secondary);
-
-    margin-bottom:28px;
-}
-
-/* Inputs */
-
-.auth-input-group{
-    position:relative;
-
-    margin-bottom:22px;
-}
-
-.auth-input-group input{
-    width:100%;
-
-    padding:15px 16px;
-
-    border-radius:var(--radius-md);
-
-    border:1px solid var(--border);
-
-    background:var(--bg-input);
-
-    color:var(--text);
-
-    font-size:.95rem;
-
-    outline:none;
-
-    transition:.3s;
-}
-
-.auth-input-group input:focus{
-    border-color:var(--purple);
-
-    box-shadow:
-        var(--focus-ring);
-}
-
-.auth-input-group label{
-    position:absolute;
-
-    left:16px;
     top:50%;
-
+    right:-130px;
     transform:translateY(-50%);
 
-    color:var(--text-secondary);
+    width:320px;
+    height:320px;
 
+    background:radial-gradient(circle, var(--pa-halo), transparent 70%);
     pointer-events:none;
-
-    transition:.25s;
 }
 
-.auth-input-group input:focus ~ label,
-.auth-input-group input:not(:placeholder-shown) ~ label{
-    top:0;
-
-    padding:0 6px;
-
-    font-size:.75rem;
-
-    color:var(--purple-light);
-
-    background:var(--bg-card);
+.auth-container-register .auth-form-side::before{
+    right:auto;
+    left:-130px;
 }
 
-/* Utilidades */
+.auth-card{
+    position:relative;
+    z-index:1;
 
-.auth-form-utilities{
+    width:100%;
+    max-width:432px;
+    padding:42px;
+    border-radius:22px;
+
+    background:var(--pa-glass);
+    border:1px solid var(--pa-glass-bd);
+    backdrop-filter:blur(24px);
+    box-shadow:var(--pa-glass-shadow);
+
+    transition:background .6s ease, border-color .6s ease, box-shadow .6s ease;
+}
+
+.auth-eyebrow{
+    margin:0 0 8px;
+    font-size:.68rem;
+    font-weight:600;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--pa-eyebrow);
+}
+
+.auth-card h3{
+    margin:0 0 6px;
+    font-family:'Spectral', Georgia, serif;
+    font-size:2rem;
+    font-weight:600;
+    line-height:1.2;
+    color:var(--pa-h3);
+}
+
+.auth-sub{
+    margin:0 0 28px;
+    font-size:.95rem;
+    color:var(--pa-sub);
+}
+
+/* ------------------------------------------------------------
+   CAMPOS
+   ------------------------------------------------------------
+   Rótulo ACIMA do campo, não flutuando sobre ele: o float label exigia
+   um `placeholder=" "` fantasma e impedia usar placeholder de verdade
+   como exemplo do formato esperado. */
+.auth-field{
     display:flex;
-    justify-content:flex-end;
-
-    margin-top:-8px;
+    flex-direction:column;
+    gap:8px;
     margin-bottom:18px;
 }
 
-.auth-forgot-link,
-.auth-footer-text a{
-    color:var(--purple-text);
-
-    text-decoration:none;
-
+.auth-field label{
+    font-size:.72rem;
     font-weight:600;
-
-    transition:.3s;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--pa-label);
 }
 
-.auth-forgot-link:hover,
-.auth-footer-text a:hover{
-    color:var(--purple-text);
-}
-
-.auth-footer-text{
-    margin-top:22px;
-
-    text-align:center;
-
-    color:var(--text-secondary);
-
-    font-size:.9rem;
-}
-
-/* Botão submit */
-
-.auth-btn-submit{
-    margin-top: 1rem;
+.auth-field input{
     width:100%;
+    padding:15px 16px;
+    box-sizing:border-box;
 
-    padding:15px 24px;
+    border-radius:12px;
+    border:1px solid var(--pa-input-bd);
+    background:var(--pa-input-bg);
+    color:var(--pa-input-fg);
 
+    font-family:inherit;
+    font-size:.95rem;
+
+    transition:border-color .2s, box-shadow .2s, background .6s ease;
+}
+
+.auth-field input::placeholder{
+    color:var(--pa-sub);
+    opacity:.7;
+}
+
+.auth-field input:focus{
+    outline:none;
+    border-color:var(--pa-focus-bd);
+    box-shadow:var(--pa-focus-ring);
+}
+
+/* Termos (cadastro) */
+.auth-terms{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+
+    margin:4px 0 24px;
+    padding:14px;
+    border-radius:12px;
+
+    background:var(--pa-terms-bg);
+    border:1px solid var(--pa-terms-bd);
+
+    transition:background .6s ease, border-color .6s ease;
+}
+
+.auth-terms input[type="checkbox"]{
+    width:18px;
+    height:18px;
+    margin-top:2px;
+    flex-shrink:0;
+    accent-color:var(--pa-check);
+    cursor:pointer;
+}
+
+.auth-terms label{
+    font-size:.85rem;
+    line-height:1.5;
+    color:var(--pa-sub);
+    cursor:pointer;
+}
+
+.auth-terms a{
+    color:var(--pa-link);
+    font-weight:600;
+}
+
+/* ------------------------------------------------------------
+   AÇÕES
+   ------------------------------------------------------------ */
+.auth-btn-submit{
+    width:100%;
+    padding:15px;
     border:none;
-    border-radius:var(--radius-md);
+    border-radius:12px;
 
-    color:white;
+    background:var(--pa-btn);
+    color:var(--pa-btn-fg);
+    box-shadow:var(--pa-btn-shadow);
 
+    font-family:inherit;
     font-size:1rem;
-    font-weight:700;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--purple),
-            var(--purple-dark)
-        );
-
+    font-weight:600;
     cursor:pointer;
 
-    transition:.35s;
+    transition:transform .2s, box-shadow .2s, background .6s ease;
 }
 
 .auth-btn-submit:hover{
-    transform:translateY(var(--lift-md));
-
-    box-shadow:
-        var(--shadow-glow);
+    transform:translateY(-2px);
+    box-shadow:var(--pa-btn-shadow-h);
 }
 
-/* Erros */
-
-.auth-error-alert,
-.field-error-message{
-    color:var(--danger-soft) !important;
-
-    background:rgba(var(--danger-rgb),.12);
-
-    border:1px solid rgba(var(--danger-rgb),.28);
-
-    border-radius:var(--radius-md);
-
-    padding:8px 10px;
-
+.auth-forgot-link{
+    display:block;
+    margin:-6px 0 22px;
+    text-align:right;
     font-size:.85rem;
-    margin-top: -12px;
-    margin-bottom:16px;
+    color:var(--pa-link);
+    text-decoration:none;
+}
 
-    display:flex !important;
+.auth-forgot-link:hover{
+    text-decoration:underline;
+}
+
+.auth-footer-text{
+    margin:22px 0 0;
+    text-align:center;
+    font-size:.9rem;
+    color:var(--pa-sub);
+}
+
+.auth-footer-text a{
+    color:var(--pa-link);
+    font-weight:600;
+    text-decoration:none;
+}
+
+.auth-footer-text a:hover{
+    text-decoration:underline;
+}
+
+.auth-error-alert{
+    display:flex;
     align-items:center;
     gap:8px;
+
+    margin-bottom:18px;
+    padding:12px 14px;
+    border-radius:12px;
+
+    background:rgba(var(--danger-rgb),.12);
+    border:1px solid rgba(var(--danger-rgb),.35);
+    color:var(--danger);
+
+    font-size:.88rem;
 }
 
-/* Tarde Mode - Sunset Palette */
-:root[data-tema="tarde"] .auth-body{
-    --bg-main: #191238;
-    --bg-main-rgb: 25, 18, 56;
-
-    --bg-card: #301A42;
-    --bg-card-rgb: 48, 26, 66;
-
-    --bg-input: rgba(25,18,56,.4);
-
-    --purple: #C77DFF;
-    --purple-rgb: 199, 125, 255;
-
-    --purple-light: #F0855A;
-    --purple-light-rgb: 240, 133, 90;
-
-    --purple-dark: #B14A86;
-    --purple-text: #F0855A;
-
-    --text: #FFF3E6;
-    --text-secondary: #C6A8BF;
-    --text-soft: #9C82A0;
-
-    --border: rgba(255,214,180,.12);
-    --border-strong: rgba(255,205,165,.3);
-
-    --focus-ring: 0 0 0 3px rgba(240, 133, 90, .25);
-}
-
-:root[data-tema="tarde"] .auth-image-side{
-    background-image:
-        linear-gradient(
-            180deg,
-            rgba(var(--bg-main-rgb),.15),
-            rgba(var(--bg-main-rgb),.92)
-        ),
-        url("../img/logo-parabook-bg.png");
-
-    /* Fundo sólido que simula 20% de opacidade do laranja morno (#FFC46B) sobre branco. */
-    background-color: #FFF3E1;
-
-    /* A camada 0 (gradiente) fica 'normal'. A camada 1 (imagem) fica em 'multiply'. 
-       Isso faz o fundo branco da imagem absorver o fundo laranja, mas preserva a logo escura intacta. */
-    background-blend-mode: normal, multiply;
-
-    background-position:
-        center,
-        right center;
-        
-    filter: none; /* Removemos o filtro para não manchar a logo */
-}
-
-:root[data-tema="tarde"] .auth-image-overlay{
-    background:
-        linear-gradient(
-            180deg,
-            transparent 35%,
-            rgba(var(--bg-main-rgb),.92) 100%
-        );
-}
-
-/* Light mode simples */
-
-/* Responsivo */
-
+/* ------------------------------------------------------------
+   RESPONSIVO
+   ------------------------------------------------------------ */
 @media(max-width:1000px){
-
     .auth-container,
     .auth-container-register{
         grid-template-columns:1fr;
+        min-height:auto;
     }
 
     .auth-image-side{
         display:none;
     }
 
+    /* Sem a coluna visual, os controles voltam para o quadro inteiro —
+       que agora é só o formulário. */
     .auth-form-side{
-        min-height:100vh;
-        padding:80px 32px;
-        border-left:none;
+        border:none;
+        padding:72px 32px 56px;
     }
 }
 
 @media(max-width:520px){
-
-    .btn-voltar-fixo{
-        left:16px;
-        right:auto;
-        top:16px;
+    .auth-body{
+        padding:16px 12px;
     }
 
-    #theme-toggle{
-        right:16px;
-        top:16px;
+    .auth-container,
+    .auth-container-register{
+        border-radius:20px;
     }
 
-    .auth-form-side{
-        padding:76px 18px 40px;
-    }
-
-    .auth-box,
-    .auth-form-box{
+    .auth-card{
         padding:28px 22px;
-        border-radius:var(--radius-lg);
     }
 
-    .pure-form h2,
-    .auth-form-header h2{
+    .auth-card h3{
         font-size:1.7rem;
     }
 }

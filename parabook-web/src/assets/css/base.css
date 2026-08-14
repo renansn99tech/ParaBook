@@ -427,7 +427,11 @@ html,
 
     width:100%;
 
-    max-width:1400px;
+    /* Largura-mestra do site (1500px). !important aqui porque este é o
+       único container que colide com o `.container` do Bootstrap (que
+       reduz por breakpoint em telas grandes); as classes próprias do
+       projeto abaixo não precisam. */
+    max-width:1500px !important;
 
     margin:auto;
 

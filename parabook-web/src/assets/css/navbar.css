@@ -21,7 +21,8 @@ html {
 
 .navbar-container {
 
-    max-width: 1400px;
+    /* acompanha a largura-mestra do site (1500px) para alinhar com o conteúdo */
+    max-width: 1500px;
 
     margin: auto;
 
@@ -49,6 +50,16 @@ html {
 
 .logo {
     font-size: 2rem;
+}
+
+/* Badge "Beta" da navbar: escondida por padrão AQUI (navbar.css é global,
+   carrega em toda página). Antes o display:none morava só no home-ceus.css,
+   que só a Home importa — então fora da landing a badge reaparecia com o
+   display default. Quem a revela é a regra em home-ceus.css
+   (html[data-home][data-tema="tarde"], especificidade maior), então ela
+   só volta na landing + modo tarde. */
+.pb-beta-badge {
+    display: none;
 }
 
 .para {

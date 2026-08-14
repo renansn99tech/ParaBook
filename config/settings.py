@@ -59,9 +59,14 @@ if not DEBUG:
 
 # Configuração de origens confiáveis para CSRF
 
+# Precisa da PORTA do Vite (5173): o Django 6 faz Origin check estrito
+# (match exato de esquema://host:porta), então "http://localhost" não
+# cobre "http://localhost:5173". Espelha o CORS_ALLOWED_ORIGINS abaixo —
+# os dois estavam dessincronizados e era o que barrava POST do frontend
+# de dev com 403 CSRF.
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
-    default="http://localhost,http://127.0.0.1",
+    default="http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1",
 ).split(",")
 
 if not DEBUG:

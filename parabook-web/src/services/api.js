@@ -2,7 +2,15 @@ import axios from 'axios';
 
 // Em produção, defina VITE_API_URL nas variáveis de ambiente do serviço
 // (ex: Render Static Site). Sem isso, cai no backend local de desenvolvimento.
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1';
+//
+// O host da API acompanha o host em que a PÁGINA foi aberta (localhost ou
+// 127.0.0.1), em vez de ficar cravado em 127.0.0.1. O motivo é o cookie
+// csrftoken: para o navegador, localhost e 127.0.0.1 são sites DIFERENTES
+// (a porta não conta, só o host), e o cookie com SameSite=Lax não
+// atravessa sites diferentes — era rejeitado antes de voltar no POST,
+// causando 403 no CSRF. Casando o host dos dois lados, é sempre same-site.
+const hostLocal = typeof window !== 'undefined' ? window.location.hostname : '127.0.0.1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || `http://${hostLocal}:8000/api/v1`;
 let csrfToken = null;
 let refreshPromise = null;
 

@@ -113,7 +113,10 @@
     align-items:center;
     gap:40px;
 
-    max-width:1400px;
+    /* Só o CONTEÚDO do hero (texto + livro) acompanha a largura-mestra
+       de 1500px. O .hero-cosmos e a .jornada são camadas full-bleed
+       separadas, sem max-width — continuam ocupando a tela toda. */
+    max-width:1500px;
     margin:0 auto;
     padding:90px 60px 70px;
 
@@ -314,7 +317,7 @@
    da caixa nova.
 
    Vertical continua preso a .hero (top/bottom:0 — o painel só cobre a
-   altura do hero, não a página). Horizontal quebra o max-width:1400px de
+   altura do hero, não a página). Horizontal quebra o max-width:1500px de
    .hero de propósito: left:50% + width:100vw + translateX(-50%) é o
    truque padrão de full-bleed dentro de container centralizado — ancora
    no meio de .hero (que é o meio da própria viewport, já que .hero é
@@ -1616,7 +1619,7 @@
     position:relative;
     z-index:1;
 
-    max-width:1400px;
+    max-width:1500px;
     margin:0 auto;
     padding:40px 60px 80px;
 
@@ -1766,7 +1769,7 @@
 }
 
 .books, .communities{
-    max-width: 1400px;
+    max-width: 1500px;
     margin: 0 auto;
     padding: 30px 30px;
 }

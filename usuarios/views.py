@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.utils import timezone
+from django.conf import settings
 from django.http import JsonResponse
 from .models import Usuario, Notificacao
 from comunidades.models import Comunidade
@@ -33,7 +34,12 @@ def sobre(request):
     return render(request, 'sobre.html')
 
 def diretrizes(request):
-    return render(request, 'diretrizes.html')
+    return render(request, 'diretrizes.html', {
+        'terms_version': settings.TERMS_VERSION,
+        'legal_controller_name': settings.LEGAL_CONTROLLER_NAME,
+        'legal_controller_address': settings.LEGAL_CONTROLLER_ADDRESS,
+        'legal_privacy_contact': settings.LEGAL_PRIVACY_CONTACT,
+    })
 
 def backlog(request):
     return render(request, 'backlog.html')
@@ -80,7 +86,8 @@ def register(request):
                 nome=nome_completo,
                 perfil=novo_perfil,
                 termos_aceitos=True,
-                data_aceite_termos=timezone.now()
+                data_aceite_termos=timezone.now(),
+                versao_termos_aceita=settings.TERMS_VERSION,
             )
 
             login(request, auth_user)
@@ -88,7 +95,10 @@ def register(request):
             return redirect('perfis:perfil_pessoal')
     else:
         form = RegistroUsuarioForm()
-    return render(request, 'usuarios/register.html', {'form': form})
+    return render(request, 'usuarios/register.html', {
+        'form': form,
+        'terms_version': settings.TERMS_VERSION,
+    })
 #####################################################################################
 
 def logout_view(request):
@@ -135,14 +145,21 @@ def aceitar_termos(request):
         if usuario_custom:
             usuario_custom.termos_aceitos = True
             usuario_custom.data_aceite_termos = timezone.now()
-            usuario_custom.save()
+            usuario_custom.versao_termos_aceita = settings.TERMS_VERSION
+            usuario_custom.save(update_fields=[
+                'termos_aceitos', 'data_aceite_termos', 'versao_termos_aceita'
+            ])
             messages.success(request, 'Obrigado por aceitar nossos termos. Bem-vindo de volta!')
         else:
             messages.error(request, 'Erro ao localizar seu perfil de usuário.')
             
         return redirect('perfis:perfil_pessoal')
         
-    return render(request, 'usuarios/aceitar_termos.html')
+    return render(
+        request,
+        'usuarios/aceitar_termos.html',
+        {'terms_version': settings.TERMS_VERSION},
+    )
 
 @login_required
 def checar_notificacoes(request):

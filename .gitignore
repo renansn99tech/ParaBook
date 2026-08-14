@@ -44,3 +44,8 @@ media/.env
 /AGENTS.md
 /.claude/
 /.agents/
+
+# Governança estratégica e regras de negócio locais. Esses documentos podem
+# conter decisões internas, ressalvas jurídicas e responsabilidades ainda não
+# adequadas para exposição no repositório remoto.
+/business_rules/

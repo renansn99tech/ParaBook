@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.conf import settings
 from usuarios.models import Usuario
 from perfis.models import Perfil
 from django.utils import timezone
@@ -18,7 +19,10 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Usuario
-        fields = ['id', 'user_auth', 'nome', 'tipo', 'cpf', 'termos_aceitos', 'data_aceite_termos']
+        fields = [
+            'id', 'user_auth', 'nome', 'tipo', 'cpf', 'termos_aceitos',
+            'data_aceite_termos', 'versao_termos_aceita',
+        ]
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -26,6 +30,14 @@ class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+    termos_aceitos = serializers.BooleanField(write_only=True)
+
+    def validate_termos_aceitos(self, value):
+        if value is not True:
+            raise serializers.ValidationError(
+                'Você deve ler e aceitar os termos vigentes para criar uma conta.'
+            )
+        return value
 
     def validate_username(self, value):
         if User.objects.filter(username__iexact=value).exists():
@@ -64,6 +76,7 @@ class RegisterSerializer(serializers.Serializer):
             perfil=novo_perfil,
             termos_aceitos=True,
             data_aceite_termos=timezone.now(),
+            versao_termos_aceita=settings.TERMS_VERSION,
         )
 
         return auth_user

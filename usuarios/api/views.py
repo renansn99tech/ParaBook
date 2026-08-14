@@ -70,6 +70,31 @@ class CsrfTokenAPIView(APIView):
         return Response({'csrfToken': get_token(request)})
 
 
+class GovernancaLegalAPIView(APIView):
+    """Metadados públicos da política vigente, sem expor configuração sensível."""
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    def get(self, request):
+        controller_ready = all([
+            settings.LEGAL_CONTROLLER_NAME,
+            settings.LEGAL_CONTROLLER_DOCUMENT,
+            settings.LEGAL_CONTROLLER_ADDRESS,
+            settings.LEGAL_PRIVACY_CONTACT,
+        ])
+        return Response({
+            'versao_termos': settings.TERMS_VERSION,
+            'jurisdicao': settings.LEGAL_JURISDICTION,
+            'controlador': {
+                'nome': settings.LEGAL_CONTROLLER_NAME,
+                'endereco': settings.LEGAL_CONTROLLER_ADDRESS,
+                'contato_privacidade': settings.LEGAL_PRIVACY_CONTACT,
+                'identificacao_completa': controller_ready,
+            },
+        })
+
+
 @method_decorator(csrf_protect, name='dispatch')
 class CookieTokenObtainPairAPIView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -312,7 +337,14 @@ class AceitarTermosAPIView(APIView):
 
         usuario_custom.termos_aceitos = True
         usuario_custom.data_aceite_termos = timezone.now()
-        usuario_custom.save(update_fields=['termos_aceitos', 'data_aceite_termos'])
+        usuario_custom.versao_termos_aceita = settings.TERMS_VERSION
+        usuario_custom.save(update_fields=[
+            'termos_aceitos', 'data_aceite_termos', 'versao_termos_aceita'
+        ])
 
-        return Response({"detail": "Termos aceitos com sucesso.", "termos_aceitos": True})
+        return Response({
+            "detail": "Termos aceitos com sucesso.",
+            "termos_aceitos": True,
+            "versao_termos_aceita": settings.TERMS_VERSION,
+        })
 

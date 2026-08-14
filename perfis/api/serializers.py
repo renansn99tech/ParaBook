@@ -1,5 +1,6 @@
 # pyrefly: ignore [missing-import]
 from rest_framework import serializers
+from django.conf import settings
 from perfis.models import Perfil
 
 class PerfilSerializer(serializers.ModelSerializer):
@@ -10,12 +11,23 @@ class PerfilSerializer(serializers.ModelSerializer):
     is_superuser = serializers.BooleanField(source='usuario.is_superuser', read_only=True)
     # Necessario para o React barrar a navegacao de quem ainda nao aceitou os termos,
     # equivalente ao ForcarAceiteTermosMiddleware do lado dos templates legados.
-    termos_aceitos = serializers.BooleanField(source='usuario.perfil_customizado.termos_aceitos', read_only=True)
+    termos_aceitos = serializers.SerializerMethodField()
+    versao_termos_aceita = serializers.CharField(
+        source='usuario.perfil_customizado.versao_termos_aceita', read_only=True
+    )
+
+    def get_termos_aceitos(self, obj):
+        usuario = getattr(obj.usuario, 'perfil_customizado', None)
+        return bool(
+            usuario
+            and usuario.termos_aceitos
+            and usuario.versao_termos_aceita == settings.TERMS_VERSION
+        )
 
     class Meta:
         model = Perfil
-        fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'is_superuser', 'termos_aceitos', 'historico', 'descricao_perfil', 'foto', 'bio', 'localizacao', 'perfil_privado']
-        read_only_fields = ['id', 'usuario', 'tipo', 'email', 'is_superuser', 'termos_aceitos']
+        fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'is_superuser', 'termos_aceitos', 'versao_termos_aceita', 'historico', 'descricao_perfil', 'foto', 'bio', 'localizacao', 'perfil_privado']
+        read_only_fields = ['id', 'usuario', 'tipo', 'email', 'is_superuser', 'termos_aceitos', 'versao_termos_aceita']
 
     def update(self, instance, validated_data):
         usuario_data = validated_data.pop('usuario', {})

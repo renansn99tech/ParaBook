@@ -11,10 +11,12 @@ from .views import (
     CookieTokenRefreshAPIView,
     CsrfTokenAPIView,
     LogoutAPIView,
+    GovernancaLegalAPIView,
 )
 
 urlpatterns = [
     path('csrf/', CsrfTokenAPIView.as_view(), name='csrf_token'),
+    path('governanca/', GovernancaLegalAPIView.as_view(), name='governanca_legal'),
     path('login/', CookieTokenObtainPairAPIView.as_view(), name='token_obtain_pair'),
     path('refresh/', CookieTokenRefreshAPIView.as_view(), name='token_refresh'),
     path('logout/', LogoutAPIView.as_view(), name='api_logout'),

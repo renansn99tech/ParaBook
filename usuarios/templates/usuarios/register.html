@@ -83,7 +83,7 @@
                         <input type="checkbox" name="{{ form.termos_aceitos.html_name }}" id="{{ form.termos_aceitos.id_for_label }}" required style="width: 18px; height: 18px; accent-color: #8b5cf6; margin-top: 3px; cursor: pointer;">
                         <div>
                             <label for="{{ form.termos_aceitos.id_for_label }}" style="font-size: 0.85rem; color: #aeb3c7; line-height: 1.5; cursor: pointer; display: block;">
-                                Li, compreendo e concordo com a <a href="{% url 'diretrizes' %}" target="_blank" style="color: #c084fc; text-decoration: underline; font-weight: 600;">Política de Privacidade e Termos de Uso</a>.
+                                Li, compreendo e concordo com a <a href="{% url 'diretrizes' %}" target="_blank" style="color: #c084fc; text-decoration: underline; font-weight: 600;">Política de Privacidade e Termos de Uso</a> — versão {{ terms_version }}.
                             </label>
                             {% if form.termos_aceitos.errors %}
                                 <span class="field-error-message" style="color: #ef4444; font-size: 12px; display: block; margin-top: 6px;">

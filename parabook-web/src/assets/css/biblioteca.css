@@ -574,3 +574,55 @@
         bottom:18px;
     }
 }
+
+/* =================================
+   ESTADO VAZIO — acervo sem títulos
+   Convite centrado em vez de página em branco. Só tokens, então
+   acompanha os três temas (escuro / tarde / claro).
+================================= */
+.biblioteca-vazia{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:16px;
+
+    max-width:640px;
+    margin:20px auto 40px;
+    padding:72px 32px;
+
+    background:rgba(var(--bg-card-rgb),.45);
+    border:1px dashed var(--border-strong);
+    border-radius:var(--radius-xl);
+}
+
+.biblioteca-vazia .empty-icone{
+    display:grid;
+    place-items:center;
+
+    width:84px;
+    height:84px;
+
+    border-radius:var(--radius-circle);
+    background:rgba(var(--purple-rgb),.12);
+    color:var(--purple-text);
+
+    font-size:2.2rem;
+}
+
+.biblioteca-vazia h2{
+    margin:0;
+    font-size:1.6rem;
+    color:var(--text);
+}
+
+.biblioteca-vazia p{
+    margin:0;
+    max-width:46ch;
+    color:var(--text-secondary);
+}
+
+.biblioteca-vazia .btn-primary,
+.biblioteca-vazia .btn-ghost{
+    margin-top:8px;
+}

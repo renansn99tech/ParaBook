@@ -17,10 +17,11 @@ const CHAVE = 'parabookTema';
  * acompanha o sistema, inclusive se a pessoa trocar com o app aberto.
  */
 /**
- * Ordem do rodízio. `tarde` é, por enquanto, um céu da JORNADA (Home) e
- * não um tema completo de UI: como o base.css só tem bloco para `claro`,
- * o resto do app fica no visual escuro quando ele está ativo — que é o
- * comportamento desejado até existirem tokens próprios de superfície.
+ * Ordem do rodízio. Os três são temas completos de UI: o base.css tem
+ * bloco de superfície para `claro` e para `tarde`, então redefinir os
+ * canais faz o app inteiro virar junto. A landing e as telas de auth
+ * ainda ganham céus artesanais próprios (tokens --pb- e --pa- escopados)
+ * por cima dessa base.
  */
 const ORDEM = ['escuro', 'tarde', 'claro'];
 

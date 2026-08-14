@@ -19,10 +19,6 @@ function Navbar() {
             <h1 className="logo">
               <span className="para">Para</span><span className="book">Book</span>
             </h1>
-            {/* Só o céu de tarde revela (ver home-ceus.css): é o modo
-                experimental, e o badge é o que avisa isso antes da
-                pessoa reparar na troca de paleta. */}
-            <span className="pb-beta-badge">Beta</span>
           </div>
         </Link>
 

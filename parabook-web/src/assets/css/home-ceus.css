@@ -292,28 +292,6 @@ html[data-home][data-tema="escuro"] .hero-cosmos {
         url('../img/stars-bg.png') center/cover no-repeat;
 }
 
-/* Badge "Beta": existe sempre no DOM, escondida globalmente por
-   navbar.css. Só a landing no modo tarde a revela — sem JS, sem nó
-   condicional. Noite e dia são o ParaBook padrão. */
-html[data-home][data-tema="tarde"] .pb-beta-badge {
-    display: inline-flex;
-    align-self: center;
-
-    padding: 4px 10px;
-    margin-left: 10px;
-    margin-bottom: 4px;
-    border-radius: var(--radius-pill, 999px);
-
-    font-size: .62rem;
-    font-weight: 700;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-
-    color: #2A1230;
-    background: linear-gradient(135deg, #FFC46B, #F0855A);
-    box-shadow: 0 0 18px rgba(240, 133, 90, .45);
-}
-
 /* A troca de céu é uma dissolvência, não um corte. */
 html[data-home] body,
 html[data-home] .navbar,

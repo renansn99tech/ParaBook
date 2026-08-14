@@ -267,9 +267,44 @@
     outline-offset: 2px;
 }
 
-.minha-biblioteca-page .empty-state { 
-    grid-column: 1 / -1; 
-    text-align: center; 
-    padding: 4rem 2rem; 
-    color: var(--text-dim); 
+/* Estado vazio: some da grade (ocupa a linha inteira) e vira um convite,
+   não um beco sem saída. Tudo em tokens, então acompanha os três temas. */
+.minha-biblioteca-page .empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 4.5rem 2rem;
+    background: rgba(var(--bg-card-rgb), .45);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+}
+
+.minha-biblioteca-page .empty-state .empty-icone {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    border-radius: var(--radius-circle);
+    background: rgba(var(--purple-rgb), .12);
+    color: var(--purple-text);
+    font-size: 2rem;
+}
+
+.minha-biblioteca-page .empty-state h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text);
+}
+
+.minha-biblioteca-page .empty-state p {
+    margin: 0;
+    max-width: 42ch;
+}
+
+.minha-biblioteca-page .empty-state .btn-primary {
+    margin-top: 6px;
 }

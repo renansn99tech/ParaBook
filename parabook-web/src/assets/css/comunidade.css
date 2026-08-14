@@ -141,10 +141,11 @@
     color:var(--text-soft);
 }
 
-/* Grade das duas listagens (oficiais e da galera). */
+/* Grade das duas listagens (oficiais e da galera). Card-base 330px
+   (era 300px) — +10% de largura por card. */
 .grid-comunidades{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns:repeat(auto-fill, minmax(330px, 1fr));
     gap:20px;
 }
 

@@ -183,13 +183,32 @@ function Biblioteca() {
         </div>
       </header>
 
-      {sessoesPorCategoria}
+      {livros.length === 0 ? (
+        <div className="biblioteca-vazia" data-revelar>
+          <span className="empty-icone"><i className="fa-solid fa-book-open"></i></span>
+          <h2>O acervo está sendo preparado</h2>
+          <p>Ainda não há títulos publicados. Assim que novas obras chegarem, elas aparecerão aqui organizadas por categoria.</p>
+          {user ? (
+            <Link to="/publicar" className="btn-primary">
+              <i className="fa-solid fa-feather-pointed"></i> Publicar uma obra
+            </Link>
+          ) : (
+            <Link to="/comunidades" className="btn-ghost">
+              <i className="fa-solid fa-users"></i> Explorar comunidades
+            </Link>
+          )}
+        </div>
+      ) : (
+        <>
+          {sessoesPorCategoria}
 
-      {obrasIndependentes.length > 0 && (
-        <section className="secao-genero" id="secao-independentes">
-          <h2 className="titulo-genero-linha" data-revelar><i className="fa-solid fa-pen-nib me-2 text-primary"></i>Outros / Independentes</h2>
-          <div className="row g-4" data-revelar-cascata>{renderLivros(obrasIndependentes, 'obra independente')}</div>
-        </section>
+          {obrasIndependentes.length > 0 && (
+            <section className="secao-genero" id="secao-independentes">
+              <h2 className="titulo-genero-linha" data-revelar><i className="fa-solid fa-pen-nib me-2 text-primary"></i>Outros / Independentes</h2>
+              <div className="row g-4" data-revelar-cascata>{renderLivros(obrasIndependentes, 'obra independente')}</div>
+            </section>
+          )}
+        </>
       )}
     </div>
   );

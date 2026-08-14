@@ -71,20 +71,21 @@ function App() {
     <div className="app-shell">
       {!hideNavAndFooter && <Navbar />}
 
-      {/* Banner de anúncio global, igual ao base.html do Django */}
+      {/* ==========================================================
+          ANÚNCIOS — DESATIVADOS TEMPORARIAMENTE (2026-08-14).
+          Banner global de anúncio + CTA de Premium tirado da tela até
+          fecharmos o modelo de monetização e a captação de usuários.
+          Para REATIVAR: descomente o bloco JSX abaixo (o destino do CTA
+          é /planos). Ressalva registrada em business_rules/.
+      =========================================================== */}
+      {/*
       {!hideNavAndFooter && (
         <div className="container my-3 ad-container">
             <div className="p-3 text-center rounded-3 border border-secondary border-opacity-25 caixa-anuncio">
                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <small className="text-white-50"><i className="fa-solid fa-rectangle-ad me-1"></i> Espaço de Anúncio</small>
-                    {/* Ia para /assinatura, que não é rota declarada e caía no
-                        catch-all. O destino certo do CTA é a página de planos. */}
                     <Link
                         to="/planos"
-                        // O âmbar aqui é intencional: chama atenção dentro do
-                        // espaço de anúncio sem virar a primária da tela.
-                        // .interactive dá a ele o mesmo movimento dos outros
-                        // CTAs do app, que o botão do Bootstrap não tem.
                         className="btn btn-sm btn-outline-warning interactive rounded-pill px-3 d-inline-flex align-items-center"
                         style={{ minHeight: '44px' }}
                     >
@@ -94,6 +95,7 @@ function App() {
             </div>
         </div>
       )}
+      */}
 
         <Suspense fallback={<div className="text-center p-5">Carregando...</div>}>
         <Routes location={displayLocation}>

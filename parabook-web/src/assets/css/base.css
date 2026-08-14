@@ -325,6 +325,55 @@ body{
    apagar. Quem lê a preferência do sistema é o script de boot no
    index.html, que a traduz para data-tema. Uma fonte de verdade só. */
 
+/* ===============================
+   TEMA TARDE — fim de tarde
+
+   O terceiro céu. Diferente do claro, a tarde é um tema ESCURO: o texto
+   segue claro, então overlays (rgba do --white-rgb) e sombras continuam
+   valendo como no escuro e NÃO são redefinidos aqui. O que muda é o que
+   dá o clima de fim de tarde — a superfície vira roxo-ameixa quente, o
+   texto vira creme e o sotaque vira o âmbar da "luz de vela". É a mesma
+   mecânica do claro (redefinir os canais faz o app inteiro virar junto),
+   só que com menos chaves porque a família de brilho é a do escuro.
+
+   A landing e as telas de auth têm céus próprios nos tokens --pb- e --pa-
+   (nomes escopados que NÃO colidem com estes tokens de base), então continuam
+   com o tratamento artesanal; todo o resto do app passa a responder à
+   tarde a partir daqui. */
+:root[data-tema="tarde"]{
+
+    --bg-main-rgb:25,18,56;
+    --bg-card-rgb:48,26,66;
+    --bg-deep-rgb:21,14,44;
+
+    /* Par canal + hex à mão, pelo mesmo motivo do escuro/claro: derivar
+       um do outro não sobrevive à troca de tema em tempo de execução. */
+    --bg-main:#191238;
+    --bg-card:#301A42;
+    --bg-card-hover:#3A2150;
+    --bg-input:#150E2C;
+    --bg-deep:#150E2C;
+
+    /* Escala de texto em creme quente, mantendo a hierarquia. --text-dim
+       fica em #A98BB2 para passar AA (~5.9:1) sobre o --bg-main ameixa. */
+    --text:#FFF3E6;
+    --text-soft:#F3DECD;
+    --text-secondary:#C6A8BF;
+    --text-dim:#A98BB2;
+
+    /* Lilás quente para texto/ícone da marca sobre o fundo escuro — é o
+       mesmo acento da landing no modo tarde. */
+    --purple-text:#C77DFF;
+
+    /* O âmbar deixa de ser pontual e vira o sotaque da tarde. */
+    --vela-rgb:255,196,107;
+    --vela:#FFC46B;
+
+    /* Contornos de tinta quente, como na landing e no login. */
+    --border:rgba(255,214,180,.12);
+    --border-strong:rgba(255,214,180,.26);
+}
+
 /* A troca de tema anima o fundo e o texto para não ser um estalo seco.
    Só o que muda de cor entra na transição — animar tudo daria arrasto. */
 html,

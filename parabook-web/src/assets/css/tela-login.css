@@ -24,7 +24,7 @@
     --pa-glow-login:radial-gradient(ellipse 74% 52% at 76% 80%, rgba(109,40,217,.4), transparent 70%), radial-gradient(ellipse 46% 38% at 18% 16%, rgba(139,92,246,.24), transparent 74%);
     --pa-glow-reg:radial-gradient(ellipse 62% 46% at 52% 34%, rgba(139,92,246,.34), transparent 70%), radial-gradient(ellipse 44% 36% at 84% 14%, rgba(168,85,247,.2), transparent 74%);
     --pa-stars-op:.55;
-    --pa-logo-pos:left center;
+    --pa-logo-pos:11% center;
     --pa-logo-blend:soft-light;
     --pa-logo-op:.34;
     --pa-arc1-bg:linear-gradient(172deg,#463C7E 0%,#231F4C 44%,#13112F 100%);
@@ -90,7 +90,7 @@
     --pa-glow-login:radial-gradient(ellipse 74% 52% at 76% 80%, rgba(240,133,90,.44), transparent 70%), radial-gradient(ellipse 46% 38% at 18% 16%, rgba(199,125,255,.22), transparent 74%);
     --pa-glow-reg:radial-gradient(ellipse 62% 46% at 52% 34%, rgba(240,133,90,.34), transparent 70%), radial-gradient(ellipse 44% 36% at 84% 14%, rgba(199,125,255,.22), transparent 74%);
     --pa-stars-op:.22;
-    --pa-logo-pos:left center;
+    --pa-logo-pos:11% center;
     --pa-logo-blend:soft-light;
     --pa-logo-op:.3;
     --pa-arc1-bg:linear-gradient(172deg,#6B6A38 0%,#3E3B22 44%,#1E1B14 100%);
@@ -156,7 +156,7 @@
     --pa-glow-login:radial-gradient(ellipse 74% 52% at 76% 80%, rgba(255,255,255,.72), transparent 70%), radial-gradient(ellipse 46% 38% at 18% 16%, rgba(191,222,255,.6), transparent 74%);
     --pa-glow-reg:radial-gradient(ellipse 62% 46% at 52% 34%, rgba(255,255,255,.7), transparent 70%), radial-gradient(ellipse 44% 36% at 84% 14%, rgba(191,222,255,.55), transparent 74%);
     --pa-stars-op:0;
-    --pa-logo-pos:right center;
+    --pa-logo-pos:89% center;
     --pa-logo-blend:multiply;
     --pa-logo-op:.16;
     --pa-arc1-bg:linear-gradient(172deg,#8FBA4C 0%,#5E8C31 44%,#3B6323 100%);
@@ -369,16 +369,21 @@
             mask-image:linear-gradient(180deg,#000 0%,transparent 66%);
 }
 
-/* Marca d'água, só no login. `auto 128%` é obrigatório: o `201% 100%`
-   antigo achatava a logo. A posição é token porque a arte traz as duas
-   metades — escura à esquerda, clara à direita —, e cada céu escolhe a
-   que contrasta. */
+/* Marca d'água, só no login. `auto` na largura preserva a proporção (o
+   `201% 100%` antigo achatava a logo); a altura controla o zoom. 113% em vez
+   dos 128% originais recua ~12% pra logo caber inteira na coluna sem cortar
+   as asas do livro. A posição é token porque a arte traz as duas metades —
+   escura à esquerda, clara à direita — e cada céu escolhe a que contrasta.
+   Como a imagem renderizada ainda é mais larga que a coluna, `left`/`right`
+   deixavam o logo torto e cortado numa borda: 11% (noite/tarde) e 89% (dia)
+   centralizam a metade certa — o logo escuro mora a ~25% da largura da arte,
+   o claro a ~75%. */
 .auth-watermark{
     z-index:1;
 
     background-image:url("../img/logo-parabook-bg.png");
     background-repeat:no-repeat;
-    background-size:auto 128%;
+    background-size:auto 113%;
     background-position:var(--pa-logo-pos);
 
     mix-blend-mode:var(--pa-logo-blend);
@@ -458,31 +463,6 @@
 
 .auth-wordmark span{
     color:var(--pa-brand-2);
-}
-
-/* "Beta" só no modo tarde — é o marcador do céu experimental, igual ao
-   da navbar na landing. Escondida por padrão; só o data-tema=tarde a
-   revela. Vale para login e cadastro (onde houver a badge). */
-.auth-badge{
-    display:none;
-
-    align-self:center;
-
-    padding:4px 12px;
-    border-radius:var(--radius-pill, 999px);
-
-    font-size:.62rem;
-    font-weight:700;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-
-    color:var(--pa-badge-fg);
-    background:var(--pa-badge-bg);
-    box-shadow:0 0 18px var(--pa-badge-glow);
-}
-
-:root[data-tema="tarde"] .auth-badge{
-    display:inline-flex;
 }
 
 /* Título do lado visual (cadastro) */

@@ -193,8 +193,22 @@ function MinhaBiblioteca() {
 
           {livrosFiltrados.length === 0 && (
             <div className="empty-state" data-revelar>
-              <i className="fa-solid fa-box-open fs-1 d-block mb-3"></i>
-              Nenhum livro encontrado nesta seleção.
+              {livros.length === 0 ? (
+                <>
+                  <span className="empty-icone"><i className="fa-solid fa-book-bookmark"></i></span>
+                  <h3>Sua estante ainda está vazia</h3>
+                  <p>Explore o acervo, adicione livros e acompanhe seu progresso de leitura por aqui.</p>
+                  <Link to="/biblioteca" className="btn-primary">
+                    <i className="fa-solid fa-compass"></i> Explorar biblioteca
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <span className="empty-icone"><i className="fa-solid fa-magnifying-glass"></i></span>
+                  <h3>Nenhum livro nesta seleção</h3>
+                  <p>Nenhum título corresponde à busca ou ao filtro escolhido.</p>
+                </>
+              )}
             </div>
           )}
         </section>

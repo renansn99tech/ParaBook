@@ -60,7 +60,6 @@ function Login() {
             <div className="auth-brand">
               <i className="fa-solid fa-book-open-reader"></i>
               <h1 className="auth-wordmark">Para<span>Book</span></h1>
-              <span className="auth-badge">Beta</span>
             </div>
             <p>Gerencie suas leituras, descubra novas comunidades e organize seu conhecimento em um ecossistema minimalista e performático.</p>
           </div>

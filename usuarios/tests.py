@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.cache import cache
 from django.test import TestCase
 
 from usuarios.models import Usuario
@@ -8,6 +11,7 @@ from perfis.api.serializers import PerfilSerializer
 from perfis.models import Perfil
 from usuarios.services import obter_ou_criar_usuario_customizado
 from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 
 class ObterOuCriarUsuarioCustomizadoTests(TestCase):
@@ -34,37 +38,141 @@ class ObterOuCriarUsuarioCustomizadoTests(TestCase):
 
 
 class CookieAuthenticationTests(TestCase):
+    """Cobertura do fluxo de sessão em cookie HttpOnly + CSRF.
+
+    O front web guarda a sessão em cookies HttpOnly (nunca em localStorage) e
+    o backend exige CSRF nos métodos mutáveis. Estes testes travam os quatro
+    riscos de regressão mais caros dessa troca de mecanismo: CSRF, expiração,
+    rotação de refresh (que também cobre o caso de múltiplas abas) e logout.
+    """
+
+    ACCESS = settings.JWT_ACCESS_COOKIE_NAME
+    REFRESH = settings.JWT_REFRESH_COOKIE_NAME
+    SENHA = 'SenhaForte123!'
+
     def setUp(self):
-        self.user = User.objects.create_user(username='cookie-user', password='SenhaForte123!')
+        # O throttle de auth (10/min) grava histórico no cache do processo.
+        # Sem limpar entre os testes, o volume acumulado de logins/refresh
+        # começaria a devolver 429 e deixaria a suíte intermitente.
+        cache.clear()
+        self.user = User.objects.create_user(username='cookie-user', password=self.SENHA)
         self.client = APIClient(enforce_csrf_checks=True)
+
+    # --- helpers -----------------------------------------------------------
+
+    def _csrf(self):
+        return self.client.get('/api/v1/auth/csrf/').data['csrfToken']
+
+    def _login(self):
+        return self.client.post(
+            '/api/v1/auth/login/',
+            {'username': self.user.username, 'password': self.SENHA},
+            format='json',
+            HTTP_X_CSRFTOKEN=self._csrf(),
+        )
+
+    # --- login -------------------------------------------------------------
 
     def test_login_exige_csrf_e_nao_expoe_tokens_no_json(self):
         sem_csrf = self.client.post(
             '/api/v1/auth/login/',
-            {'username': self.user.username, 'password': 'SenhaForte123!'},
+            {'username': self.user.username, 'password': self.SENHA},
             format='json',
         )
         self.assertEqual(sem_csrf.status_code, 403)
 
-        csrf = self.client.get('/api/v1/auth/csrf/').data['csrfToken']
-        response = self.client.post(
-            '/api/v1/auth/login/',
-            {'username': self.user.username, 'password': 'SenhaForte123!'},
-            format='json',
-            HTTP_X_CSRFTOKEN=csrf,
-        )
+        response = self._login()
         self.assertEqual(response.status_code, 200)
+        # O token nunca volta no corpo: quem carrega a sessão é o cookie.
         self.assertNotIn('access', response.data)
         self.assertNotIn('refresh', response.data)
-        self.assertTrue(response.cookies['parabook_access']['httponly'])
-        self.assertTrue(response.cookies['parabook_refresh']['httponly'])
+        self.assertTrue(response.cookies[self.ACCESS]['httponly'])
+        self.assertTrue(response.cookies[self.REFRESH]['httponly'])
 
         sem_csrf_mutavel = self.client.post(
             '/api/v1/auth/alterar-senha/',
-            {'senha_antiga': 'SenhaForte123!', 'nova_senha': 'NovaSenhaForte123!'},
+            {'senha_antiga': self.SENHA, 'nova_senha': 'NovaSenhaForte123!'},
             format='json',
         )
         self.assertEqual(sem_csrf_mutavel.status_code, 403)
+
+    # --- acesso a rota protegida ------------------------------------------
+
+    def test_rota_protegida_sem_credencial_retorna_401(self):
+        anonimo = APIClient(enforce_csrf_checks=True)
+        self.assertEqual(anonimo.get('/api/v1/auth/profile/').status_code, 401)
+
+    def test_cookie_de_acesso_autentica_get(self):
+        self._login()
+        # GET é método seguro: passa sem X-CSRFToken, só com o cookie.
+        self.assertEqual(self.client.get('/api/v1/auth/profile/').status_code, 200)
+
+    def test_access_token_expirado_e_recusado(self):
+        expirado = AccessToken.for_user(self.user)
+        expirado.set_exp(lifetime=timedelta(seconds=-1))
+        self.client.cookies[self.ACCESS] = str(expirado)
+        self.assertEqual(self.client.get('/api/v1/auth/profile/').status_code, 401)
+
+    def test_header_authorization_ignora_csrf(self):
+        # Cliente mobile manda Bearer no header e não tem cookie/CSRF de
+        # browser. O método mutável precisa passar mesmo sem X-CSRFToken.
+        access = str(AccessToken.for_user(self.user))
+        mobile = APIClient(enforce_csrf_checks=True)
+        resposta = mobile.post(
+            '/api/v1/auth/alterar-senha/',
+            {'senha_antiga': self.SENHA, 'nova_senha': 'OutraSenhaForte123!'},
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {access}',
+        )
+        self.assertEqual(resposta.status_code, 200)
+
+    # --- refresh / rotação -------------------------------------------------
+
+    def test_refresh_sem_cookie_retorna_401(self):
+        resposta = self.client.post(
+            '/api/v1/auth/refresh/', HTTP_X_CSRFTOKEN=self._csrf()
+        )
+        self.assertEqual(resposta.status_code, 401)
+
+    def test_refresh_exige_csrf(self):
+        self._login()
+        self.assertEqual(self.client.post('/api/v1/auth/refresh/').status_code, 403)
+
+    def test_refresh_rotaciona_e_invalida_token_anterior(self):
+        self._login()
+        refresh_antigo = self.client.cookies[self.REFRESH].value
+
+        renova = self.client.post('/api/v1/auth/refresh/', HTTP_X_CSRFTOKEN=self._csrf())
+        self.assertEqual(renova.status_code, 200)
+        # A rotação emite um refresh novo (diferente do que veio no login).
+        self.assertNotEqual(self.client.cookies[self.REFRESH].value, refresh_antigo)
+
+        # Reapresentar o refresh antigo — cenário de aba que ficou para trás —
+        # tem de falhar: ele foi para a blacklist ao ser rotacionado.
+        self.client.cookies[self.REFRESH] = refresh_antigo
+        reuso = self.client.post('/api/v1/auth/refresh/', HTTP_X_CSRFTOKEN=self._csrf())
+        self.assertEqual(reuso.status_code, 401)
+        self.assertEqual(reuso.cookies[self.REFRESH].value, '')
+
+    # --- logout ------------------------------------------------------------
+
+    def test_logout_exige_csrf(self):
+        self._login()
+        self.assertEqual(self.client.post('/api/v1/auth/logout/').status_code, 403)
+
+    def test_logout_limpa_cookies_e_invalida_renovacao(self):
+        self._login()
+        refresh_antigo = self.client.cookies[self.REFRESH].value
+
+        logout = self.client.post('/api/v1/auth/logout/', HTTP_X_CSRFTOKEN=self._csrf())
+        self.assertEqual(logout.status_code, 200)
+        self.assertEqual(logout.cookies[self.ACCESS].value, '')
+        self.assertEqual(logout.cookies[self.REFRESH].value, '')
+
+        # Depois do logout o refresh está na blacklist: não dá para renovar.
+        self.client.cookies[self.REFRESH] = refresh_antigo
+        renova = self.client.post('/api/v1/auth/refresh/', HTTP_X_CSRFTOKEN=self._csrf())
+        self.assertEqual(renova.status_code, 401)
 
 
 class AceiteTermosVersionadoTests(TestCase):

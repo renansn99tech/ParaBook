@@ -1,5 +1,5 @@
-import { useContext, useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useContext, useState, useEffect, useRef } from 'react';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
@@ -26,11 +26,12 @@ function EstadoVazio({ icone, titulo, texto, acao }) {
 function Profile() {
   const { user, loading, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  
+
   const [activeTab, setActiveTab] = useState('info');
   const [fullProfile, setFullProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const paginaRef = useRevelacao([fullProfile, activeTab, loadingProfile]);
+  const fotoInputRef = useRef(null);
 
   useEffect(() => {
     if (user?.username) {
@@ -38,8 +39,10 @@ function Profile() {
         .then(res => setFullProfile(res.data))
         .catch(err => console.error("Erro ao carregar perfil completo", err))
         .finally(() => setLoadingProfile(false));
+    } else if (!loading) {
+      setLoadingProfile(false);
     }
-  }, [user]);
+  }, [loading, user]);
 
   // Mocks para fallback se a API não retornar
   const stats = fullProfile?.estatisticas || {
@@ -57,8 +60,7 @@ function Profile() {
   }
 
   if (!user) {
-    navigate('/login');
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   // Mesmo fluxo do template legado: confirma, chama a exclusão transacional
@@ -103,25 +105,139 @@ function Profile() {
     }
   };
 
+  // Envia o arquivo escolhido para a API em multipart. O Content-Type precisa
+  // ser sobrescrito aqui: o axios base manda application/json, e com esse header
+  // ele serializaria o FormData como JSON (o arquivo se perderia).
+  const handleTrocarFoto = async (evento) => {
+    const arquivo = evento.target.files?.[0];
+    if (!arquivo) return;
+
+    // Bloqueia tudo que não for imagem. Whitelist de formatos web seguros;
+    // se o browser não informar o MIME, cai para a checagem por extensão.
+    const TIPOS_IMAGEM = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    const extensaoOk = /\.(png|jpe?g|webp|gif)$/i.test(arquivo.name);
+    const ehImagemValida = arquivo.type ? TIPOS_IMAGEM.includes(arquivo.type) : extensaoOk;
+    if (!ehImagemValida) {
+      swal.fire({
+        icon: 'error',
+        title: 'Formato não suportado',
+        text: 'Envie uma imagem nos formatos PNG, JPG, WEBP ou GIF.',
+      });
+      evento.target.value = '';
+      return;
+    }
+    const LIMITE_MB = 5;
+    if (arquivo.size > LIMITE_MB * 1024 * 1024) {
+      swal.fire({ icon: 'error', title: 'Imagem muito grande', text: `O limite é ${LIMITE_MB} MB.` });
+      evento.target.value = '';
+      return;
+    }
+
+    const dados = new FormData();
+    dados.append('foto', arquivo);
+    try {
+      await api.patch('/perfis/meu-perfil/', dados, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      swal.fire({
+        icon: 'success',
+        title: 'Foto atualizada!',
+        text: 'Sua nova foto de perfil já está no ar.',
+      }).then(() => window.location.reload());
+    } catch (error) {
+      console.error('Erro ao trocar foto', error);
+      swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível atualizar a foto. Tente novamente.' });
+    } finally {
+      // Permite reescolher o MESMO arquivo depois de um erro (o onChange só
+      // dispara se o valor mudar).
+      evento.target.value = '';
+    }
+  };
+
+  // Remove a foto atual mandando foto=null: o backend limpa a referência e o
+  // avatar volta para a imagem padrão.
+  const handleRemoverFoto = async () => {
+    const confirmacao = await swal.fire({
+      title: 'Remover foto?',
+      text: 'Sua foto atual será removida e o avatar voltará para a imagem padrão.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Remover',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: BOTAO.perigo,
+      cancelButtonColor: BOTAO.neutro,
+    });
+    if (!confirmacao.isConfirmed) return;
+
+    try {
+      await api.patch('/perfis/meu-perfil/', { foto: null });
+      swal.fire({
+        icon: 'success',
+        title: 'Foto removida',
+        text: 'Voltamos para o avatar padrão.',
+      }).then(() => window.location.reload());
+    } catch (error) {
+      console.error('Erro ao remover foto', error);
+      swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível remover a foto. Tente novamente.' });
+    }
+  };
+
   return (
     <main className="perfil-page" ref={paginaRef}>
       {/* PERFIL HEADER */}
       <section className="perfil-header-container" data-revelar>
         <div className="perfil-cover">
-            {/* Capa com gradiente e blur inspirado na Home */}
+          {/* Capa com gradiente e blur inspirado na Home */}
         </div>
 
         <div className="perfil-content-wrapper">
           <div className="perfil-sidebar">
             <div className="perfil-avatar-box">
-              <img src={fullProfile?.perfil?.foto || user?.foto || userImg} alt="Avatar do Usuário" className="perfil-avatar" />
+              <img
+                src={fullProfile?.perfil?.foto || user?.foto || userImg}
+                alt="Avatar do usuário"
+                className="perfil-avatar"
+                decoding="async"
+                width="176"
+                height="176"
+              />
+
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                ref={fotoInputRef}
+                onChange={handleTrocarFoto}
+                hidden
+              />
+
+              <button
+                type="button"
+                className="avatar-acao avatar-acao--trocar"
+                onClick={() => fotoInputRef.current?.click()}
+                aria-label="Trocar foto de perfil"
+                title="Trocar foto"
+              >
+                <i className="fa-solid fa-camera"></i>
+              </button>
+
+              {Boolean(user?.foto || fullProfile?.perfil?.foto) && (
+                <button
+                  type="button"
+                  className="avatar-acao avatar-acao--remover"
+                  onClick={handleRemoverFoto}
+                  aria-label="Remover foto de perfil"
+                  title="Remover foto"
+                >
+                  <i className="fa-solid fa-trash-can"></i>
+                </button>
+              )}
             </div>
           </div>
 
           <div className="perfil-main-info glass-card">
             <div className="info-header">
-              <h1 className="perfil-nome"> 
-                {user?.nome || 'Usuário'}  
+              <h1 className="perfil-nome">
+                {user?.nome || 'Usuário'}
                 {user?.tipo === 'admin' && <span className="badge badge-admin"><i className="fa-solid fa-shield-halved"></i> Admin</span>}
                 {user?.tipo === 'autor' && <span className="badge badge-autor"><i className="fa-solid fa-feather-pointed"></i> Autor</span>}
                 {user?.tipo === 'aguardando_aprovacao' && <span className="badge badge-pendente"><i className="fa-solid fa-clock-rotate-left"></i> Em Análise</span>}
@@ -133,10 +249,10 @@ function Profile() {
             <div className="info-body">
               <p className="perfil-descricao"><i className="fa-solid fa-quote-left"></i> {fullProfile?.perfil?.descricao_perfil || user?.descricao_perfil || 'Sem status'}</p>
               <p className="perfil-historico">
-                <i className="fa-solid fa-clock-rotate-left"></i> 
+                <i className="fa-solid fa-clock-rotate-left"></i>
                 Último lido: <strong>{stats.ultimo_lido || 'Nenhum livro lido'}</strong>
               </p>
-              
+
               <div className="perfil-meta">
                 <div className="meta-item">
                   <i className="fa-solid fa-location-dot"></i>
@@ -254,23 +370,23 @@ function Profile() {
                 acao={{ to: '/biblioteca', label: 'Explorar a Biblioteca' }}
               />
             ) : (
-            <div className="favoritos-grid full">
-              {livrosFavoritos.map((livro) => (
-                <div key={livro.id} className="favorito-card content-glass-card">
-                  <div className="favorito-capa">
-                    {livro.capa ? (
-                      <img src={livro.capa} alt={livro.titulo} />
-                    ) : (
-                      <i className="fa-solid fa-book-open fs-1 text-white-50"></i>
-                    )}
+              <div className="favoritos-grid full">
+                {livrosFavoritos.map((livro) => (
+                  <div key={livro.id} className="favorito-card content-glass-card">
+                    <div className="favorito-capa">
+                      {livro.capa ? (
+                        <img src={livro.capa} alt={`Capa do livro ${livro.titulo}`} loading="lazy" decoding="async" width="180" height="250" />
+                      ) : (
+                        <i className="fa-solid fa-book-open fs-1 text-white-50"></i>
+                      )}
+                    </div>
+                    <div className="favorito-info">
+                      <h4>{livro.titulo}</h4>
+                      <p>{livro.autor}</p>
+                    </div>
                   </div>
-                  <div className="favorito-info">
-                    <h4>{livro.titulo}</h4>
-                    <p>{livro.autor}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
             )}
           </div>
         )}
@@ -286,22 +402,22 @@ function Profile() {
                 acao={{ to: '/comunidades', label: 'Explorar Comunidades' }}
               />
             ) : (
-            <div className="favoritos-grid full">
-              {minhasComunidades.map((comunidade) => (
-                <div key={comunidade.id} className="favorito-card content-glass-card">
-                  <div className="favorito-capa">
-                    <i className="fa-solid fa-users"></i>
+              <div className="favoritos-grid full">
+                {minhasComunidades.map((comunidade) => (
+                  <div key={comunidade.id} className="favorito-card content-glass-card">
+                    <div className="favorito-capa">
+                      <i className="fa-solid fa-users"></i>
+                    </div>
+                    <div className="favorito-info">
+                      <h4>{comunidade.nome}</h4>
+                      <p>{comunidade.descricao}</p>
+                      <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-outline">
+                        Acessar Comunidade
+                      </Link>
+                    </div>
                   </div>
-                  <div className="favorito-info">
-                    <h4>{comunidade.nome}</h4>
-                    <p>{comunidade.descricao}</p>
-                    <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-outline">
-                      Acessar Comunidade
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
             )}
           </div>
         )}
@@ -316,7 +432,7 @@ function Profile() {
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData.entries());
                 data.perfil_privado = formData.get('perfil_privado') === 'on';
-                
+
                 // Os dados agora vão direto, pois nome e username podem ser editados
 
                 try {
@@ -378,7 +494,7 @@ function Profile() {
                 <div className="danger-actions">
                   <Link to="/perfil/alterar-senha" className="btn-outline">
                     Alterar Senha
-                  </Link> 
+                  </Link>
                   <button className="btn-danger-outline" onClick={handleExcluirConta}>
                     <i className="fa-solid fa-trash"></i> Excluir conta
                   </button>

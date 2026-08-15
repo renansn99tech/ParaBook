@@ -271,7 +271,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STORAGES = {
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        # Em desenvolvimento e no CI não há etapa de collectstatic. Usar o
+        # manifest nesse cenário fazia a renderização de templates falhar
+        # mesmo quando o arquivo existia em STATICFILES_DIRS.
+        "BACKEND": (
+            "django.contrib.staticfiles.storage.StaticFilesStorage"
+            if DEBUG
+            else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        )
     },
     "default": {
         "BACKEND": (

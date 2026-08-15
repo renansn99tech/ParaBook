@@ -3,7 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import useTema from '../hooks/useTema';
 import useRevelacao from '../hooks/useRevelacao';
-import openBookImg from '../assets/img/open-book.png';
+import openBook480 from '../assets/img/open-book-480.webp';
+import openBook768 from '../assets/img/open-book-768.webp';
 import '../assets/css/tela-login.css';
 
 function Register() {
@@ -154,7 +155,16 @@ function Register() {
               <span className="auth-dot"></span>
               <span className="auth-dot"></span>
             </div>
-            <img src={openBookImg} alt="" className="auth-book" />
+            <img
+              src={openBook480}
+              srcSet={`${openBook480} 480w, ${openBook768} 768w`}
+              sizes="330px"
+              alt=""
+              className="auth-book"
+              width="768"
+              height="512"
+              decoding="async"
+            />
           </div>
 
           <div className="auth-arc auth-arc-1"></div>

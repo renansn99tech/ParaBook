@@ -1,5 +1,5 @@
 import { lazy, Suspense, useContext } from 'react'
-import { Routes, Route, useLocation, Link, Navigate } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { AuthContext } from './context/auth-context'
 import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
 import Navbar from './components/Navbar'

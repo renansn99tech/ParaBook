@@ -217,6 +217,7 @@
    ------------------------------------------------------------ */
 .auth-body{
     min-height:100vh;
+    min-height:100svh;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -354,7 +355,7 @@
 .auth-stars{
     z-index:1;
 
-    background:url("../img/stars-bg.png") center/cover;
+    background:var(--image-stars) center/cover;
     mix-blend-mode:screen;
     opacity:var(--pa-stars-op);
 
@@ -381,7 +382,7 @@
 .auth-watermark{
     z-index:1;
 
-    background-image:url("../img/logo-parabook-bg.png");
+    background-image:var(--image-brand-watermark);
     background-repeat:no-repeat;
     background-size:auto 113%;
     background-position:var(--pa-logo-pos);
@@ -721,6 +722,7 @@
 }
 
 .auth-terms a{
+    padding-block:4px;
     color:var(--pa-link);
     font-weight:600;
 }
@@ -752,8 +754,11 @@
 }
 
 .auth-forgot-link{
-    display:block;
-    margin:-6px 0 22px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    min-height:44px;
+    margin:-6px 0 10px;
     text-align:right;
     font-size:.85rem;
     color:var(--pa-link);
@@ -772,6 +777,9 @@
 }
 
 .auth-footer-text a{
+    display:inline-flex;
+    align-items:center;
+    min-height:44px;
     color:var(--pa-link);
     font-weight:600;
     text-decoration:none;
@@ -817,6 +825,12 @@
         border:none;
         padding:72px 32px 56px;
     }
+
+    /* Também cobre tablets: Safari amplia campos abaixo de 16px e o
+       teclado passa a provocar uma mudança de escala desnecessária. */
+    .auth-field input{
+        font-size:1rem;
+    }
 }
 
 @media(max-width:520px){
@@ -836,4 +850,5 @@
     .auth-card h3{
         font-size:1.7rem;
     }
+
 }

@@ -278,7 +278,7 @@ html[data-home][data-tema="claro"] .home-cosmos-layer {
 html[data-home][data-tema="tarde"] .hero-cosmos {
     background:
         radial-gradient(circle at center, rgba(240, 133, 90, .42), transparent 54%),
-        url('../img/stars-bg.png') center/cover no-repeat;
+        var(--image-stars) center/cover no-repeat;
 }
 
 /* Mesma composição da tarde — glow radial sobre o starfield —, agora em
@@ -289,7 +289,7 @@ html[data-home][data-tema="tarde"] .hero-cosmos {
 html[data-home][data-tema="escuro"] .hero-cosmos {
     background:
         radial-gradient(circle at center, rgba(var(--purple-rgb), .42), transparent 52%),
-        url('../img/stars-bg.png') center/cover no-repeat;
+        var(--image-stars) center/cover no-repeat;
 }
 
 /* A troca de céu é uma dissolvência, não um corte. */

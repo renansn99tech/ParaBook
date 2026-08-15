@@ -80,8 +80,8 @@
 
     background:
         linear-gradient(145deg,
-            rgba(var(--bg-card-rgb),.95),
-            rgba(var(--bg-card-rgb),.72));
+            rgba(var(--bg-card-rgb), .95),
+            rgba(var(--bg-card-rgb), .72));
 
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -115,7 +115,7 @@
 
     background:
         radial-gradient(circle,
-            rgba(var(--purple-rgb),.22),
+            rgba(var(--purple-rgb), .22),
             transparent 70%);
 
     opacity: 0;
@@ -129,10 +129,10 @@
 .timeline-content:hover {
     transform: translateY(var(--lift-md));
 
-    border-color: rgba(var(--purple-rgb),.45);
+    border-color: rgba(var(--purple-rgb), .45);
 
     box-shadow:
-        0 18px 45px rgba(var(--purple-rgb),.14);
+        0 18px 45px rgba(var(--purple-rgb), .14);
 }
 
 .fade-section:hover::before,
@@ -239,7 +239,7 @@
             var(--purple-dark));
 
     box-shadow:
-        0 0 25px rgba(var(--purple-rgb),.35);
+        0 0 25px rgba(var(--purple-rgb), .35);
 }
 
 /* =================================
@@ -290,9 +290,9 @@
 
     border-radius: var(--radius-pill);
 
-    background: rgba(var(--purple-rgb),.14);
+    background: rgba(var(--purple-rgb), .14);
 
-    border: 1px solid rgba(var(--purple-rgb),.35);
+    border: 1px solid rgba(var(--purple-rgb), .35);
 
     color: var(--purple-text);
 
@@ -309,8 +309,8 @@
 
     background:
         radial-gradient(circle,
-            rgba(var(--purple-rgb),.85),
-            rgba(var(--purple-dark-rgb),.35),
+            rgba(var(--purple-rgb), .85),
+            rgba(var(--purple-dark-rgb), .35),
             transparent 70%);
 
     filter: blur(25px);
@@ -358,7 +358,7 @@
     background:
         linear-gradient(to bottom,
             var(--purple),
-            rgba(var(--purple-rgb),.15));
+            rgba(var(--purple-rgb), .15));
 }
 
 .timeline-item {
@@ -385,7 +385,7 @@
     border: 2px solid var(--purple);
 
     box-shadow:
-        0 0 16px rgba(var(--purple-rgb),.55);
+        0 0 16px rgba(var(--purple-rgb), .55);
 
     z-index: 2;
 }
@@ -438,23 +438,23 @@
 }
 
 .timeline-item.active .timeline-content {
-    border-color: rgba(var(--purple-rgb),.5);
+    border-color: rgba(var(--purple-rgb), .5);
 
     background:
         linear-gradient(145deg,
             rgba(40, 25, 88, .86),
-            rgba(var(--bg-deep-rgb),.78));
+            rgba(var(--bg-deep-rgb), .78));
 }
 
 :root[data-tema="claro"] .timeline-item.active .timeline-content {
     background:
-        linear-gradient(135deg, rgba(var(--purple-rgb),.16), rgba(255,255,255,.96) 58%);
-    border-color:rgba(var(--purple-rgb),.45);
-    box-shadow:0 12px 30px rgba(var(--purple-rgb),.12);
+        linear-gradient(135deg, rgba(var(--purple-rgb), .16), rgba(255, 255, 255, .96) 58%);
+    border-color: rgba(var(--purple-rgb), .45);
+    box-shadow: 0 12px 30px rgba(var(--purple-rgb), .12);
 }
 
 :root[data-tema="claro"] .timeline-item.active .timeline-content p {
-    color:var(--text-secondary);
+    color: var(--text-secondary);
 }
 
 .timeline-item.future {
@@ -467,15 +467,15 @@
 
 @keyframes pulsePurple {
     0% {
-        box-shadow: 0 0 0 0 rgba(var(--purple-rgb),.65);
+        box-shadow: 0 0 0 0 rgba(var(--purple-rgb), .65);
     }
 
     70% {
-        box-shadow: 0 0 0 14px rgba(var(--purple-rgb),0);
+        box-shadow: 0 0 0 14px rgba(var(--purple-rgb), 0);
     }
 
     100% {
-        box-shadow: 0 0 0 0 rgba(var(--purple-rgb),0);
+        box-shadow: 0 0 0 0 rgba(var(--purple-rgb), 0);
     }
 }
 
@@ -505,7 +505,7 @@
     margin: 40px 60px 0 auto;
 
     box-shadow:
-        0 0 25px rgba(var(--purple-rgb),.35);
+        0 0 25px rgba(var(--purple-rgb), .35);
 
     transition: .35s;
 }
@@ -560,22 +560,22 @@
 }
 
 .badge-done {
-    background: rgba(var(--white-rgb),0.05);
+    background: rgba(var(--white-rgb), 0.05);
     color: var(--text-secondary);
-    border: 1px solid rgba(var(--white-rgb),0.15);
+    border: 1px solid rgba(var(--white-rgb), 0.15);
 }
 
 .badge-active {
-    background: rgba(var(--purple-rgb),0.2);
+    background: rgba(var(--purple-rgb), 0.2);
     color: var(--purple-text);
-    border: 1px solid rgba(var(--purple-rgb),0.5);
-    box-shadow: 0 0 12px rgba(var(--purple-rgb),0.3);
+    border: 1px solid rgba(var(--purple-rgb), 0.5);
+    box-shadow: 0 0 12px rgba(var(--purple-rgb), 0.3);
 }
 
 .badge-future {
     background: transparent;
     color: var(--text-dim);
-    border: 1px dashed rgba(var(--white-rgb),0.15);
+    border: 1px dashed rgba(var(--white-rgb), 0.15);
 }
 
 /* =================================
@@ -719,37 +719,38 @@
         font-size: 1.05rem;
     }
 }
+
 /* ==========================================================
    MIGRADO DO INLINE — cabeçalho de marco na linha do tempo.
    Os cinco marcos repetiam o mesmo `style={{ display:'flex', ... }}`.
 ========================================================== */
 
-.sobre-conteudo{
-    max-width:1500px;
-    margin:0 auto;
+.sobre-conteudo {
+    max-width: 1500px;
+    margin: 0 10%;
 }
 
-.marco-cabecalho{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+.marco-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-    margin-bottom:8px;
+    margin-bottom: 8px;
 }
 
-.marco-cabecalho .date{
-    margin-bottom:0;
+.marco-cabecalho .date {
+    margin-bottom: 0;
 }
 
 /* O marco do mês corrente ganha a cor da marca em vez de um lilás
    avulso (#d8b4fe / #c4b5fd escritos à mão). */
 .marco-atual .date,
-.marco-atual h3{
-    color:var(--purple-text);
+.marco-atual h3 {
+    color: var(--purple-text);
 }
 
-.sobre-rodape{
-    margin-top:40px;
+.sobre-rodape {
+    margin-top: 40px;
 
-    text-align:center;
+    text-align: center;
 }

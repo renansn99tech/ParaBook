@@ -6,9 +6,15 @@ import useRevelacao from '../hooks/useRevelacao';
 import useProgressoScroll from '../hooks/useProgressoScroll';
 import '../assets/css/home.css';
 import '../assets/css/home-ceus.css';
-import openBookImg from '../assets/img/open-book.png';
-import leitoraImg from '../assets/img/leitora.png';
-import autorImg from '../assets/img/autor.png';
+import openBook480 from '../assets/img/open-book-480.webp';
+import openBook768 from '../assets/img/open-book-768.webp';
+import openBook1200 from '../assets/img/open-book-1200.webp';
+import leitora480 from '../assets/img/leitora-480.webp';
+import leitora768 from '../assets/img/leitora-768.webp';
+import leitora1200 from '../assets/img/leitora-1200.webp';
+import autor480 from '../assets/img/autor-480.webp';
+import autor768 from '../assets/img/autor-768.webp';
+import autor1200 from '../assets/img/autor-1200.webp';
 
 function Home() {
   const { user } = useContext(AuthContext);
@@ -111,7 +117,15 @@ function Home() {
             </div>
           </div>
 
-          <img src={openBookImg} alt="Livro Aberto" />
+          <img
+            src={openBook768}
+            srcSet={`${openBook480} 480w, ${openBook768} 768w, ${openBook1200} 1200w`}
+            sizes="(max-width: 520px) 290px, (max-width: 768px) 360px, (max-width: 1200px) 500px, 620px"
+            alt="Livro aberto"
+            width="1200"
+            height="800"
+            fetchPriority="high"
+          />
 
           <div className="floating-card author-card">
             <div className="floating-user">
@@ -212,7 +226,16 @@ function Home() {
             <div className="cena-sol-tarde"></div>
 
             <div className="cena-livro">
-              <img src={openBookImg} alt="" />
+              <img
+                src={openBook480}
+                srcSet={`${openBook480} 480w, ${openBook768} 768w, ${openBook1200} 1200w`}
+                sizes="(max-width: 900px) 55vw, 44px"
+                alt=""
+                width="768"
+                height="512"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
 
             <div className="cena-paisagem-noite">
@@ -283,7 +306,16 @@ function Home() {
             </ul>
           </div>
           <div className="feature-photo">
-            <img src={leitoraImg} alt="Leitora" />
+            <img
+              src={leitora768}
+              srcSet={`${leitora480} 480w, ${leitora768} 768w, ${leitora1200} 1200w`}
+              sizes="(max-width: 768px) calc(100vw - 40px), 50vw"
+              alt="Leitora"
+              width="1200"
+              height="960"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </div>
 
@@ -302,7 +334,16 @@ function Home() {
             </ul>
           </div>
           <div className="feature-photo">
-            <img src={autorImg} alt="Autor" />
+            <img
+              src={autor768}
+              srcSet={`${autor480} 480w, ${autor768} 768w, ${autor1200} 1200w`}
+              sizes="(max-width: 768px) calc(100vw - 40px), 50vw"
+              alt="Autor"
+              width="1200"
+              height="960"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </div>
       </section>
@@ -329,6 +370,9 @@ function Home() {
                       src={livro.capa_url}
                       alt={`Capa do livro ${livro.titulo}`}
                       loading="lazy"
+                      decoding="async"
+                      width="300"
+                      height="420"
                     />
                   ) : (
                     <div className="capa-placeholder">

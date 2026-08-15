@@ -49,6 +49,7 @@ body{
 
 .app-shell{
     min-height:100vh;
+    min-height:100svh;
 
     display:flex;
     flex-direction:column;
@@ -109,6 +110,33 @@ body{
        Pilha de sistema de propósito: sem @font-face e sem CDN, então não
        há webfont para baixar nem risco de fallback silencioso. */
     --fonte-editorial:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+
+    /* Geometria responsiva compartilhada. O gutter acompanha a viewport,
+       mas nunca fica menor que 20px no celular nem maior que 60px no
+       desktop. Páginas podem controlar seu espaçamento vertical sem que
+       uma regra global reescreva padding-top/padding-bottom. */
+    --layout-max:1500px;
+    --layout-gutter:clamp(1.25rem, 4.7vw, 3.75rem);
+    --section-space:clamp(3.75rem, 7vw, 5rem);
+    --touch-target:44px;
+
+    /* Áreas que podem ficar sob notch, Dynamic Island e indicador de
+       início. Em navegadores sem suporte, o segundo argumento mantém 0. */
+    --safe-top:env(safe-area-inset-top, 0px);
+    --safe-right:env(safe-area-inset-right, 0px);
+    --safe-bottom:env(safe-area-inset-bottom, 0px);
+    --safe-left:env(safe-area-inset-left, 0px);
+
+    /* Assets decorativos globais em densidades 1x/2x. Os PNGs originais
+       permanecem no repositório como matrizes, mas não entram no bundle. */
+    --image-stars:image-set(
+        url('../img/stars-bg-768.webp') 1x,
+        url('../img/stars-bg-1536.webp') 2x
+    );
+    --image-brand-watermark:image-set(
+        url('../img/logo-parabook-bg-768.webp') 1x,
+        url('../img/logo-parabook-bg-1536.webp') 2x
+    );
 
     /* Superfícies: hex literal, não `rgb(var(--*-rgb))`.
 
@@ -480,11 +508,12 @@ html,
        único container que colide com o `.container` do Bootstrap (que
        reduz por breakpoint em telas grandes); as classes próprias do
        projeto abaixo não precisam. */
-    max-width:1500px !important;
+    max-width:var(--layout-max) !important;
 
     margin:auto;
 
-    padding:0 40px;
+    padding-left:max(var(--layout-gutter), var(--safe-left));
+    padding-right:max(var(--layout-gutter), var(--safe-right));
 }
 
 /* ===============================
@@ -799,68 +828,102 @@ select:focus{
 }
 
 /* ==========================================================
-   PATCH DE RESPONSIVIDADE GLOBAL (iPhones e Androids)
+   FUNDAÇÃO RESPONSIVA GLOBAL
+
+   As páginas continuam responsáveis por trocar grids, ordem e composição.
+   A base garante apenas invariantes: mídia fluida, gutter consistente,
+   tipografia segura e alvos de toque. Assim uma correção global não muda
+   acidentalmente o display ou o espaçamento vertical de uma tela inteira.
 ========================================================== */
+img,
+picture,
+video,
+canvas{
+    max-width:100%;
+}
+
+@media (max-width: 1199.98px) {
+    /* Safari móvel já usa indicador sobreposto. Ocultar a scrollbar
+       customizada evita que Chromium/Android reservem largura útil. */
+    html {
+        scrollbar-width:none;
+    }
+
+    ::-webkit-scrollbar {
+        display:none;
+    }
+}
+
+img,
+video{
+    height:auto;
+}
+
+button,
+a,
+input,
+select,
+textarea{
+    overflow-wrap:anywhere;
+}
+
 @media (max-width: 768px) {
     body {
-        overflow-x: hidden; /* Impede rolagem horizontal indesejada */
-    }
-    
-    /* Força APENAS a Home a virar 1 coluna no celular, deixando o Perfil livre */
-    .hero, 
-    .novidades-grid, 
-    .footer-content {
-        grid-template-columns: 1fr !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 25px !important;
+        overflow-x:hidden;
     }
 
-    /* Ajustes da Landing Page */
-    .hero {
-        padding: 40px 24px !important;
-        text-align: center;
-    }
-    .hero-content h1 {
-        font-size: 2.2rem !important;
-        line-height: 1.2 !important;
-    }
-    .hero-buttons {
-        justify-content: center;
-        flex-direction: column;
-        width: 100%;
-    }
-    .hero-buttons .btn-primary, .hero-buttons .btn-secondary {
-        width: 100%;
-        justify-content: center;
-    }
-    .hero-image {
-        margin-top: 30px;
-        transform: scale(0.9); /* Reduz um pouco os cards flutuantes para caber na tela */
+    /* O Bootstrap define gutters próprios e algumas telas tinham um patch
+       que também sobrescrevia o eixo vertical. Aqui só o eixo horizontal
+       é normalizado; py-*, padding local e ritmo de seção permanecem vivos. */
+    .container,
+    .pagina-comunidade {
+        padding-left:max(var(--layout-gutter), var(--safe-left)) !important;
+        padding-right:max(var(--layout-gutter), var(--safe-right)) !important;
     }
 
-    /* Ajustes de Container Gerais (Biblioteca, Comunidades) */
-    .container, .pagina-comunidade {
-        padding: 30px 20px 80px !important;
-    }
-    
     .section-title {
-        font-size: 1.8rem !important;
-        text-align: center;
+        font-size:clamp(1.65rem, 7vw, 1.9rem);
+        line-height:1.2;
     }
 
-    /* Ajustes do Footer */
     .footer {
-        padding: 40px 20px 20px !important;
-        text-align: center;
+        padding-left:max(var(--layout-gutter), var(--safe-left)) !important;
+        padding-right:max(var(--layout-gutter), var(--safe-right)) !important;
     }
+
     .footer-bottom {
-        flex-direction: column;
-        gap: 20px;
+        flex-direction:column;
+        gap:20px;
     }
+
     .footer-column {
-        padding-left: 0;
-        align-items: center;
+        padding-left:0;
+    }
+}
+
+@media (max-width: 768px) {
+    /* O Safari amplia automaticamente campos com texto menor que 16px. */
+    input,
+    textarea,
+    select {
+        font-size:16px;
+    }
+}
+
+@media (pointer: coarse) {
+    button,
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"] {
+        min-height:var(--touch-target);
+    }
+}
+
+@media (hover: none) {
+    /* Informações essenciais não podem depender de hover em telas touch. */
+    [data-hover-content] {
+        opacity:1;
+        transform:none;
     }
 }
 /* Caixa do espaço de anúncio no topo. Era um rgba escuro inline, que

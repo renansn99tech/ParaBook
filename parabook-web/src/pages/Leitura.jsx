@@ -6,6 +6,31 @@ import { AuthContext } from '../context/auth-context';
 import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/leitura.css';
 
+const PDF_JS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+const PDF_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+let carregamentoPdfJs = null;
+
+function carregarPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+
+  if (!carregamentoPdfJs) {
+    carregamentoPdfJs = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = PDF_JS_URL;
+      script.async = true;
+      script.crossOrigin = 'anonymous';
+      script.onload = () => resolve(window.pdfjsLib);
+      script.onerror = () => {
+        carregamentoPdfJs = null;
+        reject(new Error('Não foi possível carregar o leitor de PDF.'));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  return carregamentoPdfJs;
+}
+
 function Leitura() {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
@@ -45,11 +70,12 @@ function Leitura() {
 
     const fetchData = async () => {
       try {
-        if (!window.pdfjsLib) {
+        const pdfjsLib = await carregarPdfJs();
+        if (!pdfjsLib) {
           throw new Error("Biblioteca PDF.js não encontrada.");
         }
         
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 
         // 1. Busca os detalhes da estante (para saber se já está lido, favorito, etc)
         const resEstante = await api.get('/biblioteca/estante/');
@@ -66,7 +92,7 @@ function Leitura() {
           responseType: 'arraybuffer'
         });
 
-        const pdf = await window.pdfjsLib.getDocument({ data: response.data }).promise;
+        const pdf = await pdfjsLib.getDocument({ data: response.data }).promise;
         setPdfDoc(pdf);
         setTotalPaginas(pdf.numPages);
         

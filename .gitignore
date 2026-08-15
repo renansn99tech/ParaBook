@@ -36,6 +36,7 @@ Thumbs.db
 
 # Pasta media do django
 media/.env
+media/avatares/
 
 # Assistentes de IA (Claude Code / AGENTS.md) — só na raiz do projeto.
 # parabook-mobile/.claude e parabook-mobile/AGENTS.md continuam

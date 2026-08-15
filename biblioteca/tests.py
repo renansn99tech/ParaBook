@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.test import APIClient
 
 from biblioteca.models import Categoria
@@ -14,6 +15,9 @@ class ListaAutoresViewTests(TestCase):
         # Regressao: Usuario nao era importado em biblioteca/views.py
         response = self.client.get(reverse('lista_autores'))
         self.assertEqual(response.status_code, 200)
+
+    def test_css_base_do_template_existe_no_storage_de_desenvolvimento(self):
+        self.assertTrue(staticfiles_storage.exists('css/styles.css'))
 
 
 class SegurancaCatalogoTests(TestCase):

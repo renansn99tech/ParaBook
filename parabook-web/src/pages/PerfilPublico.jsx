@@ -72,7 +72,7 @@ function PerfilPublico() {
           <div className="perfil-sidebar">
             <div className="perfil-avatar-box">
               {dados.perfil.foto ? (
-                <img src={dados.perfil.foto} alt="Foto de Perfil" className="perfil-avatar" />
+                <img src={dados.perfil.foto} alt={`Foto de perfil de ${dados.usuario.username}`} className="perfil-avatar" decoding="async" width="176" height="176" />
               ) : (
                 <div className="avatar-placeholder">
                   <i className="fa-solid fa-user"></i>

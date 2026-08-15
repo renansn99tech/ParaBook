@@ -34,7 +34,7 @@ function AdminUsuarios() {
               <li key={u.id}>
                 <div className="admin-usuario-info">
                   {u.foto ? (
-                    <img className="admin-avatar" src={u.foto} alt={`Foto de ${u.username}`} />
+                    <img className="admin-avatar" src={u.foto} alt={`Foto de ${u.username}`} loading="lazy" decoding="async" width="44" height="44" />
                   ) : (
                     <div className="admin-avatar sem-foto" aria-hidden="true">
                       <i className="fa-solid fa-user"></i>

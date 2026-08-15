@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import useRevelacao from '../hooks/useRevelacao';
-import '../assets/css/painel.css';
+// painel.css é carregado globalmente no main.jsx (compartilhado por várias telas).
 
 function RecomendacaoIA() {
   const [recomendacoes, setRecomendacoes] = useState([]);
@@ -110,6 +110,9 @@ function RecomendacaoIA() {
                     className="card-img-top rounded-top-4 capa-recomendacao"
                     alt={`Capa do livro ${livro.titulo}`}
                     loading="lazy"
+                    decoding="async"
+                    width="300"
+                    height="420"
                   />
                 ) : (
                   <div

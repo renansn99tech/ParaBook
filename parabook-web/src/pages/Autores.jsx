@@ -64,7 +64,15 @@ function Autores() {
               
               <div className="avatar-autor-container">
                 {autor.foto ? (
-                  <img src={autor.foto} alt={`Foto de ${autor.nome}`} className="foto-autor" />
+                  <img
+                    src={autor.foto}
+                    alt={`Foto de ${autor.nome}`}
+                    className="foto-autor"
+                    loading="lazy"
+                    decoding="async"
+                    width="96"
+                    height="96"
+                  />
                 ) : (
                   <div className="foto-autor-placeholder">
                     <i className="fa-solid fa-user-nib"></i>

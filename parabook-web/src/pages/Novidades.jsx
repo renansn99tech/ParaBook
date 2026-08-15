@@ -72,6 +72,9 @@ function Novidades() {
                       src={livro.capa_url}
                       alt={`Capa do livro ${livro.titulo}`}
                       loading="lazy"
+                      decoding="async"
+                      width="300"
+                      height="420"
                     />
                   ) : (
                     <div className="capa-placeholder">

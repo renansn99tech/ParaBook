@@ -68,7 +68,6 @@ function Biblioteca() {
     }
 
     return livrosDaCategoria.map(livro => {
-      const fallbackImage = 'https://via.placeholder.com/150x200?text=Sem+Capa';
       return (
         <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={livro.id} data-revelar>
           <article className="card h-100 card-livro-publico" style={{ position: 'relative' }}>
@@ -76,7 +75,21 @@ function Biblioteca() {
               <i className="fa-solid fa-info"></i>
             </Link>
             <div className="container-capa">
-              <img src={livro.capa_url || fallbackImage} alt={`Capa do livro ${livro.titulo}`} className="img-capa-ajustada" />
+              {livro.capa_url ? (
+                <img
+                  src={livro.capa_url}
+                  alt={`Capa do livro ${livro.titulo}`}
+                  className="img-capa-ajustada"
+                  loading="lazy"
+                  decoding="async"
+                  width="300"
+                  height="400"
+                />
+              ) : (
+                <div className="capa-placeholder" aria-label={`Livro ${livro.titulo} sem capa`}>
+                  <i className="fa-solid fa-book" aria-hidden="true"></i>
+                </div>
+              )}
             </div>
             <div className="card-body d-flex flex-column p-3">
               <h5 className="card-title text-truncate mb-1 fw-bold" title={livro.titulo}>

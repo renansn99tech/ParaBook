@@ -156,7 +156,15 @@ function MinhaBiblioteca() {
               <Link to={`/livro/${item.livro}`} style={{ textDecoration: 'none' }}>
                 <div className="capa-container">
                   {item.livro_capa ? (
-                    <img src={item.livro_capa} alt={`Capa do livro ${item.livro_titulo}`} className="capa-img" />
+                    <img
+                      src={item.livro_capa}
+                      alt={`Capa do livro ${item.livro_titulo}`}
+                      className="capa-img"
+                      loading="lazy"
+                      decoding="async"
+                      width="300"
+                      height="420"
+                    />
                   ) : (
                     <i className="fa-solid fa-book" style={{ fontSize: '5rem', color: '#334155' }}></i>
                   )}

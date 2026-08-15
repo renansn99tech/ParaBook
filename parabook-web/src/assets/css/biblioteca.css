@@ -316,6 +316,16 @@
     transition:.45s ease;
 }
 
+.container-capa .capa-placeholder{
+    display:grid;
+    place-items:center;
+    width:100%;
+    height:100%;
+    background:linear-gradient(145deg, rgba(var(--purple-rgb), .16), rgba(var(--white-rgb), .035));
+    color:var(--text-dim);
+    font-size:clamp(2.5rem, 8vw, 4rem);
+}
+
 .card-livro-publico:hover .img-capa-ajustada{
     transform:scale(1.06);
 }

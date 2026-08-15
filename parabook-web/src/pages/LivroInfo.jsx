@@ -169,7 +169,15 @@ function LivroInfo() {
       <section className="livro-info-container glass-card" data-revelar>
         <div className="livro-capa-col">
           {livro.capa_url ? (
-            <img src={livro.capa_url} alt={livro.titulo} className="livro-capa-img" />
+            <img
+              src={livro.capa_url}
+              alt={`Capa do livro ${livro.titulo}`}
+              className="livro-capa-img"
+              decoding="async"
+              fetchPriority="high"
+              width="300"
+              height="420"
+            />
           ) : (
             <div className="livro-capa-placeholder capa-vazia">
               <i className="fa-solid fa-book"></i>
@@ -318,7 +326,7 @@ function LivroInfo() {
                 <div className="avaliacao-header">
                   <strong className="avaliacao-user">
                     {ava.usuario_foto ? (
-                      <img src={ava.usuario_foto} alt="" className="avaliacao-avatar" />
+                      <img src={ava.usuario_foto} alt="" className="avaliacao-avatar" loading="lazy" decoding="async" width="44" height="44" />
                     ) : (
                       <i className="fa-solid fa-user-circle avaliacao-avatar-vazio"></i>
                     )}

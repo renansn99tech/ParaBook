@@ -1,12 +1,17 @@
-html {
-    /* Reserva o espaço da barra de rolagem mesmo quando ela não existir na página */
-    scrollbar-gutter: stable;
+/* Em desktop evita o salto horizontal entre páginas curtas e longas.
+   Em touch a barra é sobreposta; reservar gutter roubaria 10px do viewport. */
+@media (min-width: 1200px) and (hover: hover) and (pointer: fine) {
+    html {
+        scrollbar-gutter:stable;
+    }
 }
 
 .navbar {
 
     position: sticky;
     top: 0;
+
+    padding:var(--safe-top) 0 0;
 
     z-index: 1000;
 
@@ -19,20 +24,21 @@ html {
         1px solid rgba(var(--white-rgb), .05);
 }
 
-.navbar-container {
+.navbar > .navbar-container {
 
-    /* acompanha a largura-mestra do site (1500px) para alinhar com o conteúdo */
-    max-width: 1500px;
+    max-width:var(--layout-max);
 
     margin: auto;
 
-    padding: 20px 60px;
+    padding:16px max(var(--layout-gutter), var(--safe-right)) 16px max(var(--layout-gutter), var(--safe-left));
 
     display: flex;
 
     justify-content: space-between;
 
     align-items: center;
+
+    flex-wrap:nowrap;
 }
 
 .logo-container {
@@ -43,8 +49,11 @@ html {
 }
 
 .logo-img {
-    width: 95px;
-    margin-right: -1.75rem;
+    /* O PNG tem bastante transparência ao redor do livro. A escala fluida
+       mantém o símbolo legível sem deixar essa área invisível inflar a
+       altura da barra no celular. */
+    width:clamp(70px, 7vw, 95px);
+    margin-right:clamp(-1.75rem, -2vw, -1.3rem);
     margin-bottom: 0.3rem;
 }
 
@@ -133,13 +142,18 @@ html {
     box-shadow: 0 10px 30px rgba(var(--purple-rgb), .4);
 }
 
-/* No desktop, garante o alinhamento correto usando flexbox nativo */
-@media (min-width: 992px) {
+/* No desktop, garante o alinhamento correto usando flexbox nativo. O
+   corte em 1200px evita espremer links e ações em tablets landscape e
+   notebooks estreitos: abaixo disso o único gatilho é o menu lateral. */
+@media (min-width: 1200px) {
     .navbar-collapse {
         display: flex !important;
+        flex:1 1 auto;
+        flex-basis:auto;
         justify-content: space-between;
         align-items: center;
-        width: 100%;
+        width:auto;
+        min-width:0;
         margin-left: 10px;
     }
 
@@ -148,88 +162,41 @@ html {
     }
 }
 
-/* =======================================================
-   MENU MOBILE - EMPILHAMENTO VERTICAL LIMPO
-======================================================= */
+.navbar-mobile-trigger{
+    display:none;
+    align-items:center;
+    justify-content:center;
 
-/* O offcanvas do Bootstrap tem 400px fixos e, em iPhones de 390px,
-   cobre a tela inteira sem deixar a página aparecer atrás. */
-@media (max-width: 575.98px) {
-    .offcanvas.offcanvas-end {
-        width: min(400px, 85vw) !important;
-    }
+    width:var(--touch-target);
+    height:var(--touch-target);
+    padding:8px;
+
+    border-radius:var(--radius-md);
+    color:var(--text);
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 1199.98px) {
     .navbar-container {
-        padding: 15px 24px !important;
+        min-height:72px;
     }
 
     .logo {
-        font-size: 2.2rem !important;
+        font-size:clamp(1.45rem, 6vw, 1.9rem);
     }
 
     .navbar-collapse {
-        width: 100%;
-        display: none;
-        flex-direction: column;
-        align-items: stretch;
-        /* Adiciona um fundo escuro translúcido ao abrir o menu para leitura perfeita */
-        background: rgba(var(--bg-main-rgb), 0.98);
-        padding: 20px;
-        border-radius: var(--radius);
-        margin-top: 15px;
-        border: 1px solid rgba(var(--purple-rgb), 0.15);
-        box-shadow: 0 15px 40px rgba(var(--black-rgb), 0.5);
+        display:none !important;
     }
 
-    .navbar-collapse.show {
-        display: flex !important;
+    .navbar-mobile-trigger{
+        display:inline-flex;
     }
+}
 
-    /* FORÇA A COLUNA E REMOVE O FLEX-WRAP BAGUNÇADO */
-    .menu {
-        display: flex !important;
-        flex-direction: column !important;
-        flex-wrap: nowrap !important;
-        gap: 10px !important;
-        padding: 10px 0 !important;
-        margin: 0 !important;
-    }
-
-    .menu li {
-        width: 100%;
-        text-align: center;
-        /* Menu centralizado fica mais premium no touch */
-    }
-
-    .menu a {
-        display: block;
-        padding: 14px 0 !important;
-        font-size: 1.35rem !important;
-        /* Aumento equilibrado */
-        font-weight: 500;
-    }
-
-    /* BOTÕES DE AÇÃO SEPARADOS E VERTICAIS */
-    .nav-actions {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 15px !important;
-        width: 100%;
-        margin-top: 15px !important;
-        padding-top: 25px !important;
-        border-top: 1px dashed rgba(var(--white-rgb), 0.1);
-        /* Linha divisória sutil */
-    }
-
-    .btn-nav {
-        width: 100% !important;
-        font-size: 1.25rem !important;
-        padding: 16px !important;
-        text-align: center;
-        justify-content: center;
-        border-radius: var(--radius-md) !important;
+@media (max-width: 480px) {
+    .navbar-container{
+        padding-top:12px;
+        padding-bottom:12px;
     }
 }
 
@@ -272,8 +239,151 @@ html {
 /* Menu lateral (offcanvas). O fundo estava inline com dois hex fixos,
    então ele continuaria escuro no tema claro. */
 .offcanvas {
-    background: linear-gradient(145deg, var(--bg-deep) 0%, rgba(var(--purple-dark-rgb), .35) 100%);
+    width:min(420px, 100%) !important;
+    height:100vh;
+    height:100dvh;
+
+    background-color:var(--bg-deep);
+    background-image:linear-gradient(145deg, transparent 0%, rgba(var(--purple-dark-rgb), .35) 100%);
     color: var(--text);
+}
+
+.offcanvas-header{
+    min-height:72px;
+    padding:max(1rem, var(--safe-top)) max(1.25rem, var(--safe-right)) 1rem max(1.25rem, var(--safe-left));
+}
+
+.offcanvas-header .btn-close{
+    box-sizing:border-box;
+    width:var(--touch-target);
+    height:var(--touch-target);
+    padding:.75rem;
+    border-radius:var(--radius-md);
+}
+
+.offcanvas-body{
+    padding:1rem max(1.25rem, var(--safe-right)) max(2rem, var(--safe-bottom)) max(1.25rem, var(--safe-left));
+}
+
+.offcanvas-section{
+    display:grid;
+    gap:.4rem;
+}
+
+.offcanvas-section a,
+.offcanvas-action{
+    display:grid;
+    grid-template-columns:24px minmax(0, 1fr) auto;
+    align-items:center;
+    gap:.8rem;
+
+    width:100%;
+    min-height:52px;
+    padding:.75rem .85rem;
+
+    border:1px solid transparent;
+    border-radius:var(--radius-md);
+    background:transparent;
+    color:var(--text-soft);
+
+    text-align:left;
+    text-decoration:none;
+    line-height:1.3;
+
+    transition:background var(--dur-fast) var(--ease-standard),
+               border-color var(--dur-fast) var(--ease-standard),
+               color var(--dur-fast) var(--ease-standard),
+               transform var(--dur-fast) var(--ease-out);
+}
+
+.offcanvas-section a:hover,
+.offcanvas-action:hover{
+    border-color:rgba(var(--purple-rgb), .28);
+    background:rgba(var(--purple-rgb), .12);
+    color:var(--text);
+    transform:translateX(3px);
+}
+
+/* No desktop o drawer é complementar: os destinos já expostos na navbar
+   não se repetem. No mobile a navbar se resume ao gatilho, então esses
+   mesmos grupos continuam disponíveis integralmente no menu lateral. */
+@media (min-width:1200px){
+    .offcanvas-mobile-only{
+        display:none;
+    }
+}
+
+.offcanvas-section a:focus-visible,
+.offcanvas-action:focus-visible{
+    outline:2px solid var(--purple);
+    outline-offset:2px;
+}
+
+.offcanvas-section i{
+    width:24px;
+    color:var(--purple-text);
+    text-align:center;
+}
+
+.offcanvas-section-primary a{
+    min-height:56px;
+    background:rgba(var(--white-rgb), .035);
+    border-color:rgba(var(--white-rgb), .06);
+    font-weight:600;
+}
+
+.offcanvas-kicker{
+    margin:0 0 .35rem;
+    padding:0 .85rem;
+
+    color:var(--text-dim);
+    font-size:.75rem;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+}
+
+.offcanvas-divider{
+    height:1px;
+    margin:1rem 0;
+    background:var(--border);
+}
+
+.offcanvas-badge{
+    min-width:24px;
+    padding:.15rem .45rem;
+    border-radius:var(--radius-pill);
+    background:var(--danger);
+    color:white;
+    font-size:.75rem;
+    font-weight:700;
+    text-align:center;
+}
+
+.offcanvas-section .offcanvas-subscription{
+    border-color:rgba(var(--warning-rgb), .48);
+    background:linear-gradient(135deg, rgba(var(--warning-rgb), .18), rgba(var(--warning-rgb), .08));
+    color:var(--warning);
+    font-weight:700;
+}
+
+.offcanvas-section .offcanvas-subscription i,
+.offcanvas-section .link-ia i{
+    color:var(--warning);
+}
+
+.offcanvas-section .link-ia{
+    border-color:rgba(var(--warning-rgb), .28);
+    background:rgba(var(--warning-rgb), .08);
+    color:var(--warning);
+}
+
+.offcanvas-section .link-ia:hover,
+.offcanvas-section .offcanvas-subscription:hover{
+    border-color:rgba(var(--warning-rgb), .72);
+    background:rgba(var(--warning-rgb), .22);
+    color:var(--warning);
+    box-shadow:0 8px 24px rgba(var(--warning-rgb), .14);
 }
 
 .offcanvas .text-white,

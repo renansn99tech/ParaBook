@@ -299,3 +299,15 @@
     border: 1px dashed rgba(var(--white-rgb),0.1);
     color: var(--text-secondary, var(--text-secondary));
 }
+/* ==========================================================
+   RESPONSIVIDADE MOBILE
+   O patch global do base.css já reduz o padding do container e
+   trava o overflow-x. Aqui a grade vira 1 coluna (o minmax de
+   330px estourava em telas de ~360px) e os cards ficam enxutos.
+========================================================== */
+@media (max-width: 768px) {
+    .grid-comunidades { grid-template-columns: 1fr; }
+    .pagina-comunidade-lead { font-size: 1rem; margin-bottom: 24px; }
+    .secao-comunidades h3 { font-size: 1.25rem; }
+    .card-comunidade { padding: 20px; min-height: 0; }
+}

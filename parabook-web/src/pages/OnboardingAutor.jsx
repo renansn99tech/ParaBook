@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import swal from '../services/swal';
 import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
@@ -16,8 +16,7 @@ function OnboardingAutor() {
   }
 
   if (!user) {
-    navigate('/login');
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   // Mesma guarda da API: quem ja e autor, admin ou aguarda analise nao refaz o onboarding.

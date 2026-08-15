@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import swal from '../services/swal';
 import api from '../services/api';
@@ -18,8 +18,7 @@ function AlterarSenha() {
 
   // Se não estiver logado, nem renderiza o form (o AuthContext/App já protege a rota, mas é bom garantir)
   if (!user) {
-    navigate('/login');
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const handleSubmit = async (e) => {
@@ -123,11 +122,11 @@ function AlterarSenha() {
           </button>
         </form>
         
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <div className="reset-cancel-row">
           <button 
             type="button" 
             onClick={() => navigate('/perfil')} 
-            style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', textDecoration: 'underline' }}
+            className="reset-cancel"
           >
             Cancelar e voltar
           </button>

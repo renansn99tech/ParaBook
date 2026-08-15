@@ -6,6 +6,7 @@
     display:flex;
     flex-direction:column;
     min-height: calc(100vh - 260px);
+    min-height: calc(100svh - 260px);
     padding-bottom: 80px;
 }
 
@@ -65,4 +66,14 @@
 
 @media (prefers-reduced-motion:reduce) {
     .novidade-ticker-track { animation:none; }
+}
+
+/* ==========================================================
+   RESPONSIVIDADE MOBILE — a página já usa clamp() e o base.css
+   trata a .novidades-grid; aqui só afinamos tipografia e ticker.
+========================================================== */
+@media (max-width: 768px) {
+    .news-intro-content .lead { font-size: 1rem; }
+    .news-hero-section { padding: 2rem 1rem 1.5rem; }
+    .novidade-ticker-track span { font-size: 0.8rem; padding-right: 2rem; letter-spacing: 1px; }
 }

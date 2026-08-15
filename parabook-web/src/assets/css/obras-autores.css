@@ -4,6 +4,7 @@
 
 .publicar-container{
     min-height:calc(100vh - 120px);
+    min-height:calc(100svh - 120px);
 
     display:flex;
     align-items:center;

@@ -7,6 +7,7 @@
   padding-top: 100px;
   padding-bottom: 50px;
   min-height: calc(100vh - 120px);
+  min-height: calc(100svh - 120px);
 }
 
 .livro-info-page .livro-info-container {
@@ -407,4 +408,28 @@
 
     font-size:1.1rem;
     color:var(--text-dim);
+}
+
+/* =========================================
+   RESPONSIVIDADE MOBILE
+   Capa e dados empilham; nada de largura fixa que estoure a tela
+   (a capa-col era flex 0 0 300px e os dados tinham min-width 300px).
+========================================= */
+@media (max-width: 768px) {
+  .livro-info-page { padding-top: 84px; }
+  .livro-info-page .livro-info-container { padding: 20px; gap: 24px; flex-direction: column; }
+  .livro-info-page .livro-capa-col { flex-basis: auto; max-width: 300px; margin: 0 auto; }
+  .livro-info-page .livro-dados-col { min-width: 0; }
+  .livro-info-page .livro-capa-img,
+  .livro-info-page .livro-capa-placeholder { height: 380px; }
+  .livro-info-page .livro-titulo { font-size: 1.8rem; }
+  .livro-info-page .avaliacoes-titulo { font-size: 1.4rem; }
+  .livro-info-page .avaliacoes-section { margin-top: 40px; padding-top: 28px; }
+  .livro-info-page .avaliacoes-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .livro-info-page .livro-info-container { padding: 16px; }
+  .livro-info-page .livro-capa-img,
+  .livro-info-page .livro-capa-placeholder { height: 320px; }
+  .livro-info-page .livro-titulo { font-size: 1.55rem; }
 }

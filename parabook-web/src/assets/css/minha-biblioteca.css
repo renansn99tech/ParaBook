@@ -7,6 +7,7 @@
     padding-top: 100px;
     padding-bottom: 50px;
     min-height: calc(100vh - 120px);
+    min-height: calc(100svh - 120px);
 }
 
 .minha-biblioteca-page .container-biblioteca { 
@@ -87,7 +88,7 @@
     border-radius: var(--radius-sm);
     background: var(--bg-input);
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .minha-biblioteca-page .filter-input { 
@@ -307,4 +308,18 @@
 
 .minha-biblioteca-page .empty-state .btn-primary {
     margin-top: 6px;
+}
+
+/* =========================================
+   RESPONSIVIDADE MOBILE
+   Grades auto-fit já reflowam; aqui afinamos banner, título,
+   densidade da grade de livros e a altura das capas no celular.
+========================================= */
+@media (max-width: 768px) {
+    .minha-biblioteca-page { padding-top: 84px; }
+    .minha-biblioteca-page .banner-biblioteca { padding: 2rem 1.25rem; }
+    .minha-biblioteca-page .titulo-biblioteca { font-size: 1.7rem; }
+    .minha-biblioteca-page .filter-input { min-width: 0; }
+    .minha-biblioteca-page .books-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+    .minha-biblioteca-page .capa-container { height: 210px; }
 }

@@ -226,3 +226,70 @@
 
     background:rgba(var(--white-rgb),.03);
 }
+
+/* ==========================================================
+   RESPONSIVIDADE MOBILE — o layout destas telas vem do grid do
+   Bootstrap (já responsivo) + .table-responsive; aqui só escala
+   o "skin" (card, chips, ícones, capa) no celular.
+========================================================== */
+@media (max-width: 768px) {
+    .painel-card { border-radius: var(--radius-md); }
+    .painel-chip { font-size: .82rem; padding: .4rem .8rem; }
+    .conquista-icone { width: 48px; height: 48px; font-size: 1.2rem; }
+    .capa-recomendacao,
+    .capa-recomendacao-vazia { height: 220px; }
+
+    /* No celular o ranking deixa de ser uma tabela panorâmica. Cada linha
+       vira um cartão compacto, mantendo a semântica de tabela no HTML. */
+    .painel-tabela thead {
+        display:none;
+    }
+
+    .painel-tabela,
+    .painel-tabela tbody {
+        display:block;
+        width:100%;
+    }
+
+    .painel-tabela tbody tr {
+        display:grid;
+        grid-template-columns:44px minmax(0, 1fr) auto;
+        grid-template-areas:
+            "posicao leitor nivel"
+            "posicao sequencia xp";
+        align-items:center;
+        gap:.55rem .75rem;
+        padding:1rem;
+        border-bottom:1px solid var(--border);
+    }
+
+    .painel-tabela tbody tr:last-child {
+        border-bottom:0;
+    }
+
+    .painel-tabela tbody td {
+        width:auto;
+        padding:0 !important;
+        border:0;
+        text-align:left !important;
+        white-space:normal;
+        overflow-wrap:anywhere;
+    }
+
+    .painel-tabela tbody td:nth-child(1) { grid-area:posicao; text-align:center !important; }
+    .painel-tabela tbody td:nth-child(2) { grid-area:leitor; min-width:0; }
+    .painel-tabela tbody td:nth-child(3) { grid-area:nivel; justify-self:end; }
+    .painel-tabela tbody td:nth-child(4) { grid-area:sequencia; color:var(--warning-soft); }
+    .painel-tabela tbody td:nth-child(5) { grid-area:xp; justify-self:end; }
+
+    .painel-tabela tbody td[colspan] {
+        display:block;
+        grid-column:1 / -1;
+        padding:2rem 1rem !important;
+        text-align:center !important;
+    }
+
+    .painel-page .table-responsive {
+        overflow:visible;
+    }
+}

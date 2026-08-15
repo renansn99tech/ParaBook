@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import swal from '../services/swal';
 import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
@@ -24,8 +24,7 @@ function AceitarTermos() {
   }
 
   if (!user) {
-    navigate('/login');
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const handleAceitar = async () => {

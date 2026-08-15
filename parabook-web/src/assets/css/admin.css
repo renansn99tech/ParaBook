@@ -10,6 +10,7 @@
     display:flex;
     width:100%;
     min-height:100vh;
+    min-height:100svh;
 
     background:
         radial-gradient(circle at top left, rgba(var(--purple-rgb),.15), transparent 35%),
@@ -22,6 +23,7 @@
     color: var(--purple);
     width:260px;
     min-height:100vh;
+    min-height:100svh;
 
     padding:28px 20px;
 
@@ -478,7 +480,9 @@
    e viraria um bloco roxo. Mesma razão em .admin-guia-toggle e
    .admin-btn-mini. */
 .admin-main .admin-table-acao{
-    padding:6px 8px;
+    width:var(--touch-target);
+    height:var(--touch-target);
+    padding:8px;
 
     background:transparent;
     border:none;
@@ -650,6 +654,7 @@
 }
 
 .admin-main .admin-filtro{
+    min-height:var(--touch-target);
     padding:8px 16px;
 
     border:1px solid var(--border);
@@ -1162,19 +1167,48 @@
         border-bottom:1px solid var(--border);
     }
 
+    .brand-logo-admin{
+        width:100%;
+        justify-content:center;
+        margin-bottom:8px;
+    }
+
     .admin-sidebar h2{
         width:100%;
         text-align:center;
         margin-bottom:10px;
     }
 
-    .admin-sidebar button{
-        flex:1 1 140px;
+    .admin-sidebar > button{
+        flex:1 1 calc(50% - 6px);
+        min-height:52px;
         text-align:center;
     }
 
     .admin-sidebar .danger{
         margin-top:0;
+    }
+
+    .admin-sidebar-rodape{
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        width:100%;
+        margin-top:4px;
+        padding-top:12px;
+        gap:8px;
+    }
+
+    .admin-sidebar-rodape a,
+    .admin-sidebar-rodape button{
+        min-height:48px;
+        padding:10px 8px;
+        justify-content:center;
+        text-align:center;
+    }
+
+    .admin-sidebar-rodape a > i,
+    .admin-sidebar-rodape button > i{
+        width:auto;
     }
 
     .admin-main{
@@ -1202,6 +1236,18 @@
 }
 
 @media(max-width:480px){
+
+    .admin-sidebar{
+        padding:max(16px, var(--safe-top)) max(14px, var(--safe-right)) 16px max(14px, var(--safe-left));
+        gap:8px;
+    }
+
+    .admin-sidebar-rodape a,
+    .admin-sidebar-rodape button{
+        flex-direction:column;
+        gap:4px;
+        font-size:.82rem;
+    }
 
     .admin-main{
         padding:18px;

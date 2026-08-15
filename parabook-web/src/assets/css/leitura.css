@@ -5,6 +5,7 @@
 
 .leitura-page {
     min-height: 100vh;
+    min-height: 100svh;
     padding-top: 80px; /* navbar offset */
 }
 
@@ -79,6 +80,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    min-height:var(--touch-target);
     padding: 10px 14px;
     border-radius: var(--radius-md);
     border: 1px solid rgba(var(--white-rgb),.08);
@@ -208,6 +210,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
+    min-height:var(--touch-target);
     padding: 13px 22px;
     border: none;
     border-radius: var(--radius-md);
@@ -274,13 +277,14 @@
 
 .leitura-page .input-pagina-moderno {
     width: 85px;
+    min-height:var(--touch-target);
     text-align: center;
     padding: 8px 12px;
     background-color: transparent;
     color: var(--text);
     border: 1px solid rgba(var(--white-rgb),0.2);
     border-radius: var(--radius-pill);
-    font-size: 0.9rem;
+    font-size: 1rem;
     outline: none;
     transition: all 0.3s ease;
 }

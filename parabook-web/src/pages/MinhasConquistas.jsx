@@ -4,7 +4,7 @@ import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
 import Skeleton from '../components/Skeleton';
 import useRevelacao from '../hooks/useRevelacao';
-import '../assets/css/painel.css';
+// painel.css é carregado globalmente no main.jsx (compartilhado por várias telas).
 
 /**
  * O catálogo tem ícones do Font Awesome (seed) e o default do model é do

@@ -4,7 +4,7 @@ import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
 import Skeleton from '../components/Skeleton';
 import useRevelacao from '../hooks/useRevelacao';
-import '../assets/css/painel.css';
+// painel.css é carregado globalmente no main.jsx (compartilhado por várias telas).
 
 // Medalhas para o pódio; da 4ª posição em diante mostramos o número.
 const MEDALHAS = { 1: '🥇', 2: '🥈', 3: '🥉' };

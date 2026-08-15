@@ -68,7 +68,7 @@ python manage.py runserver
 * **Próximos Passos (Curto/Médio Prazo):**
   - Desacoplamento via **Django REST Framework**.
   - Novo Front-end focado em **React/Next.js**.
-  - Criação do aplicativo nativo em **Flutter**.
+  - Criação do aplicativo nativo em **Expo/React Native**.
   - Implementação de Marketplace para livros físicos.
 
 ---

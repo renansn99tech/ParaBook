@@ -39,7 +39,7 @@ function Sobre() {
                 <span>Django REST</span>
                 <span>API-First</span>
                 <span>React</span>
-                <span>Flutter</span>
+                <span>Expo (React Native)</span>
                 <span>Scalability</span>
               </div>
             </div>

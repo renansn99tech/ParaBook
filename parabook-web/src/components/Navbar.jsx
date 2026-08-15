@@ -2,31 +2,58 @@ import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../context/auth-context'
 import useTema from '../hooks/useTema'
-import logoNova from '../assets/img/logo-nova.png'
+import logoNova from '../assets/img/logo-nova-160.webp'
+import logoNova2x from '../assets/img/logo-nova-320.webp'
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const { alternar, icone, rotulo } = useTema();
 
+  const fecharMenu = () => {
+    const elemento = document.getElementById('offcanvasMenuReact');
+    const instancia = elemento ? window.bootstrap?.Offcanvas.getInstance(elemento) : null;
+    instancia?.hide();
+  };
+
+  const sairPeloMenu = () => {
+    fecharMenu();
+    logout();
+  };
+
   return (
     <>
-    <nav className="navbar navbar-expand-lg">
+    <nav className="navbar" aria-label="Navegação principal">
       <div className="container-fluid navbar-container">
         
         <Link to="/" className="logo-link">
           <div className="logo-container">
-            <img src={logoNova} alt="ParaBook" className="logo-img" />
+            <img
+              src={logoNova}
+              srcSet={`${logoNova} 1x, ${logoNova2x} 2x`}
+              alt="ParaBook"
+              className="logo-img"
+              width="160"
+              height="107"
+              decoding="async"
+            />
             <h1 className="logo">
               <span className="para">Para</span><span className="book">Book</span>
             </h1>
           </div>
         </Link>
 
-        <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#parabookNavbar" aria-controls="parabookNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          className="navbar-toggler navbar-mobile-trigger border-0 shadow-none"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasMenuReact"
+          aria-controls="offcanvasMenuReact"
+          aria-label="Abrir menu principal"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="parabookNavbar">
+        <div className="navbar-collapse">
           <ul className="menu">
             <li><Link to="/biblioteca">Explorar</Link></li>
             <li><Link to="/comunidades">Comunidades</Link></li>
@@ -71,7 +98,15 @@ function Navbar() {
             )}
 
             {/* Botão do Menu Lateral */}
-            <button className="btn-nav btn-outline" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenuReact" aria-controls="offcanvasMenuReact">
+            <button
+              className="btn-nav btn-outline btn-nav-icone"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasMenuReact"
+              aria-controls="offcanvasMenuReact"
+              aria-label="Abrir menu completo"
+              title="Abrir menu completo"
+            >
               <i className="fa-solid fa-bars"></i>
             </button>
           </div>
@@ -79,75 +114,120 @@ function Navbar() {
       </div>
     </nav>
 
-    {/* Offcanvas Menu (Menu Lateral) no React */}
+    {/* Menu único no mobile e menu complementar no desktop. */}
     <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasMenuReact" aria-labelledby="offcanvasMenuLabel">
       <div className="offcanvas-header border-bottom border-secondary border-opacity-25">
         <h5 className="offcanvas-title" id="offcanvasMenuLabel">Menu Principal</h5>
-        <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button>
       </div>
       <div className="offcanvas-body">
-        <ul className="list-unstyled d-flex flex-column gap-3 fs-5 mt-3">
-          <li>
-            <Link to="/recomendacao-ia" className="link-ia">
-              <i className="fa-solid fa-compass me-2"></i> Recomendações para você
-            </Link>
-          </li>
-          <li>
-            <Link to="/autores" className="text-white text-decoration-none">
-              <i className="fa-solid fa-pen-nib me-2"></i> Autores
-            </Link>
-          </li>
-          {user && (
-            <li>
-              <Link to="/minhas-comunidades" className="text-white text-decoration-none">
-                <i className="fa-solid fa-users-rectangle me-2"></i> Minhas Comunidades
+        <div className="offcanvas-section offcanvas-section-primary offcanvas-mobile-only" aria-label="Destinos principais">
+          <Link to="/biblioteca" onClick={fecharMenu}>
+            <i className="fa-solid fa-book-open"></i>
+            <span>Explorar livros</span>
+          </Link>
+          <Link to="/comunidades" onClick={fecharMenu}>
+            <i className="fa-solid fa-people-group"></i>
+            <span>Comunidades</span>
+          </Link>
+          <Link to="/publicar" onClick={fecharMenu}>
+            <i className="fa-solid fa-feather"></i>
+            <span>Publicar livro</span>
+          </Link>
+        </div>
+
+        <div className="offcanvas-divider offcanvas-mobile-only" role="separator"></div>
+
+        <div className="offcanvas-section offcanvas-mobile-only" aria-label="Conta e preferências">
+          <p className="offcanvas-kicker">Conta e preferências</p>
+          <button type="button" className="offcanvas-action" onClick={alternar}>
+            <i className={`fa-solid ${icone}`}></i>
+            <span>{rotulo}</span>
+          </button>
+
+          {user ? (
+            <>
+              <Link to="/notificacoes" onClick={fecharMenu}>
+                <i className="fa-solid fa-bell"></i>
+                <span>Notificações</span>
+                {user.notificacoes_nao_lidas_count > 0 && (
+                  <span className="offcanvas-badge">{user.notificacoes_nao_lidas_count}</span>
+                )}
               </Link>
-            </li>
+              <Link to="/perfil" onClick={fecharMenu}>
+                <i className="fa-solid fa-circle-user"></i>
+                <span>Meu perfil</span>
+              </Link>
+              <button type="button" className="offcanvas-action" onClick={sairPeloMenu}>
+                <i className="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Sair</span>
+              </button>
+            </>
+          ) : (
+            <Link to="/login" onClick={fecharMenu}>
+              <i className="fa-solid fa-right-to-bracket"></i>
+              <span>Entrar</span>
+            </Link>
+          )}
+        </div>
+
+        <div className="offcanvas-divider offcanvas-mobile-only" role="separator"></div>
+
+        <div className="offcanvas-section" aria-label="Mais opções">
+          <p className="offcanvas-kicker">Descobrir</p>
+          <Link to="/recomendacao-ia" className="link-ia" onClick={fecharMenu}>
+            <i className="fa-solid fa-compass"></i>
+            <span>Recomendações para você</span>
+          </Link>
+          <Link to="/autores" onClick={fecharMenu}>
+            <i className="fa-solid fa-pen-nib"></i>
+            <span>Autores</span>
+          </Link>
+          {user && (
+            <Link to="/minhas-comunidades" onClick={fecharMenu}>
+              <i className="fa-solid fa-users-rectangle"></i>
+              <span>Minhas comunidades</span>
+            </Link>
           )}
           {user && (
             <>
-              <li>
-                <Link to="/ranking" className="text-white text-decoration-none">
-                  <i className="fa-solid fa-trophy me-2"></i> Ranking de Leitores
-                </Link>
-              </li>
-              <li>
-                <Link to="/minhas-conquistas" className="text-white text-decoration-none">
-                  <i className="fa-solid fa-award me-2"></i> Minhas Conquistas
-                </Link>
-              </li>
+              <Link to="/ranking" onClick={fecharMenu}>
+                <i className="fa-solid fa-trophy"></i>
+                <span>Ranking de leitores</span>
+              </Link>
+              <Link to="/minhas-conquistas" onClick={fecharMenu}>
+                <i className="fa-solid fa-award"></i>
+                <span>Minhas conquistas</span>
+              </Link>
             </>
           )}
-          <li>
-            <Link to="/sobre" className="text-white text-decoration-none">
-              <i className="fa-solid fa-circle-info me-2"></i> Sobre
+          {user?.is_superuser && (
+            <Link to="/dashboard" onClick={fecharMenu}>
+              <i className="fa-solid fa-gauge-high"></i>
+              <span>Painel administrativo</span>
             </Link>
-          </li>
-          
-          <li><hr className="border-secondary" /></li>
-          
-          {user ? (
-            user.is_superuser ? (
-              <li>
-                <Link to="/minha-assinatura" className="text-warning text-decoration-none">
-                  <i className="fa-solid fa-star me-2"></i> Minha Assinatura
-                </Link>
-              </li>
-            ) : (
-              <li>
-                <Link to="/planos" className="text-warning text-decoration-none">
-                  <i className="fa-solid fa-crown me-2"></i> Assinatura
-                </Link>
-              </li>
-            )
-          ) : (
-            <li>
-              <Link to="/planos" className="text-warning text-decoration-none">
-                <i className="fa-solid fa-crown me-2"></i> Assinatura
-              </Link>
-            </li>
           )}
-        </ul>
+          <Link to="/sobre" onClick={fecharMenu}>
+            <i className="fa-solid fa-circle-info"></i>
+            <span>Sobre o ParaBook</span>
+          </Link>
+        </div>
+
+        <div className="offcanvas-divider" role="separator"></div>
+
+        <div className="offcanvas-section">
+          {user ? (
+            <Link to="/minha-assinatura" className="offcanvas-subscription" onClick={fecharMenu}>
+              <i className="fa-solid fa-star"></i>
+              <span>Minha assinatura</span>
+            </Link>
+          ) : (
+            <Link to="/planos" className="offcanvas-subscription" onClick={fecharMenu}>
+              <i className="fa-solid fa-crown"></i>
+              <span>Conhecer assinatura</span>
+            </Link>
+          )}
+        </div>
       </div>
     </div>
     </>

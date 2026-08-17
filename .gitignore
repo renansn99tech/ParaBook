@@ -50,3 +50,6 @@ media/avatares/
 # conter decisões internas, ressalvas jurídicas e responsabilidades ainda não
 # adequadas para exposição no repositório remoto.
 /business_rules/
+
+# Artefatos locais gerados (PDFs, relatórios e exportações).
+/output/

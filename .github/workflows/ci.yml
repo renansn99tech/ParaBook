@@ -32,6 +32,10 @@ jobs:
       - run: pip install -r requirements.txt pip-audit
       - run: python manage.py check
       - run: python manage.py makemigrations --check --dry-run
+      - name: Validate production static assets
+        env:
+          STATICFILES_USE_MANIFEST: 'True'
+        run: python manage.py collectstatic --noinput
       - run: python manage.py test
       - run: pip-audit -r requirements.txt
 

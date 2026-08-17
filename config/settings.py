@@ -269,15 +269,21 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configuração consolidada dos Storages
 
+STATICFILES_USE_MANIFEST = config(
+    "STATICFILES_USE_MANIFEST",
+    default=not DEBUG,
+    cast=bool,
+)
+
 STORAGES = {
     "staticfiles": {
-        # Em desenvolvimento e no CI não há etapa de collectstatic. Usar o
-        # manifest nesse cenário fazia a renderização de templates falhar
-        # mesmo quando o arquivo existia em STATICFILES_DIRS.
+        # Em desenvolvimento os arquivos vêm diretamente dos finders. Em
+        # produção, ou quando o CI pede explicitamente, collectstatic gera o
+        # manifest comprimido do WhiteNoise.
         "BACKEND": (
-            "django.contrib.staticfiles.storage.StaticFilesStorage"
-            if DEBUG
-            else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if STATICFILES_USE_MANIFEST
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
         )
     },
     "default": {

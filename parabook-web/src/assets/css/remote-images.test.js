@@ -8,7 +8,8 @@ const ler = (url) => readFileSync(fileURLToPath(url), 'utf8');
 test('listas de conteúdo remoto reservam espaço e usam carregamento diferido', () => {
   const paginas = [
     '../../pages/Biblioteca.jsx',
-    '../../pages/Home.jsx',
+    '../../pages/home/HomeDesktop.jsx',
+    '../../pages/home/HomeMobile.jsx',
     '../../pages/Novidades.jsx',
     '../../pages/MinhaBiblioteca.jsx',
     '../../pages/RecomendacaoIA.jsx',

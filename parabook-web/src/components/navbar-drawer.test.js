@@ -40,4 +40,7 @@ test('atalhos âmbar têm contraste, hover e foco visível próprios', () => {
   assert.match(css, /\.offcanvas-section \.link-ia\s*{/);
   assert.match(css, /\.offcanvas-section \.link-ia:hover,[\s\S]*?\.offcanvas-section \.offcanvas-subscription:hover/);
   assert.match(css, /\.offcanvas-section a:focus-visible/);
+  assert.match(css, /:root\[data-tema="claro"\] \.offcanvas\s*{[\s\S]*?background-color:#cbd3e0;[\s\S]*?rgba\(88,70,130,\.28\)/);
+  assert.match(css, /:root\[data-tema="claro"\] \.offcanvas-section \.link-ia\s*{[\s\S]*?\.096/);
+  assert.match(css, /:root\[data-tema="claro"\] \.offcanvas-section \.offcanvas-subscription\s*{[\s\S]*?\.216[\s\S]*?\.096/);
 });

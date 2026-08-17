@@ -4,6 +4,7 @@ import { AuthContext } from './context/auth-context'
 import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import RouteAccessibility from './components/RouteAccessibility'
 
 const Home = lazy(() => import('./pages/Home'))
 const Login = lazy(() => import('./pages/Login'))
@@ -69,6 +70,8 @@ function App() {
     // .app-shell é quem pinta o fundo do app (ver base.css): o <body>
     // não reage à troca de tema em tempo de execução, um descendente sim.
     <div className="app-shell">
+      <a className="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+      <RouteAccessibility />
       {!hideNavAndFooter && <Navbar />}
 
       {/* ==========================================================
@@ -97,7 +100,8 @@ function App() {
       )}
       */}
 
-        <Suspense fallback={<div className="text-center p-5">Carregando...</div>}>
+      <div id="conteudo-principal" className="route-content" tabIndex="-1">
+        <Suspense fallback={<div className="text-center p-5" role="status" aria-live="polite">Carregando página...</div>}>
         <Routes location={displayLocation}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -140,9 +144,10 @@ function App() {
           <Route path="/minhas-conquistas" element={<MinhasConquistas />} />
 
           {/* Rotas secundárias que ainda não foram migradas podem exibir uma página temporária ou redirecionar */}
-          <Route path="*" element={<div className="text-center mt-5"><h2 className="text-white">Página em Construção</h2></div>} />
+          <Route path="*" element={<main className="text-center mt-5"><h1 className="text-white">Página não encontrada</h1></main>} />
         </Routes>
         </Suspense>
+      </div>
       {!hideNavAndFooter && <Footer />}
     </div>
   )

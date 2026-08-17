@@ -314,9 +314,10 @@
 
     display:flex;
     align-items:flex-end;
-    /* O padding-bottom generoso é o que mantém a copy ACIMA do
-       horizonte dos arcos — é dele que vem o contraste do texto. */
-    padding:66px 66px 215px;
+    /* Alinha o início da marca e da copy ao bloco textual do cadastro.
+       O texto permanece acima do horizonte, mas as duas telas agora
+       mantêm a mesma linha visual ao alternar entre entrar e cadastrar. */
+    padding:66px 66px 75px;
 }
 
 .auth-container-register .auth-image-side{
@@ -443,7 +444,7 @@
     display:flex;
     align-items:center;
     gap:16px;
-    margin-bottom:22px;
+    margin-bottom:16px;
 }
 
 .auth-brand i{
@@ -534,6 +535,10 @@
     left:0;
     top:0;
     width:330px;
+    /* O wrapper é um ponto de ancoragem com largura zero. A fundação
+       responsiva global aplica max-width:100% em imagens; sem esta
+       exceção, o livro também era reduzido a zero e desaparecia. */
+    max-width:none;
     z-index:3;
     transform:translate(-50%,-50%);
 
@@ -626,7 +631,7 @@
     color:var(--pa-eyebrow);
 }
 
-.auth-card h3{
+.auth-card :is(h3, .auth-title){
     margin:0 0 6px;
     font-family:'Spectral', Georgia, serif;
     font-size:2rem;
@@ -847,7 +852,7 @@
         padding:28px 22px;
     }
 
-    .auth-card h3{
+    .auth-card :is(h3, .auth-title){
         font-size:1.7rem;
     }
 

@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 
 function Footer() {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const reduzirMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduzirMovimento ? 'auto' : 'smooth' });
   };
 
   return (

@@ -61,12 +61,12 @@ function Register() {
         <section className="auth-form-side">
           <div className="auth-card" data-revelar>
             <p className="auth-eyebrow">Comece sua jornada</p>
-            <h3>Criar Conta</h3>
+            <h1 className="auth-title">Criar Conta</h1>
             <p className="auth-sub">Preencha os dados abaixo para começar.</p>
 
             {error && (
-              <div className="auth-error-alert">
-                <i className="fa-solid fa-triangle-exclamation"></i> {error}
+              <div className="auth-error-alert" id="register-error" role="alert">
+                <i className="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {error}
               </div>
             )}
 
@@ -81,6 +81,8 @@ function Register() {
                   value={formData.username}
                   onChange={handleChange}
                   required
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? 'register-error' : undefined}
                   placeholder="seu.usuario"
                 />
               </div>
@@ -95,6 +97,8 @@ function Register() {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? 'register-error' : undefined}
                   placeholder="voce@email.com"
                 />
               </div>
@@ -109,6 +113,8 @@ function Register() {
                   value={formData.password}
                   onChange={handleChange}
                   required
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? 'register-error' : undefined}
                   placeholder="••••••••"
                 />
               </div>
@@ -121,6 +127,8 @@ function Register() {
                   checked={formData.termos_aceitos}
                   onChange={handleChange}
                   required
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? 'register-error' : undefined}
                 />
                 <label htmlFor="reg-termos">
                   Li, compreendo e concordo com a{' '}

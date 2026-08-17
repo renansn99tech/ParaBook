@@ -248,6 +248,11 @@
     color: var(--text);
 }
 
+:root[data-tema="claro"] .offcanvas{
+    background-color:#cbd3e0;
+    background-image:linear-gradient(145deg, rgba(71,85,105,.08), rgba(88,70,130,.28));
+}
+
 .offcanvas-header{
     min-height:72px;
     padding:max(1rem, var(--safe-top)) max(1.25rem, var(--safe-right)) 1rem max(1.25rem, var(--safe-left));
@@ -384,6 +389,14 @@
     background:rgba(var(--warning-rgb), .22);
     color:var(--warning);
     box-shadow:0 8px 24px rgba(var(--warning-rgb), .14);
+}
+
+:root[data-tema="claro"] .offcanvas-section .link-ia{
+    background:rgba(var(--warning-rgb), .096);
+}
+
+:root[data-tema="claro"] .offcanvas-section .offcanvas-subscription{
+    background:linear-gradient(135deg, rgba(var(--warning-rgb), .216), rgba(var(--warning-rgb), .096));
 }
 
 .offcanvas .text-white,

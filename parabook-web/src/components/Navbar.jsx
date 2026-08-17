@@ -25,20 +25,21 @@ function Navbar() {
     <nav className="navbar" aria-label="Navegação principal">
       <div className="container-fluid navbar-container">
         
-        <Link to="/" className="logo-link">
+        <Link to="/" className="logo-link" aria-label="ParaBook — página inicial">
           <div className="logo-container">
             <img
               src={logoNova}
               srcSet={`${logoNova} 1x, ${logoNova2x} 2x`}
-              alt="ParaBook"
+              alt=""
+              aria-hidden="true"
               className="logo-img"
               width="160"
               height="107"
               decoding="async"
             />
-            <h1 className="logo">
+            <span className="logo" aria-hidden="true">
               <span className="para">Para</span><span className="book">Book</span>
-            </h1>
+            </span>
           </div>
         </Link>
 
@@ -77,7 +78,8 @@ function Navbar() {
             {user ? (
               <>
                 <Link to="/notificacoes" className="btn-nav btn-outline btn-nav-icone position-relative" title="Notificações">
-                  <i className="fa-solid fa-bell"></i>
+                  <i className="fa-solid fa-bell" aria-hidden="true"></i>
+                  <span className="sr-only">Notificações</span>
                   {user.notificacoes_nao_lidas_count > 0 && (
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-contador">
                       {user.notificacoes_nao_lidas_count}

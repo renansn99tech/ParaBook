@@ -842,6 +842,50 @@ canvas{
     max-width:100%;
 }
 
+.sr-only{
+    position:absolute !important;
+    width:1px !important;
+    height:1px !important;
+    padding:0 !important;
+    margin:-1px !important;
+    overflow:hidden !important;
+    clip:rect(0, 0, 0, 0) !important;
+    white-space:nowrap !important;
+    border:0 !important;
+}
+
+.skip-link{
+    position:fixed;
+    z-index:10000;
+    top:max(.75rem, env(safe-area-inset-top));
+    left:max(.75rem, env(safe-area-inset-left));
+    padding:.75rem 1rem;
+    border:2px solid var(--purple-light);
+    border-radius:.65rem;
+    background:var(--bg-card);
+    color:var(--text);
+    font-weight:800;
+    transform:translateY(-180%);
+    transition:transform .18s ease;
+}
+
+.skip-link:focus{
+    transform:translateY(0);
+}
+
+.route-content{
+    flex:1 0 auto;
+}
+
+.route-content:focus{
+    outline:none;
+}
+
+:where(a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible{
+    outline:3px solid var(--purple-light);
+    outline-offset:3px;
+}
+
 @media (max-width: 1199.98px) {
     /* Safari móvel já usa indicador sobreposto. Ocultar a scrollbar
        customizada evita que Chromium/Android reservem largura útil. */

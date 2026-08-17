@@ -59,7 +59,7 @@ function Login() {
           <div className="auth-image-text" data-revelar>
             <div className="auth-brand">
               <i className="fa-solid fa-book-open-reader"></i>
-              <h1 className="auth-wordmark">Para<span>Book</span></h1>
+              <div className="auth-wordmark">Para<span>Book</span></div>
             </div>
             <p>Gerencie suas leituras, descubra novas comunidades e organize seu conhecimento em um ecossistema minimalista e performático.</p>
           </div>
@@ -68,12 +68,12 @@ function Login() {
         <section className="auth-form-side">
           <div className="auth-card" data-revelar>
             <p className="auth-eyebrow">Bem-vindo de volta</p>
-            <h3>Entrar no ParaBook</h3>
+            <h1 className="auth-title">Entrar no ParaBook</h1>
             <p className="auth-sub">Retome de onde parou.</p>
 
             {error && (
-              <div className="auth-error-alert">
-                <i className="fa-solid fa-triangle-exclamation"></i> {error}
+              <div className="auth-error-alert" id="login-error" role="alert">
+                <i className="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {error}
               </div>
             )}
 
@@ -87,6 +87,8 @@ function Login() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? 'login-error' : undefined}
                   placeholder="seu.usuario"
                 />
               </div>
@@ -100,6 +102,8 @@ function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={error ? 'login-error' : undefined}
                   placeholder="••••••••"
                 />
               </div>

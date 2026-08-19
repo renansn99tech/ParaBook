@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   StyleSheet,
   Text,
@@ -9,16 +10,17 @@ import {
   StatusBar,
 } from 'react-native';
 import { colors } from '../theme/colors';
+import { RootStackParamList } from '../navigation/types';
 
 export const WelcomeScreen = () => {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleStart = () => {
     navigation.navigate('MainTabs');
   };
 
   const handleLogin = () => {
-    console.log('Navegar para Login!');
+    navigation.navigate('Login');
   };
 
   return (

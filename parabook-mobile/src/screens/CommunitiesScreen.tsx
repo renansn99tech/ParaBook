@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   StyleSheet,
   Text,
   View,
@@ -10,8 +12,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
+import { Community, communityService } from '../services/communityService';
 
-const MOCK_COMMUNITIES = [
+const FALLBACK_COMMUNITIES: Community[] = [
   {
     id: '1',
     name: 'Clube do Livro: Fantasia & Sci-Fi',
@@ -48,26 +51,51 @@ const MOCK_COMMUNITIES = [
 
 export const CommunitiesScreen = () => {
   const [activeTab, setActiveTab] = useState<'minhas' | 'explorar'>('minhas');
-  const [communities, setCommunities] = useState(MOCK_COMMUNITIES);
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const toggleJoin = (id: string) => {
-    setCommunities((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, isJoined: !item.isJoined } : item
-      )
-    );
+  const fetchCommunities = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data =
+        activeTab === 'minhas'
+          ? await communityService.getMyCommunities()
+          : await communityService.getCommunities();
+      setCommunities(data.length > 0 ? data : FALLBACK_COMMUNITIES);
+    } catch (error) {
+      setCommunities(FALLBACK_COMMUNITIES);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    fetchCommunities();
+  }, [fetchCommunities]);
+
+  const toggleJoin = async (id: string | number) => {
+    try {
+      await communityService.toggleMembership(id);
+      fetchCommunities();
+    } catch (error) {
+      Alert.alert('Login necessario', 'Entre para participar de comunidades.');
+    }
   };
 
-  const displayedCommunities = communities.filter((c) =>
-    activeTab === 'minhas' ? c.isJoined : !c.isJoined
-  );
+  const displayedCommunities = communities.filter((c) => {
+    if (activeTab === 'minhas') return c.isJoined;
+    return true;
+  });
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Comunidades</Text>
-        <TouchableOpacity style={styles.createButton}>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={() => Alert.alert('Criar comunidade', 'Esta tela sera conectada na proxima etapa.')}
+        >
           <Ionicons name="add" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
@@ -93,60 +121,69 @@ export const CommunitiesScreen = () => {
       </View>
 
       {/* Lista de Comunidades */}
-      <FlatList
-        data={displayedCommunities}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="people-outline" size={48} color={colors.textMuted} />
-            <Text style={styles.emptyText}>
-              {activeTab === 'minhas'
-                ? 'Você ainda não participa de nenhuma comunidade.'
-                : 'Nenhuma comunidade disponível para entrar no momento.'}
-            </Text>
-          </View>
-        }
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View style={styles.avatarPlaceholder}>
-                <Ionicons name="people" size={24} color={colors.primary} />
-              </View>
-              <View style={styles.headerInfo}>
-                <Text style={styles.communityName}>{item.name}</Text>
-                <Text style={styles.communityMembers}>{item.members}</Text>
-              </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={displayedCommunities}
+          keyExtractor={(item) => String(item.id)}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="people-outline" size={48} color={colors.textMuted} />
+              <Text style={styles.emptyText}>
+                {activeTab === 'minhas'
+                  ? 'Voce ainda nao participa de nenhuma comunidade.'
+                  : 'Nenhuma comunidade disponivel para entrar no momento.'}
+              </Text>
             </View>
-
-            <Text style={styles.description}>{item.description}</Text>
-
-            <View style={styles.cardFooter}>
-              <View style={styles.categoryBadge}>
-                <Text style={styles.categoryBadgeText}>{item.category}</Text>
+          }
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <View style={styles.avatarPlaceholder}>
+                  <Ionicons name="people" size={24} color={colors.primary} />
+                </View>
+                <View style={styles.headerInfo}>
+                  <Text style={styles.communityName}>{item.name}</Text>
+                  <Text style={styles.communityMembers}>{item.members}</Text>
+                </View>
               </View>
 
-              <TouchableOpacity
-                style={[
-                  styles.actionButton,
-                  item.isJoined ? styles.leaveButton : styles.joinButton,
-                ]}
-                onPress={() => toggleJoin(item.id)}
-              >
-                <Text
+              <Text style={styles.description}>{item.description}</Text>
+
+              <View style={styles.cardFooter}>
+                <View style={styles.categoryBadge}>
+                  <Text style={styles.categoryBadgeText}>
+                    {item.maintenance ? 'Manutencao' : item.category}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
                   style={[
-                    styles.actionButtonText,
-                    item.isJoined ? styles.leaveButtonText : styles.joinButtonText,
+                    styles.actionButton,
+                    item.isJoined ? styles.leaveButton : styles.joinButton,
                   ]}
+                  onPress={() => toggleJoin(item.id)}
+                  disabled={item.maintenance}
                 >
-                  {item.isJoined ? 'Participando' : 'Entrar'}
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={[
+                      styles.actionButtonText,
+                      item.isJoined ? styles.leaveButtonText : styles.joinButtonText,
+                    ]}
+                  >
+                    {item.isJoined ? 'Participando' : 'Entrar'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -209,6 +246,11 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
     paddingBottom: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   card: {
     backgroundColor: colors.cardBackground,

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  Image,
   StyleSheet,
   Text,
   View,
@@ -13,17 +15,48 @@ import { colors } from '../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { Book, bookService, Category } from '../services/bookService';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const MOCK_BOOKS = [
+const FALLBACK_BOOKS: Book[] = [
   { id: '1', title: 'O Hobbit', author: 'J.R.R. Tolkien' },
   { id: '2', title: '1984', author: 'George Orwell' },
   { id: '3', title: 'Clean Code', author: 'Robert C. Martin' },
 ];
 
+const FALLBACK_CATEGORIES: Category[] = [
+  { id: '1', name: 'Filosofia' },
+  { id: '2', name: 'Literatura' },
+  { id: '3', name: 'Religiosos' },
+  { id: '4', name: 'Infantis' },
+];
+
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const [books, setBooks] = useState<Book[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingBooks, setLoadingBooks] = useState(true);
+
+  useEffect(() => {
+    const fetchHomeData = async () => {
+      try {
+        const [bookData, categoryData] = await Promise.all([
+          bookService.getFeaturedBooks(),
+          bookService.getCategories(),
+        ]);
+        setBooks(bookData.slice(0, 6));
+        setCategories(categoryData.slice(0, 4));
+      } catch (error) {
+        setBooks(FALLBACK_BOOKS);
+        setCategories(FALLBACK_CATEGORIES);
+      } finally {
+        setLoadingBooks(false);
+      }
+    };
+
+    fetchHomeData();
+  }, []);
 
   const navigateToStack = (screenName: 'MyLibrary' | 'BookDetail', params?: { bookId: string; title?: string }) => {
     if (screenName === 'MyLibrary') {
@@ -97,37 +130,17 @@ export const HomeScreen = () => {
         </View>
 
         <View style={styles.categoriesGrid}>
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() => navigateToStack('BookDetail', { bookId: '1', title: 'Ficção' })}
-          >
-            <Ionicons name="book-outline" size={24} color={colors.primary} />
-            <Text style={styles.categoryTitle}>Ficção</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() => navigateToStack('BookDetail', { bookId: '2', title: 'Filosofia' })}
-          >
-            <Ionicons name="school-outline" size={24} color="#10B981" />
-            <Text style={styles.categoryTitle}>Filosofia</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() => navigateToStack('BookDetail', { bookId: '3', title: 'Ciência' })}
-          >
-            <Ionicons name="flask-outline" size={24} color="#EC4899" />
-            <Text style={styles.categoryTitle}>Ciência</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() => navigateToStack('BookDetail', { bookId: '4', title: 'História' })}
-          >
-            <Ionicons name="hourglass-outline" size={24} color="#F59E0B" />
-            <Text style={styles.categoryTitle}>História</Text>
-          </TouchableOpacity>
+          {categories.map((category, index) => {
+            const iconColors = [colors.primary, colors.accentGreen, '#EC4899', colors.accentYellow];
+            return (
+              <View key={category.id} style={styles.categoryCard}>
+                <Ionicons name="book-outline" size={24} color={iconColors[index] || colors.primary} />
+                <Text style={styles.categoryTitle} numberOfLines={1}>
+                  {category.name}
+                </Text>
+              </View>
+            );
+          })}
         </View>
 
         {/* Seção Livros Recomendados */}
@@ -135,25 +148,33 @@ export const HomeScreen = () => {
           <Text style={styles.sectionTitle}>Continuar Lendo</Text>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
-          {MOCK_BOOKS.map((book) => (
-            <TouchableOpacity
-              key={book.id}
-              style={styles.bookCard}
-              onPress={() => navigateToStack('BookDetail', { bookId: book.id, title: book.title })}
-            >
-              <View style={styles.bookCover}>
-                <Ionicons name="book" size={32} color={colors.primary} />
-              </View>
-              <Text style={styles.bookTitle} numberOfLines={1}>
-                {book.title}
-              </Text>
-              <Text style={styles.bookAuthor} numberOfLines={1}>
-                {book.author}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        {loadingBooks ? (
+          <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
+            {books.map((book) => (
+              <TouchableOpacity
+                key={book.id}
+                style={styles.bookCard}
+                onPress={() => navigateToStack('BookDetail', { bookId: String(book.id), title: book.title })}
+              >
+                {book.cover_url ? (
+                  <Image source={{ uri: book.cover_url }} style={styles.bookCoverImage} resizeMode="cover" />
+                ) : (
+                  <View style={styles.bookCover}>
+                    <Ionicons name="book" size={32} color={colors.primary} />
+                  </View>
+                )}
+                <Text style={styles.bookTitle} numberOfLines={1}>
+                  {book.title}
+                </Text>
+                <Text style={styles.bookAuthor} numberOfLines={1}>
+                  {book.author}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
 
       </ScrollView>
     </SafeAreaView>
@@ -324,6 +345,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  bookCoverImage: {
+    width: 110,
+    height: 150,
+    borderRadius: 12,
+    backgroundColor: colors.cardBackground,
+    marginBottom: 8,
+  },
+  loadingIndicator: {
+    marginVertical: 24,
   },
   bookTitle: {
     fontSize: 13,

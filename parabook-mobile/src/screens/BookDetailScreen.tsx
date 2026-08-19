@@ -1,41 +1,47 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
-import { bookService, Book, LibraryStatus } from '../services/bookService';
+import { Book, bookService, getStatusLabel, LibraryStatus } from '../services/bookService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookDetail'>;
 
-// Fallback de demonstração caso a API Django não retorne os detalhes do livro
 const FALLBACK_BOOK: Book = {
   id: '1',
   title: 'Detalhes do Livro',
   author: 'Autor Desconhecido',
   description:
-    'Esta é uma descrição genérica de exibição. Quando a API REST do Django estiver online, os dados reais do MySQL serão carregados nesta tela.',
+    'Quando a API Django estiver online, os dados reais do acervo serao carregados nesta tela.',
   pages: 320,
 };
+
+const STATUS_OPTIONS: Array<{ status: LibraryStatus; icon: keyof typeof Ionicons.glyphMap }> = [
+  { status: 'quero_ler', icon: 'bookmark-outline' },
+  { status: 'lendo', icon: 'book-outline' },
+  { status: 'lido', icon: 'checkmark-circle-outline' },
+];
 
 export const BookDetailScreen = ({ route, navigation }: Props) => {
   const { bookId, title: initialTitle } = route.params || {};
 
   const [book, setBook] = useState<Book | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<LibraryStatus | null>(null);
-  const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [favorite, setFavorite] = useState(false);
 
-  // Busca os detalhes do livro via API
   const fetchBookDetails = useCallback(async () => {
     if (!bookId) {
       setBook(FALLBACK_BOOK);
@@ -44,10 +50,14 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
     }
 
     try {
-      const data = await bookService.getBookById(bookId);
-      setBook(data);
+      const [bookData, shelfItem] = await Promise.all([
+        bookService.getBookById(bookId),
+        bookService.getShelfItemByBook(bookId).catch(() => null),
+      ]);
+      setBook(bookData);
+      setSelectedStatus(shelfItem?.status || null);
+      setFavorite(Boolean(shelfItem?.favorite));
     } catch (error) {
-      console.warn(`Falha ao buscar livro ${bookId} na API. Usando dados locais.`);
       setBook({
         ...FALLBACK_BOOK,
         id: bookId,
@@ -62,21 +72,43 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
     fetchBookDetails();
   }, [fetchBookDetails]);
 
-  // Atualiza o status do livro na biblioteca do usuário
   const handleUpdateStatus = async (status: LibraryStatus) => {
     if (!bookId) return;
 
     setUpdatingStatus(true);
     try {
-      await bookService.updateBookStatus(bookId, status);
-      setSelectedStatus(status);
-      Alert.alert('Sucesso', 'Status do livro atualizado na sua biblioteca!');
+      const item = await bookService.updateBookStatus(bookId, status);
+      setSelectedStatus(item.status);
+      Alert.alert('Estante atualizada', `Livro marcado como ${getStatusLabel(item.status).toLowerCase()}.`);
     } catch (error) {
-      // Atualização local de feedback para desenvolvimento
-      setSelectedStatus(status);
-      Alert.alert('Aviso', 'Status atualizado localmente (offline).');
+      Alert.alert('Login necessario', 'Entre para atualizar sua biblioteca.');
+      navigation.navigate('Login');
     } finally {
       setUpdatingStatus(false);
+    }
+  };
+
+  const handleStartReading = async () => {
+    if (!bookId) return;
+
+    try {
+      await bookService.updateBookStatus(bookId, 'lendo');
+      setSelectedStatus('lendo');
+      navigation.navigate('Reader', { bookId, title: book?.title || initialTitle });
+    } catch (error) {
+      navigation.navigate('Reader', { bookId, title: book?.title || initialTitle });
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!bookId) return;
+
+    try {
+      const item = await bookService.updateBookInteraction(bookId, { favorite: !favorite });
+      setFavorite(Boolean(item.favorite));
+    } catch (error) {
+      Alert.alert('Login necessario', 'Entre para favoritar livros.');
+      navigation.navigate('Login');
     }
   };
 
@@ -90,7 +122,6 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -102,107 +133,76 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
         <Text style={styles.headerTitle} numberOfLines={1}>
           {book?.title || initialTitle || 'Detalhes do Livro'}
         </Text>
-        <View style={styles.headerPlaceholder} />
+        <TouchableOpacity
+          onPress={handleToggleFavorite}
+          style={styles.favoriteHeaderButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons
+            name={favorite ? 'heart' : 'heart-outline'}
+            size={22}
+            color={favorite ? '#EC4899' : colors.textPrimary}
+          />
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Capa do Livro */}
         <View style={styles.coverContainer}>
-          <View style={styles.coverPlaceholder}>
-            <Ionicons name="book" size={60} color={colors.primary} />
-          </View>
+          {book?.cover_url ? (
+            <Image source={{ uri: book.cover_url }} style={styles.coverImage} resizeMode="cover" />
+          ) : (
+            <View style={styles.coverPlaceholder}>
+              <Ionicons name="book" size={60} color={colors.primary} />
+            </View>
+          )}
         </View>
 
-        {/* Informações Básicas */}
         <View style={styles.infoContainer}>
           <Text style={styles.title}>{book?.title}</Text>
           <Text style={styles.author}>{book?.author}</Text>
-          {book?.pages && <Text style={styles.pagesText}>{book.pages} páginas</Text>}
-        </View>
-
-        {/* Seleção de Status da Leitura */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Status de Leitura</Text>
-          <View style={styles.statusButtonsContainer}>
-            <TouchableOpacity
-              style={[
-                styles.statusButton,
-                selectedStatus === 'want_to_read' && styles.statusButtonActive,
-              ]}
-              disabled={updatingStatus}
-              onPress={() => handleUpdateStatus('want_to_read')}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name="bookmark-outline"
-                size={18}
-                color={selectedStatus === 'want_to_read' ? '#FFF' : colors.textSecondary}
-              />
-              <Text
-                style={[
-                  styles.statusButtonText,
-                  selectedStatus === 'want_to_read' && styles.statusButtonTextActive,
-                ]}
-              >
-                Quero Ler
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.statusButton,
-                selectedStatus === 'reading' && styles.statusButtonActive,
-              ]}
-              disabled={updatingStatus}
-              onPress={() => handleUpdateStatus('reading')}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name="book-outline"
-                size={18}
-                color={selectedStatus === 'reading' ? '#FFF' : colors.textSecondary}
-              />
-              <Text
-                style={[
-                  styles.statusButtonText,
-                  selectedStatus === 'reading' && styles.statusButtonTextActive,
-                ]}
-              >
-                Lendo
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.statusButton,
-                selectedStatus === 'completed' && styles.statusButtonActive,
-              ]}
-              disabled={updatingStatus}
-              onPress={() => handleUpdateStatus('completed')}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={18}
-                color={selectedStatus === 'completed' ? '#FFF' : colors.textSecondary}
-              />
-              <Text
-                style={[
-                  styles.statusButtonText,
-                  selectedStatus === 'completed' && styles.statusButtonTextActive,
-                ]}
-              >
-                Lido
-              </Text>
-            </TouchableOpacity>
+          <View style={styles.metaRow}>
+            {book?.category && <Text style={styles.metaPill}>{book.category}</Text>}
+            {book?.pages && <Text style={styles.metaPill}>{book.pages} paginas</Text>}
+            {book?.rating !== undefined && <Text style={styles.metaPill}>{book.rating.toFixed(1)} estrelas</Text>}
           </View>
         </View>
 
-        {/* Sinopse / Descrição */}
+        <TouchableOpacity style={styles.readButton} onPress={handleStartReading} activeOpacity={0.8}>
+          <Ionicons name="reader-outline" size={20} color={colors.textPrimary} />
+          <Text style={styles.readButtonText}>Ler agora</Text>
+        </TouchableOpacity>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Status de Leitura</Text>
+          <View style={styles.statusButtonsContainer}>
+            {STATUS_OPTIONS.map((option) => {
+              const active = selectedStatus === option.status;
+              return (
+                <TouchableOpacity
+                  key={option.status}
+                  style={[styles.statusButton, active && styles.statusButtonActive]}
+                  disabled={updatingStatus}
+                  onPress={() => handleUpdateStatus(option.status)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name={option.icon}
+                    size={18}
+                    color={active ? colors.textPrimary : colors.textSecondary}
+                  />
+                  <Text style={[styles.statusButtonText, active && styles.statusButtonTextActive]}>
+                    {getStatusLabel(option.status)}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sinopse</Text>
           <Text style={styles.description}>
-            {book?.description || 'Nenhuma descrição fornecida para este livro.'}
+            {book?.description || 'Nenhuma descricao fornecida para este livro.'}
           </Text>
         </View>
       </ScrollView>
@@ -229,6 +229,12 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 4,
   },
+  favoriteHeaderButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   headerTitle: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -236,9 +242,6 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     marginHorizontal: 10,
-  },
-  headerPlaceholder: {
-    width: 24,
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -249,8 +252,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   coverPlaceholder: {
-    width: 120,
-    height: 170,
+    width: 128,
+    height: 184,
     backgroundColor: colors.cardBackground,
     borderRadius: 12,
     justifyContent: 'center',
@@ -258,9 +261,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  coverImage: {
+    width: 128,
+    height: 184,
+    borderRadius: 12,
+    backgroundColor: colors.cardBackground,
+  },
   infoContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 18,
   },
   title: {
     fontSize: 20,
@@ -274,10 +283,37 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
-  pagesText: {
-    fontSize: 12,
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 12,
+  },
+  metaPill: {
+    fontSize: 11,
     color: colors.textMuted,
-    marginTop: 6,
+    backgroundColor: colors.cardBackground,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  readButton: {
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 24,
+  },
+  readButtonText: {
+    color: colors.textPrimary,
+    fontSize: 16,
+    fontWeight: '700',
   },
   section: {
     marginBottom: 24,
@@ -314,7 +350,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   statusButtonTextActive: {
-    color: '#FFF',
+    color: colors.textPrimary,
   },
   description: {
     fontSize: 14,

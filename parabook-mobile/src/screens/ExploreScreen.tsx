@@ -1,30 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  SafeAreaView,
   StyleSheet,
   Text,
-  View,
-  ScrollView,
   TextInput,
-  SafeAreaView,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { Book, bookService } from '../services/bookService';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const EXPLORE_BOOKS = [
-  { id: '1', title: 'O Senhor dos Anéis', author: 'J.R.R. Tolkien', category: 'Fantasia' },
-  { id: '2', title: 'Admirável Mundo Novo', author: 'Aldous Huxley', category: 'Ficção Científica' },
-  { id: '3', title: 'O Poder do Hábito', author: 'Charles Duhigg', category: 'Desenvolvimento' },
-  { id: '4', title: 'Sapiens', author: 'Yuval Noah Harari', category: 'História' },
+const FALLBACK_BOOKS: Book[] = [
+  { id: '1', title: 'O Senhor dos Aneis', author: 'J.R.R. Tolkien', category: 'Fantasia' },
+  { id: '2', title: 'Admiravel Mundo Novo', author: 'Aldous Huxley', category: 'Ficcao Cientifica' },
+  { id: '3', title: 'O Poder do Habito', author: 'Charles Duhigg', category: 'Desenvolvimento' },
+  { id: '4', title: 'Sapiens', author: 'Yuval Noah Harari', category: 'Historia' },
 ];
 
 export const ExploreScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const [books, setBooks] = useState<Book[]>([]);
+  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const data = await bookService.getFeaturedBooks(search.trim() || undefined);
+        setBooks(data.length > 0 ? data : FALLBACK_BOOKS);
+      } catch (error) {
+        setBooks(FALLBACK_BOOKS);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
 
   const handleBookPress = (bookId: string, title: string) => {
     navigation.navigate('BookDetail', { bookId, title });
@@ -32,48 +54,64 @@ export const ExploreScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Explorar</Text>
-          <Text style={styles.subtitle}>Encontre seu próximo livro favorito</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Explorar</Text>
+        <Text style={styles.subtitle}>Encontre seu proximo livro favorito</Text>
+      </View>
+
+      <View style={styles.searchContainer}>
+        <Ionicons name="search-outline" size={20} color={colors.textMuted} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Pesquisar por titulo, autor ou genero..."
+          placeholderTextColor={colors.textMuted}
+          value={search}
+          onChangeText={setSearch}
+        />
+      </View>
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Livros em Destaque</Text>
+      </View>
+
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
-
-        {/* Barra de Pesquisa */}
-        <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={20} color={colors.textMuted} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Pesquisar por título, autor ou gênero..."
-            placeholderTextColor={colors.textMuted}
-          />
-        </View>
-
-        {/* Lista de Livros */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Livros em Destaque</Text>
-        </View>
-
-        {EXPLORE_BOOKS.map((book) => (
-          <TouchableOpacity
-            key={book.id}
-            style={styles.bookItem}
-            onPress={() => handleBookPress(book.id, book.title)}
-          >
-            <View style={styles.bookIconContainer}>
-              <Ionicons name="book-outline" size={28} color={colors.primary} />
-            </View>
-            <View style={styles.bookInfo}>
-              <Text style={styles.bookTitle}>{book.title}</Text>
-              <Text style={styles.bookAuthor}>{book.author}</Text>
-              <Text style={styles.bookCategory}>{book.category}</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
-          </TouchableOpacity>
-        ))}
-
-      </ScrollView>
+      ) : (
+        <FlatList
+          data={books}
+          keyExtractor={(item) => String(item.id)}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.bookItem}
+              onPress={() => handleBookPress(String(item.id), item.title)}
+            >
+              {item.cover_url ? (
+                <Image source={{ uri: item.cover_url }} style={styles.bookCover} resizeMode="cover" />
+              ) : (
+                <View style={styles.bookIconContainer}>
+                  <Ionicons name="book-outline" size={28} color={colors.primary} />
+                </View>
+              )}
+              <View style={styles.bookInfo}>
+                <Text style={styles.bookTitle} numberOfLines={1}>
+                  {item.title}
+                </Text>
+                <Text style={styles.bookAuthor} numberOfLines={1}>
+                  {item.author}
+                </Text>
+                <Text style={styles.bookCategory} numberOfLines={1}>
+                  {item.category || 'Acervo ParaBook'}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+            </TouchableOpacity>
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -82,9 +120,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-  },
-  scrollContent: {
-    padding: 20,
+    paddingHorizontal: 20,
   },
   header: {
     marginBottom: 20,
@@ -122,6 +158,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.textPrimary,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  listContent: {
+    paddingBottom: 20,
+  },
   bookItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -139,6 +183,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 14,
+  },
+  bookCover: {
+    width: 48,
+    height: 64,
+    borderRadius: 8,
+    backgroundColor: colors.background,
     marginRight: 14,
   },
   bookInfo: {

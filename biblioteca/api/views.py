@@ -95,7 +95,17 @@ class EstanteViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Biblioteca.objects.filter(user=self.request.user).order_by('-data_adicao')
+        queryset = Biblioteca.objects.filter(user=self.request.user).order_by('-data_adicao')
+        status_filtro = self.request.query_params.get('status')
+        livro_id = self.request.query_params.get('livro')
+
+        if status_filtro:
+            queryset = queryset.filter(status=status_filtro)
+
+        if livro_id:
+            queryset = queryset.filter(livro_id=livro_id)
+
+        return queryset
 
     def create(self, request, *args, **kwargs):
         # 1. Checagem de Limite de Assinatura

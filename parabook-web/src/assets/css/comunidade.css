@@ -3,7 +3,7 @@
 ================================ */
 
 .pagina-comunidade {
-    max-width: 1500px;
+    max-width: var(--layout-max);
     margin: 0 auto;
     padding: 30px 20px;
     text-align: center;

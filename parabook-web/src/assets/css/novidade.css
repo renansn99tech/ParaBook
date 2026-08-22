@@ -18,7 +18,7 @@
 .news-intro-content { max-width:800px; margin:0 auto; }
 .news-intro-content h1 { color:var(--text); font-size:clamp(2rem, 5vw, 3.25rem); }
 .news-intro-content .lead { color:var(--text-secondary); font-size:1.1rem; }
-.news-content { max-width:1500px; flex:1; }
+.news-content { max-width:var(--layout-max); flex:1; }
 .novidades-grid { justify-content:center; }
 .card-novidade-evolved .btn-info-livro { z-index:20; }
 

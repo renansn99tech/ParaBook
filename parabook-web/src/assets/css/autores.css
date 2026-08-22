@@ -3,7 +3,7 @@
 ================================ */
 
 .container-autores{
-    max-width:1500px;
+    max-width:var(--layout-max);
     margin:0 auto;
     padding:70px 60px 90px;
 }

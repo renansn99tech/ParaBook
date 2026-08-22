@@ -12,9 +12,12 @@ function Register() {
     username: '',
     email: '',
     password: '',
+    password_confirm: '',
     termos_aceitos: false,
   });
   const [error, setError] = useState('');
+  // Erros por campo, para marcar o input exato que falhou (ex: username em uso).
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -24,17 +27,41 @@ function Register() {
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
+    // Limpa o erro do campo assim que a pessoa começa a corrigi-lo.
+    if (fieldErrors[e.target.name]) {
+      setFieldErrors((anteriores) => {
+        const atualizados = { ...anteriores };
+        delete atualizados[e.target.name];
+        return atualizados;
+      });
+    }
+  };
+
+  // Normaliza o valor do DRF (array ou string) para uma frase só.
+  const mensagemCampo = (campo) => {
+    const valor = fieldErrors[campo];
+    if (!valor) return '';
+    return Array.isArray(valor) ? valor.join(' ') : String(valor);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
+
+    // Confirmação de senha checada no cliente antes de bater na API.
+    if (formData.password !== formData.password_confirm) {
+      setFieldErrors({ password_confirm: 'As senhas não conferem.' });
+      setError('As senhas não conferem. Verifique a confirmação.');
+      return;
+    }
 
     const result = await register(formData);
     if (result.success) {
       navigate('/perfil');
     } else {
       setError(result.error || 'Erro ao realizar o cadastro. Verifique os dados fornecidos.');
+      setFieldErrors(result.fieldErrors || {});
     }
   };
 
@@ -81,10 +108,15 @@ function Register() {
                   value={formData.username}
                   onChange={handleChange}
                   required
-                  aria-invalid={Boolean(error)}
-                  aria-describedby={error ? 'register-error' : undefined}
+                  aria-invalid={Boolean(fieldErrors.username)}
+                  aria-describedby={fieldErrors.username ? 'reg-usuario-erro' : undefined}
                   placeholder="seu.usuario"
                 />
+                {fieldErrors.username && (
+                  <p className="auth-field-error" id="reg-usuario-erro">
+                    <i className="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {mensagemCampo('username')}
+                  </p>
+                )}
               </div>
 
               <div className="auth-field">
@@ -113,10 +145,36 @@ function Register() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  aria-invalid={Boolean(error)}
-                  aria-describedby={error ? 'register-error' : undefined}
+                  aria-invalid={Boolean(fieldErrors.password)}
+                  aria-describedby={fieldErrors.password ? 'reg-senha-erro' : undefined}
                   placeholder="••••••••"
                 />
+                {fieldErrors.password && (
+                  <p className="auth-field-error" id="reg-senha-erro">
+                    <i className="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {mensagemCampo('password')}
+                  </p>
+                )}
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="reg-senha-confirma">Confirmar senha</label>
+                <input
+                  id="reg-senha-confirma"
+                  type="password"
+                  name="password_confirm"
+                  autoComplete="new-password"
+                  value={formData.password_confirm}
+                  onChange={handleChange}
+                  required
+                  aria-invalid={Boolean(fieldErrors.password_confirm)}
+                  aria-describedby={fieldErrors.password_confirm ? 'reg-senha-confirma-erro' : undefined}
+                  placeholder="••••••••"
+                />
+                {fieldErrors.password_confirm && (
+                  <p className="auth-field-error" id="reg-senha-confirma-erro">
+                    <i className="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {mensagemCampo('password_confirm')}
+                  </p>
+                )}
               </div>
 
               <div className="auth-terms">

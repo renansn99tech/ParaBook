@@ -455,7 +455,7 @@
 
 .auth-wordmark{
     margin:0;
-    font-family:'Spectral', Georgia, serif;
+    font-family:var(--fonte-editorial);
     font-size:3rem;
     font-weight:700;
     line-height:1;
@@ -470,7 +470,7 @@
 /* Título do lado visual (cadastro) */
 .auth-image-text h2{
     margin:0 0 18px;
-    font-family:'Spectral', Georgia, serif;
+    font-family:var(--fonte-editorial);
     font-size:2.5rem;
     font-weight:700;
     line-height:1.15;
@@ -633,7 +633,7 @@
 
 .auth-card :is(h3, .auth-title){
     margin:0 0 6px;
-    font-family:'Spectral', Georgia, serif;
+    font-family:var(--fonte-editorial);
     font-size:2rem;
     font-weight:600;
     line-height:1.2;
@@ -808,6 +808,23 @@
     color:var(--danger);
 
     font-size:.88rem;
+}
+
+/* Erro atrelado a um campo específico (ex: usuário já em uso, senhas
+   diferentes). Fica logo abaixo do input, sem o peso do alerta do topo. */
+.auth-field-error{
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    margin:6px 2px 0;
+    color:var(--danger);
+    font-size:.8rem;
+}
+
+.auth-field input[aria-invalid="true"]{
+    border-color:var(--danger);
+    box-shadow:0 0 0 3px rgba(var(--danger-rgb),.18);
 }
 
 /* ------------------------------------------------------------

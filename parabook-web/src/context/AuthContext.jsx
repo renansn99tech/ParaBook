@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { aplicarTipografia, TIPOGRAFIA_PADRAO } from '../services/tipografia';
 import { AuthContext } from './auth-context';
 
 export const AuthProvider = ({ children }) => {
@@ -14,18 +15,32 @@ export const AuthProvider = ({ children }) => {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = async (username, password) => {
+  useEffect(() => {
+    if (loading) return;
+    aplicarTipografia(user?.tipografia_efetiva || TIPOGRAFIA_PADRAO);
+  }, [loading, user]);
+
+  const login = async (username, password, codigo2fa = '') => {
     try {
       // Cria a sessão HttpOnly e carrega o perfil autenticado.
-      await api.post('/auth/login/', { username, password });
+      const resposta = await api.post('/auth/login/', {
+        username,
+        password,
+        ...(codigo2fa ? { codigo_2fa: codigo2fa } : {}),
+      });
+      if (resposta.status === 202 && resposta.data?.requires_2fa) {
+        return { success: false, requires2fa: true };
+      }
 
       const userResponse = await api.get('/perfis/meu-perfil/');
       setUser(userResponse.data);
       
-      return true;
+      return { success: true };
     } catch (error) {
       console.error("Erro no login", error);
-      return false;
+      const data = error.response?.data;
+      const mensagem = data?.codigo_2fa?.[0] || data?.detail || 'Credenciais inválidas. Tente novamente.';
+      return { success: false, error: mensagem };
     }
   };
 
@@ -50,7 +65,9 @@ export const AuthProvider = ({ children }) => {
           errorMsg = messages.join(' ');
         }
       }
-      return { success: false, error: errorMsg };
+      // `fieldErrors` preserva o dicionário do DRF por campo para o formulário
+      // conseguir destacar exatamente o input que falhou (ex: username em uso).
+      return { success: false, error: errorMsg, fieldErrors: data || {} };
     }
   };
 

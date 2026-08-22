@@ -4,7 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.conf import settings
 from usuarios.models import Usuario
-from perfis.models import Perfil
+from perfis.models import Perfil, FRASE_STATUS_PADRAO_LEITOR
 from django.utils import timezone
 
 
@@ -30,7 +30,18 @@ class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+    password_confirm = serializers.CharField(write_only=True)
     termos_aceitos = serializers.BooleanField(write_only=True)
+
+    def validate(self, attrs):
+        # A confirmação garante que a pessoa não digitou a senha errada sem
+        # perceber. O erro é atrelado ao campo de confirmação para o front
+        # conseguir destacá-lo.
+        if attrs.get('password') != attrs.get('password_confirm'):
+            raise serializers.ValidationError(
+                {'password_confirm': 'As senhas não conferem.'}
+            )
+        return attrs
 
     def validate_termos_aceitos(self, value):
         if value is not True:
@@ -66,7 +77,7 @@ class RegisterSerializer(serializers.Serializer):
 
         novo_perfil = Perfil.objects.create(
             usuario=auth_user,
-            descricao_perfil="Olá! Sou um novo leitor do ParaBook.",
+            descricao_perfil=FRASE_STATUS_PADRAO_LEITOR,
             historico="Nenhum livro lido ainda.",
         )
 

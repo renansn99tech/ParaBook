@@ -15,7 +15,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
-from usuarios.models import Usuario
+from django.http import HttpResponse
+import json
+from usuarios.models import Usuario, SessaoDispositivo, AutenticacaoDoisFatores
 from usuarios.services import obter_ou_criar_usuario_customizado
 from .serializers import (
     UsuarioSerializer,
@@ -27,6 +29,15 @@ from .serializers import (
 from drf_spectacular.utils import extend_schema
 from .throttles import AuthRateThrottle, PasswordResetRateThrottle
 from usuarios.audit import registrar_acao
+from usuarios.security import (
+    criptografar_segredo,
+    descriptografar_segredo,
+    gerar_segredo_totp,
+    montar_uri_totp,
+    registrar_sessao,
+    renovar_sessao,
+    validar_codigo_totp,
+)
 
 
 def _set_auth_cookies(response, refresh):
@@ -104,7 +115,31 @@ class CookieTokenObtainPairAPIView(APIView):
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        configuracao = AutenticacaoDoisFatores.objects.filter(
+            usuario=serializer.user,
+            habilitada=True,
+        ).first()
+        if configuracao:
+            codigo = request.data.get('codigo_2fa')
+            if not codigo:
+                return Response(
+                    {'requires_2fa': True, 'detail': 'Informe o código do aplicativo autenticador.'},
+                    status=status.HTTP_202_ACCEPTED,
+                )
+            try:
+                segredo = descriptografar_segredo(configuracao.segredo_criptografado)
+            except ValueError:
+                return Response(
+                    {'detail': 'A configuração de segurança precisa ser refeita pelo suporte.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not validar_codigo_totp(segredo, codigo):
+                return Response(
+                    {'codigo_2fa': ['Código inválido ou expirado.']},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         refresh = RefreshToken(serializer.validated_data['refresh'])
+        registrar_sessao(request, serializer.user, refresh)
         return _set_auth_cookies(Response({'detail': 'Login realizado com sucesso.'}), refresh)
 
 
@@ -122,8 +157,16 @@ class CookieTokenRefreshAPIView(APIView):
         try:
             old_refresh = RefreshToken(raw_refresh)
             user = User.objects.get(pk=old_refresh['user_id'], is_active=True)
+            sid = old_refresh.get('sid')
+            sessao = SessaoDispositivo.objects.filter(pk=sid, usuario=user).first() if sid else None
+            if sid and (not sessao or not sessao.ativa):
+                raise TokenError('Sessão revogada')
             old_refresh.blacklist()
             new_refresh = RefreshToken.for_user(user)
+            if sessao:
+                renovar_sessao(sessao, new_refresh)
+            else:
+                registrar_sessao(request, user, new_refresh)
         except (TokenError, User.DoesNotExist):
             return _clear_auth_cookies(
                 Response({'detail': 'Sessão inválida.'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -141,7 +184,13 @@ class LogoutAPIView(APIView):
         raw_refresh = request.COOKIES.get(settings.JWT_REFRESH_COOKIE_NAME)
         if raw_refresh:
             try:
-                RefreshToken(raw_refresh).blacklist()
+                refresh = RefreshToken(raw_refresh)
+                sid = refresh.get('sid')
+                if sid:
+                    SessaoDispositivo.objects.filter(pk=sid, revogada_em__isnull=True).update(
+                        revogada_em=timezone.now()
+                    )
+                refresh.blacklist()
             except TokenError:
                 pass
         return _clear_auth_cookies(Response({'detail': 'Sessão encerrada.'}))
@@ -162,6 +211,7 @@ class RegisterAPIView(APIView):
 
         # Gera sessão em cookies HttpOnly para login automático após o cadastro.
         refresh = RefreshToken.for_user(auth_user)
+        registrar_sessao(request, auth_user, refresh)
         response = Response(
             {'detail': 'Cadastro realizado com sucesso.'},
             status=status.HTTP_201_CREATED,
@@ -175,6 +225,200 @@ class UserProfileAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         return obter_ou_criar_usuario_customizado(self.request.user)
+
+
+class SessoesDispositivoAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        sid_atual = str(request.auth.get('sid', '')) if request.auth else ''
+        sessoes = SessaoDispositivo.objects.filter(
+            usuario=request.user,
+            revogada_em__isnull=True,
+            expira_em__gt=timezone.now(),
+        )
+        return Response([
+            {
+                'id': str(sessao.id),
+                'dispositivo': sessao.user_agent or 'Dispositivo não identificado',
+                'criada_em': sessao.criada_em,
+                'ultima_atividade_em': sessao.ultima_atividade_em,
+                'expira_em': sessao.expira_em,
+                'atual': str(sessao.id) == sid_atual,
+            }
+            for sessao in sessoes
+        ])
+
+    def delete(self, request):
+        sessao_id = request.data.get('sessao_id')
+        encerrar_todas = request.data.get('todas') is True
+        sessoes = SessaoDispositivo.objects.filter(usuario=request.user, revogada_em__isnull=True)
+        if not encerrar_todas:
+            if not sessao_id:
+                return Response({'sessao_id': ['Informe a sessão.']}, status=400)
+            sessoes = sessoes.filter(pk=sessao_id)
+        ids = list(sessoes.values_list('id', flat=True))
+        if not ids:
+            return Response({'detail': 'Sessão não encontrada.'}, status=404)
+        sessoes.update(revogada_em=timezone.now())
+        registrar_acao(
+            ator=request.user,
+            acao='sessao.encerrada',
+            recurso='SessaoDispositivo',
+            recurso_id=str(sessao_id or 'todas'),
+            metadados={'quantidade': len(ids)},
+        )
+        sid_atual = str(request.auth.get('sid', '')) if request.auth else ''
+        response = Response({'detail': f'{len(ids)} sessão(ões) encerrada(s).'})
+        if encerrar_todas or sid_atual in {str(item) for item in ids}:
+            _clear_auth_cookies(response)
+        return response
+
+
+class AutenticacaoDoisFatoresAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        configuracao = AutenticacaoDoisFatores.objects.filter(usuario=request.user).first()
+        return Response({'habilitada': bool(configuracao and configuracao.habilitada), 'metodo': 'totp'})
+
+    def post(self, request):
+        acao = request.data.get('acao')
+        if not request.user.check_password(request.data.get('senha_atual', '')):
+            return Response({'senha_atual': ['Senha atual incorreta.']}, status=400)
+
+        if acao == 'iniciar':
+            existente = AutenticacaoDoisFatores.objects.filter(usuario=request.user, habilitada=True).exists()
+            if existente:
+                return Response({'detail': 'A verificação já está habilitada.'}, status=409)
+            segredo = gerar_segredo_totp()
+            AutenticacaoDoisFatores.objects.update_or_create(
+                usuario=request.user,
+                defaults={'segredo_criptografado': criptografar_segredo(segredo), 'habilitada': False},
+            )
+            return Response({'segredo': segredo, 'otpauth_uri': montar_uri_totp(request.user, segredo)})
+
+        if acao == 'confirmar':
+            configuracao = AutenticacaoDoisFatores.objects.filter(usuario=request.user).first()
+            if not configuracao:
+                return Response({'detail': 'Inicie a configuração primeiro.'}, status=409)
+            segredo = descriptografar_segredo(configuracao.segredo_criptografado)
+            if not validar_codigo_totp(segredo, request.data.get('codigo')):
+                return Response({'codigo': ['Código inválido ou expirado.']}, status=400)
+            configuracao.habilitada = True
+            configuracao.save(update_fields=['habilitada', 'atualizada_em'])
+            registrar_acao(ator=request.user, acao='seguranca.2fa_habilitada', recurso='User', recurso_id=request.user.pk)
+            return Response({'detail': 'Verificação em duas etapas habilitada.', 'habilitada': True})
+
+        return Response({'acao': ['Ação inválida.']}, status=400)
+
+    def delete(self, request):
+        if not request.user.check_password(request.data.get('senha_atual', '')):
+            return Response({'senha_atual': ['Senha atual incorreta.']}, status=400)
+        configuracao = AutenticacaoDoisFatores.objects.filter(usuario=request.user, habilitada=True).first()
+        if not configuracao:
+            return Response({'detail': 'A verificação já está desabilitada.'})
+        segredo = descriptografar_segredo(configuracao.segredo_criptografado)
+        if not validar_codigo_totp(segredo, request.data.get('codigo')):
+            return Response({'codigo': ['Código inválido ou expirado.']}, status=400)
+        configuracao.delete()
+        registrar_acao(ator=request.user, acao='seguranca.2fa_desabilitada', recurso='User', recurso_id=request.user.pk)
+        return Response({'detail': 'Verificação em duas etapas desabilitada.'})
+
+
+class PreferenciasNotificacaoAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response(self._dados(obter_ou_criar_usuario_customizado(request.user)))
+
+    def patch(self, request):
+        usuario = obter_ou_criar_usuario_customizado(request.user)
+        campos = ('notificacoes_email', 'notificacoes_comunidades', 'notificacoes_assinaturas')
+        atualizados = []
+        for campo in campos:
+            if campo in request.data:
+                valor = request.data[campo]
+                if not isinstance(valor, bool):
+                    return Response({campo: ['Use verdadeiro ou falso.']}, status=400)
+                setattr(usuario, campo, valor)
+                atualizados.append(campo)
+        if atualizados:
+            usuario.save(update_fields=atualizados)
+        return Response(self._dados(usuario))
+
+    @staticmethod
+    def _dados(usuario):
+        return {
+            'notificacoes_email': usuario.notificacoes_email,
+            'notificacoes_comunidades': usuario.notificacoes_comunidades,
+            'notificacoes_assinaturas': usuario.notificacoes_assinaturas,
+        }
+
+
+class ExportarDadosAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        usuario = obter_ou_criar_usuario_customizado(request.user)
+        perfil = getattr(request.user, 'perfil', None)
+        dados = {
+            'exportado_em': timezone.now().isoformat(),
+            'conta': {
+                'id': request.user.pk,
+                'username': request.user.username,
+                'email': request.user.email,
+                'data_cadastro': request.user.date_joined.isoformat(),
+                'nome': usuario.nome,
+                'tipo': usuario.tipo,
+                'cpf': usuario.cpf,
+                'telefone': usuario.telefone,
+                'termos_aceitos': usuario.termos_aceitos,
+                'versao_termos_aceita': usuario.versao_termos_aceita,
+            },
+            'perfil': {
+                'bio': getattr(perfil, 'bio', None),
+                'localizacao': getattr(perfil, 'localizacao', None),
+                'descricao': getattr(perfil, 'descricao_perfil', None),
+                'privado': getattr(perfil, 'perfil_privado', False),
+                'meta_leitura_anual': getattr(perfil, 'meta_leitura_anual', 12),
+            },
+            'biblioteca': [
+                {
+                    'livro_id': item.livro_id,
+                    'titulo': item.livro.titulo,
+                    'status': item.status,
+                    'favorito': item.favorito,
+                    'nota': item.nota,
+                    'resenha': item.resenha,
+                    'pagina_atual': item.pagina_atual,
+                    'adicionado_em': item.data_adicao.isoformat(),
+                    'concluido_em': item.data_conclusao.isoformat() if item.data_conclusao else None,
+                }
+                for item in request.user.itens_biblioteca.select_related('livro').all()
+            ],
+            'comunidades': [
+                {'id': comunidade.pk, 'nome': comunidade.nome}
+                for comunidade in request.user.comunidades_inscritas.all()
+            ],
+            'notificacoes': [
+                {
+                    'titulo': item.titulo,
+                    'mensagem': item.mensagem,
+                    'tipo': item.tipo,
+                    'lida': item.lida,
+                    'criada_em': item.data_criacao.isoformat(),
+                }
+                for item in request.user.notificacoes.all()
+            ],
+        }
+        registrar_acao(ator=request.user, acao='lgpd.dados_exportados', recurso='User', recurso_id=request.user.pk)
+        response = HttpResponse(
+            json.dumps(dados, ensure_ascii=False, indent=2),
+            content_type='application/json; charset=utf-8',
+        )
+        response['Content-Disposition'] = 'attachment; filename="parabook-meus-dados.json"'
+        return response
 
 
 class ExcluirContaAPIView(APIView):

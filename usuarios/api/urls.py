@@ -12,6 +12,10 @@ from .views import (
     CsrfTokenAPIView,
     LogoutAPIView,
     GovernancaLegalAPIView,
+    SessoesDispositivoAPIView,
+    AutenticacaoDoisFatoresAPIView,
+    PreferenciasNotificacaoAPIView,
+    ExportarDadosAPIView,
 )
 
 urlpatterns = [
@@ -27,4 +31,8 @@ urlpatterns = [
     path('redefinir-senha/', PasswordResetConfirmAPIView.as_view(), name='api_redefinir_senha'),
     path('aceitar-termos/', AceitarTermosAPIView.as_view(), name='api_aceitar_termos'),
     path('excluir-conta/', ExcluirContaAPIView.as_view(), name='api_excluir_conta'),
+    path('sessoes/', SessoesDispositivoAPIView.as_view(), name='api_sessoes'),
+    path('dois-fatores/', AutenticacaoDoisFatoresAPIView.as_view(), name='api_dois_fatores'),
+    path('preferencias-notificacao/', PreferenciasNotificacaoAPIView.as_view(), name='api_preferencias_notificacao'),
+    path('exportar-dados/', ExportarDadosAPIView.as_view(), name='api_exportar_dados'),
 ]

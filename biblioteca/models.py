@@ -98,6 +98,10 @@ class Biblioteca(models.Model):
     )
     resenha = models.TextField(null=True, blank=True, verbose_name="Resenha/Avaliação")
     data_adicao = models.DateTimeField(auto_now_add=True, verbose_name="Adicionado em")
+    pagina_atual = models.PositiveIntegerField(default=0, verbose_name="Página atual")
+    ultima_leitura_em = models.DateTimeField(null=True, blank=True, verbose_name="Última leitura")
+    data_conclusao = models.DateTimeField(null=True, blank=True, verbose_name="Conclusão da leitura")
+    avaliada_em = models.DateTimeField(null=True, blank=True, verbose_name="Última avaliação")
 
     # Flags para controle de gamificação antifraude
     xp_ganho_adicao = models.BooleanField(default=False)

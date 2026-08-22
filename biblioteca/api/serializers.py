@@ -1,7 +1,6 @@
 # api/serializers.py
 from django.conf import settings
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao
 from django.contrib.auth.models import User
 from biblioteca.validators import validar_pdf_livro
@@ -36,20 +35,25 @@ class EstanteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Biblioteca
-        fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'status', 'favorito', 'nota', 'resenha', 'data_adicao']
-        read_only_fields = ['user']
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Biblioteca.objects.all(),
-                fields=['user', 'livro'],
-                message="Este livro já está presente na sua estante."
-            )
-        ]
+        fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'status', 'favorito', 'nota', 'resenha', 'pagina_atual', 'ultima_leitura_em', 'data_conclusao', 'avaliada_em', 'data_adicao']
+        read_only_fields = ['user', 'avaliada_em']
 
     def get_livro_capa(self, obj):
         if obj.livro and obj.livro.capa:
             return obj.livro.capa.url
         return None
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        livro = attrs.get('livro') or getattr(self.instance, 'livro', None)
+        if self.instance is None and livro:
+            request = self.context.get('request')
+            if request and Biblioteca.objects.filter(user=request.user, livro=livro).exists():
+                raise serializers.ValidationError({'livro': 'Este livro já está presente na sua estante.'})
+        pagina = attrs.get('pagina_atual')
+        if pagina is not None and livro and livro.paginas and pagina > livro.paginas:
+            raise serializers.ValidationError({'pagina_atual': 'A página excede o total do livro.'})
+        return attrs
 
 class ResenhaSerializer(serializers.ModelSerializer):
     usuario_nome = serializers.CharField(source='user.username', read_only=True)

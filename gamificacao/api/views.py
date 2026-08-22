@@ -91,8 +91,15 @@ class MeusStatsAPIView(APIView):
 
     def get(self, request):
         progresso, _ = ProgressoLeitor.objects.get_or_create(user=request.user)
+        xp_inicio_nivel = progresso.nivel * (progresso.nivel - 1) * 50
+        xp_necessario_nivel = progresso.nivel * 100
+        xp_no_nivel = max(0, progresso.pontos_xp - xp_inicio_nivel)
         return Response({
             'xp': progresso.pontos_xp,
             'nivel': progresso.nivel,
             'dias_seguidos': progresso.dias_seguidos,
+            'xp_no_nivel': xp_no_nivel,
+            'xp_necessario_nivel': xp_necessario_nivel,
+            'progresso_nivel': min(1, xp_no_nivel / xp_necessario_nivel),
+            'total_conquistas': ConquistaUsuario.objects.filter(user=request.user).count(),
         }, status=status.HTTP_200_OK)

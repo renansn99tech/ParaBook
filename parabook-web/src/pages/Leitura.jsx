@@ -85,6 +85,17 @@ function Leitura() {
           setIdEstante(entry.id);
           setLido(entry.status === 'lido');
           setFavorito(entry.favorito);
+        } else {
+          try {
+            const criada = await api.post('/biblioteca/estante/', {
+              livro: parseInt(id),
+              status: 'lendo',
+              pagina_atual: 1,
+            });
+            setIdEstante(criada.data.id);
+          } catch (erroEstante) {
+            console.warn('Leitura aberta sem sincronização na estante', erroEstante);
+          }
         }
 
         // 2. Busca o arquivo PDF
@@ -97,8 +108,11 @@ function Leitura() {
         setTotalPaginas(pdf.numPages);
         
         // Recuperar progresso
+        const paginaServidor = Number(entry?.pagina_atual || 0);
         const pagSalva = localStorage.getItem(`pagina_${id}`);
-        if (pagSalva && parseInt(pagSalva) <= pdf.numPages) {
+        if (paginaServidor > 0 && paginaServidor <= pdf.numPages) {
+          setPaginaAtual(paginaServidor);
+        } else if (pagSalva && parseInt(pagSalva) <= pdf.numPages) {
           setPaginaAtual(parseInt(pagSalva));
         } else {
           setPaginaAtual(1);
@@ -156,6 +170,15 @@ function Leitura() {
       isRenderCancelled = true;
     };
   }, [pdfDoc, paginaAtual, zoomAtual, id]);
+
+  useEffect(() => {
+    if (!idEstante || !pdfDoc || loading) return undefined;
+    const timer = window.setTimeout(() => {
+      api.patch(`/biblioteca/estante/${idEstante}/`, { pagina_atual: paginaAtual })
+        .catch((error) => console.error('Erro ao sincronizar progresso de leitura', error));
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, [idEstante, loading, paginaAtual, pdfDoc]);
 
   // Keyboard navigation
   useEffect(() => {

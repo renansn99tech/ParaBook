@@ -15,6 +15,7 @@ from django.http import FileResponse
 from usuarios.api.throttles import UploadRateThrottle
 from django.conf import settings
 from django.utils.crypto import salted_hmac
+from django.utils import timezone
 from usuarios.audit import registrar_acao
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -144,7 +145,14 @@ class EstanteViewSet(viewsets.ModelViewSet):
             return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        extras = {'user': self.request.user}
+        if serializer.validated_data.get('pagina_atual', 0) > 0:
+            extras['ultima_leitura_em'] = timezone.now()
+        if serializer.validated_data.get('status') == 'lido':
+            extras['data_conclusao'] = timezone.now()
+        if serializer.validated_data.get('nota') is not None or serializer.validated_data.get('resenha'):
+            extras['avaliada_em'] = timezone.now()
+        serializer.save(**extras)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -165,6 +173,21 @@ class EstanteViewSet(viewsets.ModelViewSet):
 
         # 3. Gatilhos de Gamificação após atualização
         obj = serializer.instance
+        campos_temporais = []
+        if 'pagina_atual' in serializer.validated_data:
+            obj.ultima_leitura_em = timezone.now()
+            campos_temporais.append('ultima_leitura_em')
+            if obj.status == 'quero_ler':
+                obj.status = 'lendo'
+                campos_temporais.append('status')
+        if status_anterior != 'lido' and obj.status == 'lido':
+            obj.data_conclusao = timezone.now()
+            campos_temporais.append('data_conclusao')
+        if 'nota' in serializer.validated_data or 'resenha' in serializer.validated_data:
+            obj.avaliada_em = timezone.now() if obj.nota is not None or obj.resenha else None
+            campos_temporais.append('avaliada_em')
+        if campos_temporais:
+            obj.save(update_fields=campos_temporais)
         msg_extra = []
 
         try:

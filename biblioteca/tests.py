@@ -6,7 +6,7 @@ from django.contrib.staticfiles import finders
 from rest_framework.test import APIClient
 
 from biblioteca.models import Categoria
-from biblioteca.models import Livro
+from biblioteca.models import Livro, Biblioteca
 from biblioteca.api.serializers import SolicitacaoPublicacaoSerializer
 
 
@@ -61,3 +61,50 @@ class SegurancaCatalogoTests(TestCase):
         response = client.get('/api/v1/dashboard/lixeira/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Livro.objects.filter(pk=livro.pk).exists())
+
+
+class ProgressoLeituraTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='progresso', password='x')
+        self.categoria = Categoria.objects.create(nome='Progresso')
+        self.livro = Livro.objects.create(
+            titulo='Livro Longo', autor='Autora', categoria=self.categoria, paginas=120,
+        )
+        self.item = Biblioteca.objects.create(user=self.user, livro=self.livro, status='lendo')
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    def test_pagina_atual_e_conclusao_sao_persistidas(self):
+        url = f'/api/v1/biblioteca/estante/{self.item.pk}/'
+        resposta = self.client.patch(url, {'pagina_atual': 57}, format='json')
+        self.item.refresh_from_db()
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(self.item.pagina_atual, 57)
+        self.assertIsNotNone(self.item.ultima_leitura_em)
+
+        self.client.patch(url, {'status': 'lido'}, format='json')
+        self.item.refresh_from_db()
+        self.assertIsNotNone(self.item.data_conclusao)
+
+    def test_pagina_nao_pode_exceder_total(self):
+        resposta = self.client.patch(
+            f'/api/v1/biblioteca/estante/{self.item.pk}/',
+            {'pagina_atual': 121},
+            format='json',
+        )
+        self.assertEqual(resposta.status_code, 400)
+
+    def test_avaliacao_registra_e_remove_a_data_da_ultima_avaliacao(self):
+        url = f'/api/v1/biblioteca/estante/{self.item.pk}/'
+
+        resposta = self.client.patch(url, {'nota': 5}, format='json')
+        self.item.refresh_from_db()
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIsNotNone(self.item.avaliada_em)
+
+        resposta = self.client.patch(url, {'nota': None, 'resenha': ''}, format='json')
+        self.item.refresh_from_db()
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIsNone(self.item.avaliada_em)

@@ -25,6 +25,8 @@ const PerfilPublico = lazy(() => import('./pages/PerfilPublico'))
 const Novidades = lazy(() => import('./pages/Novidades'))
 const ConteudoComunidade = lazy(() => import('./pages/ConteudoComunidade'))
 const AlterarSenha = lazy(() => import('./pages/AlterarSenha'))
+const ConfiguracoesAvancadas = lazy(() => import('./pages/ConfiguracoesAvancadas'))
+const CentralConta = lazy(() => import('./pages/CentralConta'))
 const Notificacoes = lazy(() => import('./pages/Notificacoes'))
 const Planos = lazy(() => import('./pages/Planos'))
 const MinhaAssinatura = lazy(() => import('./pages/MinhaAssinatura'))
@@ -108,6 +110,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/perfil" element={<Profile />} />
           <Route path="/perfil/alterar-senha" element={<AlterarSenha />} />
+          <Route path="/perfil/configuracoes" element={<ConfiguracoesAvancadas />} />
+          <Route path="/perfil/configuracoes/:secao" element={<CentralConta />} />
           <Route path="/perfil/:username" element={<PerfilPublico />} />
           <Route path="/biblioteca" element={<Biblioteca />} />
           <Route path="/comunidades" element={<Comunidades />} />

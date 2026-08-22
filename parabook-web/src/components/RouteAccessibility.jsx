@@ -6,6 +6,7 @@ const TITULOS = new Map([
   ['/login', 'Entrar'],
   ['/register', 'Criar conta'],
   ['/perfil', 'Meu perfil'],
+  ['/perfil/configuracoes', 'Configurações avançadas'],
   ['/biblioteca', 'Biblioteca'],
   ['/comunidades', 'Comunidades'],
   ['/autores', 'Autores'],
@@ -24,6 +25,7 @@ function tituloDaRota(pathname) {
   if (TITULOS.has(pathname)) return TITULOS.get(pathname);
   if (pathname.startsWith('/livro/')) return 'Detalhes do livro';
   if (pathname.startsWith('/leitura/')) return 'Leitura';
+  if (pathname.startsWith('/perfil/configuracoes/')) return 'Configurações da conta';
   if (pathname.startsWith('/perfil/')) return 'Perfil';
   if (pathname.startsWith('/comunidade/')) return 'Comunidade';
   if (pathname.startsWith('/dashboard')) return 'Painel administrativo';

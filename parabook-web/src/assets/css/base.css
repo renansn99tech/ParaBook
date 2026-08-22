@@ -36,7 +36,7 @@ html{
 
 body{
 
-    font-family:'Inter',sans-serif;
+    font-family:var(--fonte-interface);
 
     background:transparent;
 
@@ -106,16 +106,16 @@ body{
     --vela-rgb:232,162,72;
     --vela:#E8A248;
 
-    /* Serifada só para o título do hero — o resto do app segue em Inter.
-       Pilha de sistema de propósito: sem @font-face e sem CDN, então não
-       há webfont para baixar nem risco de fallback silencioso. */
-    --fonte-editorial:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    /* Preset público do ParaBook. Contas autenticadas podem substituir o
+       par por meio de data-tipografia; os componentes só consomem tokens. */
+    --fonte-interface:'Inter','Segoe UI',Arial,sans-serif;
+    --fonte-editorial:'Spectral',Georgia,'Times New Roman',serif;
 
     /* Geometria responsiva compartilhada. O gutter acompanha a viewport,
        mas nunca fica menor que 20px no celular nem maior que 60px no
        desktop. Páginas podem controlar seu espaçamento vertical sem que
        uma regra global reescreva padding-top/padding-bottom. */
-    --layout-max:1500px;
+    --layout-max:1600px;
     --layout-gutter:clamp(1.25rem, 4.7vw, 3.75rem);
     --section-space:clamp(3.75rem, 7vw, 5rem);
     --touch-target:44px;
@@ -264,6 +264,21 @@ body{
     --lift-md:-5px;
     --lift-lg:-8px;
 
+}
+
+:root[data-tipografia="leitura_clara"]{
+    --fonte-interface:'Atkinson Hyperlegible Next','Segoe UI',Arial,sans-serif;
+    --fonte-editorial:'Literata',Georgia,'Times New Roman',serif;
+}
+
+:root[data-tipografia="oficina_autor"]{
+    --fonte-interface:'IBM Plex Sans','Segoe UI',Arial,sans-serif;
+    --fonte-editorial:'IBM Plex Serif',Georgia,'Times New Roman',serif;
+}
+
+:root[data-tipografia="edicao_premium"]{
+    --fonte-interface:'Source Sans 3','Segoe UI',Arial,sans-serif;
+    --fonte-editorial:'Source Serif 4',Georgia,'Times New Roman',serif;
 }
 
 /* ===============================
@@ -504,7 +519,7 @@ html,
 
     width:100%;
 
-    /* Largura-mestra do site (1500px). !important aqui porque este é o
+    /* Largura-mestra do site (--layout-max). !important aqui porque este é o
        único container que colide com o `.container` do Bootstrap (que
        reduz por breakpoint em telas grandes); as classes próprias do
        projeto abaixo não precisam. */

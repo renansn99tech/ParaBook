@@ -4,6 +4,25 @@ import api from '../../services/api';
 function AdminAprovacoes() {
   const [dados, setDados] = useState({ perfis: [], publicacoes: [] });
   const [loading, setLoading] = useState(true);
+  const [processando, setProcessando] = useState(null);
+
+  const decidir = async (categoria, id, acao) => {
+    if (!window.confirm(`Deseja ${acao === 'aprovar' ? 'aprovar' : 'recusar'} esta solicitação?`)) return;
+    const chave = `${categoria}-${id}`;
+    setProcessando(chave);
+    try {
+      await api.post(`/dashboard/moderacao/${categoria}/${id}/`, { acao });
+      setDados((atual) => ({
+        ...atual,
+        perfis: categoria === 'autor' ? atual.perfis.filter((item) => item.id !== id) : atual.perfis,
+        publicacoes: categoria === 'publicacao' ? atual.publicacoes.filter((item) => item.id !== id) : atual.publicacoes,
+      }));
+    } catch (error) {
+      window.alert(error.response?.data?.detail || 'Não foi possível registrar a decisão.');
+    } finally {
+      setProcessando(null);
+    }
+  };
 
   useEffect(() => {
     const fetchDados = async () => {
@@ -37,8 +56,8 @@ function AdminAprovacoes() {
                 <li key={p.id}>
                   <span>@{p.username} - {p.bio || 'Sem bio'}</span>
                   <div className="admin-linha-acoes">
-                    <button className="admin-btn-mini ok">Aprovar</button>
-                    <button className="admin-btn-mini nao">Recusar</button>
+                    <button type="button" className="admin-btn-mini ok" disabled={processando === `autor-${p.id}`} onClick={() => decidir('autor', p.id, 'aprovar')}>Aprovar</button>
+                    <button type="button" className="admin-btn-mini nao" disabled={processando === `autor-${p.id}`} onClick={() => decidir('autor', p.id, 'recusar')}>Recusar</button>
                   </div>
                 </li>
               ))}
@@ -63,7 +82,8 @@ function AdminAprovacoes() {
                   <span><strong>{pub.titulo_livro}</strong> (por @{pub.autor})</span>
                   <span className="admin-linha-meta">{pub.data_envio}</span>
                   <div className="admin-linha-acoes">
-                    <button className="admin-btn-mini ok">Avaliar</button>
+                    <button type="button" className="admin-btn-mini ok" disabled={processando === `publicacao-${pub.id}`} onClick={() => decidir('publicacao', pub.id, 'aprovar')}>Aprovar</button>
+                    <button type="button" className="admin-btn-mini nao" disabled={processando === `publicacao-${pub.id}`} onClick={() => decidir('publicacao', pub.id, 'recusar')}>Recusar</button>
                   </div>
                 </li>
               ))}

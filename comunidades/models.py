@@ -72,10 +72,18 @@ class PostagemComunidade(models.Model):
         return self.titulo
     
 class DenunciaComunidade(models.Model):
+    STATUS_CHOICES = [
+        ('pendente', 'Pendente'),
+        ('acolhida', 'Acolhida'),
+        ('arquivada', 'Arquivada'),
+    ]
+
     comunidade = models.ForeignKey(Comunidade, on_delete=models.CASCADE, related_name='denuncias_registradas')
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     motivo = models.CharField(max_length=100)
     data_denuncia = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente', db_index=True)
+    data_analise = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'denuncias_comunidades'

@@ -5,7 +5,7 @@
 
 /* Remove interferências do Bootstrap */
 .container.py-4{
-    max-width:1500px;
+    max-width:var(--layout-max);
     margin:0 auto;
     padding:60px 60px 80px !important;
 }

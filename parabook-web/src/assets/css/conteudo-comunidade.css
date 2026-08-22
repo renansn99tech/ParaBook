@@ -43,9 +43,14 @@
     /* Era um degradê azul-marinho -> cinza-quente (#14213d -> #58504a),
        a única superfície morna do app. Agora usa o roxo da marca. */
     background: linear-gradient(135deg, var(--purple-dark), var(--bg-card));
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
+    border: 0;
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(var(--white-rgb), .045);
     color: var(--text);
+    text-align: center;
+}
+
+.banner-comunidade > div {
+    width: 100%;
 }
 
 .banner-comunidade h2 {
@@ -58,6 +63,9 @@
     font-size: 1rem;
     line-height: 1.7;
     max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    text-wrap: balance;
 }
 
 /* POSTS SECTION */

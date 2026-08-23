@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,41 +18,31 @@ import { bookService, LibraryStatus, UserBookItem } from '../services/bookServic
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MyLibrary'>;
 
-// Fallback visual caso a API ainda não esteja respondendo
-const FALLBACK_LIBRARY: UserBookItem[] = [
-  { id: '1', book: { id: '1', title: 'O Hobbit', author: 'J.R.R. Tolkien' }, status: 'reading', progress: 65 },
-  { id: '2', book: { id: '2', title: '1984', author: 'George Orwell' }, status: 'want_to_read', progress: 0 },
-  { id: '3', book: { id: '3', title: 'Clean Code', author: 'Robert C. Martin' }, status: 'completed', progress: 100 },
-  { id: '4', book: { id: '4', title: 'Duna', author: 'Frank Herbert' }, status: 'want_to_read', progress: 0 },
-  { id: '5', book: { id: '5', title: 'O Senhor dos Anéis', author: 'J.R.R. Tolkien' }, status: 'completed', progress: 100 },
-];
-
-export const MyLibraryScreen = ({ navigation }: Props) => {
-  const [activeTab, setActiveTab] = useState<LibraryStatus>('reading');
+export const MyLibraryScreen = ({ navigation, route }: Props) => {
+  const [activeTab, setActiveTab] = useState<LibraryStatus>(route.params?.initialStatus || 'lendo');
   const [books, setBooks] = useState<UserBookItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Busca os dados da biblioteca via API
   const fetchLibrary = useCallback(async () => {
+    setErrorMessage(null);
     try {
-      const data = await bookService.getUserLibrary(activeTab);
-      if (data && data.length > 0) {
-        setBooks(data);
-      } else {
-        // Se a API retornar vazio para a aba ou durante testes sem backend
-        const fallbackFiltered = FALLBACK_LIBRARY.filter((item) => item.status === activeTab);
-        setBooks(fallbackFiltered);
-      }
+      const showAllStatuses = route.params?.favoritesOnly || route.params?.reviewedOnly;
+      const data = await bookService.getUserLibrary(showAllStatuses ? undefined : activeTab);
+      setBooks(data.filter((item) => {
+        if (route.params?.favoritesOnly) return Boolean(item.favorite);
+        if (route.params?.reviewedOnly) return item.rating !== null && item.rating !== undefined;
+        return true;
+      }));
     } catch (error) {
-      console.warn('Não foi possível conectar à API Django. Exibindo dados locais de demonstração.');
-      const fallbackFiltered = FALLBACK_LIBRARY.filter((item) => item.status === activeTab);
-      setBooks(fallbackFiltered);
+      setBooks([]);
+      setErrorMessage('Nao foi possivel carregar sua biblioteca agora.');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [activeTab]);
+  }, [activeTab, route.params?.favoritesOnly, route.params?.reviewedOnly]);
 
   useEffect(() => {
     setLoading(true);
@@ -74,47 +65,55 @@ export const MyLibraryScreen = ({ navigation }: Props) => {
         >
           <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Minha Biblioteca</Text>
+        <Text style={styles.headerTitle}>{route.params?.favoritesOnly ? 'Favoritos' : route.params?.reviewedOnly ? 'Avaliacoes' : 'Minha Biblioteca'}</Text>
         <View style={styles.headerPlaceholder} />
       </View>
 
       {/* Abas da Biblioteca */}
-      <View style={styles.tabsContainer}>
+      {!route.params?.favoritesOnly && !route.params?.reviewedOnly && <View style={styles.tabsContainer}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'reading' && styles.activeTab]}
-          onPress={() => setActiveTab('reading')}
+          style={[styles.tab, activeTab === 'lendo' && styles.activeTab]}
+          onPress={() => setActiveTab('lendo')}
           activeOpacity={0.7}
         >
-          <Text style={[styles.tabText, activeTab === 'reading' && styles.activeTabText]}>
+          <Text style={[styles.tabText, activeTab === 'lendo' && styles.activeTabText]}>
             Lendo
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'want_to_read' && styles.activeTab]}
-          onPress={() => setActiveTab('want_to_read')}
+          style={[styles.tab, activeTab === 'quero_ler' && styles.activeTab]}
+          onPress={() => setActiveTab('quero_ler')}
           activeOpacity={0.7}
         >
-          <Text style={[styles.tabText, activeTab === 'want_to_read' && styles.activeTabText]}>
+          <Text style={[styles.tabText, activeTab === 'quero_ler' && styles.activeTabText]}>
             Quero Ler
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'completed' && styles.activeTab]}
-          onPress={() => setActiveTab('completed')}
+          style={[styles.tab, activeTab === 'lido' && styles.activeTab]}
+          onPress={() => setActiveTab('lido')}
           activeOpacity={0.7}
         >
-          <Text style={[styles.tabText, activeTab === 'completed' && styles.activeTabText]}>
+          <Text style={[styles.tabText, activeTab === 'lido' && styles.activeTabText]}>
             Lidos
           </Text>
         </TouchableOpacity>
-      </View>
+      </View>}
 
       {/* Conteúdo Principal (Loading ou Lista) */}
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : errorMessage ? (
+        <View style={styles.emptyState}>
+          <Ionicons name="cloud-offline-outline" size={48} color={colors.textMuted} />
+          <Text style={styles.emptyText}>{errorMessage}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={fetchLibrary}>
+            <Text style={styles.retryButtonText}>Tentar novamente</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
@@ -142,9 +141,13 @@ export const MyLibraryScreen = ({ navigation }: Props) => {
                 })
               }
             >
-              <View style={styles.coverPlaceholder}>
-                <Ionicons name="book" size={28} color={colors.primary} />
-              </View>
+              {item.book.cover_url ? (
+                <Image source={{ uri: item.book.cover_url }} style={styles.coverImage} resizeMode="cover" />
+              ) : (
+                <View style={styles.coverPlaceholder}>
+                  <Ionicons name="book" size={28} color={colors.primary} />
+                </View>
+              )}
 
               <View style={styles.bookInfo}>
                 <Text style={styles.bookTitle} numberOfLines={1}>
@@ -154,7 +157,7 @@ export const MyLibraryScreen = ({ navigation }: Props) => {
                   {item.book.author}
                 </Text>
 
-                {item.status === 'reading' && (
+                {item.status === 'lendo' && (
                   <View style={styles.progressSection}>
                     <View style={styles.progressBarBg}>
                       <View style={[styles.progressBarFill, { width: `${item.progress}%` }]} />
@@ -252,6 +255,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  coverImage: {
+    width: 46,
+    height: 64,
+    borderRadius: 8,
+    backgroundColor: colors.background,
+  },
   bookInfo: {
     flex: 1,
     marginLeft: 12,
@@ -298,5 +307,19 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 8,
     fontSize: 14,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 16,
+    minHeight: 42,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    borderRadius: 21,
+    backgroundColor: colors.primary,
+  },
+  retryButtonText: {
+    color: colors.textPrimary,
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

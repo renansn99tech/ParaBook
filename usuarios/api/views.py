@@ -143,6 +143,28 @@ class CookieTokenObtainPairAPIView(APIView):
         return _set_auth_cookies(Response({'detail': 'Login realizado com sucesso.'}), refresh)
 
 
+class MobileTokenObtainPairAPIView(APIView):
+    """Login para clientes mobile nativos.
+
+    Mantem o fluxo web em cookies HttpOnly separado e entrega tokens no corpo
+    apenas para apps nativos, que autenticam as demais rotas via Bearer.
+    """
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    throttle_classes = [AuthRateThrottle]
+
+    def post(self, request):
+        serializer = TokenObtainPairSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        refresh = RefreshToken(serializer.validated_data['refresh'])
+        return Response({
+            'detail': 'Login realizado com sucesso.',
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        })
+
+
 @method_decorator(csrf_protect, name='dispatch')
 class CookieTokenRefreshAPIView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -217,6 +239,32 @@ class RegisterAPIView(APIView):
             status=status.HTTP_201_CREATED,
         )
         return _set_auth_cookies(response, refresh)
+
+
+class MobileRegisterAPIView(APIView):
+    """Cadastro para app mobile com retorno de JWT Bearer."""
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    throttle_classes = [AuthRateThrottle]
+
+    @extend_schema(request=RegisterSerializer, responses={201: None})
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        with transaction.atomic():
+            auth_user = serializer.save()
+
+        refresh = RefreshToken.for_user(auth_user)
+        return Response(
+            {
+                'detail': 'Cadastro realizado com sucesso.',
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class UserProfileAPIView(generics.RetrieveAPIView):

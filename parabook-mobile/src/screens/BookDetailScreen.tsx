@@ -8,24 +8,16 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TextInput,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
-import { Book, bookService, getStatusLabel, LibraryStatus } from '../services/bookService';
+import { Book, BookReview, bookService, getStatusLabel, LibraryStatus } from '../services/bookService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookDetail'>;
-
-const FALLBACK_BOOK: Book = {
-  id: '1',
-  title: 'Detalhes do Livro',
-  author: 'Autor Desconhecido',
-  description:
-    'Quando a API Django estiver online, os dados reais do acervo serao carregados nesta tela.',
-  pages: 320,
-};
 
 const STATUS_OPTIONS: Array<{ status: LibraryStatus; icon: keyof typeof Ionicons.glyphMap }> = [
   { status: 'quero_ler', icon: 'bookmark-outline' },
@@ -41,28 +33,36 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
   const [selectedStatus, setSelectedStatus] = useState<LibraryStatus | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [favorite, setFavorite] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<BookReview[]>([]);
+  const [myRating, setMyRating] = useState(0);
+  const [myReview, setMyReview] = useState('');
+  const [savingReview, setSavingReview] = useState(false);
 
   const fetchBookDetails = useCallback(async () => {
     if (!bookId) {
-      setBook(FALLBACK_BOOK);
+      setBook(null);
+      setErrorMessage('Livro nao identificado.');
       setLoading(false);
       return;
     }
 
     try {
-      const [bookData, shelfItem] = await Promise.all([
+      setErrorMessage(null);
+      const [bookData, shelfItem, reviewData] = await Promise.all([
         bookService.getBookById(bookId),
         bookService.getShelfItemByBook(bookId).catch(() => null),
+        bookService.getBookReviews(bookId).catch(() => []),
       ]);
       setBook(bookData);
       setSelectedStatus(shelfItem?.status || null);
       setFavorite(Boolean(shelfItem?.favorite));
+      setMyRating(shelfItem?.rating || 0);
+      setMyReview(shelfItem?.review || '');
+      setReviews(reviewData);
     } catch (error) {
-      setBook({
-        ...FALLBACK_BOOK,
-        id: bookId,
-        title: initialTitle || FALLBACK_BOOK.title,
-      });
+      setBook(null);
+      setErrorMessage('Nao foi possivel carregar os detalhes deste livro.');
     } finally {
       setLoading(false);
     }
@@ -112,10 +112,39 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
     }
   };
 
+  const handleSaveReview = async () => {
+    if (!bookId || myRating < 1) {
+      Alert.alert('Escolha uma nota', 'Selecione de uma a cinco estrelas.');
+      return;
+    }
+    setSavingReview(true);
+    try {
+      await bookService.updateBookInteraction(bookId, { rating: myRating, review: myReview.trim() });
+      setReviews(await bookService.getBookReviews(bookId));
+      Alert.alert('Avaliacao salva', 'Sua avaliacao foi publicada.');
+    } catch {
+      Alert.alert('Nao foi possivel salvar', 'Verifique sua conexao e tente novamente.');
+    } finally {
+      setSavingReview(false);
+    }
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" color={colors.primary} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!book) {
+    return (
+      <SafeAreaView style={[styles.container, styles.centerContent]}>
+        <Ionicons name="alert-circle-outline" size={46} color={colors.textMuted} />
+        <Text style={styles.errorText}>{errorMessage || 'Livro nao encontrado.'}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={() => void fetchBookDetails()}>
+          <Text style={styles.retryButtonText}>Tentar novamente</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
@@ -131,7 +160,7 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
           <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
-          {book?.title || initialTitle || 'Detalhes do Livro'}
+          {book.title || initialTitle || 'Detalhes do Livro'}
         </Text>
         <TouchableOpacity
           onPress={handleToggleFavorite}
@@ -148,7 +177,7 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.coverContainer}>
-          {book?.cover_url ? (
+          {book.cover_url ? (
             <Image source={{ uri: book.cover_url }} style={styles.coverImage} resizeMode="cover" />
           ) : (
             <View style={styles.coverPlaceholder}>
@@ -158,12 +187,12 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.title}>{book?.title}</Text>
-          <Text style={styles.author}>{book?.author}</Text>
+          <Text style={styles.title}>{book.title}</Text>
+          <Text style={styles.author}>{book.author}</Text>
           <View style={styles.metaRow}>
-            {book?.category && <Text style={styles.metaPill}>{book.category}</Text>}
-            {book?.pages && <Text style={styles.metaPill}>{book.pages} paginas</Text>}
-            {book?.rating !== undefined && <Text style={styles.metaPill}>{book.rating.toFixed(1)} estrelas</Text>}
+            {book.category && <Text style={styles.metaPill}>{book.category}</Text>}
+            {book.pages && <Text style={styles.metaPill}>{book.pages} paginas</Text>}
+            {book.rating !== undefined && <Text style={styles.metaPill}>{book.rating.toFixed(1)} estrelas</Text>}
           </View>
         </View>
 
@@ -200,9 +229,21 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Sua avaliacao</Text>
+          <View style={styles.starsRow}>{[1, 2, 3, 4, 5].map((value) => <TouchableOpacity key={value} onPress={() => setMyRating(value)} hitSlop={6}><Ionicons name={value <= myRating ? 'star' : 'star-outline'} size={28} color={colors.starYellow} /></TouchableOpacity>)}</View>
+          <TextInput style={styles.reviewInput} value={myReview} onChangeText={setMyReview} placeholder="Escreva uma resenha (opcional)" placeholderTextColor={colors.textMuted} multiline textAlignVertical="top" />
+          <TouchableOpacity style={styles.saveReviewButton} onPress={handleSaveReview} disabled={savingReview}>{savingReview ? <ActivityIndicator color={colors.textPrimary} /> : <Text style={styles.saveReviewText}>Salvar avaliacao</Text>}</TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Resenhas dos leitores</Text>
+          {reviews.length === 0 ? <Text style={styles.description}>Este livro ainda nao recebeu resenhas.</Text> : reviews.map((review) => <View key={review.id} style={styles.reviewCard}><View style={styles.reviewHeader}><Text style={styles.reviewAuthor}>@{review.username}</Text><Text style={styles.reviewRating}>{review.rating ? `${review.rating}/5` : 'Sem nota'}</Text></View><Text style={styles.reviewBody}>{review.review || 'Avaliacao sem texto.'}</Text></View>)}
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sinopse</Text>
           <Text style={styles.description}>
-            {book?.description || 'Nenhuma descricao fornecida para este livro.'}
+            {book.description || 'Nenhuma descricao fornecida para este livro.'}
           </Text>
         </View>
       </ScrollView>
@@ -356,5 +397,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     lineHeight: 22,
+  },
+  starsRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
+  reviewInput: { minHeight: 96, padding: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.cardBackground, color: colors.textPrimary, fontSize: 14 },
+  saveReviewButton: { minHeight: 44, marginTop: 10, borderRadius: 22, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
+  saveReviewText: { color: colors.textPrimary, fontWeight: '700' },
+  reviewCard: { padding: 13, marginBottom: 9, borderRadius: 10, backgroundColor: colors.cardBackground, borderWidth: 1, borderColor: colors.border },
+  reviewHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  reviewAuthor: { color: colors.textPrimary, fontSize: 13, fontWeight: '700' },
+  reviewRating: { color: colors.starYellow, fontSize: 12, fontWeight: '700' },
+  reviewBody: { color: colors.textSecondary, fontSize: 13, lineHeight: 19, marginTop: 7 },
+  errorText: {
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 14,
+    fontSize: 14,
+    lineHeight: 20,
+    paddingHorizontal: 24,
+  },
+  retryButton: {
+    marginTop: 18,
+    minHeight: 44,
+    borderRadius: 22,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+  },
+  retryButtonText: {
+    color: colors.textPrimary,
+    fontSize: 14,
+    fontWeight: '700',
   },
 });

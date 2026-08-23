@@ -199,6 +199,8 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
   const [total, setTotal] = useState(0);
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [readerVersion, setReaderVersion] = useState(0);
 
   useEffect(() => {
     if (!accessToken) {
@@ -216,7 +218,16 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
   const readerHtml = useMemo(() => {
     if (!accessToken) return '';
     return buildReaderHtml(bookService.getBookPdfUrl(bookId), accessToken, title || 'Livro');
-  }, [accessToken, bookId, title]);
+  }, [accessToken, bookId, title, readerVersion]);
+
+  const retryReader = () => {
+    setLoading(true);
+    setErrorMessage(null);
+    setPage(1);
+    setTotal(0);
+    setProgress(0);
+    setReaderVersion((version) => version + 1);
+  };
 
   const injectReaderCommand = (command: string) => {
     webViewRef.current?.injectJavaScript(`${command}; true;`);
@@ -227,6 +238,7 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
       const message = JSON.parse(event.nativeEvent.data) as ReaderMessage;
       if (message.type === 'loaded' || message.type === 'page') {
         setLoading(false);
+        setErrorMessage(null);
         setPage(message.page || 1);
         setTotal(message.total || 0);
         setProgress(message.progress || 0);
@@ -234,10 +246,11 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
 
       if (message.type === 'error') {
         setLoading(false);
-        Alert.alert('Leitor indisponivel', message.message || 'Nao foi possivel abrir o livro.');
+        setErrorMessage(message.message || 'Nao foi possivel abrir o livro.');
       }
     } catch (error) {
       setLoading(false);
+      setErrorMessage('Nao foi possivel interpretar a resposta do leitor.');
     }
   };
 
@@ -288,22 +301,39 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         )}
-        <WebView
-          ref={webViewRef}
-          source={{ html: readerHtml }}
-          originWhitelist={['*']}
-          javaScriptEnabled
-          domStorageEnabled
-          onMessage={handleMessage}
-          style={styles.webView}
-          containerStyle={styles.webViewContainer}
-        />
+        {!errorMessage ? (
+          <WebView
+            key={readerVersion}
+            ref={webViewRef}
+            source={{ html: readerHtml }}
+            originWhitelist={['*']}
+            javaScriptEnabled
+            domStorageEnabled
+            onMessage={handleMessage}
+            onError={() => {
+              setLoading(false);
+              setErrorMessage('Nao foi possivel iniciar o leitor. Verifique sua conexao e tente novamente.');
+            }}
+            style={styles.webView}
+            containerStyle={styles.webViewContainer}
+          />
+        ) : (
+          <View style={styles.errorContainer}>
+            <Ionicons name="alert-circle-outline" size={42} color={colors.textMuted} />
+            <Text style={styles.errorText}>{errorMessage}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={retryReader}>
+              <Ionicons name="refresh" size={18} color={colors.textPrimary} />
+              <Text style={styles.retryButtonText}>Tentar novamente</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <View style={styles.controls}>
         <TouchableOpacity
           style={styles.controlButton}
           onPress={() => injectReaderCommand('window.readerPreviousPage && window.readerPreviousPage()')}
+          disabled={loading || Boolean(errorMessage) || page <= 1}
         >
           <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
@@ -312,12 +342,14 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
           <TouchableOpacity
             style={styles.zoomButton}
             onPress={() => injectReaderCommand('window.readerZoomOut && window.readerZoomOut()')}
+            disabled={loading || Boolean(errorMessage)}
           >
             <Ionicons name="remove" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.zoomButton}
             onPress={() => injectReaderCommand('window.readerZoomIn && window.readerZoomIn()')}
+            disabled={loading || Boolean(errorMessage)}
           >
             <Ionicons name="add" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
@@ -326,6 +358,7 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
         <TouchableOpacity
           style={styles.controlButton}
           onPress={() => injectReaderCommand('window.readerNextPage && window.readerNextPage()')}
+          disabled={loading || Boolean(errorMessage) || (total > 0 && page >= total)}
         >
           <Ionicons name="arrow-forward" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
@@ -398,6 +431,34 @@ const styles = StyleSheet.create({
   webView: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  errorText: {
+    color: colors.textSecondary,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: 'center',
+    marginTop: 14,
+  },
+  retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minHeight: 44,
+    paddingHorizontal: 16,
+    marginTop: 20,
+    borderRadius: 8,
+    backgroundColor: colors.primary,
+  },
+  retryButtonText: {
+    color: colors.textPrimary,
+    fontSize: 14,
+    fontWeight: '700',
   },
   controls: {
     flexDirection: 'row',

@@ -16,7 +16,7 @@ export const WelcomeScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleStart = () => {
-    navigation.navigate('MainTabs');
+    navigation.navigate('Register');
   };
 
   const handleLogin = () => {

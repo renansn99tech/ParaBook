@@ -15,15 +15,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
-import { authService } from '../services/authService';
+import { useAuth } from '../context/AuthContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 export const RegisterScreen = ({ navigation }: Props) => {
+  const { register } = useAuth();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [acceptedTerms, setAcceptedTerms] = useState(true);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
@@ -39,10 +40,16 @@ export const RegisterScreen = ({ navigation }: Props) => {
 
     setLoading(true);
     try {
-      await authService.register(username.trim(), email.trim(), password);
-      navigation.replace('MainTabs');
-    } catch (error) {
-      Alert.alert('Cadastro nao concluido', 'Revise os dados informados e tente novamente.');
+      const result = await register({
+        username: username.trim(),
+        email: email.trim(),
+        password,
+        termosAceitos: acceptedTerms,
+      });
+
+      if (!result.success) {
+        Alert.alert('Cadastro nao concluido', result.error || 'Revise os dados informados e tente novamente.');
+      }
     } finally {
       setLoading(false);
     }

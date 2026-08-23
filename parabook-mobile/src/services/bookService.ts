@@ -31,6 +31,15 @@ export interface Category {
   name: string;
 }
 
+export interface BookReview {
+  id: string | number;
+  username: string;
+  userPhoto?: string;
+  rating?: number | null;
+  review: string;
+  createdAt?: string;
+}
+
 type DjangoBook = {
   id: string | number;
   titulo?: string;
@@ -124,6 +133,18 @@ export const bookService = {
 
   getBookPdfUrl: (id: string | number): string => {
     return api.getUri({ url: `/biblioteca/livros/${id}/ler_pdf/` });
+  },
+
+  getBookReviews: async (id: string | number): Promise<BookReview[]> => {
+    const response = await api.get(`/biblioteca/livros/${id}/resenhas/`);
+    return asArray<Record<string, unknown>>(response.data).map((raw) => ({
+      id: raw.id as string | number,
+      username: String(raw.usuario_nome || 'Leitor'),
+      userPhoto: resolveDjangoUrl(raw.usuario_foto as string | null),
+      rating: raw.nota === null || raw.nota === undefined ? null : Number(raw.nota),
+      review: String(raw.resenha || ''),
+      createdAt: raw.data_adicao ? String(raw.data_adicao) : undefined,
+    }));
   },
 
   getCategories: async (): Promise<Category[]> => {

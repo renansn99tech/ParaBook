@@ -15,11 +15,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
-import { authService } from '../services/authService';
+import { useAuth } from '../context/AuthContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 export const LoginScreen = ({ navigation }: Props) => {
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,10 +33,10 @@ export const LoginScreen = ({ navigation }: Props) => {
 
     setLoading(true);
     try {
-      await authService.login(username.trim(), password);
-      navigation.replace('MainTabs');
-    } catch (error) {
-      Alert.alert('Nao foi possivel entrar', 'Confira seus dados e tente novamente.');
+      const result = await login(username.trim(), password);
+      if (!result.success) {
+        Alert.alert('Nao foi possivel entrar', result.error || 'Confira seus dados e tente novamente.');
+      }
     } finally {
       setLoading(false);
     }
@@ -103,6 +104,9 @@ export const LoginScreen = ({ navigation }: Props) => {
                   <Ionicons name="arrow-forward" size={18} color={colors.textPrimary} />
                 </>
               )}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} activeOpacity={0.7}>
+              <Text style={styles.forgotText}>Esqueci minha senha</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -212,4 +216,5 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: 'bold',
   },
+  forgotText: { color: colors.primary, textAlign: 'right', fontSize: 13, fontWeight: '600', marginTop: 2 },
 });

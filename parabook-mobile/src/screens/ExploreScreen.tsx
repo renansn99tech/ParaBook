@@ -19,27 +19,23 @@ import { Book, bookService } from '../services/bookService';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const FALLBACK_BOOKS: Book[] = [
-  { id: '1', title: 'O Senhor dos Aneis', author: 'J.R.R. Tolkien', category: 'Fantasia' },
-  { id: '2', title: 'Admiravel Mundo Novo', author: 'Aldous Huxley', category: 'Ficcao Cientifica' },
-  { id: '3', title: 'O Poder do Habito', author: 'Charles Duhigg', category: 'Desenvolvimento' },
-  { id: '4', title: 'Sapiens', author: 'Yuval Noah Harari', category: 'Historia' },
-];
-
 export const ExploreScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [books, setBooks] = useState<Book[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const timeout = setTimeout(async () => {
       setLoading(true);
+      setErrorMessage(null);
       try {
         const data = await bookService.getFeaturedBooks(search.trim() || undefined);
-        setBooks(data.length > 0 ? data : FALLBACK_BOOKS);
+        setBooks(data);
       } catch (error) {
-        setBooks(FALLBACK_BOOKS);
+        setBooks([]);
+        setErrorMessage('Nao foi possivel buscar livros agora.');
       } finally {
         setLoading(false);
       }
@@ -78,12 +74,23 @@ export const ExploreScreen = () => {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
+      ) : errorMessage ? (
+        <View style={styles.emptyState}>
+          <Ionicons name="cloud-offline-outline" size={44} color={colors.textMuted} />
+          <Text style={styles.emptyText}>{errorMessage}</Text>
+        </View>
       ) : (
         <FlatList
           data={books}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Ionicons name="book-outline" size={44} color={colors.textMuted} />
+              <Text style={styles.emptyText}>Nenhum livro encontrado para essa busca.</Text>
+            </View>
+          }
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.bookItem}
@@ -165,6 +172,19 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 20,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  emptyText: {
+    color: colors.textSecondary,
+    marginTop: 12,
+    textAlign: 'center',
+    fontSize: 14,
+    lineHeight: 20,
   },
   bookItem: {
     flexDirection: 'row',

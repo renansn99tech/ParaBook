@@ -18,41 +18,31 @@ import { bookService, LibraryStatus, UserBookItem } from '../services/bookServic
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MyLibrary'>;
 
-// Fallback visual caso a API ainda não esteja respondendo
-const FALLBACK_LIBRARY: UserBookItem[] = [
-  { id: '1', book: { id: '1', title: 'O Hobbit', author: 'J.R.R. Tolkien' }, status: 'lendo', progress: 65 },
-  { id: '2', book: { id: '2', title: '1984', author: 'George Orwell' }, status: 'quero_ler', progress: 0 },
-  { id: '3', book: { id: '3', title: 'Clean Code', author: 'Robert C. Martin' }, status: 'lido', progress: 100 },
-  { id: '4', book: { id: '4', title: 'Duna', author: 'Frank Herbert' }, status: 'quero_ler', progress: 0 },
-  { id: '5', book: { id: '5', title: 'O Senhor dos Aneis', author: 'J.R.R. Tolkien' }, status: 'lido', progress: 100 },
-];
-
-export const MyLibraryScreen = ({ navigation }: Props) => {
-  const [activeTab, setActiveTab] = useState<LibraryStatus>('lendo');
+export const MyLibraryScreen = ({ navigation, route }: Props) => {
+  const [activeTab, setActiveTab] = useState<LibraryStatus>(route.params?.initialStatus || 'lendo');
   const [books, setBooks] = useState<UserBookItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Busca os dados da biblioteca via API
   const fetchLibrary = useCallback(async () => {
+    setErrorMessage(null);
     try {
-      const data = await bookService.getUserLibrary(activeTab);
-      if (data && data.length > 0) {
-        setBooks(data);
-      } else {
-        // Se a API retornar vazio para a aba ou durante testes sem backend
-        const fallbackFiltered = FALLBACK_LIBRARY.filter((item) => item.status === activeTab);
-        setBooks(fallbackFiltered);
-      }
+      const showAllStatuses = route.params?.favoritesOnly || route.params?.reviewedOnly;
+      const data = await bookService.getUserLibrary(showAllStatuses ? undefined : activeTab);
+      setBooks(data.filter((item) => {
+        if (route.params?.favoritesOnly) return Boolean(item.favorite);
+        if (route.params?.reviewedOnly) return item.rating !== null && item.rating !== undefined;
+        return true;
+      }));
     } catch (error) {
-      console.warn('Não foi possível conectar à API Django. Exibindo dados locais de demonstração.');
-      const fallbackFiltered = FALLBACK_LIBRARY.filter((item) => item.status === activeTab);
-      setBooks(fallbackFiltered);
+      setBooks([]);
+      setErrorMessage('Nao foi possivel carregar sua biblioteca agora.');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [activeTab]);
+  }, [activeTab, route.params?.favoritesOnly, route.params?.reviewedOnly]);
 
   useEffect(() => {
     setLoading(true);
@@ -75,12 +65,12 @@ export const MyLibraryScreen = ({ navigation }: Props) => {
         >
           <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Minha Biblioteca</Text>
+        <Text style={styles.headerTitle}>{route.params?.favoritesOnly ? 'Favoritos' : route.params?.reviewedOnly ? 'Avaliacoes' : 'Minha Biblioteca'}</Text>
         <View style={styles.headerPlaceholder} />
       </View>
 
       {/* Abas da Biblioteca */}
-      <View style={styles.tabsContainer}>
+      {!route.params?.favoritesOnly && !route.params?.reviewedOnly && <View style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'lendo' && styles.activeTab]}
           onPress={() => setActiveTab('lendo')}
@@ -110,12 +100,20 @@ export const MyLibraryScreen = ({ navigation }: Props) => {
             Lidos
           </Text>
         </TouchableOpacity>
-      </View>
+      </View>}
 
       {/* Conteúdo Principal (Loading ou Lista) */}
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : errorMessage ? (
+        <View style={styles.emptyState}>
+          <Ionicons name="cloud-offline-outline" size={48} color={colors.textMuted} />
+          <Text style={styles.emptyText}>{errorMessage}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={fetchLibrary}>
+            <Text style={styles.retryButtonText}>Tentar novamente</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
@@ -309,5 +307,19 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 8,
     fontSize: 14,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 16,
+    minHeight: 42,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    borderRadius: 21,
+    backgroundColor: colors.primary,
+  },
+  retryButtonText: {
+    color: colors.textPrimary,
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

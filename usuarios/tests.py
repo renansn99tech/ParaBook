@@ -98,6 +98,20 @@ class CookieAuthenticationTests(TestCase):
         )
         self.assertEqual(sem_csrf_mutavel.status_code, 403)
 
+    def test_login_mobile_retorna_tokens_sem_exigir_csrf(self):
+        mobile = APIClient(enforce_csrf_checks=True)
+        response = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.username, 'password': self.SENHA},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('access', response.data)
+        self.assertIn('refresh', response.data)
+        self.assertNotIn(self.ACCESS, response.cookies)
+        self.assertNotIn(self.REFRESH, response.cookies)
+
     # --- acesso a rota protegida ------------------------------------------
 
     def test_rota_protegida_sem_credencial_retorna_401(self):

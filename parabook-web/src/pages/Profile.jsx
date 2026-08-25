@@ -3,9 +3,9 @@ import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import useRevelacao from '../hooks/useRevelacao';
 import api from '../services/api';
+import { obterAvatarPerfil } from '../services/avatarPerfil';
 import { abrirOnboardingPerfil } from '../services/onboardingPerfil';
 import swal, { BOTAO } from '../services/swal';
-import userImg from '../assets/img/avatar-padrao-parabook.webp';
 import '../assets/css/perfil.css';
 
 let onboardingExibidoPara = null;
@@ -70,14 +70,14 @@ function EstadoVazio({ icone, titulo, texto, acao }) {
       <i className={`fa-solid ${icone}`} aria-hidden="true"></i>
       <h3>{titulo}</h3>
       <p>{texto}</p>
-      {acao && <Link to={acao.to} className="btn-primary-action">{acao.label}</Link>}
+      {acao && <Link to={acao.to} className={`btn-primary-action ${acao.className || ''}`.trim()}>{acao.label}</Link>}
     </div>
   );
 }
 
 function BadgeTipo({ tipo }) {
   const badges = {
-    admin: ['badge-admin', 'fa-shield-halved', 'Admin'],
+    admin: ['badge-admin', 'fa-shield-halved', 'ADM'],
     autor: ['badge-autor', 'fa-feather-pointed', 'Autor'],
     aguardando_aprovacao: ['badge-pendente', 'fa-clock-rotate-left', 'Em análise'],
     leitor: ['badge-leitor', 'fa-book-open', 'Leitor'],
@@ -151,6 +151,19 @@ function formatarTempoRelativo(data) {
   return formato.format(Math.round(horas / 24), 'day');
 }
 
+async function buscarDadosAdministrativos() {
+  const [estatisticas, aprovacoes, denuncias] = await Promise.all([
+    api.get('/dashboard/estatisticas/'),
+    api.get('/dashboard/aprovacoes/'),
+    api.get('/dashboard/denuncias/'),
+  ]);
+  return {
+    estatisticas: estatisticas.data.estatisticas,
+    aprovacoes: aprovacoes.data,
+    denuncias: denuncias.data,
+  };
+}
+
 function Profile() {
   const { user, loading, recarregarUsuario } = useContext(AuthContext);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -161,6 +174,7 @@ function Profile() {
   const [historicoRecentes, setHistoricoRecentes] = useState({ livros: [], avaliacoes: [] });
   const [carregandoHistorico, setCarregandoHistorico] = useState(true);
   const [adminDados, setAdminDados] = useState(null);
+  const [atualizandoFila, setAtualizandoFila] = useState(false);
   const [perfilPrivado, setPerfilPrivado] = useState(false);
   const [toast, setToast] = useState(null);
   const [menuInformacoesAberto, setMenuInformacoesAberto] = useState(false);
@@ -330,6 +344,23 @@ function Profile() {
   const totalDenuncias = adminDados?.estatisticas?.denuncias_abertas || 0;
   const totalModeracao = totalFila + totalDenuncias;
   const mostrarToast = (mensagem, tipo = 'success') => setToast({ mensagem, tipo, id: Date.now() });
+  const handleAtualizarFila = async () => {
+    if (atualizandoFila) return;
+    setAtualizandoFila(true);
+    try {
+      setAdminDados(await buscarDadosAdministrativos());
+      mostrarToast('Fila de moderação atualizada.');
+    } catch (error) {
+      console.error('Erro ao atualizar fila de moderação', error);
+      swal.fire({
+        icon: 'error',
+        title: 'Não foi possível atualizar a fila',
+        text: 'Verifique sua conexão e tente novamente.',
+      });
+    } finally {
+      setAtualizandoFila(false);
+    }
+  };
   const trocarAba = (tab) => {
     setActiveTab(tab);
     setSearchParams(tab === 'info' ? {} : { tab }, { replace: true });
@@ -532,9 +563,14 @@ function Profile() {
   ] : [];
 
   const handleModeracao = async (item, acao) => {
+    const textoConfirmacao = item.categoria === 'autor' && acao === 'aprovar'
+      ? `${item.titulo} se tornará um Autor Independente.`
+      : item.categoria === 'livro' && acao === 'aprovar'
+        ? 'A obra será movida para a lixeira.'
+        : item.titulo;
     const resultado = await swal.fire({
       title: acao === 'aprovar' ? 'Confirmar decisão?' : 'Recusar ou arquivar?',
-      text: item.categoria === 'livro' && acao === 'aprovar' ? 'A obra será movida para a lixeira.' : item.titulo,
+      text: textoConfirmacao,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: acao === 'aprovar' ? 'Confirmar' : 'Recusar',
@@ -578,11 +614,11 @@ function Profile() {
           <div className="perfil-sidebar">
             <div className={`perfil-avatar-box ${gamificacao?.progresso_nivel != null ? 'tem-progresso' : ''}`} style={gamificacao?.progresso_nivel != null ? { '--pf-xp': gamificacao.progresso_nivel } : undefined}>
               {gamificacao?.progresso_nivel != null && <span className="perfil-avatar-anel" aria-hidden="true"></span>}
-              <img src={fullProfile?.perfil?.foto || user?.foto || userImg} alt={`Foto de perfil de ${user?.nome || user?.username}`} className="perfil-avatar" decoding="async" width="176" height="176" />
+              <img src={obterAvatarPerfil(user, fullProfile?.perfil?.foto)} alt={`Foto de perfil de ${user?.nome || user?.username}`} className="perfil-avatar" decoding="async" width="176" height="176" />
               <input type="file" accept="image/png,image/jpeg,image/webp" ref={fotoInputRef} onChange={handleTrocarFoto} hidden />
               <button type="button" className="avatar-acao avatar-acao--trocar" onClick={() => fotoInputRef.current?.click()} aria-label="Trocar foto de perfil" title="Trocar foto"><i className="fa-solid fa-camera" aria-hidden="true"></i></button>
               {Boolean(user?.foto || fullProfile?.perfil?.foto) && <button type="button" className="avatar-acao avatar-acao--remover" onClick={handleRemoverFoto} aria-label="Remover foto de perfil" title="Remover foto"><i className="fa-solid fa-trash-can" aria-hidden="true"></i></button>}
-              <span className="perfil-nivel">{adminAutorizado ? 'Staff' : `Nível ${gamificacao?.nivel || 1}`}</span>
+              <span className="perfil-nivel">{adminAutorizado ? 'ADM' : user?.tipo === 'autor' ? 'Autor' : `Nível ${gamificacao?.nivel || 1}`}</span>
             </div>
           </div>
 
@@ -633,7 +669,7 @@ function Profile() {
             {adminAutorizado ? <>
               <span className="perfil-painel-kicker">Operação</span><h2>Painel da plataforma</h2>
               <dl className="perfil-painel-metricas"><div><dt>Fila de moderação</dt><dd className="metrica-perigo">{totalModeracao}</dd></div><div><dt>Novos usuários hoje</dt><dd>{adminDados?.estatisticas?.novos_usuarios_hoje || 0}</dd></div><div><dt>Obras publicadas</dt><dd>{adminDados?.estatisticas?.obras_publicadas || 0}</dd></div></dl>
-              <Link to="/dashboard" className="btn-primary-action">Central de Comando <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link>
+              <Link to="/dashboard" className="btn-primary-action admin-cta-warm">Central de Comando <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link>
             </> : <>
               <span className="perfil-painel-kicker">Leitura</span><h2>Sua jornada</h2>
               <div className="perfil-meta-anual"><span className="perfil-meta-anel" style={{ '--pf-meta': percentualMeta }}><strong>{percentualMeta}%</strong><small>{lidosAno} de {metaLeitura}</small></span><span className="perfil-meta-copy"><small className="perfil-meta-kicker">Meta anual</small><strong>Leitura em {new Date().getFullYear()}</strong><span className={`perfil-meta-status ${percentualMeta >= 100 ? 'concluida' : ''}`}><i className={`fa-solid ${percentualMeta >= 100 ? 'fa-circle-check' : 'fa-book-open'}`} aria-hidden="true"></i>{percentualMeta >= 100 ? 'Meta concluída!' : `Faltam ${Math.max(0, metaLeitura - lidosAno)} livros`}</span></span></div>
@@ -675,7 +711,7 @@ function Profile() {
 
           {activeTab === 'comunidades' && (minhasComunidades.length === 0 ? <EstadoVazio icone="fa-users-slash" titulo="Você ainda não participa de comunidades" texto="Entre em um espaço de discussão para acompanhar conversas sobre seus livros favoritos." acao={{ to: '/comunidades', label: 'Explorar Comunidades' }} /> : <div className="comunidades-perfil-grid full">{minhasComunidades.map((comunidade, indice) => <article key={comunidade.id} className="comunidade-perfil-card content-glass-card"><header><span className="comunidade-perfil-icone"><i className={`fa-solid ${['fa-moon', 'fa-feather-pointed', 'fa-compass'][indice % 3]}`} aria-hidden="true"></i></span><div><h4>{comunidade.nome}</h4><small>Membro</small></div></header><p>{comunidade.descricao}</p><footer><span>Comunidade literária</span><Link to={`/comunidade/${comunidade.id}/conteudo`}>Acessar <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link></footer></article>)}</div>)}
 
-          {activeTab === 'moderacao' && adminAutorizado && <div className="content-glass-card moderacao-card"><div className="moderacao-cabecalho"><div><h3>Fila de moderação</h3><p>Decisões transacionais com auditoria e proteção contra processamento duplicado.</p></div><Link to="/dashboard" className="btn-primary-action">Abrir Dashboard</Link></div>{moderacaoItens.length > 0 ? <ul className="moderacao-lista">{moderacaoItens.slice(0, 8).map((item) => <li key={item.id}><i className={`fa-solid ${item.icone}`} aria-hidden="true"></i><span><strong>{item.titulo}</strong><small>{item.detalhe}</small></span><div className="moderacao-acoes"><button type="button" className="admin-btn-mini ok" onClick={() => handleModeracao(item, 'aprovar')}>Aprovar</button><button type="button" className="admin-btn-mini nao" onClick={() => handleModeracao(item, 'recusar')}>Recusar</button></div></li>)}</ul> : <EstadoVazio icone="fa-circle-check" titulo="Fila zerada" texto="Não há itens aguardando revisão neste momento." acao={{ to: '/dashboard', label: 'Ir para o Dashboard' }} />}</div>}
+          {activeTab === 'moderacao' && adminAutorizado && <div className="content-glass-card moderacao-card"><div className="moderacao-cabecalho"><div><h3>Fila de moderação</h3><p>Decisões transacionais com auditoria e proteção contra processamento duplicado.</p></div><div className="moderacao-cabecalho-acoes">{moderacaoItens.length > 0 && <Link to="/dashboard" className="btn-primary-action admin-cta-warm">Abrir Dashboard</Link>}<button type="button" className="btn-outline moderacao-atualizar" onClick={handleAtualizarFila} disabled={atualizandoFila} aria-busy={atualizandoFila}><i className={`fa-solid fa-arrows-rotate ${atualizandoFila ? 'fa-spin' : ''}`} aria-hidden="true"></i>{atualizandoFila ? 'Atualizando...' : 'Atualizar Fila'}</button></div></div>{moderacaoItens.length > 0 ? <ul className="moderacao-lista">{moderacaoItens.slice(0, 8).map((item) => <li key={item.id}><i className={`fa-solid ${item.icone}`} aria-hidden="true"></i><span><strong>{item.titulo}</strong><small>{item.detalhe}</small></span><div className="moderacao-acoes"><button type="button" className="admin-btn-mini ok" onClick={() => handleModeracao(item, 'aprovar')}>Aprovar</button><button type="button" className="admin-btn-mini nao" onClick={() => handleModeracao(item, 'recusar')}>Recusar</button></div></li>)}</ul> : <EstadoVazio icone="fa-circle-check" titulo="Fila zerada" texto="Não há itens aguardando revisão neste momento." acao={{ to: '/dashboard', label: 'Abrir Dashboard', className: 'admin-cta-warm' }} />}</div>}
 
           {activeTab === 'configuracoes' && <div className="configuracoes-perfil-stack">
             <div className="config-container content-glass-card full-width">

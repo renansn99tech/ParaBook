@@ -8,6 +8,9 @@ from .views import (
     DashboardModeracaoAPIView,
     DashboardAuditoriaAPIView,
     DashboardFeatureFlagsAPIView,
+    DashboardFeatureFlagsPublicasAPIView,
+    DashboardModelosAdminAPIView,
+    DashboardDjangoAdminAcessoAPIView,
 )
 
 urlpatterns = [
@@ -18,5 +21,8 @@ urlpatterns = [
     path('lixeira/', DashboardLixeiraAPIView.as_view(), name='api-dashboard-lixeira'),
     path('moderacao/<str:categoria>/<int:item_id>/', DashboardModeracaoAPIView.as_view(), name='api-dashboard-moderacao'),
     path('auditoria/', DashboardAuditoriaAPIView.as_view(), name='api-dashboard-auditoria'),
+    path('modelos-admin/', DashboardModelosAdminAPIView.as_view(), name='api-dashboard-modelos-admin'),
+    path('django-admin/acesso/', DashboardDjangoAdminAcessoAPIView.as_view(), name='api-dashboard-django-admin-acesso'),
     path('feature-flags/', DashboardFeatureFlagsAPIView.as_view(), name='api-dashboard-feature-flags'),
+    path('feature-flags/publicas/', DashboardFeatureFlagsPublicasAPIView.as_view(), name='api-dashboard-feature-flags-publicas'),
 ]

@@ -2,12 +2,13 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/auth-context'
 import useTema from '../hooks/useTema'
+import { obterAvatarPerfil } from '../services/avatarPerfil'
 import logoNova from '../assets/img/logo-nova-160.webp'
 import logoNova2x from '../assets/img/logo-nova-320.webp'
-import userImg from '../assets/img/avatar-padrao-parabook.webp'
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext)
+  const avatarUsuario = obterAvatarPerfil(user)
   const { alternar, icone, rotulo } = useTema()
   const navigate = useNavigate()
   const [contaAberta, setContaAberta] = useState(false)
@@ -73,7 +74,7 @@ function Navbar() {
             {user && <Link to="/notificacoes" className="btn-nav btn-outline btn-nav-icone nav-notificacoes position-relative" title="Notificações" aria-label="Notificações"><i className="fa-solid fa-bell" aria-hidden="true"></i>{user.notificacoes_nao_lidas_count > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-contador">{user.notificacoes_nao_lidas_count}</span>}</Link>}
             <button className="btn-nav btn-outline btn-nav-icone" onClick={alternar} title={rotulo} aria-label={rotulo}><i className={`fa-solid ${icone}`} aria-hidden="true"></i></button>
             {user ? (
-              <button ref={botaoContaRef} type="button" className="nav-perfil-circular" onClick={abrirConta} onDoubleClick={abrirPerfilDireto} aria-expanded={contaAberta} aria-controls="drawerContaReact" aria-label="Abrir menu da conta; clique duas vezes para ir ao perfil" title="Conta — duplo clique abre o perfil"><img src={user.foto || userImg} alt="" aria-hidden="true" width="48" height="48" /><span className="nav-perfil-status" aria-hidden="true"></span></button>
+              <button ref={botaoContaRef} type="button" className="nav-perfil-circular" onClick={abrirConta} onDoubleClick={abrirPerfilDireto} aria-expanded={contaAberta} aria-controls="drawerContaReact" aria-label="Abrir menu da conta; clique duas vezes para ir ao perfil" title="Conta — duplo clique abre o perfil"><img src={avatarUsuario} alt="" aria-hidden="true" width="48" height="48" /><span className="nav-perfil-status" aria-hidden="true"></span></button>
             ) : <Link to="/login" className="btn-nav btn-outline nav-entrar">Entrar</Link>}
           </div>
         </div>
@@ -83,7 +84,7 @@ function Navbar() {
         <div className={`nav-account-backdrop ${contaAberta ? 'is-open' : ''}`} onClick={() => setContaAberta(false)} aria-hidden="true"></div>
         <aside id="drawerContaReact" className={`nav-account-drawer ${contaAberta ? 'is-open' : ''}`} role="dialog" aria-modal="true" aria-hidden={!contaAberta} inert={!contaAberta} aria-labelledby="drawerContaTitulo">
           <header className="nav-account-header">
-            <img src={user.foto || userImg} alt="" aria-hidden="true" width="52" height="52" />
+            <img src={avatarUsuario} alt="" aria-hidden="true" width="52" height="52" />
             <span><small>Sua conta</small><strong id="drawerContaTitulo">{user.nome || user.username || 'Leitor ParaBook'}</strong></span>
             <button ref={fecharContaRef} type="button" onClick={() => { setContaAberta(false); botaoContaRef.current?.focus() }} aria-label="Fechar menu da conta"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button>
           </header>

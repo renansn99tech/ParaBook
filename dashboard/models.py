@@ -6,6 +6,7 @@ class FeatureFlag(models.Model):
     chave = models.SlugField(max_length=80, unique=True)
     descricao = models.CharField(max_length=255, blank=True)
     habilitada = models.BooleanField(default=False)
+    disponivel = models.BooleanField(default=True)
     atualizada_em = models.DateTimeField(auto_now=True)
     atualizada_por = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -22,6 +22,7 @@ from django.db.models import Count, F, Q
 from django.utils import timezone
 from usuarios.models import Usuario
 from usuarios.services import obter_ou_criar_usuario_customizado
+from usuarios.permissions import eh_admin_parabook
 from biblioteca.models import Biblioteca, Livro
 from comunidades.models import Comunidade
 from gamificacao.models import ConquistaUsuario
@@ -170,9 +171,12 @@ class PerfilPublicoAPIView(APIView):
             dados_usuario.perfil = perfil_do_usuario
             dados_usuario.save(update_fields=['perfil'])
 
-        # REGRAS DE TRAVA
-        if not is_owner and not (request.user.is_authenticated and request.user.is_superuser):
-            if dados_usuario.tipo == 'admin' or user_auth_obj.is_superuser:
+        # Perfis administrativos são uma superfície operacional privativa:
+        # somente o proprietário ou outro administrador ParaBook pode acessá-los.
+        solicitante_admin = eh_admin_parabook(request.user)
+        alvo_admin = dados_usuario.tipo == 'admin' or user_auth_obj.is_superuser
+        if not is_owner and not solicitante_admin:
+            if alvo_admin:
                 return Response({"erro": "Acesso negado a perfis administrativos.", "status_block": "admin"}, status=403)
             if perfil_do_usuario.perfil_privado:
                 return Response({"erro": "Este perfil é privado.", "status_block": "privado"}, status=403)

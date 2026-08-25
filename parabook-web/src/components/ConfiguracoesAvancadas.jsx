@@ -1,6 +1,8 @@
+import { useId } from 'react';
 import { Link } from 'react-router-dom';
 
-function ItemConfiguracao({ icone, titulo, estado, to, externo = false, indisponivel = false }) {
+function ItemConfiguracao({ icone, titulo, estado, to, externo = false, indisponivel = false, tooltip = '' }) {
+  const tooltipId = useId();
   const conteudo = (
     <>
       <span className="config-avancado-item-icone" aria-hidden="true">
@@ -10,9 +12,18 @@ function ItemConfiguracao({ icone, titulo, estado, to, externo = false, indispon
         <strong>{titulo}</strong>
         {estado && <small>{estado}</small>}
       </span>
-      {!indisponivel && <i className="fa-solid fa-chevron-right config-avancado-item-seta" aria-hidden="true"></i>}
+      {!indisponivel && !tooltip && <i className="fa-solid fa-chevron-right config-avancado-item-seta" aria-hidden="true"></i>}
     </>
   );
+
+  if (tooltip) {
+    return (
+      <div className="config-avancado-item is-policy" tabIndex="0" aria-describedby={tooltipId}>
+        {conteudo}
+        <span id={tooltipId} className="config-avancado-tooltip" role="tooltip">{tooltip}</span>
+      </div>
+    );
+  }
 
   if (indisponivel) {
     return (
@@ -79,12 +90,21 @@ function ConfiguracoesAvancadas({ user, mostrarAtalhoPagina = false }) {
           estado={user?.tipografia_nome || 'ParaBook Original'}
           to="/perfil/configuracoes/aparencia"
         />
-        <ItemConfiguracao
-          icone="fa-user-lock"
-          titulo="Visibilidade do perfil"
-          estado={user?.perfil_privado ? 'Perfil privado' : 'Perfil público'}
-          to="/perfil?tab=configuracoes"
-        />
+        {adminAutorizado ? (
+          <ItemConfiguracao
+            icone="fa-user-shield"
+            titulo="Visibilidade do perfil"
+            estado="Perfil Administrativo · Visualização totalmente privativa"
+            tooltip="Somente outros administradores podem visualizar o perfil."
+          />
+        ) : (
+          <ItemConfiguracao
+            icone="fa-user-lock"
+            titulo="Visibilidade do perfil"
+            estado={user?.perfil_privado ? 'Perfil privado' : 'Perfil público'}
+            to="/perfil?tab=configuracoes"
+          />
+        )}
         <ItemConfiguracao icone="fa-file-export" titulo="Exportar meus dados (LGPD)" indisponivel />
         <ItemConfiguracao icone="fa-bell" titulo="Notificações e e-mails" to="/perfil/configuracoes/notificacoes" />
       </GrupoConfiguracao>
@@ -95,10 +115,10 @@ function ConfiguracoesAvancadas({ user, mostrarAtalhoPagina = false }) {
           titulo="Administração da plataforma · só para admins"
           descricao="Atalhos protegidos para operação e governança do ParaBook."
         >
-          <ItemConfiguracao icone="fa-screwdriver-wrench" titulo="Django admin" to="/admin/" externo />
+          <ItemConfiguracao icone="fa-screwdriver-wrench" titulo="Django admin" estado="Acesso técnico auditável" to="/perfil/configuracoes/django-admin" />
           <ItemConfiguracao icone="fa-toggle-on" titulo="Feature flags" to="/perfil/configuracoes/feature-flags" />
           <ItemConfiguracao icone="fa-list-check" titulo="Trilha de auditoria" to="/perfil/configuracoes/auditoria" />
-          <ItemConfiguracao icone="fa-credit-card" titulo="Planos e assinaturas" to="/planos" />
+          <ItemConfiguracao icone="fa-credit-card" titulo="Planos e assinaturas" estado="Métricas financeiras em preparação" indisponivel />
         </GrupoConfiguracao>
       )}
     </div>

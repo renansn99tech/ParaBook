@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
+import { obterAvatarPerfil } from '../services/avatarPerfil';
 import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/perfil.css';
 
@@ -71,13 +72,7 @@ function PerfilPublico() {
         <div className="perfil-content-wrapper">
           <div className="perfil-sidebar">
             <div className="perfil-avatar-box">
-              {dados.perfil.foto ? (
-                <img src={dados.perfil.foto} alt={`Foto de perfil de ${dados.usuario.username}`} className="perfil-avatar" decoding="async" width="176" height="176" />
-              ) : (
-                <div className="avatar-placeholder">
-                  <i className="fa-solid fa-user"></i>
-                </div>
-              )}
+              <img src={obterAvatarPerfil(dados.usuario, dados.perfil.foto)} alt={`Foto de perfil de ${dados.usuario.username}`} className="perfil-avatar" decoding="async" width="176" height="176" />
             </div>
           </div>
 
@@ -85,7 +80,7 @@ function PerfilPublico() {
             <div className="info-header">
               <h1 className="perfil-nome">
                 {dados.usuario.nome}
-                {dados.usuario.tipo === 'admin' && <span className="badge badge-admin"><i className="fa-solid fa-shield-halved"></i> Admin</span>}
+                {dados.usuario.tipo === 'admin' && <span className="badge badge-admin"><i className="fa-solid fa-shield-halved"></i> ADM</span>}
                 {dados.usuario.tipo === 'autor' && <span className="badge badge-autor"><i className="fa-solid fa-feather-pointed"></i> Autor</span>}
                 {dados.usuario.tipo === 'leitor' && <span className="badge badge-leitor"><i className="fa-solid fa-book-open"></i> Leitor</span>}
               </h1>

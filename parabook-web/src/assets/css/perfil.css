@@ -597,6 +597,34 @@
     outline-offset: 2px;
 }
 
+.perfil-page--proprio .admin-cta-warm {
+    border-color: rgba(var(--vela-rgb), .42);
+    background:
+        radial-gradient(circle at 92% 10%, rgba(var(--vela-rgb), .42), transparent 34%),
+        linear-gradient(135deg, var(--purple), var(--purple-dark));
+    box-shadow:
+        0 10px 26px rgba(var(--purple-rgb), .24),
+        inset 0 1px 0 rgba(var(--vela-rgb), .2);
+}
+
+.perfil-page--proprio .admin-cta-warm > i {
+    color: var(--vela);
+}
+
+.perfil-page--proprio .admin-cta-warm:hover {
+    border-color: rgba(var(--vela-rgb), .68);
+    background:
+        radial-gradient(circle at 88% 4%, rgba(var(--vela-rgb), .58), transparent 38%),
+        linear-gradient(135deg, var(--purple-light), var(--purple-dark));
+    box-shadow:
+        0 12px 30px rgba(var(--purple-rgb), .3),
+        0 5px 18px rgba(var(--vela-rgb), .13);
+}
+
+.perfil-page--proprio .admin-cta-warm:focus-visible {
+    outline-color: var(--vela);
+}
+
 /* .btn-outline era redefinido aqui e vazava por cima da navbar (que tem
    a própria versão, de 44px). Agora vem só de base.css. */
 
@@ -1382,10 +1410,58 @@
     margin-left: auto;
 }
 
+/* A fila administrativa vive no Perfil, fora de .admin-main. Mantém aqui
+   o mesmo tratamento semântico dos botões compactos do Dashboard sem
+   importar todos os estilos da área administrativa para esta página. */
+.perfil-page--proprio .moderacao-acoes .admin-btn-mini {
+    min-height: var(--touch-target);
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-xs);
+    font: 600 .85rem/1.2 var(--fonte-interface);
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-standard),
+        border-color var(--dur-fast) var(--ease-standard),
+        color var(--dur-fast) var(--ease-standard);
+}
+
+.perfil-page--proprio .moderacao-acoes .admin-btn-mini.ok {
+    background: rgba(var(--success-rgb), .15);
+    border-color: rgba(var(--success-rgb), .4);
+    color: var(--success-soft);
+}
+
+.perfil-page--proprio .moderacao-acoes .admin-btn-mini.nao {
+    background: rgba(var(--danger-rgb), .12);
+    border-color: rgba(var(--danger-rgb), .35);
+    color: var(--danger-soft);
+}
+
+.perfil-page--proprio .moderacao-acoes .admin-btn-mini.ok:hover {
+    background: var(--success);
+    border-color: var(--success);
+    color: #fff;
+}
+
+.perfil-page--proprio .moderacao-acoes .admin-btn-mini.nao:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
+
+.perfil-page--proprio .moderacao-acoes .admin-btn-mini:focus-visible {
+    outline: 3px solid rgba(var(--purple-light-rgb), .42);
+    outline-offset: 2px;
+}
+
 @media (max-width: 680px) {
     .moderacao-acoes {
         width: 100%;
         margin-left: 0;
+    }
+
+    .perfil-page--proprio .moderacao-acoes .admin-btn-mini {
+        flex: 1;
     }
 }
 
@@ -2892,6 +2968,18 @@
     color: var(--text-secondary);
 }
 
+.moderacao-cabecalho-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.moderacao-atualizar > i {
+    width: 1em;
+}
+
 .configuracoes-perfil-stack {
     display: flex;
     flex-direction: column;
@@ -3312,6 +3400,57 @@
     border-color: rgba(var(--purple-rgb), .55);
 }
 
+.config-avancado-item.is-policy {
+    cursor: help;
+    outline: none;
+}
+
+.config-avancado-item.is-policy:hover,
+.config-avancado-item.is-policy:focus-visible {
+    transform: translateY(var(--lift-sm));
+    border-color: rgba(var(--purple-rgb), .55);
+}
+
+.config-avancado-item.is-policy:focus-visible {
+    box-shadow: 0 0 0 2px var(--bg-main), 0 0 0 4px var(--purple-light);
+}
+
+.config-avancado-tooltip {
+    position: absolute;
+    right: 10px;
+    bottom: calc(100% + 10px);
+    z-index: 20;
+    width: max-content;
+    max-width: min(290px, calc(100vw - 48px));
+    padding: 9px 11px;
+    border: 1px solid rgba(var(--purple-light-rgb), .4);
+    border-radius: var(--radius-sm);
+    background: rgba(var(--bg-card-rgb), .98);
+    color: var(--text);
+    box-shadow: var(--shadow-lg);
+    font-size: .74rem;
+    line-height: 1.4;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(5px);
+    transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-out);
+}
+
+.config-avancado-tooltip::after {
+    position: absolute;
+    top: 100%;
+    right: 18px;
+    border: 6px solid transparent;
+    border-top-color: rgba(var(--purple-light-rgb), .4);
+    content: '';
+}
+
+.config-avancado-item.is-policy:hover .config-avancado-tooltip,
+.config-avancado-item.is-policy:focus-visible .config-avancado-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .config-avancado-item-icone {
     width: 40px;
     height: 40px;
@@ -3580,6 +3719,15 @@
     .configuracoes-page-header {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .moderacao-cabecalho-acoes {
+        width: 100%;
+    }
+
+    .moderacao-cabecalho-acoes > .btn-primary-action,
+    .moderacao-cabecalho-acoes > .moderacao-atualizar {
+        flex: 1;
     }
 
     .perfil-page--proprio .form-grid {

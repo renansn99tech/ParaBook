@@ -255,6 +255,45 @@ class ContratoPerfilModernizadoTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data['is_owner'])
 
+    def test_perfil_administrativo_so_pode_ser_visto_por_outro_admin(self):
+        outro_admin = User.objects.create_user(
+            username='outro-admin', password='x', is_staff=True,
+        )
+        outro_perfil = Perfil.objects.create(usuario=outro_admin)
+        Usuario.objects.create(
+            user_auth=outro_admin,
+            nome='Outro Admin',
+            tipo='admin',
+            perfil=outro_perfil,
+        )
+        self.client.force_authenticate(user=outro_admin)
+
+        permitido = self.client.get(
+            reverse('api-perfil-publico', args=[self.admin.username]),
+        )
+
+        self.assertEqual(permitido.status_code, 200)
+        self.assertFalse(permitido.data['is_owner'])
+
+        staff_leitor = User.objects.create_user(
+            username='staff-leitor-perfil', password='x', is_staff=True,
+        )
+        staff_perfil = Perfil.objects.create(usuario=staff_leitor)
+        Usuario.objects.create(
+            user_auth=staff_leitor,
+            nome='Staff Leitor',
+            tipo='leitor',
+            perfil=staff_perfil,
+        )
+        self.client.force_authenticate(user=staff_leitor)
+
+        negado = self.client.get(
+            reverse('api-perfil-publico', args=[self.admin.username]),
+        )
+
+        self.assertEqual(negado.status_code, 403)
+        self.assertEqual(negado.data['status_block'], 'admin')
+
 
 class InteressesPerfilAPITests(TestCase):
     def setUp(self):

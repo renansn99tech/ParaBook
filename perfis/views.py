@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.db.models import Count
 from usuarios.models import Usuario
 from usuarios.services import obter_ou_criar_usuario_customizado
+from usuarios.permissions import eh_admin_parabook
 from biblioteca.models import Biblioteca
 from comunidades.models import Comunidade
 from django.contrib.auth.views import PasswordChangeView
@@ -132,7 +133,7 @@ def perfil_publico(request, username_alvo):
     # ==========================================================
     # SISTEMA DE TRAVA SEGURO (REGRAS 2 E 3)
     # ==========================================================
-    if not request.user.is_superuser:
+    if not eh_admin_parabook(request.user):
         # REGRA 3: Bloqueia acesso a perfis administrativos
         if dados_usuario.tipo == 'admin' or user_auth_obj.is_superuser:
             url_origem = request.META.get('HTTP_REFERER', '/comunidades/')

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const profile = readFileSync(new URL('./Profile.jsx', import.meta.url), 'utf8');
@@ -8,6 +8,10 @@ const app = readFileSync(new URL('../App.jsx', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../assets/css/perfil.css', import.meta.url), 'utf8');
 const centralConta = readFileSync(new URL('./CentralConta.jsx', import.meta.url), 'utf8');
 const paginaConfiguracoes = readFileSync(new URL('./ConfiguracoesAvancadas.jsx', import.meta.url), 'utf8');
+const perfilPublico = readFileSync(new URL('./PerfilPublico.jsx', import.meta.url), 'utf8');
+const navbar = readFileSync(new URL('../components/Navbar.jsx', import.meta.url), 'utf8');
+const shellAdmin = readFileSync(new URL('../components/admin/AdminAvancadoShell.jsx', import.meta.url), 'utf8');
+const avatarPerfil = readFileSync(new URL('../services/avatarPerfil.js', import.meta.url), 'utf8');
 
 test('abas do perfil são linkáveis e expõem semântica de tab acessível', () => {
   assert.match(profile, /useSearchParams/);
@@ -85,6 +89,12 @@ test('configurações avançadas usam card estático e rota própria', () => {
   assert.match(configuracoes, /titulo="Verificação em duas etapas" indisponivel/);
   assert.match(configuracoes, /titulo="Exportar meus dados \(LGPD\)" indisponivel/);
   assert.match(configuracoes, />EM BREVE</);
+  assert.match(configuracoes, /estado="Perfil Administrativo · Visualização totalmente privativa"/);
+  assert.match(configuracoes, /tooltip="Somente outros administradores podem visualizar o perfil\."/);
+  assert.match(configuracoes, /role="tooltip"/);
+  assert.match(configuracoes, /aria-describedby=\{tooltipId\}/);
+  assert.match(css, /\.config-avancado-item\.is-policy:hover \.config-avancado-tooltip/);
+  assert.match(css, /\.config-avancado-item\.is-policy:focus-visible \.config-avancado-tooltip/);
   assert.doesNotMatch(profile, /\/auth\/excluir-conta\//);
   assert.match(paginaConfiguracoes, /\/auth\/excluir-conta\//);
   assert.match(paginaConfiguracoes, /configuracoes-page-danger/);
@@ -131,6 +141,34 @@ test('redesign fica escopado ao perfil autenticado e respeita movimento reduzido
   assert.match(css, /\.perfil-page--proprio \.perfil-cover::after[\s\S]*?display: none/);
 });
 
+test('ações de moderação mantêm o padrão visual administrativo dentro do perfil', () => {
+  assert.match(profile, /className="moderacao-acoes"/);
+  assert.match(profile, /className="admin-btn-mini ok"/);
+  assert.match(profile, /className="admin-btn-mini nao"/);
+  assert.match(profile, /`\$\{item\.titulo\} se tornará um Autor Independente\.`/);
+  assert.match(profile, /text: textoConfirmacao/);
+  assert.match(profile, /moderacaoItens\.length > 0 && <Link to="\/dashboard" className="btn-primary-action admin-cta-warm">Abrir Dashboard<\/Link>/);
+  assert.match(profile, /onClick=\{handleAtualizarFila\} disabled=\{atualizandoFila\} aria-busy=\{atualizandoFila\}/);
+  assert.match(profile, /atualizandoFila \? 'Atualizando\.\.\.' : 'Atualizar Fila'/);
+  assert.match(profile, /acao=\{\{ to: '\/dashboard', label: 'Abrir Dashboard', className: 'admin-cta-warm' \}\}/);
+  assert.doesNotMatch(profile, /label: 'Ir para o Dashboard'/);
+  assert.match(profile, /Promise\.all\(\[[\s\S]*?dashboard\/estatisticas[\s\S]*?dashboard\/aprovacoes[\s\S]*?dashboard\/denuncias/);
+  assert.match(css, /\.perfil-page--proprio \.moderacao-acoes \.admin-btn-mini\s*\{/);
+  assert.match(css, /\.perfil-page--proprio \.moderacao-acoes \.admin-btn-mini\.ok\s*\{[\s\S]*?--success-rgb/);
+  assert.match(css, /\.perfil-page--proprio \.moderacao-acoes \.admin-btn-mini\.nao\s*\{[\s\S]*?--danger-rgb/);
+  assert.match(css, /\.perfil-page--proprio \.moderacao-acoes \.admin-btn-mini:focus-visible/);
+  assert.match(css, /\.moderacao-cabecalho-acoes\s*\{[\s\S]*?justify-content: flex-end/);
+});
+
+test('CTAs administrativos combinam base roxa com destaque quente sem afetar ações comuns', () => {
+  assert.match(profile, /className="btn-primary-action admin-cta-warm">Central de Comando/);
+  assert.match(profile, /className="btn-primary-action admin-cta-warm">Abrir Dashboard/);
+  assert.match(profile, /label: 'Abrir Dashboard', className: 'admin-cta-warm'/);
+  assert.match(css, /\.perfil-page--proprio \.admin-cta-warm\s*\{[\s\S]*?rgba\(var\(--vela-rgb\), \.42\)[\s\S]*?linear-gradient\(135deg, var\(--purple\), var\(--purple-dark\)\)/);
+  assert.match(css, /\.perfil-page--proprio \.admin-cta-warm:hover/);
+  assert.match(css, /\.perfil-page--proprio \.admin-cta-warm:focus-visible/);
+});
+
 test('composição desktop respeita a largura da capa com cards mais compactos', () => {
   assert.match(css, /\.perfil-page\s*{[\s\S]*?padding: 30px 45px/);
   assert.match(css, /\.perfil-page--proprio \.perfil-content-wrapper\s*{[\s\S]*?width: 100%;[\s\S]*?max-width: 100%;[\s\S]*?box-sizing: border-box;[\s\S]*?padding-inline: 0;[\s\S]*?gap: 20\.8px/);
@@ -141,7 +179,26 @@ test('composição desktop respeita a largura da capa com cards mais compactos',
   assert.match(css, /\.perfil-page--proprio \.perfil-painel\s*{[\s\S]*?padding: 22\.8px/);
 });
 
-test('perfil usa o avatar padrão próprio do ParaBook', () => {
-  assert.match(profile, /avatar-padrao-parabook\.webp/);
+test('avatar padrão acompanha o tipo de perfil em todas as superfícies', () => {
+  assert.match(avatarPerfil, /avatar-padrao-admin-parabook\.webp/);
+  assert.match(avatarPerfil, /avatar-padrao-autor-parabook\.webp/);
+  assert.match(avatarPerfil, /usuario\?\.tipo === 'admin' \|\| usuario\?\.is_superuser/);
+  assert.match(avatarPerfil, /usuario\?\.tipo === 'autor'/);
+  assert.match(avatarPerfil, /return avatarLeitor/);
+  assert.match(profile, /obterAvatarPerfil\(user, fullProfile\?\.perfil\?\.foto\)/);
+  assert.match(perfilPublico, /obterAvatarPerfil\(dados\.usuario, dados\.perfil\.foto\)/);
+  assert.match(navbar, /const avatarUsuario = obterAvatarPerfil\(user\)/);
+  assert.match(shellAdmin, /obterAvatarPerfil\(user\)/);
+  assert.equal(existsSync(new URL('../assets/img/avatar-padrao-admin-parabook.webp', import.meta.url)), true);
+  assert.equal(existsSync(new URL('../assets/img/avatar-padrao-autor-parabook.webp', import.meta.url)), true);
   assert.doesNotMatch(profile, /assets\/img\/user\.png/);
+});
+
+test('identidade visível usa ADM e Autor sem categoria Pro', () => {
+  assert.match(profile, /admin: \['badge-admin', 'fa-shield-halved', 'ADM'\]/);
+  assert.match(profile, /autor: \['badge-autor', 'fa-feather-pointed', 'Autor'\]/);
+  assert.match(profile, /adminAutorizado \? 'ADM' : user\?\.tipo === 'autor' \? 'Autor'/);
+  assert.match(perfilPublico, /badge-admin[\s\S]*?> ADM<\/span>/);
+  assert.match(perfilPublico, /badge-autor[\s\S]*?> Autor<\/span>/);
+  assert.doesNotMatch(`${profile}\n${perfilPublico}`, /Autor Pro/i);
 });

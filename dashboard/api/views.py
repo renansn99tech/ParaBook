@@ -1,30 +1,184 @@
+import csv
+import json
+import logging
+from urllib.parse import parse_qs, urlparse
+
 # pyrefly: ignore [missing-import]
+from django.core.cache import cache
+from django.db.models import Count, Q
+from django.http import HttpResponse
+from django.urls import NoReverseMatch, reverse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
+from rest_framework.pagination import CursorPagination
+from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.db import transaction
-from comunidades.models import Comunidade, DenunciaComunidade
+from comunidades.models import Comunidade, DenunciaComunidade, PostagemComunidade
 from biblioteca.models import Livro, Denuncia, SolicitacaoPublicacao
 from usuarios.models import Usuario, AuditoriaAcao
 from usuarios.audit import registrar_acao
 from notificacoes.models import Notificacao
 from dashboard.models import FeatureFlag
+from assinaturas.models import Assinatura, Plano
+from dashboard.api.permissions import IsParaBookAdmin
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
+
+FEATURE_FLAGS_PUBLICAS = ('banner_anuncios',)
+
+
+AUDITORIA_PREFIXOS = {
+    'moderacao': ('moderacao.', 'livro.', 'denuncia.'),
+    'conta': ('conta.', 'seguranca.', 'lgpd.'),
+    'plataforma': ('feature_flag.', 'django_admin.', 'comunidade.', 'postagem.'),
+}
+
+AUDITORIA_FILTROS = {
+    'moderacao': (
+        Q(acao__startswith='moderacao.')
+        | Q(acao__startswith='livro.')
+        | Q(acao__startswith='denuncia.')
+    ),
+    'conta': (
+        Q(acao__startswith='conta.')
+        | Q(acao__startswith='seguranca.')
+        | Q(acao__startswith='lgpd.')
+    ),
+    'plataforma': (
+        Q(acao__startswith='feature_flag.')
+        | Q(acao__startswith='django_admin.')
+        | Q(acao__startswith='comunidade.')
+        | Q(acao__startswith='postagem.')
+    ),
+}
+
+
+def _tipo_auditoria(acao):
+    for tipo, prefixos in AUDITORIA_PREFIXOS.items():
+        if acao.startswith(prefixos):
+            return tipo
+    return 'sistema'
+
+
+def _serializar_auditoria(registro):
+    return {
+        'id': registro.pk,
+        'ator': registro.ator.username if registro.ator else 'Sistema',
+        'acao': registro.acao,
+        'tipo': _tipo_auditoria(registro.acao),
+        'recurso': registro.recurso,
+        'recurso_id': registro.recurso_id,
+        'sucesso': registro.sucesso,
+        'metadados': registro.metadados,
+        'criado_em': registro.criado_em,
+    }
+
+
+def _celula_csv_segura(valor):
+    texto = str(valor if valor is not None else '')
+    if texto.lstrip().startswith(('=', '+', '-', '@')):
+        return f"'{texto}"
+    return texto
+
+
+class AuditoriaCursorPagination(CursorPagination):
+    page_size = 20
+    ordering = ('-criado_em', '-pk')
+    cursor_query_param = 'cursor'
+
+
+MODELOS_DJANGO_ADMIN = (
+    ('usuarios', 'Usuários', Usuario, 'fa-user-shield'),
+    ('assinaturas', 'Assinaturas', Assinatura, 'fa-receipt'),
+    ('planos', 'Planos', Plano, 'fa-credit-card'),
+    ('comunidades', 'Comunidades', Comunidade, 'fa-users'),
+    ('postagens', 'Postagens', PostagemComunidade, 'fa-comments'),
+    ('denuncias', 'Denúncias', Denuncia, 'fa-flag'),
+)
 
 class EstatisticasDashboardAPIView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsParaBookAdmin]
 
     def get(self, request, *args, **kwargs):
         total_usuarios = User.objects.count()
         total_comunidades = Comunidade.objects.count()
         total_livros = Livro.objects.count()
-        aprovacoes_pendentes = (
-            Usuario.objects.filter(tipo='aguardando_aprovacao').count()
-            + SolicitacaoPublicacao.objects.filter(status='pendente').count()
-        )
+        perfis_pendentes = Usuario.objects.filter(
+            tipo='aguardando_aprovacao',
+            user_auth__isnull=False,
+        ).select_related('user_auth')
+        publicacoes_pendentes = SolicitacaoPublicacao.objects.filter(
+            status='pendente',
+        ).select_related('livro', 'usuario')
+        denuncias_livros = Denuncia.objects.filter(
+            arquivada=False,
+        ).select_related('livro', 'usuario')
+        denuncias_comunidades = DenunciaComunidade.objects.filter(
+            status='pendente',
+        ).select_related('comunidade', 'usuario')
+        livros_removidos = Livro.objects.filter(status='removido')
+        denuncias_arquivadas = Denuncia.objects.filter(arquivada=True)
+
+        aprovacoes_pendentes = perfis_pendentes.count() + publicacoes_pendentes.count()
+        denuncias_abertas = denuncias_livros.count() + denuncias_comunidades.count()
+        itens_lixeira = livros_removidos.count() + denuncias_arquivadas.count()
+
+        turno = [
+            *[{
+                'id': item.pk,
+                'categoria': 'autor',
+                'fila': 'aprovacoes',
+                'titulo': f'@{item.user_auth.username} quer se tornar Autor',
+                'detalhe': 'Solicitação de perfil de Autor Independente',
+                'criado_em': item.user_auth.date_joined,
+                'data_aproximada': True,
+                'acao': 'aprovar',
+                'acao_label': 'Aprovar',
+            } for item in perfis_pendentes[:5]],
+            *[{
+                'id': item.pk,
+                'categoria': 'publicacao',
+                'fila': 'aprovacoes',
+                'titulo': item.livro.titulo if item.livro else 'Publicação sem título',
+                'detalhe': f'Publicação enviada por @{item.usuario.username}',
+                'criado_em': item.data_envio,
+                'data_aproximada': False,
+                'acao': 'aprovar',
+                'acao_label': 'Aprovar',
+            } for item in publicacoes_pendentes[:5]],
+            *[{
+                'id': item.pk,
+                'categoria': 'livro',
+                'fila': 'denuncias',
+                'titulo': item.livro.titulo,
+                'detalhe': f'Denúncia de livro: {item.motivo}',
+                'criado_em': item.data_denuncia,
+                'data_aproximada': False,
+                'acao': 'aprovar',
+                'acao_label': 'Acolher',
+            } for item in denuncias_livros[:5]],
+            *[{
+                'id': item.pk,
+                'categoria': 'comunidade',
+                'fila': 'denuncias',
+                'titulo': item.comunidade.nome,
+                'detalhe': f'Denúncia de comunidade: {item.motivo}',
+                'criado_em': item.data_denuncia,
+                'data_aproximada': False,
+                'acao': 'aprovar',
+                'acao_label': 'Acolher',
+            } for item in denuncias_comunidades[:5]],
+        ]
+        turno.sort(key=lambda item: item['criado_em'] or timezone.now())
+        turno = turno[:8]
+
+        ultima_decisao = AuditoriaAcao.objects.filter(
+            acao__startswith='moderacao.',
+        ).select_related('ator').first()
+        atividade = AuditoriaAcao.objects.select_related('ator')[:5]
 
         return Response({
             "estatisticas": {
@@ -33,62 +187,85 @@ class EstatisticasDashboardAPIView(APIView):
                 "total_livros": total_livros,
                 "obras_publicadas": Livro.objects.filter(status='publicado').count(),
                 "aprovacoes_pendentes": aprovacoes_pendentes,
-                "denuncias_abertas": (
-                    Denuncia.objects.filter(arquivada=False).count()
-                    + DenunciaComunidade.objects.filter(status='pendente').count()
-                ),
+                "denuncias_abertas": denuncias_abertas,
                 "novos_usuarios_hoje": User.objects.filter(
                     date_joined__date=timezone.localdate()
                 ).count(),
-            }
+                "comunidades_oficiais": Comunidade.objects.filter(criada_por_sistema=True).count(),
+            },
+            "pendencias": {
+                "aprovacoes": aprovacoes_pendentes,
+                "denuncias": denuncias_abertas,
+                "lixeira": itens_lixeira,
+            },
+            "turno": {
+                "itens": turno,
+                "ultima_decisao": _serializar_auditoria(ultima_decisao) if ultima_decisao else None,
+            },
+            "atividade": [_serializar_auditoria(registro) for registro in atividade],
         })
 
 class DashboardUsuariosAPIView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsParaBookAdmin]
 
     def get(self, request, *args, **kwargs):
         usuarios = []
-        for user in User.objects.all():
-            try:
-                perfil = user.perfil_da_biblioteca
-                foto_url = perfil.foto.url if perfil.foto else None
-                status = perfil.status
-            except:
-                foto_url = None
-                status = 'desconhecido'
-                
+        queryset = User.objects.select_related('perfil_customizado', 'perfil').order_by('-date_joined')
+        for user in queryset:
+            dados_usuario = getattr(user, 'perfil_customizado', None)
             usuarios.append({
                 "id": user.id,
                 "username": user.username,
+                "nome": dados_usuario.nome if dados_usuario and dados_usuario.nome else user.get_full_name() or user.username,
+                "email": user.email,
+                "tipo": dados_usuario.tipo if dados_usuario else ('admin' if user.is_superuser else 'leitor'),
                 "is_staff": user.is_staff,
                 "is_superuser": user.is_superuser,
-                "foto": foto_url,
-                "status": status,
+                "is_active": user.is_active,
+                "last_login": user.last_login,
+                "date_joined": user.date_joined,
             })
         return Response(usuarios)
 
 class DashboardAprovacoesAPIView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsParaBookAdmin]
 
     def get(self, request, *args, **kwargs):
         perfis_pendentes = Usuario.objects.filter(
             tipo='aguardando_aprovacao',
             user_auth__isnull=False,
-        ).select_related('user_auth', 'perfil')
-        solicitacoes_pendentes = SolicitacaoPublicacao.objects.filter(status='pendente').select_related('livro', 'usuario')
+        ).select_related('user_auth', 'perfil').annotate(
+            total_lidos=Count(
+                'user_auth__itens_biblioteca',
+                filter=Q(user_auth__itens_biblioteca__status='lido'),
+                distinct=True,
+            ),
+            obras_enviadas=Count('user_auth__solicitacoes_publicacao', distinct=True),
+        )
+        solicitacoes_pendentes = SolicitacaoPublicacao.objects.filter(
+            status='pendente',
+        ).select_related('livro', 'livro__categoria', 'usuario')
         
         lista_perfis = [{
             "id": p.id,
             "username": p.user_auth.username,
+            "nome": p.nome or p.user_auth.username,
             "bio": p.perfil.bio if p.perfil else '',
             "data": p.user_auth.date_joined,
+            "data_aproximada": True,
+            "livros_lidos": p.total_lidos,
+            "obras_enviadas": p.obras_enviadas,
         } for p in perfis_pendentes]
 
         lista_publicacoes = [{
             "id": s.id,
+            "livro_id": s.livro_id,
             "titulo_livro": s.livro.titulo if s.livro else 'Sem Título',
             "autor": s.usuario.username,
-            "data_envio": s.data_envio.strftime("%d/%m/%Y %H:%M") if s.data_envio else "",
+            "data_envio": s.data_envio,
+            "categoria": s.livro.categoria.nome if s.livro and s.livro.categoria else 'Não informada',
+            "isbn": s.livro.isbn if s.livro else None,
+            "tem_capa": bool(s.livro and s.livro.capa),
         } for s in solicitacoes_pendentes]
 
         return Response({
@@ -97,7 +274,7 @@ class DashboardAprovacoesAPIView(APIView):
         })
 
 class DashboardDenunciasAPIView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsParaBookAdmin]
 
     def get(self, request, *args, **kwargs):
         denuncias_livros = Denuncia.objects.filter(arquivada=False).select_related('livro', 'usuario')
@@ -109,7 +286,7 @@ class DashboardDenunciasAPIView(APIView):
             "denunciante": d.usuario.username if d.usuario else 'Anônimo',
             "motivo": d.motivo,
             "status": d.status,
-            "data": d.data_denuncia.strftime("%d/%m/%Y")
+            "data": d.data_denuncia,
         } for d in denuncias_livros]
 
         lista_dc = [{
@@ -117,7 +294,7 @@ class DashboardDenunciasAPIView(APIView):
             "comunidade": c.comunidade.nome,
             "denunciante": c.usuario.username if c.usuario else 'Anônimo',
             "motivo": c.motivo,
-            "data": c.data_denuncia.strftime("%d/%m/%Y")
+            "data": c.data_denuncia,
         } for c in denuncias_comuns]
 
         return Response({
@@ -127,7 +304,7 @@ class DashboardDenunciasAPIView(APIView):
 
 
 class DashboardModeracaoAPIView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsParaBookAdmin]
 
     @transaction.atomic
     def post(self, request, categoria, item_id, *args, **kwargs):
@@ -175,7 +352,11 @@ class DashboardModeracaoAPIView(APIView):
             Notificacao.objects.create(
                 usuario=solicitacao.usuario,
                 titulo='Publicação analisada',
-                mensagem=f'A obra “{solicitacao.livro.titulo}” foi {"aprovada" if acao == "aprovar" else "recusada"}.',
+                mensagem=(
+                    f'A obra “{solicitacao.livro.titulo}” foi aprovada.'
+                    if acao == 'aprovar'
+                    else f'A obra “{solicitacao.livro.titulo}” foi recusada.{" " + observacao if observacao else ""}'
+                ),
                 tipo='SOLICITACAO',
                 link='/perfil',
             )
@@ -239,32 +420,123 @@ class DashboardModeracaoAPIView(APIView):
 
 
 class DashboardAuditoriaAPIView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsParaBookAdmin]
 
     def get(self, request, *args, **kwargs):
+        formato = request.query_params.get('formato', '').lower()
+        tipo = request.query_params.get('tipo', '').lower()
+        filtro_tipo = AUDITORIA_FILTROS.get(tipo)
+        registros_base = AuditoriaAcao.objects.select_related('ator').all()
+        registros_filtrados = registros_base.filter(filtro_tipo) if filtro_tipo else registros_base
+
+        if formato == 'csv':
+            resposta = HttpResponse(content_type='text/csv; charset=utf-8')
+            resposta['Content-Disposition'] = 'attachment; filename="auditoria-parabook.csv"'
+            resposta.write('\ufeff')
+            escritor = csv.writer(resposta)
+            escritor.writerow(['ID', 'Data', 'Ator', 'Ação', 'Recurso', 'ID do recurso', 'Sucesso', 'Metadados'])
+            for registro in registros_filtrados[:10000]:
+                escritor.writerow([
+                    registro.pk,
+                    registro.criado_em.isoformat(),
+                    _celula_csv_segura(registro.ator.username if registro.ator else 'Sistema'),
+                    _celula_csv_segura(registro.acao),
+                    _celula_csv_segura(registro.recurso),
+                    _celula_csv_segura(registro.recurso_id),
+                    'sim' if registro.sucesso else 'não',
+                    _celula_csv_segura(json.dumps(registro.metadados, ensure_ascii=False, default=str)),
+                ])
+            return resposta
+
+        if formato == 'avancado':
+            paginador = AuditoriaCursorPagination()
+            pagina = paginador.paginate_queryset(registros_filtrados, request, view=self)
+            proximo_link = paginador.get_next_link()
+            proximo_cursor = None
+            if proximo_link:
+                proximo_cursor = parse_qs(urlparse(proximo_link).query).get('cursor', [None])[0]
+            return Response({
+                'resultados': [_serializar_auditoria(registro) for registro in pagina],
+                'proximo_cursor': proximo_cursor,
+                'contagens': {
+                    'tudo': registros_base.count(),
+                    **{
+                        chave: registros_base.filter(filtro).count()
+                        for chave, filtro in AUDITORIA_FILTROS.items()
+                    },
+                },
+                'eventos_hoje': registros_base.filter(criado_em__date=timezone.localdate()).count(),
+                'filtro': tipo if filtro_tipo else 'tudo',
+            })
+
         try:
             limite_solicitado = int(request.query_params.get('limite', 50))
         except (TypeError, ValueError):
             limite_solicitado = 50
         limite = min(max(limite_solicitado, 1), 200)
-        registros = AuditoriaAcao.objects.select_related('ator')[:limite]
         return Response([
-            {
-                'id': registro.pk,
-                'ator': registro.ator.username if registro.ator else 'Sistema',
-                'acao': registro.acao,
-                'recurso': registro.recurso,
-                'recurso_id': registro.recurso_id,
-                'sucesso': registro.sucesso,
-                'metadados': registro.metadados,
-                'criado_em': registro.criado_em,
-            }
-            for registro in registros
+            _serializar_auditoria(registro)
+            for registro in registros_base[:limite]
         ])
 
 
+class DashboardModelosAdminAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    def get(self, request, *args, **kwargs):
+        cache_key = 'dashboard:modelos-admin:contagens:v1'
+        contagens = cache.get(cache_key)
+        if contagens is None:
+            contagens = {}
+            for chave, _nome, model, _icone in MODELOS_DJANGO_ADMIN:
+                try:
+                    contagens[chave] = model.objects.count()
+                except Exception:
+                    logger.exception('Falha ao contar o modelo administrativo %s', chave)
+                    contagens[chave] = None
+            cache.set(cache_key, contagens, 300)
+
+        modelos = []
+        for chave, nome, model, icone in MODELOS_DJANGO_ADMIN:
+            meta = model._meta
+            try:
+                caminho_admin = reverse(f'admin:{meta.app_label}_{meta.model_name}_changelist')
+            except NoReverseMatch:
+                continue
+            modelos.append({
+                'chave': chave,
+                'nome': nome,
+                'modelo': f'{meta.app_label}.{model.__name__}',
+                'icone': icone,
+                'contagem': contagens.get(chave),
+                'url': request.build_absolute_uri(caminho_admin),
+            })
+
+        ultimo_acesso = AuditoriaAcao.objects.filter(
+            acao='django_admin.atalho_aberto',
+        ).values_list('criado_em', flat=True).first()
+        return Response({
+            'modelos': modelos,
+            'django_admin_url': request.build_absolute_uri(reverse('admin:index')),
+            'ultimo_acesso': ultimo_acesso,
+        })
+
+
+class DashboardDjangoAdminAcessoAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    def post(self, request, *args, **kwargs):
+        registrar_acao(
+            ator=request.user,
+            acao='django_admin.atalho_aberto',
+            recurso='AdminSite',
+            metadados={'origem': 'perfil_avancado'},
+        )
+        return Response({'url': request.build_absolute_uri(reverse('admin:index'))})
+
+
 class DashboardFeatureFlagsAPIView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsParaBookAdmin]
 
     def get(self, request, *args, **kwargs):
         return Response([
@@ -272,6 +544,7 @@ class DashboardFeatureFlagsAPIView(APIView):
                 'chave': flag.chave,
                 'descricao': flag.descricao,
                 'habilitada': flag.habilitada,
+                'disponivel': flag.disponivel,
                 'atualizada_em': flag.atualizada_em,
                 'atualizada_por': flag.atualizada_por.username if flag.atualizada_por else None,
             }
@@ -287,6 +560,11 @@ class DashboardFeatureFlagsAPIView(APIView):
         flag = FeatureFlag.objects.select_for_update().filter(chave=chave).first()
         if not flag:
             return Response({'detail': 'Feature flag inexistente; chaves não podem ser criadas pela API.'}, status=404)
+        if not flag.disponivel:
+            return Response(
+                {'detail': 'Esta funcionalidade ainda está indisponível e não pode ser alterada.'},
+                status=409,
+            )
         flag.habilitada = habilitada
         flag.atualizada_por = request.user
         flag.save(update_fields=['habilitada', 'atualizada_por', 'atualizada_em'])
@@ -299,8 +577,21 @@ class DashboardFeatureFlagsAPIView(APIView):
         )
         return Response({'chave': flag.chave, 'habilitada': flag.habilitada})
 
+
+class DashboardFeatureFlagsPublicasAPIView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        estados = {chave: False for chave in FEATURE_FLAGS_PUBLICAS}
+        estados.update({
+            flag.chave: flag.habilitada and flag.disponivel
+            for flag in FeatureFlag.objects.filter(chave__in=FEATURE_FLAGS_PUBLICAS)
+        })
+        return Response(estados)
+
 class DashboardLixeiraAPIView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsParaBookAdmin]
 
     def get(self, request, *args, **kwargs):
         livros_removidos = Livro.objects.filter(status='removido').order_by('-data_remocao')
@@ -309,14 +600,16 @@ class DashboardLixeiraAPIView(APIView):
         lista_livros = [{
             "id": l.id,
             "titulo": l.titulo,
-            "data_remocao": l.data_remocao.strftime("%d/%m/%Y") if l.data_remocao else ""
+            "data_remocao": l.data_remocao,
+            "dias_retencao": 7,
         } for l in livros_removidos]
 
         lista_denuncias = [{
             "id": d.id,
             "livro": d.livro.titulo if d.livro else 'Removido',
             "motivo": d.motivo,
-            "data_arquivamento": d.data_arquivamento.strftime("%d/%m/%Y") if d.data_arquivamento else ""
+            "data_arquivamento": d.data_arquivamento,
+            "dias_retencao": 30,
         } for d in denuncias_arquivadas]
 
         return Response({

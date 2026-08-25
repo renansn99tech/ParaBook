@@ -73,22 +73,10 @@ function Auditoria() {
   return <ul className="central-conta-lista">{registros.map((item) => <li key={item.id}><span><strong>{item.acao}</strong><small>{item.ator} · {item.recurso} #{item.recurso_id || '—'} · {new Date(item.criado_em).toLocaleString('pt-BR')}</small></span><span>{item.sucesso ? 'Sucesso' : 'Falha'}</span></li>)}</ul>;
 }
 
-function FeatureFlags() {
-  const [flags, setFlags] = useState(null);
-  useEffect(() => { api.get('/dashboard/feature-flags/').then((res) => setFlags(res.data)); }, []);
-  const alternar = async (flag) => {
-    const res = await api.patch('/dashboard/feature-flags/', { chave: flag.chave, habilitada: !flag.habilitada });
-    setFlags((atuais) => atuais.map((item) => item.chave === flag.chave ? { ...item, habilitada: res.data.habilitada } : item));
-  };
-  if (!flags) return <p role="status">Carregando feature flags...</p>;
-  return <div className="central-conta-lista">{flags.map((flag) => <button type="button" className="central-conta-switch" role="switch" aria-checked={flag.habilitada} key={flag.chave} onClick={() => alternar(flag)}><span><strong>{flag.chave}</strong><small>{flag.descricao}</small></span><strong>{flag.habilitada ? 'Ativa' : 'Inativa'}</strong></button>)}</div>;
-}
-
 const PAGINAS = {
   aparencia: ['Tipografia e aparência', Aparencia, false],
   notificacoes: ['Notificações e e-mails', Preferencias, false],
   auditoria: ['Trilha de auditoria', Auditoria, true],
-  'feature-flags': ['Feature flags', FeatureFlags, true],
 };
 
 function CentralConta() {

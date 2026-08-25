@@ -1,10 +1,12 @@
-import { lazy, Suspense, useContext } from 'react'
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
+import { lazy, Suspense, useContext, useEffect, useState } from 'react'
+import { Routes, Route, useLocation, Navigate, Link } from 'react-router-dom'
 import { AuthContext } from './context/auth-context'
 import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import RouteAccessibility from './components/RouteAccessibility'
+import RotaAdmin from './components/admin/RotaAdmin'
+import api from './services/api'
 
 const Home = lazy(() => import('./pages/Home'))
 const Login = lazy(() => import('./pages/Login'))
@@ -39,6 +41,9 @@ const MinhasComunidades = lazy(() => import('./pages/MinhasComunidades'))
 const CriarComunidade = lazy(() => import('./pages/CriarComunidade'))
 const Ranking = lazy(() => import('./pages/Ranking'))
 const MinhasConquistas = lazy(() => import('./pages/MinhasConquistas'))
+const AdminDjango = lazy(() => import('./pages/admin/AdminDjango'))
+const AdminAuditoria = lazy(() => import('./pages/admin/AdminAuditoria'))
+const AdminFeatureFlags = lazy(() => import('./pages/admin/AdminFeatureFlags'))
 
 // Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
 const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', '/diretrizes', '/login', '/register', '/esqueci-senha'];
@@ -50,11 +55,31 @@ function App() {
   // transição (ver hooks/useViewTransitionLocation.js).
   const displayLocation = useViewTransitionLocation(location);
   const { user, loading } = useContext(AuthContext);
+  const [flagsPublicas, setFlagsPublicas] = useState({ banner_anuncios: false });
   const isDashboard = location.pathname.startsWith('/dashboard');
+  const isAdminAvancado = [
+    '/perfil/configuracoes/django-admin',
+    '/perfil/configuracoes/auditoria',
+    '/perfil/configuracoes/feature-flags',
+  ].includes(location.pathname);
   // Telas do fluxo de autenticação: sem navbar/rodapé/banner, já que o usuário não está logado.
   const isAuthPage = ['/login', '/register', '/esqueci-senha'].includes(location.pathname)
     || location.pathname.startsWith('/redefinir-senha/');
-  const hideNavAndFooter = isDashboard || isAuthPage;
+  const hideNavAndFooter = isDashboard || isAdminAvancado || isAuthPage;
+  const exibirBannerAnuncios = flagsPublicas.banner_anuncios && !hideNavAndFooter;
+
+  useEffect(() => {
+    let ativo = true;
+    const carregarFlagsPublicas = () => api.get('/dashboard/feature-flags/publicas/')
+      .then((resposta) => ativo && setFlagsPublicas(resposta.data))
+      .catch(() => ativo && setFlagsPublicas({ banner_anuncios: false }));
+    carregarFlagsPublicas();
+    window.addEventListener('parabook:feature-flags-atualizadas', carregarFlagsPublicas);
+    return () => {
+      ativo = false;
+      window.removeEventListener('parabook:feature-flags-atualizadas', carregarFlagsPublicas);
+    };
+  }, []);
 
   // Equivalente ao ForcarAceiteTermosMiddleware do lado dos templates legados:
   // trava a navegação de quem tem pendência de aceite dos termos.
@@ -76,15 +101,7 @@ function App() {
       <RouteAccessibility />
       {!hideNavAndFooter && <Navbar />}
 
-      {/* ==========================================================
-          ANÚNCIOS — DESATIVADOS TEMPORARIAMENTE (2026-08-14).
-          Banner global de anúncio + CTA de Premium tirado da tela até
-          fecharmos o modelo de monetização e a captação de usuários.
-          Para REATIVAR: descomente o bloco JSX abaixo (o destino do CTA
-          é /planos). Ressalva registrada em business_rules/.
-      =========================================================== */}
-      {/*
-      {!hideNavAndFooter && (
+      {exibirBannerAnuncios && (
         <div className="container my-3 ad-container">
             <div className="p-3 text-center rounded-3 border border-secondary border-opacity-25 caixa-anuncio">
                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -100,7 +117,6 @@ function App() {
             </div>
         </div>
       )}
-      */}
 
       <div id="conteudo-principal" className="route-content" tabIndex="-1">
         <Suspense fallback={<div className="text-center p-5" role="status" aria-live="polite">Carregando página...</div>}>
@@ -111,12 +127,15 @@ function App() {
           <Route path="/perfil" element={<Profile />} />
           <Route path="/perfil/alterar-senha" element={<AlterarSenha />} />
           <Route path="/perfil/configuracoes" element={<ConfiguracoesAvancadas />} />
+          <Route path="/perfil/configuracoes/django-admin" element={<RotaAdmin><AdminDjango /></RotaAdmin>} />
+          <Route path="/perfil/configuracoes/auditoria" element={<RotaAdmin><AdminAuditoria /></RotaAdmin>} />
+          <Route path="/perfil/configuracoes/feature-flags" element={<RotaAdmin><AdminFeatureFlags /></RotaAdmin>} />
           <Route path="/perfil/configuracoes/:secao" element={<CentralConta />} />
           <Route path="/perfil/:username" element={<PerfilPublico />} />
           <Route path="/biblioteca" element={<Biblioteca />} />
           <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/comunidade/:id/conteudo" element={<ConteudoComunidade />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<RotaAdmin><Dashboard /></RotaAdmin>} />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/backlog" element={<Backlog />} />
           <Route path="/diretrizes" element={<Diretrizes />} />

@@ -91,6 +91,8 @@ export interface FullUserProfile {
   }>;
 }
 
+type ApiErrorBody = Record<string, unknown> | unknown[];
+
 const normalizeCurrentUserProfile = (raw: CurrentUserProfile): CurrentUserProfile => ({
   ...raw,
   foto: resolveDjangoUrl(raw.foto) || null,
@@ -120,6 +122,63 @@ const parseTokens = (data: unknown): AuthTokens => {
   return { access: data.access, refresh };
 };
 
+const isDevelopmentRuntime = () => {
+  const runtime = globalThis as typeof globalThis & { __DEV__?: boolean };
+  return runtime.__DEV__ !== false;
+};
+
+const sanitizeApiErrorBody = (value: unknown): unknown => {
+  const sensitiveKeys = new Set(['password', 'password_confirm', 'token', 'access', 'refresh']);
+
+  if (Array.isArray(value)) {
+    return value.map(sanitizeApiErrorBody);
+  }
+
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+      key,
+      sensitiveKeys.has(key.toLowerCase()) && typeof item === 'string'
+        ? '[redacted]'
+        : sanitizeApiErrorBody(item),
+    ])
+  );
+};
+
+const extractValidationMessages = (value: unknown): string[] => {
+  if (typeof value === 'string') {
+    return [value];
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap(extractValidationMessages);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.values(value).flatMap(extractValidationMessages);
+  }
+
+  return [];
+};
+
+const logApiValidationError = (endpoint: string, error: unknown) => {
+  if (!isDevelopmentRuntime() || !axios.isAxiosError(error)) {
+    return;
+  }
+
+  const status = error.response?.status;
+  const body = error.response?.data as ApiErrorBody | undefined;
+
+  console.error('[authService] API request failed', {
+    endpoint,
+    status,
+    body: sanitizeApiErrorBody(body),
+  });
+};
+
 export const extractApiErrorMessage = (error: unknown, fallback: string) => {
   if (!axios.isAxiosError(error)) {
     return fallback;
@@ -136,9 +195,7 @@ export const extractApiErrorMessage = (error: unknown, fallback: string) => {
   }
 
   if (data && typeof data === 'object') {
-    const messages = Object.values(data)
-      .flatMap((value) => Array.isArray(value) ? value : [value])
-      .filter((value): value is string => typeof value === 'string');
+    const messages = extractValidationMessages(data);
 
     if (messages.length > 0) {
       return messages.join(' ');
@@ -161,16 +218,23 @@ export const authService = {
   },
 
   register: async (payload: RegisterPayload): Promise<AuthTokens> => {
-    const response = await api.post('/auth/mobile-register/', {
-      username: payload.username,
-      email: payload.email,
-      password: payload.password,
-      password_confirm: payload.passwordConfirm,
-      termos_aceitos: payload.termosAceitos,
-    });
-    const tokens = parseTokens(response.data);
-    setAuthTokens(tokens);
-    return tokens;
+    const endpoint = '/auth/mobile-register/';
+
+    try {
+      const response = await api.post(endpoint, {
+        username: payload.username,
+        email: payload.email,
+        password: payload.password,
+        password_confirm: payload.passwordConfirm,
+        termos_aceitos: payload.termosAceitos,
+      });
+      const tokens = parseTokens(response.data);
+      setAuthTokens(tokens);
+      return tokens;
+    } catch (error) {
+      logApiValidationError(endpoint, error);
+      throw error;
+    }
   },
 
   getAuthenticatedUser: async (): Promise<AuthenticatedUser> => {

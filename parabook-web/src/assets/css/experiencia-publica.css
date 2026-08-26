@@ -1,0 +1,297 @@
+.experiencia-page{
+    width:100%;
+    max-width:var(--layout-max);
+    margin:0 auto;
+    padding:
+        clamp(2rem, 5vw, 5rem)
+        max(var(--layout-gutter), var(--safe-right))
+        6rem
+        max(var(--layout-gutter), var(--safe-left));
+    color:var(--text);
+}
+
+.experiencia-hero{
+    min-height:min(680px, 76vh);
+    display:grid;
+    grid-template-columns:minmax(0, .92fr) minmax(24rem, 1.08fr);
+    align-items:center;
+    overflow:hidden;
+    border:1px solid var(--border);
+    border-radius:clamp(1.4rem, 3vw, 2.4rem);
+    background:
+        radial-gradient(circle at 12% 15%, rgba(var(--purple-rgb),.18), transparent 36%),
+        var(--bg-card);
+    box-shadow:var(--shadow);
+}
+
+.experiencia-hero-copy{
+    padding:clamp(2rem, 5vw, 5rem);
+}
+
+.experiencia-eyebrow{
+    margin:0 0 .9rem;
+    color:var(--vela);
+    font-size:.78rem;
+    font-weight:900;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+}
+
+.experiencia-hero h1{
+    max-width:15ch;
+    margin:0;
+    font-family:var(--fonte-editorial);
+    font-size:clamp(2.5rem, 5vw, 5.4rem);
+    line-height:.98;
+    letter-spacing:-.045em;
+}
+
+.experiencia-hero-copy > p:not(.experiencia-eyebrow){
+    max-width:62ch;
+    margin:1.4rem 0 0;
+    color:var(--text-secondary);
+    font-size:clamp(1rem, 1.4vw, 1.18rem);
+    line-height:1.75;
+}
+
+.experiencia-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.8rem;
+    margin-top:2rem;
+}
+
+.experiencia-primary,
+.experiencia-secondary{
+    min-height:48px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:.6rem;
+    padding:.8rem 1.25rem;
+    border:1px solid transparent;
+    border-radius:999px;
+    font-weight:850;
+    text-decoration:none;
+}
+
+.experiencia-primary{
+    background:linear-gradient(120deg, var(--purple-light), var(--purple-dark));
+    color:var(--text);
+    box-shadow:0 12px 32px rgba(var(--purple-rgb),.25);
+}
+
+.experiencia-secondary{
+    border-color:var(--border);
+    background:rgba(var(--bg-card-rgb),.45);
+    color:var(--text);
+}
+
+.experiencia-primary:hover,
+.experiencia-secondary:hover{
+    transform:translateY(-2px);
+}
+
+.experiencia-hero-media{
+    align-self:stretch;
+    min-height:30rem;
+    position:relative;
+}
+
+.experiencia-hero-media::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg, var(--bg-card), transparent 36%);
+    pointer-events:none;
+}
+
+.experiencia-hero-media img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+}
+
+.experiencia-beneficios,
+.experiencia-passos{
+    padding:clamp(4rem, 8vw, 8rem) 0 0;
+}
+
+.experiencia-heading{
+    max-width:48rem;
+    margin-bottom:2rem;
+}
+
+.experiencia-heading h2,
+.experiencia-final h2{
+    margin:0;
+    font-family:var(--fonte-editorial);
+    font-size:clamp(2rem, 3.5vw, 3.6rem);
+    line-height:1.08;
+}
+
+.experiencia-grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:1rem;
+}
+
+.experiencia-grid article{
+    min-height:15rem;
+    padding:1.5rem;
+    border:1px solid var(--border);
+    border-radius:1.25rem;
+    background:linear-gradient(145deg, rgba(var(--bg-card-rgb),.9), rgba(var(--bg-card-rgb),.65));
+}
+
+.experiencia-icon{
+    width:3rem;
+    aspect-ratio:1;
+    display:grid;
+    place-items:center;
+    border-radius:.9rem;
+    background:rgba(var(--purple-rgb),.16);
+    color:var(--purple-light);
+}
+
+.experiencia-card-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.75rem;
+    margin:1.35rem 0 .65rem;
+}
+
+.experiencia-card-title h3{
+    margin:0;
+    font-size:1.15rem;
+}
+
+.experiencia-card-title span{
+    flex:none;
+    padding:.25rem .55rem;
+    border:1px solid rgba(var(--vela-rgb),.35);
+    border-radius:999px;
+    color:var(--vela);
+    font-size:.7rem;
+    font-weight:850;
+    text-transform:uppercase;
+}
+
+.experiencia-grid article p,
+.experiencia-passos li p{
+    margin:0;
+    color:var(--text-secondary);
+    line-height:1.65;
+}
+
+.experiencia-passos ol{
+    display:grid;
+    gap:.8rem;
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+
+.experiencia-passos li{
+    display:grid;
+    grid-template-columns:auto minmax(0, 1fr);
+    align-items:start;
+    gap:1.2rem;
+    padding:1.35rem;
+    border-top:1px solid var(--border);
+}
+
+.experiencia-passos li > span{
+    color:var(--purple-light);
+    font-family:var(--fonte-editorial);
+    font-size:1.7rem;
+}
+
+.experiencia-passos h3{
+    margin:0 0 .35rem;
+}
+
+.experiencia-final{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:2rem;
+    margin-top:clamp(4rem, 8vw, 8rem);
+    padding:clamp(1.7rem, 4vw, 3.5rem);
+    border:1px solid rgba(var(--vela-rgb),.28);
+    border-radius:1.5rem;
+    background:
+        linear-gradient(120deg, rgba(var(--vela-rgb),.09), transparent 48%),
+        var(--bg-card);
+}
+
+.experiencia-final h2{
+    max-width:22ch;
+    font-size:clamp(1.8rem, 3vw, 3rem);
+}
+
+@media (max-width:900px){
+    .experiencia-hero{
+        grid-template-columns:1fr;
+    }
+
+    .experiencia-hero-media{
+        min-height:18rem;
+        order:-1;
+    }
+
+    .experiencia-hero-media::after{
+        background:linear-gradient(0deg, var(--bg-card), transparent 48%);
+    }
+
+    .experiencia-grid{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width:560px){
+    .experiencia-page{
+        padding-top:1rem;
+    }
+
+    .experiencia-hero{
+        border-radius:1.25rem;
+    }
+
+    .experiencia-hero-copy{
+        padding:1.4rem;
+    }
+
+    .experiencia-hero h1{
+        font-size:clamp(2.25rem, 13vw, 3.4rem);
+    }
+
+    .experiencia-actions,
+    .experiencia-grid{
+        display:grid;
+        grid-template-columns:1fr;
+    }
+
+    .experiencia-primary,
+    .experiencia-secondary{
+        width:100%;
+    }
+
+    .experiencia-grid article{
+        min-height:0;
+    }
+
+    .experiencia-final{
+        align-items:stretch;
+        flex-direction:column;
+    }
+}
+
+@media (prefers-reduced-motion:reduce){
+    .experiencia-primary,
+    .experiencia-secondary{
+        transition:none;
+    }
+}

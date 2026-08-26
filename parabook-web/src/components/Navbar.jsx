@@ -3,12 +3,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/auth-context'
 import useTema from '../hooks/useTema'
 import { obterAvatarPerfil } from '../services/avatarPerfil'
+import { obterCtaAutoria } from '../services/ctaAutoria'
 import logoNova from '../assets/img/logo-nova-160.webp'
 import logoNova2x from '../assets/img/logo-nova-320.webp'
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext)
   const avatarUsuario = obterAvatarPerfil(user)
+  const ctaPublicacao = user
+    ? obterCtaAutoria(user)
+    : { to: '/para-autores', label: 'Conhecer autoria' }
   const { alternar, icone, rotulo } = useTema()
   const navigate = useNavigate()
   const [contaAberta, setContaAberta] = useState(false)
@@ -108,7 +112,7 @@ function Navbar() {
             <Link to="/autores" onClick={fecharMenu}><i className="fa-solid fa-pen-nib" aria-hidden="true"></i><span>Autores</span></Link>
           </div>
 
-          <div className="offcanvas-section offcanvas-section-publicar" aria-label="Publicação"><p className="offcanvas-kicker">Criar</p><Link to="/publicar" className="link-publicar" onClick={fecharMenu}><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i><span>Publicar livro</span></Link></div>
+          <div className="offcanvas-section offcanvas-section-publicar" aria-label="Publicação"><p className="offcanvas-kicker">Criar</p><Link to={ctaPublicacao.to} className="link-publicar" onClick={fecharMenu}><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i><span>{ctaPublicacao.label}</span></Link></div>
           <div className="offcanvas-divider" role="separator"></div>
 
           <div className="offcanvas-section" aria-label="Mais opções">

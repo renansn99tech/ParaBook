@@ -6,6 +6,14 @@ export interface AuthTokens {
   refresh?: string;
 }
 
+export interface RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+  termosAceitos: boolean;
+}
+
 export interface AuthenticatedUser {
   id: string | number;
   nome: string;
@@ -103,6 +111,15 @@ const normalizeFullUserProfile = (raw: FullUserProfile): FullUserProfile => ({
   },
 });
 
+const parseTokens = (data: unknown): AuthTokens => {
+  if (!data || typeof data !== 'object' || !('access' in data) || typeof data.access !== 'string') {
+    throw new Error('A API nao retornou uma sessao valida.');
+  }
+
+  const refresh = 'refresh' in data && typeof data.refresh === 'string' ? data.refresh : undefined;
+  return { access: data.access, refresh };
+};
+
 export const extractApiErrorMessage = (error: unknown, fallback: string) => {
   if (!axios.isAxiosError(error)) {
     return fallback;
@@ -138,30 +155,20 @@ export const extractApiErrorMessage = (error: unknown, fallback: string) => {
 export const authService = {
   login: async (username: string, password: string): Promise<AuthTokens> => {
     const response = await api.post('/auth/mobile-login/', { username, password });
-    const tokens = {
-      access: response.data.access,
-      refresh: response.data.refresh,
-    };
+    const tokens = parseTokens(response.data);
     setAuthTokens(tokens);
     return tokens;
   },
 
-  register: async (
-    username: string,
-    email: string,
-    password: string,
-    termosAceitos: boolean
-  ): Promise<AuthTokens> => {
+  register: async (payload: RegisterPayload): Promise<AuthTokens> => {
     const response = await api.post('/auth/mobile-register/', {
-      username,
-      email,
-      password,
-      termos_aceitos: termosAceitos,
+      username: payload.username,
+      email: payload.email,
+      password: payload.password,
+      password_confirm: payload.passwordConfirm,
+      termos_aceitos: payload.termosAceitos,
     });
-    const tokens = {
-      access: response.data.access,
-      refresh: response.data.refresh,
-    };
+    const tokens = parseTokens(response.data);
     setAuthTokens(tokens);
     return tokens;
   },
@@ -177,7 +184,7 @@ export const authService = {
   },
 
   getFullUserProfile: async (username: string): Promise<FullUserProfile> => {
-    const response = await api.get(`/perfis/${username}/`);
+    const response = await api.get(`/perfis/${encodeURIComponent(username)}/`);
     return normalizeFullUserProfile(response.data);
   },
 

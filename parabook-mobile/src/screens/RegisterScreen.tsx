@@ -24,12 +24,18 @@ export const RegisterScreen = ({ navigation }: Props) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    if (!username.trim() || !email.trim() || !password) {
-      Alert.alert('Campos obrigatorios', 'Preencha usuario, email e senha.');
+    if (!username.trim() || !email.trim() || !password || !passwordConfirm) {
+      Alert.alert('Campos obrigatorios', 'Preencha usuario, email, senha e confirmacao da senha.');
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      Alert.alert('Senhas diferentes', 'A confirmacao precisa ser igual a senha.');
       return;
     }
 
@@ -44,6 +50,7 @@ export const RegisterScreen = ({ navigation }: Props) => {
         username: username.trim(),
         email: email.trim(),
         password,
+        passwordConfirm,
         termosAceitos: acceptedTerms,
       });
 
@@ -112,6 +119,18 @@ export const RegisterScreen = ({ navigation }: Props) => {
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Ionicons name="shield-checkmark-outline" size={20} color={colors.textMuted} />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirmar senha"
+                placeholderTextColor={colors.textMuted}
+                secureTextEntry
+                value={passwordConfirm}
+                onChangeText={setPasswordConfirm}
               />
             </View>
 

@@ -15,3 +15,11 @@ export type RootStackParamList = {
   Achievements: undefined;
   CreateCommunity: undefined;
 };
+
+export type MainTabParamList = {
+  Home: undefined;
+  Catalogo: undefined;
+  Biblioteca: undefined;
+  Comunidades: undefined;
+  Perfil: undefined;
+};

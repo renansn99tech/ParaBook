@@ -1,6 +1,6 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
-import { authService, AuthTokens, AuthenticatedUser, CurrentUserProfile, extractApiErrorMessage } from '../services/authService';
+import { authService, AuthenticatedUser, CurrentUserProfile, RegisterPayload, extractApiErrorMessage } from '../services/authService';
 import { clearAuthTokens, setAuthTokens, setUnauthorizedHandler } from '../services/api';
 import { authStorage } from '../services/authStorage';
 
@@ -18,12 +18,7 @@ type AuthContextValue = {
   authenticatedUser: AuthenticatedUser | null;
   sessionError: string | null;
   login: (username: string, password: string) => Promise<AuthActionResult>;
-  register: (payload: {
-    username: string;
-    email: string;
-    password: string;
-    termosAceitos: boolean;
-  }) => Promise<AuthActionResult>;
+  register: (payload: RegisterPayload) => Promise<AuthActionResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<CurrentUserProfile | null>;
   retrySession: () => Promise<void>;
@@ -41,32 +36,48 @@ const withTimeout = <T,>(promise: Promise<T>, milliseconds: number): Promise<T> 
   );
 });
 
+const isRecoverableConnectionError = (error: unknown) => (
+  error instanceof SessionBootstrapTimeoutError
+  || (axios.isAxiosError(error) && (
+    !error.response
+    || error.code === 'ECONNABORTED'
+    || error.code === 'ETIMEDOUT'
+  ))
+);
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [status, setStatus] = useState<AuthStatus>('loading');
   const [user, setUser] = useState<CurrentUserProfile | null>(null);
   const [authenticatedUser, setAuthenticatedUser] = useState<AuthenticatedUser | null>(null);
   const [sessionError, setSessionError] = useState<string | null>(null);
+  const sessionOperationRef = useRef(0);
 
   const resetSession = useCallback(async () => {
+    sessionOperationRef.current += 1;
     authService.logout();
-    try {
-      await authStorage.clear();
-    } catch {
-      // O estado em memoria ainda precisa ser encerrado se o armazenamento falhar.
-    }
     clearAuthTokens();
     setAuthenticatedUser(null);
     setUser(null);
     setSessionError(null);
     setStatus('unauthenticated');
+
+    try {
+      await withTimeout(authStorage.clear(), 3000);
+    } catch {
+      // A interface ja saiu do loading; uma falha do armazenamento nao pode
+      // manter o usuario preso na inicializacao.
+    }
   }, []);
 
-  const loadCurrentSession = useCallback(async () => {
-    const [accountData, profileData] = await Promise.all([
+  const fetchCurrentSession = useCallback(async () => Promise.all([
       authService.getAuthenticatedUser(),
       authService.getCurrentUserProfile(),
-    ]);
+    ]), []);
 
+  const applyCurrentSession = useCallback(([
+    accountData,
+    profileData,
+  ]: [AuthenticatedUser, CurrentUserProfile]) => {
     setAuthenticatedUser(accountData);
     setUser(profileData);
     setSessionError(null);
@@ -75,11 +86,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const bootstrapSession = useCallback(async () => {
+    const operation = ++sessionOperationRef.current;
     setStatus('loading');
     setSessionError(null);
 
     try {
       const storedTokens = await withTimeout(authStorage.read(), 5000);
+      if (operation !== sessionOperationRef.current) return;
 
       if (!storedTokens?.access) {
         clearAuthTokens();
@@ -90,9 +103,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       setAuthTokens(storedTokens);
-      await withTimeout(loadCurrentSession(), 35000);
+      const sessionData = await withTimeout(fetchCurrentSession(), 35000);
+      if (operation !== sessionOperationRef.current) return;
+      applyCurrentSession(sessionData);
     } catch (error) {
-      if (error instanceof SessionBootstrapTimeoutError || (axios.isAxiosError(error) && !error.response)) {
+      if (operation !== sessionOperationRef.current) return;
+
+      if (isRecoverableConnectionError(error)) {
         clearAuthTokens();
         setAuthenticatedUser(null);
         setUser(null);
@@ -103,7 +120,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       await resetSession();
     }
-  }, [loadCurrentSession, resetSession]);
+  }, [applyCurrentSession, fetchCurrentSession, resetSession]);
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
@@ -118,10 +135,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [bootstrapSession, resetSession]);
 
   const login = useCallback(async (username: string, password: string): Promise<AuthActionResult> => {
+    const operation = ++sessionOperationRef.current;
     try {
       const tokens = await authService.login(username, password);
-      await authStorage.save(tokens);
-      await loadCurrentSession();
+      await withTimeout(authStorage.save(tokens), 5000);
+      const sessionData = await withTimeout(fetchCurrentSession(), 35000);
+      if (operation !== sessionOperationRef.current) {
+        return { success: false, error: 'A tentativa de login foi cancelada.' };
+      }
+      applyCurrentSession(sessionData);
       return { success: true };
     } catch (error) {
       await resetSession();
@@ -130,23 +152,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         error: extractApiErrorMessage(error, 'Nao foi possivel entrar. Confira suas credenciais.'),
       };
     }
-  }, [loadCurrentSession, resetSession]);
+  }, [applyCurrentSession, fetchCurrentSession, resetSession]);
 
-  const register = useCallback(async (payload: {
-    username: string;
-    email: string;
-    password: string;
-    termosAceitos: boolean;
-  }): Promise<AuthActionResult> => {
+  const register = useCallback(async (payload: RegisterPayload): Promise<AuthActionResult> => {
+    const operation = ++sessionOperationRef.current;
     try {
-      const tokens = await authService.register(
-        payload.username,
-        payload.email,
-        payload.password,
-        payload.termosAceitos
-      );
-      await authStorage.save(tokens);
-      await loadCurrentSession();
+      const tokens = await authService.register(payload);
+      await withTimeout(authStorage.save(tokens), 5000);
+      const sessionData = await withTimeout(fetchCurrentSession(), 35000);
+      if (operation !== sessionOperationRef.current) {
+        return { success: false, error: 'A tentativa de cadastro foi cancelada.' };
+      }
+      applyCurrentSession(sessionData);
       return { success: true };
     } catch (error) {
       await resetSession();
@@ -155,16 +172,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         error: extractApiErrorMessage(error, 'Nao foi possivel concluir o cadastro.'),
       };
     }
-  }, [loadCurrentSession, resetSession]);
+  }, [applyCurrentSession, fetchCurrentSession, resetSession]);
 
   const refreshUser = useCallback(async () => {
     try {
-      return await loadCurrentSession();
+      const sessionData = await withTimeout(fetchCurrentSession(), 35000);
+      return applyCurrentSession(sessionData);
     } catch {
-      await resetSession();
       return null;
     }
-  }, [loadCurrentSession, resetSession]);
+  }, [applyCurrentSession, fetchCurrentSession]);
 
   const logout = useCallback(async () => {
     await resetSession();

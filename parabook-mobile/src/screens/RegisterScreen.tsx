@@ -19,6 +19,18 @@ import { useAuth } from '../context/AuthContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
+const validatePassword = (value: string) => {
+  if (value.length < 8) {
+    return 'A senha precisa ter pelo menos 8 caracteres.';
+  }
+
+  if (/^\d+$/.test(value)) {
+    return 'A senha nao pode ser inteiramente numerica.';
+  }
+
+  return null;
+};
+
 export const RegisterScreen = ({ navigation }: Props) => {
   const { register } = useAuth();
   const [username, setUsername] = useState('');
@@ -31,6 +43,12 @@ export const RegisterScreen = ({ navigation }: Props) => {
   const handleRegister = async () => {
     if (!username.trim() || !email.trim() || !password || !passwordConfirm) {
       Alert.alert('Campos obrigatorios', 'Preencha usuario, email, senha e confirmacao da senha.');
+      return;
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      Alert.alert('Senha invalida', passwordError);
       return;
     }
 

@@ -1,4 +1,7 @@
 # biblioteca/models.py
+import uuid
+
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
@@ -90,6 +93,7 @@ class Biblioteca(models.Model):
     livro = models.ForeignKey(Livro, on_delete=models.CASCADE, related_name='usuarios_interagiram', verbose_name="Livro")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='quero_ler', verbose_name="Status de Leitura")
     favorito = models.BooleanField(default=False, verbose_name="Favorito")
+    favoritado_em = models.DateTimeField(null=True, blank=True, verbose_name="Favoritado em")
     nota = models.PositiveSmallIntegerField(
         null=True, 
         blank=True, 
@@ -120,6 +124,50 @@ class Biblioteca(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.livro.titulo}"
+
+
+class EventoLeitura(models.Model):
+    class Origem(models.TextChoices):
+        REAL = 'real', 'Leitura real'
+        BACKFILL = 'backfill', 'Dado anterior à telemetria'
+
+    livro = models.ForeignKey(
+        Livro,
+        on_delete=models.CASCADE,
+        related_name='eventos_leitura',
+        verbose_name='Livro',
+    )
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='eventos_leitura',
+        verbose_name='Leitor',
+    )
+    sessao_id = models.UUIDField(default=uuid.uuid4, db_index=True, verbose_name='Sessão de leitura')
+    pagina = models.PositiveIntegerField(default=0)
+    percentual = models.PositiveSmallIntegerField(default=0)
+    duracao_segundos = models.PositiveIntegerField(default=0)
+    origem = models.CharField(max_length=12, choices=Origem.choices, default=Origem.REAL)
+    criado_em = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'eventos_leitura'
+        ordering = ['-criado_em']
+        indexes = [
+            models.Index(fields=['livro', 'criado_em'], name='evento_livro_data_idx'),
+            models.Index(fields=['livro', 'pagina'], name='evento_livro_pag_idx'),
+            models.Index(fields=['usuario', 'sessao_id'], name='evento_user_sessao_idx'),
+        ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(percentual__gte=0, percentual__lte=100),
+                name='evento_percentual_0_100',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.livro_id} · {self.sessao_id} · página {self.pagina}'
 
 
 class Perfil(models.Model):

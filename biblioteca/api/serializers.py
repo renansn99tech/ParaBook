@@ -35,8 +35,8 @@ class EstanteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Biblioteca
-        fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'status', 'favorito', 'nota', 'resenha', 'pagina_atual', 'ultima_leitura_em', 'data_conclusao', 'avaliada_em', 'data_adicao']
-        read_only_fields = ['user', 'avaliada_em']
+        fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'status', 'favorito', 'favoritado_em', 'nota', 'resenha', 'pagina_atual', 'ultima_leitura_em', 'data_conclusao', 'avaliada_em', 'data_adicao']
+        read_only_fields = ['user', 'favoritado_em', 'avaliada_em']
 
     def get_livro_capa(self, obj):
         if obj.livro and obj.livro.capa:

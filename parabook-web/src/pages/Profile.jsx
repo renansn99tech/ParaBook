@@ -6,6 +6,7 @@ import api from '../services/api';
 import { obterAvatarPerfil } from '../services/avatarPerfil';
 import { abrirOnboardingPerfil } from '../services/onboardingPerfil';
 import { formatarDataNascimento } from '../services/dadosPessoais';
+import { formatarTempoRelativo } from '../services/tempoRelativo';
 import swal, { BOTAO } from '../services/swal';
 import '../assets/css/perfil.css';
 
@@ -134,18 +135,6 @@ function calcularIdade(data) {
     || (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() < nascimento.getDate())
       ? 1 : 0
   );
-}
-
-function formatarTempoRelativo(data) {
-  if (!data) return null;
-  const valor = new Date(data);
-  if (Number.isNaN(valor.getTime())) return null;
-  const minutos = Math.round((valor.getTime() - Date.now()) / 60000);
-  const formato = new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' });
-  if (Math.abs(minutos) < 60) return formato.format(minutos, 'minute');
-  const horas = Math.round(minutos / 60);
-  if (Math.abs(horas) < 24) return formato.format(horas, 'hour');
-  return formato.format(Math.round(horas / 24), 'day');
 }
 
 async function buscarDadosAdministrativos() {
@@ -744,7 +733,7 @@ function Profile() {
         <div className="perfil-atividade-drawer-corpo">{carregandoHistorico ? <p role="status">Carregando atividades...</p> : (historicoRecentes[drawerAtividade] || []).length > 0 ? <ol>{historicoRecentes[drawerAtividade].map((evento) => <li key={evento.id}><span><i className={`fa-solid ${drawerAtividade === 'avaliacoes' ? 'fa-star' : 'fa-check'}`} aria-hidden="true"></i></span><div><strong>{evento.titulo}</strong><p>{evento.descricao}</p><time dateTime={evento.data}>{formatarTempoRelativo(evento.data) || 'Registro anterior'}</time></div></li>)}</ol> : <div className="perfil-atividade-drawer-vazio"><i className={`fa-solid ${drawerAtividade === 'avaliacoes' ? 'fa-star-half-stroke' : 'fa-book'}`} aria-hidden="true"></i><strong>Nenhum registro por enquanto</strong><p>Suas próximas atividades aparecerão aqui.</p></div>}</div>
       </aside>
 
-      {user?.tipo === 'autor' && <section data-revelar className="special-panel autor-panel content-glass-card"><div className="panel-info"><h3><i className="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Painel do Autor Independente</h3><p>Gerencie suas publicações e compartilhe novas histórias.</p></div><Link to="/publicar" className="btn-primary-action"><i className="fa-solid fa-plus" aria-hidden="true"></i> Publicar novo livro</Link></section>}
+      {user?.tipo === 'autor' && <section data-revelar className="special-panel autor-panel content-glass-card"><div className="panel-info"><h3><i className="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Painel do Autor Independente</h3><p>Acompanhe suas obras, leituras e a recepção do público.</p></div><Link to="/autor/painel" className="btn-primary-action"><i className="fa-solid fa-chart-line" aria-hidden="true"></i> Acessar Painel</Link></section>}
       {user?.tipo === 'aguardando_aprovacao' && <section data-revelar className="special-panel pendente-panel content-glass-card"><div className="panel-info"><h3 className="perfil-analise-titulo"><i className="fa-solid fa-hourglass-half" aria-hidden="true"></i> Solicitação em análise</h3><p>Nossa equipe está avaliando seu pedido para se tornar Autor Independente.</p></div></section>}
       {user?.tipo === 'leitor' && <section data-revelar className="special-panel upgrade-panel content-glass-card"><div className="panel-info"><h3>Escreve ou deseja publicar suas próprias obras?</h3><p>Torne-se Autor Independente e comece a compartilhar suas histórias.</p></div><Link to="/autor/onboarding" className="btn-primary-action"><i className="fa-solid fa-feather" aria-hidden="true"></i> Quero ser um Autor</Link></section>}
       <ToastPerfil toast={toast} />

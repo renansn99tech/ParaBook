@@ -12,6 +12,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.conf import settings
 from django.utils.crypto import salted_hmac
+from django.utils import timezone
 
 from comunidades.models import Comunidade
 from usuarios.models import Usuario
@@ -397,7 +398,11 @@ def favoritar_livro(request, livro_id):
             registro = Biblioteca.objects.get(user=request.user, livro__id=livro_id)
             estava_favoritado = registro.favorito
             registro.favorito = not registro.favorito
-            registro.save(update_fields=['favorito'])
+            campos_atualizados = ['favorito']
+            if not estava_favoritado and registro.favorito:
+                registro.favoritado_em = timezone.now()
+                campos_atualizados.append('favoritado_em')
+            registro.save(update_fields=campos_atualizados)
 
             # --- GATILHO DE GAMIFICAÇÃO: FAVORITAR ---
             if not estava_favoritado and registro.favorito and not registro.xp_ganho_favorito:

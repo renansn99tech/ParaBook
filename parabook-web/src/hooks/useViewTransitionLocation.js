@@ -19,7 +19,14 @@ export function useViewTransitionLocation(location) {
       isFirstRender.current = false;
       return;
     }
-    if (displayLocation.pathname === location.pathname) return;
+    if (displayLocation.pathname === location.pathname) {
+      if (displayLocation.search === location.search && displayLocation.hash === location.hash) return;
+      // Mudanças de aba/filtro na query string não trocam a página, mas o
+      // contexto de <Routes location> precisa receber a nova location para
+      // que useSearchParams reflita o estado atual.
+      setDisplayLocation(location);
+      return;
+    }
 
     const semSuporte = typeof document.startViewTransition !== 'function';
     const reduzirMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

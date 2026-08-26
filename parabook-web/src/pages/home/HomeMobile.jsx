@@ -1,4 +1,8 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardLeituraResumo from '../../components/DashboardLeituraResumo';
+import ProximoCapitulo from '../../components/ProximoCapitulo';
+import { formatarTempoResumo } from '../../services/resumoLeitura';
 import openBook480 from '../../assets/img/open-book-480.webp';
 import '../../assets/css/home-mobile.css';
 
@@ -31,7 +35,11 @@ function LivroCard({ livro }) {
   );
 }
 
-function HomeMobile({ user, novidades, comunidadesOficiais, loading, erro }) {
+function HomeMobile({ user, novidades, comunidadesOficiais, loading, erro, resumoLeitura, carregandoResumo, erroResumo, inicioPersonalizado, carregandoInicio, erroInicio }) {
+  const [dashboardAberto, setDashboardAberto] = useState(false);
+  const leitura = resumoLeitura?.leitura_destaque;
+  const metricas = resumoLeitura?.metricas || {};
+
   return (
     <main className="home-mobile">
       <div className="hm-intro-cosmos">
@@ -63,6 +71,25 @@ function HomeMobile({ user, novidades, comunidadesOficiais, loading, erro }) {
           <Link to="/autores"><i className="fa-solid fa-feather" aria-hidden="true"></i><span>Autores</span></Link>
         </nav>
       </div>
+
+      {user && <section className="hm-reading" aria-labelledby="hm-reading-title">
+        <div className="hm-reading-copy">
+          <p className="hm-label">Sua jornada</p>
+          <h2 id="hm-reading-title">{leitura?.titulo || (carregandoResumo ? 'Organizando suas leituras' : 'Sua próxima leitura começa aqui')}</h2>
+          <p>{leitura ? (leitura.em_andamento ? `${leitura.progresso_percentual}% concluído · continue de onde parou.` : 'Sua leitura concluída mais recente.') : 'Explore o acervo para alimentar seu painel pessoal.'}</p>
+          <div className="hm-reading-metrics" aria-label="Resumo das estatísticas">
+            <span><strong>{formatarTempoResumo(metricas.tempo_medio_sessao_segundos)}</strong> por sessão</span>
+            <span><strong>{metricas.generos_explorados || 0}</strong> gêneros</span>
+            <span><strong>{metricas.avaliacoes_feitas || 0}</strong> avaliações</span>
+          </div>
+        </div>
+        <div className="hm-reading-actions">
+          <Link to={leitura?.link || '/biblioteca'}>{leitura?.em_andamento ? 'Continuar leitura' : 'Explorar livros'} <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link>
+          <button type="button" onClick={() => setDashboardAberto(true)} aria-haspopup="dialog"><i className="fa-solid fa-chart-simple" aria-hidden="true"></i> Abrir dashboard</button>
+        </div>
+      </section>}
+
+      {user && <ProximoCapitulo dados={inicioPersonalizado} carregando={carregandoInicio} erro={erroInicio} />}
 
       <section className="hm-section" aria-labelledby="hm-novidades">
         <div className="hm-section-heading">
@@ -107,12 +134,16 @@ function HomeMobile({ user, novidades, comunidadesOficiais, loading, erro }) {
         </div>
       </section>
 
-      <section className="hm-publish" aria-labelledby="hm-publish-title">
-        <p className="hm-label">Para autores independentes</p>
-        <h2 id="hm-publish-title">Sua obra merece encontrar leitores.</h2>
-        <p>Envie seu livro, acompanhe a publicação e construa sua comunidade.</p>
-        <Link to="/publicar" className="hm-button hm-button-primary">Publicar minha obra</Link>
-      </section>
+      {!user && <section className="hm-audiences" aria-labelledby="hm-audiences-title">
+        <div className="hm-section-heading">
+          <div><p className="hm-label">Escolha sua jornada</p><h2 id="hm-audiences-title">Conheça o ParaBook</h2></div>
+        </div>
+        <div className="hm-audience-grid">
+          <Link to="/para-leitores"><i className="fa-solid fa-book-open-reader" aria-hidden="true"></i><span><strong>Para Leitores</strong><small>Estante, leitura, avaliações e comunidades.</small></span><i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link>
+          <Link to="/para-autores"><i className="fa-solid fa-feather" aria-hidden="true"></i><span><strong>Para Autores</strong><small>Conheça a aprovação e o fluxo de publicação.</small></span><i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link>
+        </div>
+      </section>}
+      <DashboardLeituraResumo aberto={dashboardAberto} onClose={() => setDashboardAberto(false)} resumo={resumoLeitura} carregando={carregandoResumo} erro={erroResumo} />
     </main>
   );
 }

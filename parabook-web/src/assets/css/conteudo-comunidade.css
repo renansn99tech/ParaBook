@@ -432,6 +432,21 @@
     line-height:1.6;
 }
 
+.post-engajamento { display:flex; margin-top:1.1rem; padding-top:.85rem; border-top:1px solid var(--border); }
+.post-engajamento button { display:inline-flex; align-items:center; gap:.55rem; min-height:var(--touch-target); padding:.55rem .8rem; border:1px solid transparent; border-radius:var(--radius-md); background:transparent; color:var(--text-secondary); font:inherit; font-size:.8rem; font-weight:750; cursor:pointer; }
+.post-engajamento button:hover { border-color:rgba(var(--purple-light-rgb),.3); background:rgba(var(--purple-rgb),.09); color:var(--purple-text); }
+.post-engajamento button i:last-child { font-size:.65rem; }
+.post-respostas { display:grid; gap:.75rem; margin-top:.7rem; padding:1rem; border:1px solid var(--border); border-radius:var(--radius-md); background:rgba(var(--bg-deep-rgb),.28); }
+.post-respostas article { padding:.85rem 1rem; border-left:3px solid rgba(var(--purple-light-rgb),.38); border-radius:0 var(--radius-sm) var(--radius-sm) 0; background:rgba(var(--white-rgb),.025); }
+.post-respostas article header { display:flex; justify-content:space-between; gap:1rem; margin-bottom:.45rem; font-size:.76rem; }
+.post-respostas article header a { color:var(--purple-text); font-weight:800; text-decoration:none; }
+.post-respostas article time { color:var(--text-dim); }
+.post-respostas article p,.post-respostas-status { margin:0; color:var(--text-secondary); font-size:.88rem; line-height:1.55; }
+.post-respostas form { display:grid; gap:.65rem; margin-top:.35rem; }
+.post-respostas textarea { width:100%; resize:vertical; padding:.85rem; border:1px solid var(--border); border-radius:var(--radius-md); background:rgba(var(--bg-deep-rgb),.45); color:var(--text); font:inherit; }
+.post-respostas form button { justify-self:end; min-height:var(--touch-target); padding:.65rem 1rem; border:0; border-radius:var(--radius-md); background:linear-gradient(135deg,var(--purple),var(--purple-dark)); color:var(--text); font:inherit; font-weight:800; cursor:pointer; }
+.post-respostas form button:disabled { opacity:.55; cursor:not-allowed; }
+
 .post-acoes{
     display:flex;
     gap:8px;

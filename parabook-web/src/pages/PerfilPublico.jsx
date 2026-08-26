@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
+import { formatarDataNascimento } from '../services/dadosPessoais';
 import { obterAvatarPerfil } from '../services/avatarPerfil';
 import useRevelacao from '../hooks/useRevelacao';
 import '../assets/css/perfil.css';
@@ -63,6 +64,9 @@ function PerfilPublico() {
   }
 
   if (!dados) return null;
+
+  const pessoais = dados.dados_pessoais || {};
+  const valorPublico = (exibir, valor, vazio) => exibir === false ? 'Privado' : valor || vazio;
 
   return (
     <main className="perfil-page perfil-publico-page" ref={paginaRef}>
@@ -152,6 +156,14 @@ function PerfilPublico() {
               <p className="sobre-texto">
                 {dados.perfil.bio || "Nenhuma biografia cadastrada."}
               </p>
+              <div className="perfil-sobre-divisor" aria-hidden="true"></div>
+              <div className="perfil-dados-pessoais perfil-dados-pessoais--publico">
+                <dl>
+                  <div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Idade</dt><dd>{valorPublico(pessoais.exibir_idade, Number.isInteger(pessoais.idade) ? `${pessoais.idade} anos` : null, 'Não informada')}</dd></div>
+                  <div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><dd>{pessoais.exibir_data_nascimento === false ? 'Privado' : formatarDataNascimento(pessoais.data_nascimento)}</dd></div>
+                  <div><dt><i className="fa-solid fa-envelope" aria-hidden="true"></i> E-mail</dt><dd>{valorPublico(pessoais.exibir_email, pessoais.email, 'Não informado')}</dd></div>
+                </dl>
+              </div>
             </div>
           </div>
         )}

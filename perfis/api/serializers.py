@@ -5,7 +5,7 @@ from django.utils import timezone
 from perfis.models import Perfil
 
 
-def _interpretar_data_nascimento(valor):
+def interpretar_data_nascimento(valor):
     """Aceita os formatos legados sem alterar os dados armazenados."""
     from datetime import datetime
 
@@ -16,6 +16,17 @@ def _interpretar_data_nascimento(valor):
         except ValueError:
             continue
     return None
+
+
+def calcular_idade(valor, hoje=None):
+    nascimento = interpretar_data_nascimento(valor)
+    hoje = hoje or timezone.localdate()
+    if nascimento is None or nascimento > hoje:
+        return None
+    idade = hoje.year - nascimento.year - (
+        (hoje.month, hoje.day) < (nascimento.month, nascimento.day)
+    )
+    return idade if idade <= 130 else None
 
 class PerfilSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='usuario.username', required=False)
@@ -78,21 +89,12 @@ class PerfilSerializer(serializers.ModelSerializer):
         usuario = self._usuario_customizado(obj)
         if usuario is None:
             return None
-        nascimento = _interpretar_data_nascimento(usuario.data_nascimento)
+        nascimento = interpretar_data_nascimento(usuario.data_nascimento)
         return nascimento.isoformat() if nascimento else None
 
     def get_idade(self, obj):
         usuario = self._usuario_customizado(obj)
-        nascimento = _interpretar_data_nascimento(
-            usuario.data_nascimento if usuario else None
-        )
-        hoje = timezone.localdate()
-        if nascimento is None or nascimento > hoje:
-            return None
-        idade = hoje.year - nascimento.year - (
-            (hoje.month, hoje.day) < (nascimento.month, nascimento.day)
-        )
-        return idade if idade <= 130 else None
+        return calcular_idade(usuario.data_nascimento if usuario else None)
 
     def validate_data_nascimento(self, value):
         if value is None:

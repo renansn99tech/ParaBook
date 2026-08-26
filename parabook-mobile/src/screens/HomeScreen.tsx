@@ -26,26 +26,38 @@ export const HomeScreen = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingBooks, setLoadingBooks] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [booksError, setBooksError] = useState<string | null>(null);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
   const fetchHomeData = async (query?: string) => {
     setLoadingBooks(true);
-    setErrorMessage(null);
-    try {
-      const [bookData, categoryData] = await Promise.all([
-        bookService.getFeaturedBooks(query?.trim() || undefined),
-        bookService.getCategories(),
-      ]);
-      setBooks(bookData.slice(0, 6));
-      setCategories(categoryData.slice(0, 4));
-    } catch (error) {
+    setLoadingCategories(true);
+    setBooksError(null);
+    setCategoriesError(null);
+
+    const [bookResult, categoryResult] = await Promise.allSettled([
+      bookService.getBooks(query?.trim() || undefined),
+      bookService.getCategories(),
+    ]);
+
+    if (bookResult.status === 'fulfilled') {
+      setBooks(bookResult.value.slice(0, 6));
+    } else {
       setBooks([]);
-      setCategories([]);
-      setErrorMessage('Nao foi possivel carregar o acervo agora.');
-    } finally {
-      setLoadingBooks(false);
+      setBooksError('Falha ao carregar os livros. Tente novamente.');
     }
+
+    if (categoryResult.status === 'fulfilled') {
+      setCategories(categoryResult.value.slice(0, 4));
+    } else {
+      setCategories([]);
+      setCategoriesError('Falha ao carregar as categorias. Tente novamente.');
+    }
+
+    setLoadingBooks(false);
+    setLoadingCategories(false);
   };
 
   useEffect(() => {
@@ -60,7 +72,7 @@ export const HomeScreen = () => {
     }
   };
 
-  const featuredBook = books[0] || null;
+  const firstBook = books[0] || null;
   const greetingName = user?.nome || user?.username || 'leitor';
   const avatarLetter = (user?.nome || user?.username || 'P').charAt(0).toUpperCase();
 
@@ -110,15 +122,15 @@ export const HomeScreen = () => {
           <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
         </TouchableOpacity>
 
-        {/* Banner Destaque */}
+        {/* Banner do acervo */}
         <View style={styles.banner}>
-          <Text style={styles.bannerBadge}>DESTAQUE</Text>
+          <Text style={styles.bannerBadge}>ACERVO</Text>
           <Text style={styles.bannerTitle}>Descubra novos mundos</Text>
-          <Text style={styles.bannerSubtitle}>Explore milhares de livros e amplie seus horizontes.</Text>
-          {featuredBook && (
+          <Text style={styles.bannerSubtitle}>Explore os livros disponiveis no ParaBook e amplie seus horizontes.</Text>
+          {firstBook && (
             <TouchableOpacity
               style={styles.bannerButton}
-              onPress={() => navigateToStack('BookDetail', { bookId: String(featuredBook.id), title: featuredBook.title })}
+              onPress={() => navigateToStack('BookDetail', { bookId: String(firstBook.id), title: firstBook.title })}
             >
               <Text style={styles.bannerButtonText}>Explorar</Text>
             </TouchableOpacity>
@@ -133,69 +145,79 @@ export const HomeScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.categoriesGrid}>
-          {categories.map((category, index) => {
-            const iconColors = [colors.primary, colors.accentGreen, '#EC4899', colors.accentYellow];
-            return (
-              <View key={category.id} style={styles.categoryCard}>
-                <Ionicons name="book-outline" size={24} color={iconColors[index] || colors.primary} />
-                <Text style={styles.categoryTitle} numberOfLines={1}>
-                  {category.name}
-                </Text>
-              </View>
-            );
-          })}
-        </View>
+        {loadingCategories ? (
+          <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
+        ) : categoriesError ? (
+          <View style={styles.stateCard}>
+            <Ionicons name="cloud-offline-outline" size={36} color={colors.textMuted} />
+            <Text style={styles.stateText}>{categoriesError}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)}>
+              <Text style={styles.retryButtonText}>Tentar novamente</Text>
+            </TouchableOpacity>
+          </View>
+        ) : categories.length === 0 ? (
+          <Text style={styles.stateText}>Nenhuma categoria cadastrada no acervo.</Text>
+        ) : (
+          <View style={styles.categoriesGrid}>
+            {categories.map((category, index) => {
+              const iconColors = [colors.primary, colors.accentGreen, '#EC4899', colors.accentYellow];
+              return (
+                <View key={category.id} style={styles.categoryCard}>
+                  <Ionicons name="book-outline" size={24} color={iconColors[index] || colors.primary} />
+                  <Text style={styles.categoryTitle} numberOfLines={1}>
+                    {category.name}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        )}
 
-        {/* Seção Livros Recomendados */}
+        {/* Seção Livros do acervo */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{search.trim() ? 'Resultados da busca' : 'Recomendados no acervo'}</Text>
+          <Text style={styles.sectionTitle}>{search.trim() ? 'Resultados da busca' : 'Livros do acervo'}</Text>
         </View>
 
         {loadingBooks ? (
           <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
-        ) : errorMessage ? (
+        ) : booksError ? (
           <View style={styles.stateCard}>
             <Ionicons name="cloud-offline-outline" size={36} color={colors.textMuted} />
-            <Text style={styles.stateText}>{errorMessage}</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData()}>
+            <Text style={styles.stateText}>{booksError}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)}>
               <Text style={styles.retryButtonText}>Tentar novamente</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          <>
-            {categories.length === 0 && (
-              <Text style={styles.stateText}>Nenhuma categoria disponivel no momento.</Text>
-            )}
-
-            {books.length === 0 ? (
-              <Text style={styles.stateText}>Nenhum livro foi retornado pela API.</Text>
-            ) : (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
-                {books.map((book) => (
-                  <TouchableOpacity
-                    key={book.id}
-                    style={styles.bookCard}
-                    onPress={() => navigateToStack('BookDetail', { bookId: String(book.id), title: book.title })}
-                  >
-                    {book.cover_url ? (
-                      <Image source={{ uri: book.cover_url }} style={styles.bookCoverImage} resizeMode="cover" />
-                    ) : (
-                      <View style={styles.bookCover}>
-                        <Ionicons name="book" size={32} color={colors.primary} />
-                      </View>
-                    )}
-                    <Text style={styles.bookTitle} numberOfLines={1}>
-                      {book.title}
-                    </Text>
-                    <Text style={styles.bookAuthor} numberOfLines={1}>
-                      {book.author}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            )}
-          </>
+          books.length === 0 ? (
+            <Text style={styles.stateText}>
+              {search.trim() ? 'Nenhum livro encontrado para essa busca.' : 'Nenhum livro cadastrado no acervo.'}
+            </Text>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
+              {books.map((book) => (
+                <TouchableOpacity
+                  key={book.id}
+                  style={styles.bookCard}
+                  onPress={() => navigateToStack('BookDetail', { bookId: String(book.id), title: book.title })}
+                >
+                  {book.cover_url ? (
+                    <Image source={{ uri: book.cover_url }} style={styles.bookCoverImage} resizeMode="cover" />
+                  ) : (
+                    <View style={styles.bookCover}>
+                      <Ionicons name="book" size={32} color={colors.primary} />
+                    </View>
+                  )}
+                  <Text style={styles.bookTitle} numberOfLines={1}>
+                    {book.title}
+                  </Text>
+                  <Text style={styles.bookAuthor} numberOfLines={1}>
+                    {book.author}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )
         )}
 
       </ScrollView>

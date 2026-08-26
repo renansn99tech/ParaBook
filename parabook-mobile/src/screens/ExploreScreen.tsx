@@ -31,7 +31,7 @@ export const ExploreScreen = () => {
       setLoading(true);
       setErrorMessage(null);
       try {
-        const data = await bookService.getFeaturedBooks(search.trim() || undefined);
+        const data = await bookService.getBooks(search.trim() || undefined);
         setBooks(data);
       } catch (error) {
         setBooks([]);

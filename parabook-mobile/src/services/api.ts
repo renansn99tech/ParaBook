@@ -14,6 +14,39 @@ let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let unauthorizedHandler: (() => void) | null = null;
 
+const isDevelopmentRuntime = () => typeof __DEV__ !== 'undefined' && __DEV__;
+
+const getRequestEndpoint = (baseURL?: string, url?: string) => {
+  if (!url) return baseURL || '(endpoint desconhecido)';
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${(baseURL || '').replace(/\/+$/, '')}/${url.replace(/^\/+/, '')}`;
+};
+
+const describeResponseData = (data: unknown) => {
+  if (Array.isArray(data)) return { type: 'array', length: data.length };
+  if (data && typeof data === 'object') {
+    return { type: 'object', keys: Object.keys(data as Record<string, unknown>) };
+  }
+  return { type: typeof data };
+};
+
+const sanitizeErrorData = (value: unknown): unknown => {
+  const sensitiveKeys = new Set([
+    'access', 'authorization', 'cookie', 'csrf', 'password', 'password_confirm',
+    'refresh', 'secret', 'set-cookie', 'token',
+  ]);
+
+  if (Array.isArray(value)) return value.map(sanitizeErrorData);
+  if (!value || typeof value !== 'object') return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+      key,
+      sensitiveKeys.has(key.toLowerCase()) ? '[redacted]' : sanitizeErrorData(item),
+    ])
+  );
+};
+
 export const api = axios.create({
   baseURL: API_BASE_URL,
   // O plano hospedado pode levar cerca de 20-30 s no primeiro acesso (cold start).
@@ -34,11 +67,32 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (isDevelopmentRuntime()) {
+      console.debug('[api] response', {
+        endpoint: getRequestEndpoint(response.config.baseURL, response.config.url),
+        method: response.config.method?.toUpperCase(),
+        status: response.status,
+        data: describeResponseData(response.data),
+      });
+    }
+
+    return response;
+  },
   (error) => {
     const requestUrl = error.config?.url || '';
     const isAuthenticationRequest = requestUrl.includes('/auth/mobile-login/')
       || requestUrl.includes('/auth/mobile-register/');
+
+    if (isDevelopmentRuntime()) {
+      console.error('[api] request failed', {
+        endpoint: getRequestEndpoint(error.config?.baseURL, error.config?.url),
+        method: error.config?.method?.toUpperCase(),
+        status: error.response?.status,
+        code: error.code,
+        response: sanitizeErrorData(error.response?.data),
+      });
+    }
 
     if (error.response?.status === 401 && accessToken && !isAuthenticationRequest) {
       unauthorizedHandler?.();

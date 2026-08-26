@@ -1,5 +1,6 @@
 # pyrefly: ignore [missing-import]
-from django.db.models import Q
+from django.db import transaction
+from django.db.models import Count, Q
 # pyrefly: ignore [missing-import]
 from rest_framework import viewsets, status
 # pyrefly: ignore [missing-import]
@@ -11,7 +12,7 @@ from rest_framework.response import Response
 # pyrefly: ignore [missing-import]
 from rest_framework.permissions import IsAuthenticated
 # pyrefly: ignore [missing-import]
-from comunidades.models import Comunidade, PostagemComunidade
+from comunidades.models import Comunidade, PostagemComunidade, RespostaPostagem
 # pyrefly: ignore [missing-import]
 from .permissions import IsAutorDaPostagemOuAdmin, IsCriadorOuAdmin
 # pyrefly: ignore [missing-import]
@@ -19,8 +20,10 @@ from .serializers import (
     ComunidadeSerializer,
     MembroComunidadeSerializer,
     PostagemComunidadeSerializer,
+    RespostaPostagemSerializer,
 )
 from usuarios.audit import registrar_acao
+from notificacoes.models import Notificacao
 
 # REGRA 10: teto de comunidades criadas por um leitor/autor.
 LIMITE_COMUNIDADES_POR_USUARIO = 5
@@ -222,7 +225,9 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAutorDaPostagemOuAdmin]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().select_related('autor').annotate(
+            total_respostas_anotado=Count('respostas', distinct=True),
+        )
         comunidade_id = self.request.query_params.get('comunidade')
         if comunidade_id:
             queryset = queryset.filter(comunidade_id=comunidade_id)
@@ -230,3 +235,38 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(autor=self.request.user)
+
+
+class RespostaPostagemViewSet(viewsets.ModelViewSet):
+    queryset = RespostaPostagem.objects.select_related(
+        'autor', 'postagem', 'postagem__comunidade',
+    )
+    serializer_class = RespostaPostagemSerializer
+    permission_classes = [IsAutorDaPostagemOuAdmin]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        postagem_id = self.request.query_params.get('postagem')
+        if postagem_id:
+            queryset = queryset.filter(postagem_id=postagem_id)
+        return queryset
+
+    def perform_create(self, serializer):
+        postagem = serializer.validated_data['postagem']
+        comunidade = postagem.comunidade
+        usuario = self.request.user
+        if comunidade.em_manutencao and not usuario.is_superuser:
+            raise PermissionDenied('Esta comunidade está temporariamente desativada.')
+        if not usuario.is_superuser and not comunidade.membros.filter(pk=usuario.pk).exists():
+            raise PermissionDenied('Entre na comunidade antes de responder a uma postagem.')
+        with transaction.atomic():
+            resposta = serializer.save(autor=usuario)
+            if postagem.autor_id != usuario.id:
+                Notificacao.objects.create(
+                    usuario=postagem.autor,
+                    titulo='Nova resposta na sua postagem',
+                    mensagem=f'@{usuario.username} respondeu a “{postagem.titulo}”.',
+                    tipo='COMUNIDADE',
+                    link=f'/comunidade/{comunidade.id}/conteudo',
+                )
+        return resposta

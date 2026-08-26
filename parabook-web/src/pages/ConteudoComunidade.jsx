@@ -22,6 +22,11 @@ function ConteudoComunidade() {
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
   const [editingPostId, setEditingPostId] = useState(null);
+  const [postRespostasAberto, setPostRespostasAberto] = useState(null);
+  const [respostasPorPost, setRespostasPorPost] = useState({});
+  const [carregandoRespostas, setCarregandoRespostas] = useState(null);
+  const [novaResposta, setNovaResposta] = useState('');
+  const [enviandoResposta, setEnviandoResposta] = useState(false);
 
   // Config state
   const [showConfig, setShowConfig] = useState(false);
@@ -257,6 +262,58 @@ function ConteudoComunidade() {
     }
   };
 
+  const handleToggleRespostas = async (postId) => {
+    if (postRespostasAberto === postId) {
+      setPostRespostasAberto(null);
+      setNovaResposta('');
+      return;
+    }
+    setPostRespostasAberto(postId);
+    setNovaResposta('');
+    if (respostasPorPost[postId]) return;
+    setCarregandoRespostas(postId);
+    try {
+      const res = await api.get(`/comunidades/respostas/?postagem=${postId}`);
+      setRespostasPorPost((atual) => ({
+        ...atual,
+        [postId]: res.data.results || res.data,
+      }));
+    } catch (error) {
+      console.error('Erro ao carregar respostas', error);
+      swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível carregar as respostas.' });
+    } finally {
+      setCarregandoRespostas(null);
+    }
+  };
+
+  const handleResponder = async (evento, postId) => {
+    evento.preventDefault();
+    const conteudoResposta = novaResposta.trim();
+    if (!conteudoResposta) return;
+    setEnviandoResposta(true);
+    try {
+      const res = await api.post('/comunidades/respostas/', {
+        postagem: postId,
+        conteudo: conteudoResposta,
+      });
+      setRespostasPorPost((atual) => ({
+        ...atual,
+        [postId]: [...(atual[postId] || []), res.data],
+      }));
+      setPostagens((atuais) => atuais.map((postagem) => (
+        postagem.id === postId
+          ? { ...postagem, total_respostas: (postagem.total_respostas || 0) + 1 }
+          : postagem
+      )));
+      setNovaResposta('');
+    } catch (error) {
+      console.error('Erro ao publicar resposta', error);
+      swal.fire({ icon: 'error', title: 'Erro', text: error.response?.data?.detail || 'Não foi possível publicar sua resposta.' });
+    } finally {
+      setEnviandoResposta(false);
+    }
+  };
+
   const postsFiltrados = postagens.filter(p => 
     p.titulo.toLowerCase().includes(busca.toLowerCase()) || 
     p.conteudo.toLowerCase().includes(busca.toLowerCase())
@@ -470,6 +527,19 @@ function ConteudoComunidade() {
                 <div className="post-content">
                   {post.conteudo}
                 </div>
+                <footer className="post-engajamento">
+                  <button type="button" onClick={() => handleToggleRespostas(post.id)} aria-expanded={postRespostasAberto === post.id} aria-controls={`respostas-post-${post.id}`}>
+                    <i className="fa-solid fa-comments" aria-hidden="true"></i>
+                    {post.total_respostas || 0} {(post.total_respostas || 0) === 1 ? 'resposta' : 'respostas'}
+                    <i className={`fa-solid fa-chevron-${postRespostasAberto === post.id ? 'up' : 'down'}`} aria-hidden="true"></i>
+                  </button>
+                </footer>
+                {postRespostasAberto === post.id && <section id={`respostas-post-${post.id}`} className="post-respostas" aria-label={`Respostas de ${post.titulo}`}>
+                  {carregandoRespostas === post.id && <p className="post-respostas-status" role="status">Carregando respostas...</p>}
+                  {carregandoRespostas !== post.id && (respostasPorPost[post.id] || []).length === 0 && <p className="post-respostas-status">Seja a primeira pessoa a responder.</p>}
+                  {(respostasPorPost[post.id] || []).map((resposta) => <article key={resposta.id}><header><Link to={`/perfil/${resposta.autor_nome}`}>@{resposta.autor_nome}</Link><time dateTime={resposta.criado_em}>{new Date(resposta.criado_em).toLocaleDateString()}</time></header><p>{resposta.conteudo}</p></article>)}
+                  {comunidade.usuario_participa && <form onSubmit={(evento) => handleResponder(evento, post.id)}><label className="sr-only" htmlFor={`nova-resposta-${post.id}`}>Responder à postagem {post.titulo}</label><textarea id={`nova-resposta-${post.id}`} maxLength="1200" rows="3" value={novaResposta} onChange={(evento) => setNovaResposta(evento.target.value)} placeholder="Escreva uma resposta construtiva..." required></textarea><button type="submit" disabled={enviandoResposta || !novaResposta.trim()}>{enviandoResposta ? 'Enviando...' : 'Responder'}</button></form>}
+                </section>}
               </div>
             ))
           ) : (

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from comunidades.models import Comunidade, PostagemComunidade
+from comunidades.models import Comunidade, PostagemComunidade, RespostaPostagem
 
 
 class MembroComunidadeSerializer(serializers.ModelSerializer):
@@ -20,13 +20,31 @@ class MembroComunidadeSerializer(serializers.ModelSerializer):
         comunidade = self.context.get('comunidade')
         return bool(comunidade and comunidade.criador_id == obj.id)
 
+class RespostaPostagemSerializer(serializers.ModelSerializer):
+    autor_nome = serializers.CharField(source='autor.username', read_only=True)
+    postagem_titulo = serializers.CharField(source='postagem.titulo', read_only=True)
+
+    class Meta:
+        model = RespostaPostagem
+        fields = [
+            'id', 'postagem', 'postagem_titulo', 'autor', 'autor_nome',
+            'conteudo', 'criado_em', 'atualizado_em',
+        ]
+        read_only_fields = ['id', 'autor', 'criado_em', 'atualizado_em']
+
+
 class PostagemComunidadeSerializer(serializers.ModelSerializer):
     autor_nome = serializers.CharField(source='autor.username', read_only=True)
+    total_respostas = serializers.SerializerMethodField()
 
     class Meta:
         model = PostagemComunidade
-        fields = ['id', 'comunidade', 'autor', 'autor_nome', 'titulo', 'conteudo', 'imagem', 'criado_em', 'atualizado_em']
+        fields = ['id', 'comunidade', 'autor', 'autor_nome', 'titulo', 'conteudo', 'imagem', 'total_respostas', 'criado_em', 'atualizado_em']
         read_only_fields = ['id', 'autor', 'criado_em', 'atualizado_em']
+
+    def get_total_respostas(self, obj):
+        anotado = getattr(obj, 'total_respostas_anotado', None)
+        return anotado if anotado is not None else obj.respostas.count()
 
 class ComunidadeSerializer(serializers.ModelSerializer):
     criador_nome = serializers.CharField(source='criador.username', read_only=True)

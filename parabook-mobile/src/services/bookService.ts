@@ -72,9 +72,15 @@ type DjangoShelfItem = {
   resenha?: string | null;
 };
 
-const asArray = <T>(payload: T[] | { results?: T[] }): T[] => {
-  if (Array.isArray(payload)) return payload;
-  return payload.results || [];
+const parseCollection = <T>(payload: unknown, endpoint: string): T[] => {
+  if (Array.isArray(payload)) return payload as T[];
+
+  if (payload && typeof payload === 'object' && 'results' in payload) {
+    const results = (payload as { results?: unknown }).results;
+    if (Array.isArray(results)) return results as T[];
+  }
+
+  throw new Error(`Contrato inesperado em ${endpoint}: era esperada uma lista ou uma pagina com results.`);
 };
 
 const normalizeBook = (raw: DjangoBook): Book => ({
@@ -119,11 +125,12 @@ export const getStatusLabel = (status: LibraryStatus) => {
 };
 
 export const bookService = {
-  getFeaturedBooks: async (search?: string): Promise<Book[]> => {
-    const response = await api.get('/biblioteca/livros/', {
+  getBooks: async (search?: string): Promise<Book[]> => {
+    const endpoint = '/biblioteca/livros/';
+    const response = await api.get(endpoint, {
       params: search ? { search } : {},
     });
-    return asArray<DjangoBook>(response.data).map(normalizeBook);
+    return parseCollection<DjangoBook>(response.data, endpoint).map(normalizeBook);
   },
 
   getBookById: async (id: string | number): Promise<Book> => {
@@ -136,8 +143,9 @@ export const bookService = {
   },
 
   getBookReviews: async (id: string | number): Promise<BookReview[]> => {
-    const response = await api.get(`/biblioteca/livros/${id}/resenhas/`);
-    return asArray<Record<string, unknown>>(response.data).map((raw) => ({
+    const endpoint = `/biblioteca/livros/${id}/resenhas/`;
+    const response = await api.get(endpoint);
+    return parseCollection<Record<string, unknown>>(response.data, endpoint).map((raw) => ({
       id: raw.id as string | number,
       username: String(raw.usuario_nome || 'Leitor'),
       userPhoto: resolveDjangoUrl(raw.usuario_foto as string | null),
@@ -148,25 +156,28 @@ export const bookService = {
   },
 
   getCategories: async (): Promise<Category[]> => {
-    const response = await api.get('/biblioteca/categorias/');
-    return asArray<{ id: string | number; nome?: string; name?: string }>(response.data).map((category) => ({
+    const endpoint = '/biblioteca/categorias/';
+    const response = await api.get(endpoint);
+    return parseCollection<{ id: string | number; nome?: string; name?: string }>(response.data, endpoint).map((category) => ({
       id: category.id,
       name: category.nome || category.name || 'Categoria',
     }));
   },
 
   getUserLibrary: async (status?: LibraryStatus): Promise<UserBookItem[]> => {
-    const response = await api.get('/biblioteca/estante/', {
+    const endpoint = '/biblioteca/estante/';
+    const response = await api.get(endpoint, {
       params: status ? { status } : {},
     });
-    return asArray<DjangoShelfItem>(response.data).map(normalizeShelfItem);
+    return parseCollection<DjangoShelfItem>(response.data, endpoint).map(normalizeShelfItem);
   },
 
   getShelfItemByBook: async (bookId: string | number): Promise<UserBookItem | null> => {
-    const response = await api.get('/biblioteca/estante/', {
+    const endpoint = '/biblioteca/estante/';
+    const response = await api.get(endpoint, {
       params: { livro: bookId },
     });
-    const items = asArray<DjangoShelfItem>(response.data).map(normalizeShelfItem);
+    const items = parseCollection<DjangoShelfItem>(response.data, endpoint).map(normalizeShelfItem);
     return items[0] || null;
   },
 

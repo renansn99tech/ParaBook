@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
@@ -9,6 +9,15 @@ import '../assets/css/leitura.css';
 const PDF_JS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 const PDF_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 let carregamentoPdfJs = null;
+
+function criarIdSessao() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (caractere) => {
+    const aleatorio = Math.floor(Math.random() * 16);
+    const valor = caractere === 'x' ? aleatorio : ((aleatorio & 0x3) | 0x8);
+    return valor.toString(16);
+  });
+}
 
 function carregarPdfJs() {
   if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
@@ -55,6 +64,23 @@ function Leitura() {
   const [favorito, setFavorito] = useState(false);
   
   const [inputPag, setInputPag] = useState('');
+  const sessaoLeituraRef = useRef(criarIdSessao());
+  const ultimoEventoRef = useRef({ enviadoEm: Date.now(), pagina: null });
+
+  const registrarEventoLeitura = useCallback((pagina, forcar = false) => {
+    if (!user || !pdfDoc || loading) return;
+    const agora = Date.now();
+    const duracaoSegundos = Math.min(1800, Math.max(0, Math.round((agora - ultimoEventoRef.current.enviadoEm) / 1000)));
+    if (forcar && ultimoEventoRef.current.pagina === pagina && duracaoSegundos === 0) return;
+    if (!forcar && ultimoEventoRef.current.pagina === pagina && duracaoSegundos < 25) return;
+    ultimoEventoRef.current = { enviadoEm: agora, pagina };
+    api.post('/biblioteca/leitura/eventos/', {
+      livro: Number(id),
+      pagina,
+      sessao_id: sessaoLeituraRef.current,
+      duracao_segundos: duracaoSegundos,
+    }).catch((error) => console.error('Erro ao registrar evento de leitura', error));
+  }, [id, loading, pdfDoc, user]);
 
   // Só a moldura do leitor entra animada: o <article> do canvas fica de
   // fora de propósito, para não animar o elemento que o PDF.js mede e
@@ -179,6 +205,25 @@ function Leitura() {
     }, 700);
     return () => window.clearTimeout(timer);
   }, [idEstante, loading, paginaAtual, pdfDoc]);
+
+  useEffect(() => {
+    if (!idEstante || !pdfDoc || loading) return undefined;
+    const timer = window.setTimeout(() => registrarEventoLeitura(paginaAtual), 30000);
+    return () => window.clearTimeout(timer);
+  }, [idEstante, loading, paginaAtual, pdfDoc, registrarEventoLeitura]);
+
+  useEffect(() => {
+    const finalizarMarcador = () => registrarEventoLeitura(paginaAtual, true);
+    const registrarAoOcultar = () => {
+      if (document.visibilityState === 'hidden') finalizarMarcador();
+    };
+    window.addEventListener('pagehide', finalizarMarcador);
+    document.addEventListener('visibilitychange', registrarAoOcultar);
+    return () => {
+      window.removeEventListener('pagehide', finalizarMarcador);
+      document.removeEventListener('visibilitychange', registrarAoOcultar);
+    };
+  }, [paginaAtual, registrarEventoLeitura]);
 
   // Keyboard navigation
   useEffect(() => {

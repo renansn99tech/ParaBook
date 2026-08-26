@@ -13,6 +13,7 @@ const TITULOS = new Map([
   ['/para-leitores', 'Para Leitores'],
   ['/para-autores', 'Para Autores'],
   ['/publicar', 'Publicar livro'],
+  ['/autor/painel', 'Painel do Autor'],
   ['/minha-biblioteca', 'Minha biblioteca'],
   ['/notificacoes', 'Notificações'],
   ['/planos', 'Planos'],

@@ -498,7 +498,13 @@
         0 0 35px rgba(var(--purple-rgb),.15);
 
     transition:.35s ease;
+    color:inherit;
+    font:inherit;
+    text-align:left;
+    text-decoration:none;
 }
+
+button.floating-card { cursor:pointer; }
 
 .floating-card:hover{
     transform:translateY(var(--lift-md));
@@ -580,6 +586,15 @@
 
 .story-card span{
     font-size:.82rem;
+}
+
+.story-card .floating-book-placeholder {
+    display:grid;
+    place-items:center;
+    width:82px;
+    height:100px;
+    border-radius:var(--radius-sm);
+    background:rgba(var(--purple-rgb),.12);
 }
 
 .story-info h4{
@@ -689,15 +704,12 @@
 .floating-avatar{
     width:42px;
     height:42px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    flex:0 0 42px;
 
     border-radius:var(--radius-circle);
-
-    background:
-        linear-gradient(135deg,var(--purple-light),var(--purple-dark));
+    object-fit:cover;
+    object-position:center;
+    border:1px solid rgba(255,255,255,.18);
 
     box-shadow:0 0 18px rgba(var(--purple-rgb),.45);
 }
@@ -1622,13 +1634,22 @@
     }
 }
 
+.features,
+.books,
+.communities{
+    width:100%;
+    max-width:var(--layout-max);
+    margin:0 auto;
+    padding-left:max(var(--layout-gutter), var(--safe-left));
+    padding-right:max(var(--layout-gutter), var(--safe-right));
+}
+
 .features{
     position:relative;
     z-index:1;
 
-    max-width:var(--layout-max);
-    margin:0 auto;
-    padding:40px 60px 80px;
+    padding-top:40px;
+    padding-bottom:80px;
 
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -1769,16 +1790,36 @@
     margin-bottom:10px;
 }
 
+.feature-cta{
+    min-height:46px;
+    display:inline-flex;
+    align-items:center;
+    gap:.55rem;
+    margin-top:1.15rem;
+    padding:.72rem 1rem;
+    border:1px solid rgba(var(--purple-rgb),.35);
+    border-radius:var(--radius-pill);
+    color:var(--purple-text);
+    font-weight:850;
+    text-decoration:none;
+}
+
+.feature-cta:hover,
+.feature-cta:focus-visible{
+    border-color:var(--purple-light);
+    background:rgba(var(--purple-rgb),.12);
+}
+
 .feature-icon{
     font-size:2.5rem;
     color:var(--purple);
     margin-bottom:20px;
 }
 
-.books, .communities{
-    max-width: var(--layout-max);
-    margin: 0 auto;
-    padding: 30px 30px;
+.books,
+.communities{
+    padding-top:30px;
+    padding-bottom:30px;
 }
 
 .books-grid{

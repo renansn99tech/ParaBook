@@ -5,7 +5,9 @@ const DEFAULT_API_BASE_URL = 'https://parabook-nl8o.onrender.com/api/v1';
 // Expo SDK 54 suporta EXPO_PUBLIC_* no bundle do app. Mantemos um fallback
 // para o backend real hospedado e deixamos o ambiente sobrescrever quando
 // precisarmos apontar para outro servidor (ex.: IP local na mesma rede).
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_API_BASE_URL;
+const configuredApiUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
+
+export const API_BASE_URL = (configuredApiUrl || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
 export const DJANGO_BASE_URL = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
 
 let accessToken: string | null = null;
@@ -18,6 +20,7 @@ export const api = axios.create({
   // Ainda mantemos um teto para toda requisicao, evitando espera indefinida.
   timeout: 30000,
   headers: {
+    Accept: 'application/json',
     'Content-Type': 'application/json',
   },
 });
@@ -33,7 +36,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && accessToken) {
+    const requestUrl = error.config?.url || '';
+    const isAuthenticationRequest = requestUrl.includes('/auth/mobile-login/')
+      || requestUrl.includes('/auth/mobile-register/');
+
+    if (error.response?.status === 401 && accessToken && !isAuthenticationRequest) {
       unauthorizedHandler?.();
     }
     return Promise.reject(error);

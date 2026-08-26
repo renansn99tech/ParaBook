@@ -2404,6 +2404,36 @@
     white-space: nowrap;
 }
 
+.perfil-dados-pessoais dd.is-private {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    white-space: normal;
+}
+
+.perfil-dado-privado {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: fit-content;
+    padding: 3px 8px;
+    border: 1px solid rgba(var(--purple-light-rgb), .28);
+    border-radius: var(--radius-pill);
+    background: rgba(var(--purple-rgb), .1);
+    color: var(--purple-text);
+    font-size: .66rem;
+    font-weight: 750;
+    line-height: 1.35;
+}
+
+.perfil-dados-pessoais--publico {
+    grid-template-columns: 1fr;
+    width: 100%;
+    margin-top: 22px;
+    text-align: left;
+}
+
 .perfil-info-atalhos {
     display: flex;
     flex-wrap: wrap;

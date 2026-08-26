@@ -1,4 +1,5 @@
 import tempfile
+from datetime import timedelta
 from io import BytesIO
 
 from django.contrib.auth.models import User
@@ -11,11 +12,11 @@ from rest_framework.test import APIClient
 
 from assinaturas.models import Assinatura, Plano
 from biblioteca.models import Biblioteca, Categoria, Livro, SolicitacaoPublicacao
-from comunidades.models import Comunidade, PostagemComunidade
+from comunidades.models import Comunidade, PostagemComunidade, RespostaPostagem
 from gamificacao.models import Conquista, ConquistaUsuario
 from notificacoes.models import Notificacao
 from perfis.models import Perfil
-from usuarios.models import Usuario
+from usuarios.models import SessaoDispositivo, Usuario
 
 
 def _imagem_png():
@@ -123,6 +124,95 @@ class HistoricoPerfilAPITests(TestCase):
         )
 
         self.assertEqual(evento['link'], '/notificacoes')
+
+
+class ResumoLeituraAPITests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='resumo-leitor', password='x')
+        self.outro = User.objects.create_user(username='resumo-colega', password='x')
+        fantasia = Categoria.objects.create(nome='Fantasia do resumo')
+        ensaio = Categoria.objects.create(nome='Ensaio do resumo')
+        atual = Livro.objects.create(
+            titulo='Leitura em andamento', autor='Autora Um', categoria=fantasia, paginas=200,
+        )
+        avaliado = Livro.objects.create(
+            titulo='Leitura avaliada', autor='Autor Dois', categoria=fantasia, paginas=100,
+        )
+        outro_genero = Livro.objects.create(
+            titulo='Outro gênero', autor='Autora Três', categoria=ensaio, paginas=120,
+        )
+        Biblioteca.objects.create(
+            user=self.user, livro=atual, status='lendo', pagina_atual=50,
+            ultima_leitura_em=timezone.now(),
+        )
+        Biblioteca.objects.create(
+            user=self.user, livro=avaliado, status='lido', nota=5,
+            data_conclusao=timezone.now(), avaliada_em=timezone.now(),
+        )
+        Biblioteca.objects.create(
+            user=self.user, livro=outro_genero, status='quero_ler', resenha='Quero explorar.',
+        )
+
+        comunidade = Comunidade.objects.create(
+            nome='Clube do resumo', descricao='Conversas relevantes.', criador=self.user,
+        )
+        comunidade.membros.add(self.user, self.outro)
+        postagem = PostagemComunidade.objects.create(
+            comunidade=comunidade, autor=self.user,
+            titulo='Uma discussão relevante', conteudo='Texto da discussão.',
+        )
+        RespostaPostagem.objects.create(
+            postagem=postagem, autor=self.outro, conteudo='Primeira resposta externa.',
+        )
+        RespostaPostagem.objects.create(
+            postagem=postagem, autor=self.outro, conteudo='Segunda resposta externa.',
+        )
+        RespostaPostagem.objects.create(
+            postagem=postagem, autor=self.user, conteudo='Complemento do autor.',
+        )
+        somente_propria = PostagemComunidade.objects.create(
+            comunidade=comunidade, autor=self.user,
+            titulo='Sem validação externa', conteudo='Ainda sem respostas de terceiros.',
+        )
+        RespostaPostagem.objects.create(
+            postagem=somente_propria, autor=self.user, conteudo='Resposta própria.',
+        )
+
+        sessao = SessaoDispositivo.objects.create(
+            usuario=self.user,
+            refresh_jti='resumo-jti',
+            expira_em=timezone.now() + timedelta(days=1),
+        )
+        SessaoDispositivo.objects.filter(pk=sessao.pk).update(
+            criada_em=timezone.now() - timedelta(minutes=40),
+            ultima_atividade_em=timezone.now(),
+        )
+        self.client = APIClient()
+        self.url = reverse('api-resumo-leitura')
+
+    def test_requer_autenticacao(self):
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 401)
+
+    def test_resume_jornada_sem_contar_resposta_do_proprio_autor(self):
+        self.client.force_authenticate(user=self.user)
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.data['leitura_destaque']['titulo'], 'Leitura em andamento')
+        self.assertEqual(resposta.data['leitura_destaque']['progresso_percentual'], 25)
+        self.assertEqual(resposta.data['metricas']['generos_explorados'], 2)
+        self.assertEqual(resposta.data['metricas']['avaliacoes_feitas'], 2)
+        self.assertEqual(resposta.data['metricas']['postagens_relevantes'], 1)
+        self.assertEqual(resposta.data['metricas']['tempo_medio_sessao_segundos'], 2400)
+        self.assertEqual(resposta.data['postagens_relevantes'][0]['respostas'], 2)
+        self.assertEqual(resposta.data['postagens_relevantes'][0]['participantes'], 1)
+        self.assertNotIn(
+            'Sem validação externa',
+            {postagem['titulo'] for postagem in resposta.data['postagens_relevantes']},
+        )
 
 
 class AutoresListAPIViewTests(TestCase):
@@ -294,6 +384,61 @@ class ContratoPerfilModernizadoTests(TestCase):
         self.assertEqual(negado.status_code, 403)
         self.assertEqual(negado.data['status_block'], 'admin')
 
+    def test_dados_privados_so_sao_expostos_ao_proprio_titular(self):
+        self.admin.email = 'segredo@parabook.test'
+        self.admin.save(update_fields=['email'])
+        usuario = self.admin.perfil_customizado
+        usuario.data_nascimento = '1995-06-15'
+        usuario.save(update_fields=['data_nascimento'])
+        self.perfil.exibir_idade = False
+        self.perfil.exibir_data_nascimento = False
+        self.perfil.exibir_email = False
+        self.perfil.save(update_fields=[
+            'exibir_idade', 'exibir_data_nascimento', 'exibir_email',
+        ])
+
+        outro_admin = User.objects.create_user(
+            username='admin-sem-acesso-aos-dados', password='x', is_staff=True,
+        )
+        outro_perfil = Perfil.objects.create(usuario=outro_admin)
+        Usuario.objects.create(
+            user_auth=outro_admin,
+            nome='Admin sem acesso aos dados',
+            tipo='admin',
+            perfil=outro_perfil,
+        )
+        self.client.force_authenticate(user=outro_admin)
+
+        resposta_terceiro = self.client.get(
+            reverse('api-perfil-publico', args=[self.admin.username]),
+        )
+
+        self.assertEqual(resposta_terceiro.status_code, 200)
+        self.assertEqual(resposta_terceiro.data['dados_pessoais'], {
+            'idade': None,
+            'data_nascimento': None,
+            'email': None,
+            'exibir_idade': False,
+            'exibir_data_nascimento': False,
+            'exibir_email': False,
+        })
+
+        self.client.force_authenticate(user=self.admin)
+        resposta_titular = self.client.get(
+            reverse('api-perfil-publico', args=[self.admin.username]),
+        )
+
+        self.assertEqual(resposta_titular.status_code, 200)
+        self.assertIsInstance(resposta_titular.data['dados_pessoais']['idade'], int)
+        self.assertEqual(
+            resposta_titular.data['dados_pessoais']['data_nascimento'],
+            '1995-06-15',
+        )
+        self.assertEqual(
+            resposta_titular.data['dados_pessoais']['email'],
+            'segredo@parabook.test',
+        )
+
 
 class InteressesPerfilAPITests(TestCase):
     def setUp(self):
@@ -376,6 +521,85 @@ class InteressesPerfilAPITests(TestCase):
         self.assertEqual(recomendacao['id'], self.favorito.id)
         self.assertEqual(recomendacao['tipo'], 'autor')
         self.assertEqual(recomendacao['rotulo'], 'Recomendação do Autor')
+
+
+class InicioPersonalizadoAPITests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='inicio-user', password='x')
+        perfil = Perfil.objects.create(usuario=self.user)
+        self.usuario = Usuario.objects.create(
+            user_auth=self.user,
+            nome='Leitor da Home',
+            tipo='leitor',
+            perfil=perfil,
+        )
+        self.fantasia = Categoria.objects.create(nome='Fantasia da Home')
+        self.ensaio = Categoria.objects.create(nome='Ensaio da Home')
+        livro_estante = Livro.objects.create(
+            titulo='Já está na estante', autor='Autora A', categoria=self.fantasia,
+        )
+        self.recomendado = Livro.objects.create(
+            titulo='Fantasia recomendada', autor='Autor B', categoria=self.fantasia,
+            avaliacao=4.8,
+        )
+        Livro.objects.create(
+            titulo='Destaque complementar', autor='Autora C', categoria=self.ensaio,
+            avaliacao=4.5,
+        )
+        Biblioteca.objects.create(user=self.user, livro=livro_estante, status='lido')
+        self.client = APIClient()
+        self.url = reverse('api-inicio-personalizado')
+
+    def test_inicio_exige_autenticacao(self):
+        resposta = self.client.get(self.url)
+
+        self.assertIn(resposta.status_code, [401, 403])
+
+    def test_descobertas_excluem_estante_e_explicam_o_criterio(self):
+        self.client.force_authenticate(user=self.user)
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.data['papel'], 'leitor')
+        self.assertEqual(resposta.data['descobertas'][0]['id'], self.recomendado.id)
+        self.assertNotIn('Já está na estante', [item['titulo'] for item in resposta.data['descobertas']])
+        self.assertIn('Fantasia da Home', resposta.data['descobertas'][0]['motivo'])
+        self.assertEqual(resposta.data['proxima_acao']['link'], '/comunidades')
+
+    def test_notificacao_de_comunidade_define_a_proxima_acao_com_link_seguro(self):
+        Notificacao.objects.create(
+            usuario=self.user,
+            tipo='COMUNIDADE',
+            titulo='Responderam sua postagem',
+            mensagem='Uma nova resposta chegou.',
+            link='https://destino-externo.test/inseguro',
+        )
+        self.client.force_authenticate(user=self.user)
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.data['proxima_acao']['titulo'], 'Responderam sua postagem')
+        self.assertEqual(resposta.data['proxima_acao']['link'], '/notificacoes')
+
+    def test_cta_respeita_os_estados_de_autoria_e_administracao(self):
+        self.client.force_authenticate(user=self.user)
+
+        self.usuario.tipo = 'aguardando_aprovacao'
+        self.usuario.save(update_fields=['tipo'])
+        aguardando = self.client.get(self.url)
+        self.assertEqual(aguardando.data['proxima_acao']['link'], '/perfil')
+        self.assertNotEqual(aguardando.data['proxima_acao']['link'], '/publicar')
+
+        self.usuario.tipo = 'autor'
+        self.usuario.save(update_fields=['tipo'])
+        autor = self.client.get(self.url)
+        self.assertEqual(autor.data['proxima_acao']['link'], '/publicar')
+
+        self.usuario.tipo = 'admin'
+        self.usuario.save(update_fields=['tipo'])
+        admin = self.client.get(self.url)
+        self.assertEqual(admin.data['proxima_acao']['link'], '/dashboard')
 
 
 class PreferenciaTipograficaAPITests(TestCase):

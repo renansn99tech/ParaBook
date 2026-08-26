@@ -5,6 +5,7 @@ import useRevelacao from '../hooks/useRevelacao';
 import api from '../services/api';
 import { obterAvatarPerfil } from '../services/avatarPerfil';
 import { abrirOnboardingPerfil } from '../services/onboardingPerfil';
+import { formatarDataNascimento } from '../services/dadosPessoais';
 import swal, { BOTAO } from '../services/swal';
 import '../assets/css/perfil.css';
 
@@ -101,29 +102,25 @@ function ToastPerfil({ toast }) {
   return <div className={`perfil-toast perfil-toast--${toast.tipo}`} role="status"><i className="fa-solid fa-circle-check" aria-hidden="true"></i>{toast.mensagem}</div>;
 }
 
+function DadoPessoalProprio({ valor, privado }) {
+  return (
+    <dd className={privado ? 'is-private' : ''}>
+      <span>{valor}</span>
+      {privado && (
+        <small className="perfil-dado-privado">
+          <i className="fa-solid fa-lock" aria-hidden="true"></i>
+          Privado para o público
+        </small>
+      )}
+    </dd>
+  );
+}
+
 function formatarMembroDesde(data) {
   if (!data) return null;
   const valor = new Date(data);
   if (Number.isNaN(valor.getTime())) return null;
   return new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(valor);
-}
-
-function formatarDataNascimento(data) {
-  if (!data) return 'Não informada';
-  const partesIso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(data);
-  const partesBr = /^(\d{2})[/-](\d{2})[/-](\d{4})$/.exec(data);
-  const partes = partesIso
-    ? [partesIso[3], partesIso[2], partesIso[1]]
-    : partesBr?.slice(1);
-  if (!partes) return data;
-  const [dia, mes, ano] = partes.map(Number);
-  const valor = new Date(ano, mes - 1, dia);
-  if (valor.getFullYear() !== ano || valor.getMonth() !== mes - 1 || valor.getDate() !== dia) {
-    return 'Não informada';
-  }
-  return new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit', month: 'long', year: 'numeric',
-  }).format(valor);
 }
 
 function calcularIdade(data) {
@@ -701,7 +698,11 @@ function Profile() {
               <p className="sobre-texto">{fullProfile?.perfil?.bio || user?.bio || 'Nenhuma biografia informada.'}</p>
               <div className="perfil-sobre-divisor" aria-hidden="true"></div>
               <div className="perfil-dados-pessoais">
-                <dl><div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Idade</dt><dd>{user?.exibir_idade === false ? 'Privado' : Number.isInteger(user?.idade) ? `${user.idade} anos` : 'Não informada'}</dd></div><div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><dd>{user?.exibir_data_nascimento === false ? 'Privado' : formatarDataNascimento(user?.data_nascimento)}</dd></div><div><dt><i className="fa-solid fa-envelope" aria-hidden="true"></i> E-mail</dt><dd>{user?.exibir_email === false ? 'Privado' : user?.email || 'Não informado'}</dd></div></dl>
+                <dl>
+                  <div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Idade</dt><DadoPessoalProprio valor={Number.isInteger(user?.idade) ? `${user.idade} anos` : 'Não informada'} privado={user?.exibir_idade === false} /></div>
+                  <div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><DadoPessoalProprio valor={formatarDataNascimento(user?.data_nascimento)} privado={user?.exibir_data_nascimento === false} /></div>
+                  <div><dt><i className="fa-solid fa-envelope" aria-hidden="true"></i> E-mail</dt><DadoPessoalProprio valor={user?.email || 'Não informado'} privado={user?.exibir_email === false} /></div>
+                </dl>
                 <nav className="perfil-info-atalhos" aria-label="Atalhos da atividade literária"><button type="button" onClick={(evento) => abrirDrawerAtividade(evento, 'livros')} aria-haspopup="dialog" aria-controls="drawerAtividadePerfil"><i className="fa-solid fa-book-open" aria-hidden="true"></i><span><strong>{stats.total_lidos}</strong> livros lidos</span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></button><button type="button" onClick={(evento) => abrirDrawerAtividade(evento, 'avaliacoes')} aria-haspopup="dialog" aria-controls="drawerAtividadePerfil"><i className="fa-solid fa-star" aria-hidden="true"></i><span><strong>{stats.total_avaliados}</strong> avaliações</span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></button></nav>
               </div>
             </article>

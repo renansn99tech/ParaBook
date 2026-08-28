@@ -23,8 +23,8 @@ export interface CommunityPost {
 
 type DjangoCommunity = {
   id: string | number;
-  nome?: string;
-  descricao?: string;
+  nome: string;
+  descricao: string;
   criada_por_sistema?: boolean;
   em_manutencao?: boolean;
   total_membros?: number;
@@ -42,16 +42,20 @@ type DjangoCommunityPost = {
   atualizado_em: string;
 };
 
-const asArray = <T>(payload: T[] | { results?: T[] }): T[] => {
-  if (Array.isArray(payload)) return payload;
-  return payload.results || [];
+const parseCollection = <T>(payload: unknown, endpoint: string): T[] => {
+  if (Array.isArray(payload)) return payload as T[];
+  if (payload && typeof payload === 'object' && 'results' in payload) {
+    const results = (payload as { results?: unknown }).results;
+    if (Array.isArray(results)) return results as T[];
+  }
+  throw new Error(`Contrato inesperado em ${endpoint}: era esperada uma lista ou uma pagina com results.`);
 };
 
 const normalizeCommunity = (raw: DjangoCommunity): Community => ({
   id: raw.id,
-  name: raw.nome || 'Comunidade ParaBook',
+  name: raw.nome,
   members: `${raw.total_membros || 0} membros`,
-  description: raw.descricao || 'Espaco para trocar leituras, ideias e recomendacoes.',
+  description: raw.descricao,
   category: raw.criada_por_sistema ? 'Oficial' : 'Leitores',
   isJoined: Boolean(raw.usuario_participa),
   maintenance: raw.em_manutencao,
@@ -70,13 +74,15 @@ const normalizePost = (raw: DjangoCommunityPost): CommunityPost => ({
 
 export const communityService = {
   getCommunities: async (): Promise<Community[]> => {
-    const response = await api.get('/comunidades/comunidades/');
-    return asArray<DjangoCommunity>(response.data).map(normalizeCommunity);
+    const endpoint = '/comunidades/comunidades/';
+    const response = await api.get(endpoint);
+    return parseCollection<DjangoCommunity>(response.data, endpoint).map(normalizeCommunity);
   },
 
   getMyCommunities: async (): Promise<Community[]> => {
-    const response = await api.get('/comunidades/comunidades/minhas/');
-    return asArray<DjangoCommunity>(response.data).map(normalizeCommunity);
+    const endpoint = '/comunidades/comunidades/minhas/';
+    const response = await api.get(endpoint);
+    return parseCollection<DjangoCommunity>(response.data, endpoint).map(normalizeCommunity);
   },
 
   getCommunityById: async (id: string | number): Promise<Community> => {
@@ -98,10 +104,11 @@ export const communityService = {
   },
 
   getPosts: async (communityId: string | number): Promise<CommunityPost[]> => {
-    const response = await api.get('/comunidades/postagens/', {
+    const endpoint = '/comunidades/postagens/';
+    const response = await api.get(endpoint, {
       params: { comunidade: communityId },
     });
-    return asArray<DjangoCommunityPost>(response.data).map(normalizePost);
+    return parseCollection<DjangoCommunityPost>(response.data, endpoint).map(normalizePost);
   },
 
   getPostById: async (id: string | number): Promise<CommunityPost> => {

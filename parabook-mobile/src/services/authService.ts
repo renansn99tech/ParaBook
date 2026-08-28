@@ -1,10 +1,14 @@
 import axios from 'axios';
-import { api, clearAuthTokens, resolveDjangoUrl, setAuthTokens } from './api';
+import { api, getRefreshToken, resolveDjangoUrl, setAuthTokens } from './api';
 
 export interface AuthTokens {
   access: string;
   refresh?: string;
 }
+
+export type LoginResponse =
+  | { requiresTwoFactor: true; detail: string }
+  | { requiresTwoFactor: false; tokens: AuthTokens };
 
 export interface RegisterPayload {
   username: string;
@@ -123,12 +127,14 @@ const parseTokens = (data: unknown): AuthTokens => {
 };
 
 const isDevelopmentRuntime = () => {
-  const runtime = globalThis as typeof globalThis & { __DEV__?: boolean };
-  return runtime.__DEV__ !== false;
+  return typeof __DEV__ !== 'undefined' && __DEV__;
 };
 
 const sanitizeApiErrorBody = (value: unknown): unknown => {
-  const sensitiveKeys = new Set(['password', 'password_confirm', 'token', 'access', 'refresh']);
+  const sensitiveKeys = new Set([
+    'access', 'codigo_2fa', 'nova_senha', 'password', 'password_confirm',
+    'refresh', 'senha', 'senha_atual', 'token',
+  ]);
 
   if (Array.isArray(value)) {
     return value.map(sanitizeApiErrorBody);
@@ -210,11 +216,21 @@ export const extractApiErrorMessage = (error: unknown, fallback: string) => {
 };
 
 export const authService = {
-  login: async (username: string, password: string): Promise<AuthTokens> => {
-    const response = await api.post('/auth/mobile-login/', { username, password });
+  login: async (username: string, password: string, twoFactorCode?: string): Promise<LoginResponse> => {
+    const response = await api.post('/auth/mobile-login/', {
+      username,
+      password,
+      ...(twoFactorCode ? { codigo_2fa: twoFactorCode } : {}),
+    });
+    if (response.status === 202 && response.data?.requires_2fa === true) {
+      return {
+        requiresTwoFactor: true,
+        detail: response.data.detail || 'Informe o codigo do aplicativo autenticador.',
+      };
+    }
     const tokens = parseTokens(response.data);
     setAuthTokens(tokens);
-    return tokens;
+    return { requiresTwoFactor: false, tokens };
   },
 
   register: async (payload: RegisterPayload): Promise<AuthTokens> => {
@@ -252,7 +268,9 @@ export const authService = {
     return normalizeFullUserProfile(response.data);
   },
 
-  logout: () => {
-    clearAuthTokens();
+  logout: async () => {
+    const refresh = getRefreshToken();
+    if (!refresh) return;
+    await api.post('/auth/mobile-logout/', { refresh });
   },
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,7 +11,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import { CompositeNavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MainTabParamList, RootStackParamList } from '../navigation/types';
@@ -58,10 +58,10 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
     }
   }, [activeTab, params?.favoritesOnly, params?.reviewedOnly]);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     setLoading(true);
-    fetchLibrary();
-  }, [fetchLibrary]);
+    void fetchLibrary();
+  }, [fetchLibrary]));
 
   const onRefresh = () => {
     setRefreshing(true);

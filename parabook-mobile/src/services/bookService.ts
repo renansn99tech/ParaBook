@@ -7,13 +7,14 @@ export interface Book {
   title: string;
   author: string;
   cover_url?: string;
-  description?: string;
   pages?: number;
   category?: string;
   rating?: number;
   year?: number;
   isbn?: string;
-  pdf_url?: string;
+  pdfAvailable: boolean;
+  origin?: 'dominio_publico' | 'autor_independente';
+  publicationStatus?: 'pendente' | 'publicado' | 'rejeitado' | 'removido';
 }
 
 export interface UserBookItem {
@@ -24,6 +25,7 @@ export interface UserBookItem {
   favorite?: boolean;
   rating?: number | null;
   review?: string | null;
+  currentPage: number;
 }
 
 export interface Category {
@@ -42,30 +44,27 @@ export interface BookReview {
 
 type DjangoBook = {
   id: string | number;
-  titulo?: string;
-  title?: string;
-  autor?: string;
-  author?: string;
+  titulo: string;
+  autor: string;
   capa_url?: string | null;
-  cover_url?: string | null;
-  descricao?: string | null;
-  description?: string | null;
   paginas?: number | null;
-  pages?: number | null;
   categoria_nome?: string | null;
-  category?: string | null;
   avaliacao?: number | string | null;
   ano_publicacao?: number | null;
   isbn?: string | null;
+  pdf_disponivel?: boolean;
+  origem?: 'dominio_publico' | 'autor_independente';
+  status?: 'pendente' | 'publicado' | 'rejeitado' | 'removido';
 };
 
 type DjangoShelfItem = {
   id: string | number;
-  livro?: string | number;
-  book?: DjangoBook;
-  livro_titulo?: string;
-  livro_autor?: string;
+  livro: string | number;
+  livro_titulo: string;
+  livro_autor: string;
   livro_capa?: string | null;
+  livro_paginas?: number | null;
+  pagina_atual?: number;
   status: LibraryStatus;
   favorito?: boolean;
   nota?: number | null;
@@ -85,36 +84,43 @@ const parseCollection = <T>(payload: unknown, endpoint: string): T[] => {
 
 const normalizeBook = (raw: DjangoBook): Book => ({
   id: raw.id,
-  title: raw.titulo || raw.title || 'Livro sem titulo',
-  author: raw.autor || raw.author || 'Autor desconhecido',
-  cover_url: resolveDjangoUrl(raw.capa_url || raw.cover_url),
-  description: raw.descricao || raw.description || undefined,
-  pages: raw.paginas || raw.pages || undefined,
-  category: raw.categoria_nome || raw.category || undefined,
+  title: raw.titulo,
+  author: raw.autor,
+  cover_url: resolveDjangoUrl(raw.capa_url),
+  pages: raw.paginas || undefined,
+  category: raw.categoria_nome || undefined,
   rating: raw.avaliacao === null || raw.avaliacao === undefined ? undefined : Number(raw.avaliacao),
   year: raw.ano_publicacao || undefined,
   isbn: raw.isbn || undefined,
+  pdfAvailable: Boolean(raw.pdf_disponivel),
+  origin: raw.origem,
+  publicationStatus: raw.status,
 });
 
 const normalizeShelfItem = (raw: DjangoShelfItem): UserBookItem => {
-  const nestedBook = raw.book;
-  const book = nestedBook
-    ? normalizeBook(nestedBook)
-    : normalizeBook({
-        id: raw.livro || raw.id,
-        titulo: raw.livro_titulo,
-        autor: raw.livro_autor,
-        capa_url: raw.livro_capa,
-      });
+  const book = normalizeBook({
+    id: raw.livro,
+    titulo: raw.livro_titulo,
+    autor: raw.livro_autor,
+    capa_url: raw.livro_capa,
+    paginas: raw.livro_paginas,
+    pdf_disponivel: false,
+  });
+
+  const currentPage = raw.pagina_atual || 0;
+  const totalPages = raw.livro_paginas || book.pages || 0;
 
   return {
     id: raw.id,
     book,
     status: raw.status,
-    progress: raw.status === 'lido' ? 100 : 0,
+    progress: raw.status === 'lido'
+      ? 100
+      : totalPages > 0 ? Math.min(100, Math.round((currentPage / totalPages) * 100)) : 0,
     favorite: raw.favorito,
     rating: raw.nota,
     review: raw.resenha,
+    currentPage,
   };
 };
 
@@ -158,9 +164,9 @@ export const bookService = {
   getCategories: async (): Promise<Category[]> => {
     const endpoint = '/biblioteca/categorias/';
     const response = await api.get(endpoint);
-    return parseCollection<{ id: string | number; nome?: string; name?: string }>(response.data, endpoint).map((category) => ({
+    return parseCollection<{ id: string | number; nome: string }>(response.data, endpoint).map((category) => ({
       id: category.id,
-      name: category.nome || category.name || 'Categoria',
+      name: category.nome,
     }));
   },
 
@@ -221,5 +227,19 @@ export const bookService = {
       resenha: data.review,
     });
     return normalizeShelfItem(response.data);
+  },
+
+  updateReadingProgress: async (shelfItemId: string | number, currentPage: number): Promise<UserBookItem> => {
+    const response = await api.patch(`/biblioteca/estante/${shelfItemId}/`, {
+      pagina_atual: currentPage,
+    });
+    return normalizeShelfItem(response.data);
+  },
+
+  removeFromLibrary: async (bookId: string | number): Promise<boolean> => {
+    const currentItem = await bookService.getShelfItemByBook(bookId);
+    if (!currentItem) return false;
+    await api.delete(`/biblioteca/estante/${currentItem.id}/`);
+    return true;
   },
 };

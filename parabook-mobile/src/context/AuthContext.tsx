@@ -9,6 +9,7 @@ type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated' | 'error';
 type AuthActionResult = {
   success: boolean;
   error?: string;
+  requiresTwoFactor?: boolean;
 };
 
 type AuthContextValue = {
@@ -17,7 +18,7 @@ type AuthContextValue = {
   user: CurrentUserProfile | null;
   authenticatedUser: AuthenticatedUser | null;
   sessionError: string | null;
-  login: (username: string, password: string) => Promise<AuthActionResult>;
+  login: (username: string, password: string, twoFactorCode?: string) => Promise<AuthActionResult>;
   register: (payload: RegisterPayload) => Promise<AuthActionResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<CurrentUserProfile | null>;
@@ -54,7 +55,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resetSession = useCallback(async () => {
     sessionOperationRef.current += 1;
-    authService.logout();
     clearAuthTokens();
     setAuthenticatedUser(null);
     setUser(null);
@@ -134,11 +134,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [bootstrapSession, resetSession]);
 
-  const login = useCallback(async (username: string, password: string): Promise<AuthActionResult> => {
+  const login = useCallback(async (username: string, password: string, twoFactorCode?: string): Promise<AuthActionResult> => {
     const operation = ++sessionOperationRef.current;
     try {
-      const tokens = await authService.login(username, password);
-      await withTimeout(authStorage.save(tokens), 5000);
+      const response = await authService.login(username, password, twoFactorCode);
+      if (response.requiresTwoFactor) {
+        return { success: false, requiresTwoFactor: true, error: response.detail };
+      }
+      await withTimeout(authStorage.save(response.tokens), 5000);
       const sessionData = await withTimeout(fetchCurrentSession(), 35000);
       if (operation !== sessionOperationRef.current) {
         return { success: false, error: 'A tentativa de login foi cancelada.' };
@@ -184,7 +187,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [applyCurrentSession, fetchCurrentSession]);
 
   const logout = useCallback(async () => {
-    await resetSession();
+    try {
+      await withTimeout(authService.logout(), 5000);
+    } catch {
+      // O logout local deve concluir mesmo se o servidor estiver indisponivel.
+    } finally {
+      await resetSession();
+    }
   }, [resetSession]);
 
   const value = useMemo<AuthContextValue>(() => ({

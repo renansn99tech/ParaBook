@@ -111,6 +111,93 @@ class CookieAuthenticationTests(TestCase):
         self.assertIn('refresh', response.data)
         self.assertNotIn(self.ACCESS, response.cookies)
         self.assertNotIn(self.REFRESH, response.cookies)
+        self.assertEqual(SessaoDispositivo.objects.filter(usuario=self.user).count(), 1)
+
+    def test_login_mobile_invalido_nao_retorna_usuario_ou_tokens(self):
+        mobile = APIClient(enforce_csrf_checks=True)
+        response = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.username, 'password': 'SenhaIncorreta123!'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertNotIn('access', response.data)
+        self.assertNotIn('refresh', response.data)
+        self.assertNotIn('user', response.data)
+
+    def test_login_mobile_respeita_segundo_fator(self):
+        segredo = 'JBSWY3DPEHPK3PXP'
+        AutenticacaoDoisFatores.objects.create(
+            usuario=self.user,
+            segredo_criptografado=criptografar_segredo(segredo),
+            habilitada=True,
+        )
+        mobile = APIClient(enforce_csrf_checks=True)
+
+        sem_codigo = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.username, 'password': self.SENHA},
+            format='json',
+        )
+        self.assertEqual(sem_codigo.status_code, 202)
+        self.assertTrue(sem_codigo.data['requires_2fa'])
+
+        com_codigo = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {
+                'username': self.user.username,
+                'password': self.SENHA,
+                'codigo_2fa': _codigo_totp(segredo),
+            },
+            format='json',
+        )
+        self.assertEqual(com_codigo.status_code, 200)
+        self.assertIn('access', com_codigo.data)
+        self.assertIn('refresh', com_codigo.data)
+
+    def test_refresh_e_logout_mobile_rotacionam_e_invalidam_refresh(self):
+        mobile = APIClient(enforce_csrf_checks=True)
+        login = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.username, 'password': self.SENHA},
+            format='json',
+        )
+        refresh_antigo = login.data['refresh']
+        access_antigo = login.data['access']
+
+        renovacao = mobile.post(
+            '/api/v1/auth/mobile-refresh/',
+            {'refresh': refresh_antigo},
+            format='json',
+        )
+        self.assertEqual(renovacao.status_code, 200)
+        self.assertIn('access', renovacao.data)
+        self.assertIn('refresh', renovacao.data)
+        self.assertNotEqual(renovacao.data['refresh'], refresh_antigo)
+
+        reuso = mobile.post(
+            '/api/v1/auth/mobile-refresh/',
+            {'refresh': refresh_antigo},
+            format='json',
+        )
+        self.assertEqual(reuso.status_code, 401)
+
+        logout = mobile.post(
+            '/api/v1/auth/mobile-logout/',
+            {'refresh': renovacao.data['refresh']},
+            format='json',
+        )
+        self.assertEqual(logout.status_code, 200)
+        mobile.credentials(HTTP_AUTHORIZATION=f'Bearer {access_antigo}')
+        self.assertEqual(mobile.get('/api/v1/auth/profile/').status_code, 401)
+        mobile.credentials()
+        depois_logout = mobile.post(
+            '/api/v1/auth/mobile-refresh/',
+            {'refresh': renovacao.data['refresh']},
+            format='json',
+        )
+        self.assertEqual(depois_logout.status_code, 401)
 
     # --- acesso a rota protegida ------------------------------------------
 

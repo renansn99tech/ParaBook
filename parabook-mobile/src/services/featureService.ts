@@ -43,7 +43,7 @@ export const featureService = {
     return asArray<Record<string, unknown>>(response.data).map((raw) => ({
       id: raw.id as string | number,
       username: String(raw.username || ''),
-      name: String(raw.nome || raw.username || 'Autor ParaBook'),
+      name: String(raw.nome || raw.username || ''),
       photo: resolveDjangoUrl(raw.foto as string | null),
       biography: String(raw.biografia || ''),
       totalBooks: Number(raw.total_obras || 0),

@@ -86,6 +86,16 @@ class ProgressoLeituraTests(TestCase):
         self.item.refresh_from_db()
         self.assertIsNotNone(self.item.data_conclusao)
 
+    def test_serializers_expoem_disponibilidade_do_pdf_e_progresso(self):
+        detalhe = self.client.get(f'/api/v1/biblioteca/livros/{self.livro.pk}/')
+        estante = self.client.get('/api/v1/biblioteca/estante/')
+
+        self.assertEqual(detalhe.status_code, 200)
+        self.assertFalse(detalhe.data['pdf_disponivel'])
+        self.assertEqual(estante.status_code, 200)
+        self.assertEqual(estante.data[0]['livro_paginas'], 120)
+        self.assertEqual(estante.data[0]['pagina_atual'], 0)
+
     def test_pagina_nao_pode_exceder_total(self):
         resposta = self.client.patch(
             f'/api/v1/biblioteca/estante/{self.item.pk}/',
@@ -93,6 +103,14 @@ class ProgressoLeituraTests(TestCase):
             format='json',
         )
         self.assertEqual(resposta.status_code, 400)
+
+    def test_item_pode_ser_removido_da_estante(self):
+        resposta = self.client.delete(
+            f'/api/v1/biblioteca/estante/{self.item.pk}/'
+        )
+
+        self.assertEqual(resposta.status_code, 204)
+        self.assertFalse(Biblioteca.objects.filter(pk=self.item.pk).exists())
 
     def test_avaliacao_registra_e_remove_a_data_da_ultima_avaliacao(self):
         url = f'/api/v1/biblioteca/estante/{self.item.pk}/'

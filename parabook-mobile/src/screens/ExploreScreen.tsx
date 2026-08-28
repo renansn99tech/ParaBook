@@ -59,7 +59,7 @@ export const ExploreScreen = () => {
         <Ionicons name="search-outline" size={20} color={colors.textMuted} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Pesquisar por titulo, autor ou genero..."
+          placeholder="Pesquisar por titulo ou autor..."
           placeholderTextColor={colors.textMuted}
           value={search}
           onChangeText={setSearch}

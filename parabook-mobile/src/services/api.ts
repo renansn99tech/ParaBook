@@ -1,4 +1,6 @@
 import axios from 'axios';
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { authStorage } from './authStorage';
 
 const DEFAULT_API_BASE_URL = 'https://parabook-nl8o.onrender.com/api/v1';
 
@@ -13,6 +15,9 @@ export const DJANGO_BASE_URL = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let unauthorizedHandler: (() => void) | null = null;
+let tokenRefreshPromise: Promise<boolean> | null = null;
+
+type RetryableRequestConfig = InternalAxiosRequestConfig & { _parabookRetried?: boolean };
 
 const isDevelopmentRuntime = () => typeof __DEV__ !== 'undefined' && __DEV__;
 
@@ -33,7 +38,8 @@ const describeResponseData = (data: unknown) => {
 const sanitizeErrorData = (value: unknown): unknown => {
   const sensitiveKeys = new Set([
     'access', 'authorization', 'cookie', 'csrf', 'password', 'password_confirm',
-    'refresh', 'secret', 'set-cookie', 'token',
+    'codigo_2fa', 'nova_senha', 'refresh', 'secret', 'senha', 'senha_atual',
+    'set-cookie', 'token',
   ]);
 
   if (Array.isArray(value)) return value.map(sanitizeErrorData);
@@ -45,6 +51,43 @@ const sanitizeErrorData = (value: unknown): unknown => {
       sensitiveKeys.has(key.toLowerCase()) ? '[redacted]' : sanitizeErrorData(item),
     ])
   );
+};
+
+const parseTokenResponse = (data: unknown) => {
+  if (!data || typeof data !== 'object' || !('access' in data) || typeof data.access !== 'string') {
+    return null;
+  }
+
+  const nextRefresh = 'refresh' in data && typeof data.refresh === 'string'
+    ? data.refresh
+    : refreshToken;
+  return nextRefresh ? { access: data.access, refresh: nextRefresh } : null;
+};
+
+const refreshMobileSession = async () => {
+  if (!refreshToken) return false;
+
+  if (!tokenRefreshPromise) {
+    const currentRefresh = refreshToken;
+    tokenRefreshPromise = axios.post(
+      `${API_BASE_URL}/auth/mobile-refresh/`,
+      { refresh: currentRefresh },
+      {
+        timeout: 30000,
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      },
+    ).then(async (response) => {
+      const tokens = parseTokenResponse(response.data);
+      if (!tokens) return false;
+      setAuthTokens(tokens);
+      await authStorage.save(tokens);
+      return true;
+    }).catch(() => false).finally(() => {
+      tokenRefreshPromise = null;
+    });
+  }
+
+  return tokenRefreshPromise;
 };
 
 export const api = axios.create({
@@ -79,10 +122,12 @@ api.interceptors.response.use(
 
     return response;
   },
-  (error) => {
+  async (error: AxiosError) => {
     const requestUrl = error.config?.url || '';
     const isAuthenticationRequest = requestUrl.includes('/auth/mobile-login/')
-      || requestUrl.includes('/auth/mobile-register/');
+      || requestUrl.includes('/auth/mobile-register/')
+      || requestUrl.includes('/auth/mobile-refresh/')
+      || requestUrl.includes('/auth/mobile-logout/');
 
     if (isDevelopmentRuntime()) {
       console.error('[api] request failed', {
@@ -94,7 +139,16 @@ api.interceptors.response.use(
       });
     }
 
-    if (error.response?.status === 401 && accessToken && !isAuthenticationRequest) {
+    if (error.response?.status === 401 && accessToken && !isAuthenticationRequest && error.config) {
+      const originalRequest = error.config as RetryableRequestConfig;
+      if (!originalRequest._parabookRetried && refreshToken) {
+        originalRequest._parabookRetried = true;
+        const refreshed = await refreshMobileSession();
+        if (refreshed) {
+          return api.request(originalRequest);
+        }
+      }
+
       unauthorizedHandler?.();
     }
     return Promise.reject(error);

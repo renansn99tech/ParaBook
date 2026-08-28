@@ -98,7 +98,7 @@ export const HomeScreen = () => {
           <Ionicons name="search-outline" size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar livros, autores, categorias..."
+            placeholder="Buscar por titulo ou autor..."
             placeholderTextColor={colors.textMuted}
             value={search}
             onChangeText={setSearch}
@@ -140,7 +140,7 @@ export const HomeScreen = () => {
         {/* Seção Categorias */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Categorias</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Catalogo' })}>
             <Text style={styles.seeAllText}>Ver todas</Text>
           </TouchableOpacity>
         </View>

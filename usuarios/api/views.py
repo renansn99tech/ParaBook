@@ -157,12 +157,93 @@ class MobileTokenObtainPairAPIView(APIView):
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        configuracao = AutenticacaoDoisFatores.objects.filter(
+            usuario=serializer.user,
+            habilitada=True,
+        ).first()
+        if configuracao:
+            codigo = request.data.get('codigo_2fa')
+            if not codigo:
+                return Response(
+                    {'requires_2fa': True, 'detail': 'Informe o código do aplicativo autenticador.'},
+                    status=status.HTTP_202_ACCEPTED,
+                )
+            try:
+                segredo = descriptografar_segredo(configuracao.segredo_criptografado)
+            except ValueError:
+                return Response(
+                    {'detail': 'A configuração de segurança precisa ser refeita pelo suporte.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not validar_codigo_totp(segredo, codigo):
+                return Response(
+                    {'codigo_2fa': ['Código inválido ou expirado.']},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         refresh = RefreshToken(serializer.validated_data['refresh'])
+        registrar_sessao(request, serializer.user, refresh)
         return Response({
             'detail': 'Login realizado com sucesso.',
             'access': str(refresh.access_token),
             'refresh': str(refresh),
         })
+
+
+class MobileTokenRefreshAPIView(APIView):
+    """Rotaciona o refresh JWT enviado pelo cliente mobile nativo."""
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    throttle_classes = [AuthRateThrottle]
+
+    def post(self, request):
+        raw_refresh = request.data.get('refresh')
+        if not raw_refresh:
+            return Response({'refresh': ['Este campo é obrigatório.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            old_refresh = RefreshToken(raw_refresh)
+            user = User.objects.get(pk=old_refresh['user_id'], is_active=True)
+            sid = old_refresh.get('sid')
+            sessao = SessaoDispositivo.objects.filter(pk=sid, usuario=user).first() if sid else None
+            if sid and (not sessao or not sessao.ativa):
+                raise TokenError('Sessão revogada')
+            old_refresh.blacklist()
+            new_refresh = RefreshToken.for_user(user)
+            if sessao:
+                renovar_sessao(sessao, new_refresh)
+            else:
+                registrar_sessao(request, user, new_refresh)
+        except (TokenError, User.DoesNotExist):
+            return Response({'detail': 'Sessão inválida.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response({
+            'access': str(new_refresh.access_token),
+            'refresh': str(new_refresh),
+        })
+
+
+class MobileLogoutAPIView(APIView):
+    """Invalida o refresh nativo; logout local continua mesmo se ele já expirou."""
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        raw_refresh = request.data.get('refresh')
+        if raw_refresh:
+            try:
+                refresh = RefreshToken(raw_refresh)
+                sid = refresh.get('sid')
+                if sid:
+                    SessaoDispositivo.objects.filter(
+                        pk=sid,
+                        revogada_em__isnull=True,
+                    ).update(revogada_em=timezone.now())
+                refresh.blacklist()
+            except TokenError:
+                pass
+        return Response({'detail': 'Sessão encerrada.'})
 
 
 @method_decorator(csrf_protect, name='dispatch')
@@ -257,6 +338,7 @@ class MobileRegisterAPIView(APIView):
             auth_user = serializer.save()
 
         refresh = RefreshToken.for_user(auth_user)
+        registrar_sessao(request, auth_user, refresh)
         return Response(
             {
                 'detail': 'Cadastro realizado com sucesso.',

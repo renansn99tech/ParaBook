@@ -1,0 +1,260 @@
+.proximo-capitulo{
+    width:100%;
+    max-width:var(--layout-max);
+    margin:0 auto;
+    padding-top:clamp(4rem, 8vw, 7rem);
+    padding-right:max(var(--layout-gutter), var(--safe-right));
+    padding-bottom:clamp(4rem, 8vw, 7rem);
+    padding-left:max(var(--layout-gutter), var(--safe-left));
+    color:var(--text);
+}
+
+.proximo-heading{
+    display:flex;
+    align-items:end;
+    justify-content:space-between;
+    gap:2rem;
+    margin-bottom:1.75rem;
+}
+
+.proximo-heading p,
+.proximo-card-heading p{
+    margin:0 0 .35rem;
+    color:var(--vela);
+    font-size:.76rem;
+    font-weight:900;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+}
+
+.proximo-heading h2{
+    margin:0;
+    font-family:var(--fonte-editorial);
+    font-size:clamp(2.2rem, 4vw, 4rem);
+}
+
+.proximo-heading > span{
+    max-width:22rem;
+    color:var(--text-secondary);
+    text-align:right;
+}
+
+.proximo-grid{
+    display:grid;
+    grid-template-columns:minmax(0, 1.18fr) minmax(20rem, .82fr);
+    gap:1rem;
+}
+
+.proximo-card{
+    min-width:0;
+    padding:clamp(1.25rem, 2.5vw, 2rem);
+    border:1px solid var(--border);
+    border-radius:1.5rem;
+    background:
+        radial-gradient(circle at 100% 0, rgba(var(--purple-rgb),.14), transparent 42%),
+        var(--bg-card);
+    box-shadow:var(--shadow);
+}
+
+.proximo-card-heading{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+}
+
+.proximo-card-heading h3{
+    margin:0;
+    font-size:clamp(1.2rem, 2vw, 1.7rem);
+}
+
+.proximo-card-icon{
+    width:3.2rem;
+    aspect-ratio:1;
+    flex:none;
+    display:grid;
+    place-items:center;
+    border-radius:1rem;
+    background:rgba(var(--purple-rgb),.17);
+    color:var(--purple-light);
+}
+
+.proximo-criterio,
+.proximo-descricao{
+    margin:1.1rem 0;
+    color:var(--text-secondary);
+    line-height:1.6;
+}
+
+.proximo-lista{
+    display:grid;
+    gap:.65rem;
+}
+
+.proximo-descoberta{
+    min-height:6.6rem;
+    display:grid;
+    grid-template-columns:4rem minmax(0, 1fr) auto;
+    align-items:center;
+    gap:.9rem;
+    padding:.65rem;
+    border:1px solid transparent;
+    border-radius:1rem;
+    background:rgba(var(--bg-main-rgb),.28);
+    color:var(--text);
+    text-decoration:none;
+}
+
+.proximo-descoberta:hover,
+.proximo-descoberta:focus-visible{
+    border-color:rgba(var(--purple-rgb),.4);
+    background:rgba(var(--purple-rgb),.09);
+}
+
+.proximo-capa{
+    width:4rem;
+    height:5.5rem;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    border-radius:.65rem;
+    background:rgba(var(--purple-rgb),.14);
+    color:var(--purple-light);
+}
+
+.proximo-capa img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.proximo-livro-copy,
+.proximo-livro-copy strong,
+.proximo-livro-copy small,
+.proximo-livro-copy span{
+    min-width:0;
+    display:block;
+}
+
+.proximo-livro-copy strong,
+.proximo-livro-copy small{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.proximo-livro-copy small{
+    margin:.2rem 0 .45rem;
+    color:var(--text-secondary);
+}
+
+.proximo-livro-copy span{
+    color:var(--purple-text);
+    font-size:.78rem;
+    line-height:1.35;
+}
+
+.proximo-card--acao{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    background:
+        linear-gradient(145deg, rgba(var(--vela-rgb),.08), transparent 52%),
+        var(--bg-card);
+}
+
+.proximo-card--administracao{
+    border-color:rgba(var(--vela-rgb),.27);
+}
+
+.proximo-destaque{
+    display:block;
+    margin:auto 0 0;
+    color:var(--vela);
+    font-family:var(--fonte-editorial);
+    font-size:clamp(4rem, 8vw, 7rem);
+    line-height:1;
+}
+
+.proximo-cta,
+.proximo-vazio a{
+    min-height:46px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:.55rem;
+    align-self:flex-start;
+    padding:.75rem 1rem;
+    border-radius:999px;
+    background:linear-gradient(120deg, var(--purple-light), var(--purple-dark));
+    color:var(--text);
+    font-weight:850;
+    text-decoration:none;
+}
+
+.proximo-vazio{
+    padding:1rem;
+    border:1px dashed var(--border-strong);
+    border-radius:1rem;
+}
+
+.proximo-vazio p{
+    margin:0 0 .8rem;
+    color:var(--text-secondary);
+}
+
+.proximo-status{
+    padding:2rem;
+    border:1px dashed var(--border-strong);
+    border-radius:1.25rem;
+    color:var(--text-secondary);
+    text-align:center;
+}
+
+@media (max-width:900px){
+    .proximo-grid{
+        grid-template-columns:1fr;
+    }
+
+    .proximo-card--acao{
+        min-height:22rem;
+    }
+}
+
+@media (max-width:560px){
+    .proximo-capitulo{
+        padding:3.5rem 0;
+        padding-left:max(var(--layout-gutter), var(--safe-left));
+        padding-right:max(var(--layout-gutter), var(--safe-right));
+    }
+
+    .proximo-heading{
+        align-items:start;
+        flex-direction:column;
+        gap:.6rem;
+    }
+
+    .proximo-heading > span{
+        text-align:left;
+    }
+
+    .proximo-card{
+        padding:1rem;
+        border-radius:1.2rem;
+    }
+
+    .proximo-descoberta{
+        grid-template-columns:3.4rem minmax(0, 1fr) auto;
+    }
+
+    .proximo-capa{
+        width:3.4rem;
+        height:4.7rem;
+    }
+}
+
+@media (prefers-reduced-motion:reduce){
+    .proximo-descoberta,
+    .proximo-cta{
+        transition:none;
+    }
+}

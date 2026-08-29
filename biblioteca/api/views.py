@@ -64,10 +64,12 @@ class LivroViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def resenhas(self, request, pk=None):
         livro = self.get_object()
-        resenhas = Biblioteca.objects.filter(
+        resenhas = Biblioteca.objects.select_related(
+            'user', 'user__perfil_customizado', 'user__perfil',
+        ).filter(
             livro=livro
         ).exclude(nota__isnull=True, resenha__isnull=True).exclude(resenha='')
-        serializer = ResenhaSerializer(resenhas, many=True)
+        serializer = ResenhaSerializer(resenhas, many=True, context={'request': request})
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
@@ -162,6 +164,8 @@ class EstanteViewSet(viewsets.ModelViewSet):
             extras['data_conclusao'] = timezone.now()
         if serializer.validated_data.get('nota') is not None or serializer.validated_data.get('resenha'):
             extras['avaliada_em'] = timezone.now()
+        if serializer.validated_data.get('favorito'):
+            extras['favoritado_em'] = timezone.now()
         serializer.save(**extras)
 
     def update(self, request, *args, **kwargs):
@@ -196,6 +200,9 @@ class EstanteViewSet(viewsets.ModelViewSet):
         if 'nota' in serializer.validated_data or 'resenha' in serializer.validated_data:
             obj.avaliada_em = timezone.now() if obj.nota is not None or obj.resenha else None
             campos_temporais.append('avaliada_em')
+        if not estava_favoritado and obj.favorito:
+            obj.favoritado_em = timezone.now()
+            campos_temporais.append('favoritado_em')
         if campos_temporais:
             obj.save(update_fields=campos_temporais)
         msg_extra = []

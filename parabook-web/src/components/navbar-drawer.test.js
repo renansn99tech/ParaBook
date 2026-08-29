@@ -20,6 +20,8 @@ test('navbar distribui marca, destinos e ações em três zonas', () => {
 test('drawer evita repetir no desktop os destinos centrais', () => {
   assert.match(navbar, /offcanvas-section-primary offcanvas-mobile-only/);
   assert.match(navbar, /offcanvas-section offcanvas-section-publicar/);
+  assert.match(navbar, /const ctaPublicacao = user/);
+  assert.match(navbar, /to=\{ctaPublicacao\.to\}/);
   assert.match(css, /@media \(min-width:981px\)[\s\S]*?\.offcanvas-mobile-only\s*{\s*display:none/);
 });
 
@@ -48,7 +50,6 @@ test('todos os destinos complementares do drawer possuem rota React', () => {
   const destinos = [
     '/recomendacao-ia',
     '/autores',
-    '/publicar',
     '/minhas-comunidades',
     '/ranking',
     '/minhas-conquistas',
@@ -63,6 +64,8 @@ test('todos os destinos complementares do drawer possuem rota React', () => {
     assert.ok(navbar.includes(`to="${destino}"`), `${destino} precisa estar no drawer`);
     assert.ok(app.includes(`path="${destino}"`), `${destino} precisa ter rota em App.jsx`);
   }
+
+  assert.match(app, /path="\/publicar"/);
 
   assert.doesNotMatch(navbar, /<Link[^>]+data-bs-dismiss="offcanvas"/);
   assert.match(navbar, /<Link[^>]+onClick={fecharMenu}/);

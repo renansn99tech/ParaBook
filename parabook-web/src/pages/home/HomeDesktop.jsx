@@ -1,5 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardLeituraResumo from '../../components/DashboardLeituraResumo';
+import ProximoCapitulo from '../../components/ProximoCapitulo';
+import { obterAvatarPerfil } from '../../services/avatarPerfil';
+import { obterCtaAutoria, obterCtaSecundariaLanding } from '../../services/ctaAutoria';
+import { formatarTempoResumo } from '../../services/resumoLeitura';
 import useRevelacao from '../../hooks/useRevelacao';
 import useProgressoScroll from '../../hooks/useProgressoScroll';
 import '../../assets/css/home.css';
@@ -14,8 +19,15 @@ import autor480 from '../../assets/img/autor-480.webp';
 import autor768 from '../../assets/img/autor-768.webp';
 import autor1200 from '../../assets/img/autor-1200.webp';
 
-function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
+function HomeDesktop({ user, novidades, comunidadesOficiais, loading, resumoLeitura, carregandoResumo, erroResumo, inicioPersonalizado, carregandoInicio, erroInicio }) {
   const isAuthenticated = Boolean(user);
+  const avatarUsuario = obterAvatarPerfil(user);
+  const ctaSecundaria = obterCtaSecundariaLanding(user);
+  const ctaAutoria = obterCtaAutoria(user);
+  const [dashboardAberto, setDashboardAberto] = useState(false);
+  const leituraDestaque = resumoLeitura?.leitura_destaque;
+  const metricasLeitura = resumoLeitura?.metricas || {};
+  const resumoEstatisticas = `${metricasLeitura.generos_explorados || 0} gêneros · ${metricasLeitura.avaliacoes_feitas || 0} avaliações`;
 
   // Os cards de novidades e comunidades só existem depois da resposta da
   // API, então o hook precisa saber quando reobservar o que nasceu tarde.
@@ -52,7 +64,7 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
           <h1>Leia fundo. Publique <span>alto</span>.</h1>
 
           <p className="hero-lead">
-            Descubra obras independentes, leia sem sair do navegador e publique a sua.
+            Descubra obras independentes, leia sem sair do navegador e conheça o caminho para publicar a sua.
           </p>
 
           <div className="hero-buttons">
@@ -60,8 +72,8 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
               <i className="fa-solid fa-book-open"></i> Explorar livros
             </Link>
 
-            <Link to="/publicar" className="btn-secondary">
-              <i className="fa-solid fa-feather"></i> Publicar minha obra
+            <Link to={ctaSecundaria.to} className="btn-secondary">
+              <i className={`fa-solid ${ctaSecundaria.icon}`}></i> {ctaSecundaria.label}
             </Link>
           </div>
         </div>
@@ -97,7 +109,14 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
 
           <div className="floating-card author-card">
             <div className="floating-user">
-              <div className="floating-avatar">👩</div>
+              <img
+                className="floating-avatar"
+                src={avatarUsuario}
+                alt=""
+                aria-hidden="true"
+                width="42"
+                height="42"
+              />
               <div>
                 <h4 className="visitante-nome">{isAuthenticated ? user.username : 'Visitante'}</h4>
                 <span className="visitante-papel">
@@ -113,23 +132,23 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
             <div className="mini-chart"><span></span></div>
           </div>
 
-          <div className="floating-card story-card">
-            <div className="floating-book-placeholder">
-              <i className="fa-solid fa-book"></i>
-            </div>
+          <Link to={leituraDestaque?.link || '/biblioteca'} className="floating-card story-card" aria-label={leituraDestaque ? `Abrir ${leituraDestaque.titulo}` : 'Encontrar uma leitura'}>
+            {leituraDestaque?.capa ? <img src={leituraDestaque.capa} alt="" width="82" height="100" /> : <div className="floating-book-placeholder"><i className="fa-solid fa-book" aria-hidden="true"></i></div>}
             <div className="story-info">
-              <h4>Nenhuma leitura</h4>
-              <span>Comece um livro</span>
+              <h4>{leituraDestaque?.titulo || (carregandoResumo ? 'Buscando sua leitura' : 'Nenhuma leitura')}</h4>
+              <span>{leituraDestaque ? (leituraDestaque.em_andamento ? `${leituraDestaque.progresso_percentual}% concluído` : 'Última leitura concluída') : (isAuthenticated ? 'Comece um livro' : 'Entre para acompanhar')}</span>
             </div>
-            <i className="fa-solid fa-star"></i>
-          </div>
+            <i className={`fa-solid ${leituraDestaque?.em_andamento ? 'fa-book-open' : 'fa-star'}`} aria-hidden="true"></i>
+          </Link>
 
-          <div className="floating-card stats-card">
-            <h4>Estatísticas</h4>
-            <span>Leituras</span>
-            <strong>Em evolução</strong>
+          {isAuthenticated ? <button type="button" className="floating-card stats-card" onClick={() => setDashboardAberto(true)} aria-haspopup="dialog">
+            <h4>Sua jornada</h4>
+            <span>{carregandoResumo ? 'Atualizando estatísticas' : resumoEstatisticas}</span>
+            <strong>{formatarTempoResumo(metricasLeitura.tempo_medio_sessao_segundos)} / sessão</strong>
             <div className="mini-chart chart-large"><span></span></div>
-          </div>
+          </button> : <Link to="/login" className="floating-card stats-card">
+            <h4>Estatísticas</h4><span>Seu painel de leitura</span><strong>Entrar para ver</strong><div className="mini-chart chart-large"><span></span></div>
+          </Link>}
         </div>
         </section>
 
@@ -249,29 +268,30 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
           <div className="jornada-convite" data-revelar>
             <h2>Sua obra é o próximo capítulo</h2>
             <p className="capitulo-texto">
-              A publicação é gratuita e leva minutos. O resto é com os leitores.
+              O envio acontece após a aprovação do perfil de autor e passa pela moderação da plataforma.
             </p>
 
-            <Link to="/publicar" className="btn-primary convite-cta">
-              <i className="fa-solid fa-feather"></i> Publicar minha obra
-            </Link>
+            {isAuthenticated && <Link to={ctaAutoria.to} className="btn-primary convite-cta">
+              <i className={`fa-solid ${ctaAutoria.icon}`}></i> {ctaAutoria.label}
+            </Link>}
           </div>
           </div>
         </section>
       </div>
 
-      <section className="features" data-revelar-cascata>
+      {!isAuthenticated ? <section className="features" data-revelar-cascata aria-label="Conheça o ParaBook por perfil">
         <div className="feature-card" data-revelar>
           <div className="feature-content">
             <div className="feature-icon">📚</div>
             <h2>Para Leitores</h2>
-            <p>Explore milhares de livros, descubra novos autores e participe de comunidades literárias.</p>
+            <p>Explore o acervo, descubra novos autores e participe de comunidades literárias.</p>
             <ul>
               <li>✔ Biblioteca Digital</li>
               <li>✔ Livros Gratuitos</li>
               <li>✔ Comunidades</li>
               <li>✔ Favoritos</li>
             </ul>
+            <Link to="/para-leitores" className="feature-cta">Conhecer para leitores <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link>
           </div>
           <div className="feature-photo">
             <img
@@ -295,11 +315,12 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
             <h2>Para Autores</h2>
             <p>Compartilhe suas obras, alcance novos leitores e faça parte da comunidade ParaBook.</p>
             <ul>
-              <li>✔ Publicação Gratuita</li>
-              <li>✔ Divulgação</li>
-              <li>✔ Feedback</li>
+              <li>✔ Perfil autoral</li>
+              <li>✔ Publicação moderada</li>
+              <li>✔ Avaliações e feedback</li>
               <li>✔ Comunidade</li>
             </ul>
+            <Link to="/para-autores" className="feature-cta">Conhecer para autores <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link>
           </div>
           <div className="feature-photo">
             <img
@@ -314,7 +335,7 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
             />
           </div>
         </div>
-      </section>
+      </section> : <ProximoCapitulo dados={inicioPersonalizado} carregando={carregandoInicio} erro={erroInicio} />}
 
       <section className="communities container my-5">
         <div className="section-header" data-revelar>
@@ -415,6 +436,7 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading }) {
             destaque e no momento certo da narrativa. Dois convites para
             a mesma ação na mesma página competiam entre si. */}
       </section>
+      <DashboardLeituraResumo aberto={dashboardAberto} onClose={() => setDashboardAberto(false)} resumo={resumoLeitura} carregando={carregandoResumo} erro={erroResumo} />
     </main>
   )
 }

@@ -4,6 +4,7 @@ from rest_framework import serializers
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao
 from django.contrib.auth.models import User
 from biblioteca.validators import validar_pdf_livro
+from usuarios.identidade_publica import identidade_publica
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,16 +62,31 @@ class EstanteSerializer(serializers.ModelSerializer):
         return attrs
 
 class ResenhaSerializer(serializers.ModelSerializer):
-    usuario_nome = serializers.CharField(source='user.username', read_only=True)
+    usuario_nome = serializers.SerializerMethodField()
+    usuario_perfil_clicavel = serializers.SerializerMethodField()
     usuario_foto = serializers.SerializerMethodField()
 
     class Meta:
         model = Biblioteca
-        fields = ['id', 'usuario_nome', 'usuario_foto', 'nota', 'resenha', 'data_adicao']
+        fields = ['id', 'usuario_nome', 'usuario_perfil_clicavel', 'usuario_foto', 'nota', 'resenha', 'data_adicao']
+
+    def get_usuario_nome(self, obj):
+        request = self.context.get('request')
+        viewer = request.user if request else None
+        return identidade_publica(obj.user, viewer)['username']
+
+    def get_usuario_perfil_clicavel(self, obj):
+        request = self.context.get('request')
+        viewer = request.user if request else None
+        return identidade_publica(obj.user, viewer)['perfil_clicavel']
     
     def get_usuario_foto(self, obj):
         # Mapeia dinamicamente os relacionamentos de Perfil existentes no Parabook
         user = obj.user
+        request = self.context.get('request')
+        viewer = request.user if request else None
+        if not identidade_publica(user, viewer)['perfil_clicavel']:
+            return None
         if hasattr(user, 'perfil_da_biblioteca') and user.perfil_da_biblioteca.foto:
             return user.perfil_da_biblioteca.foto.url
         elif hasattr(user, 'perfil') and user.perfil.foto:

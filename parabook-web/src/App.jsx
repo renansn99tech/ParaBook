@@ -6,6 +6,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import RouteAccessibility from './components/RouteAccessibility'
 import RotaAdmin from './components/admin/RotaAdmin'
+import RotaPublicacao from './components/RotaPublicacao'
 import api from './services/api'
 
 const Home = lazy(() => import('./pages/Home'))
@@ -19,13 +20,17 @@ const Sobre = lazy(() => import('./pages/Sobre'))
 const Backlog = lazy(() => import('./pages/Backlog'))
 const Diretrizes = lazy(() => import('./pages/Diretrizes'))
 const Autores = lazy(() => import('./pages/Autores'))
+const ParaLeitores = lazy(() => import('./pages/ParaLeitores'))
+const ParaAutores = lazy(() => import('./pages/ParaAutores'))
 const PublicarLivro = lazy(() => import('./pages/PublicarLivro'))
+const PainelAutor = lazy(() => import('./pages/PainelAutor'))
 const MinhaBiblioteca = lazy(() => import('./pages/MinhaBiblioteca'))
 const LivroInfo = lazy(() => import('./pages/LivroInfo'))
 const Leitura = lazy(() => import('./pages/Leitura'))
 const PerfilPublico = lazy(() => import('./pages/PerfilPublico'))
 const Novidades = lazy(() => import('./pages/Novidades'))
 const ConteudoComunidade = lazy(() => import('./pages/ConteudoComunidade'))
+const PainelDenunciasComunidade = lazy(() => import('./pages/PainelDenunciasComunidade'))
 const AlterarSenha = lazy(() => import('./pages/AlterarSenha'))
 const ConfiguracoesAvancadas = lazy(() => import('./pages/ConfiguracoesAvancadas'))
 const CentralConta = lazy(() => import('./pages/CentralConta'))
@@ -135,12 +140,16 @@ function App() {
           <Route path="/biblioteca" element={<Biblioteca />} />
           <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/comunidade/:id/conteudo" element={<ConteudoComunidade />} />
+          <Route path="/comunidade/:id/denuncias" element={<RotaAdmin><PainelDenunciasComunidade /></RotaAdmin>} />
           <Route path="/dashboard" element={<RotaAdmin><Dashboard /></RotaAdmin>} />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/backlog" element={<Backlog />} />
           <Route path="/diretrizes" element={<Diretrizes />} />
           <Route path="/autores" element={<Autores />} />
-          <Route path="/publicar" element={<PublicarLivro />} />
+          <Route path="/para-leitores" element={<ParaLeitores />} />
+          <Route path="/para-autores" element={<ParaAutores />} />
+          <Route path="/publicar" element={<RotaPublicacao><PublicarLivro /></RotaPublicacao>} />
+          <Route path="/autor/painel" element={<RotaPublicacao><PainelAutor /></RotaPublicacao>} />
           <Route path="/minha-biblioteca" element={<MinhaBiblioteca />} />
           <Route path="/livro/:id" element={<LivroInfo />} />
           <Route path="/leitura/:id" element={<Leitura />} />

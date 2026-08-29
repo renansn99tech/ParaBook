@@ -7,7 +7,10 @@ from rest_framework.test import APIClient
 
 from biblioteca.models import Categoria
 from biblioteca.models import Livro, Biblioteca
+from biblioteca.models import EventoLeitura, SolicitacaoPublicacao
 from biblioteca.api.serializers import SolicitacaoPublicacaoSerializer
+from usuarios.models import Usuario
+import uuid
 
 
 class ListaAutoresViewTests(TestCase):
@@ -61,6 +64,45 @@ class SegurancaCatalogoTests(TestCase):
         response = client.get('/api/v1/dashboard/lixeira/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Livro.objects.filter(pk=livro.pk).exists())
+
+
+class ResenhaIdentidadeAdministrativaTests(TestCase):
+    def setUp(self):
+        self.categoria = Categoria.objects.create(nome='Identidade em resenha')
+        self.livro = Livro.objects.create(
+            titulo='Livro avaliado', autor='Autoria', categoria=self.categoria, status='publicado',
+        )
+        self.leitor = User.objects.create_user(username='resenha-leitor', password='x')
+        Usuario.objects.create(user_auth=self.leitor, nome='Leitor', tipo='leitor')
+        self.admin = User.objects.create_user(
+            username='resenha-admin-real', password='x', is_staff=True,
+        )
+        Usuario.objects.create(user_auth=self.admin, nome='Admin de Resenha', tipo='admin')
+        Biblioteca.objects.create(
+            user=self.admin,
+            livro=self.livro,
+            status='lido',
+            nota=5,
+            resenha='Avaliação institucional.',
+        )
+        self.client = APIClient()
+        self.url = f'/api/v1/biblioteca/livros/{self.livro.id}/resenhas/'
+
+    def test_leitor_ve_resenha_administrativa_como_admin_generico(self):
+        self.client.force_authenticate(self.leitor)
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.data[0]['usuario_nome'], 'admin')
+        self.assertFalse(resposta.data[0]['usuario_perfil_clicavel'])
+        self.assertIsNone(resposta.data[0]['usuario_foto'])
+
+    def test_admin_ve_identificador_real_na_resenha(self):
+        self.client.force_authenticate(self.admin)
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.data[0]['usuario_nome'], self.admin.username)
+        self.assertTrue(resposta.data[0]['usuario_perfil_clicavel'])
 
 
 class ProgressoLeituraTests(TestCase):
@@ -126,3 +168,91 @@ class ProgressoLeituraTests(TestCase):
 
         self.assertEqual(resposta.status_code, 200)
         self.assertIsNone(self.item.avaliada_em)
+
+
+class PainelAutorAPITests(TestCase):
+    def setUp(self):
+        self.categoria = Categoria.objects.create(nome='Painel do Autor')
+        self.autor_a = User.objects.create_user(username='autora-a', password='x')
+        self.autor_b = User.objects.create_user(username='autor-b', password='x')
+        self.leitor = User.objects.create_user(username='leitora', password='x')
+        Usuario.objects.create(user_auth=self.autor_a, nome='Autora A', tipo='autor')
+        Usuario.objects.create(user_auth=self.autor_b, nome='Autor B', tipo='autor')
+        Usuario.objects.create(user_auth=self.leitor, nome='Leitora', tipo='leitor')
+
+        self.livro_a = Livro.objects.create(
+            titulo='Obra da Autora A', autor='Autora A', categoria=self.categoria,
+            paginas=200, origem='autor_independente', status='publicado',
+        )
+        self.livro_b = Livro.objects.create(
+            titulo='Obra do Autor B', autor='Autor B', categoria=self.categoria,
+            paginas=100, origem='autor_independente', status='publicado',
+        )
+        SolicitacaoPublicacao.objects.create(usuario=self.autor_a, livro=self.livro_a, status='aprovado')
+        SolicitacaoPublicacao.objects.create(usuario=self.autor_b, livro=self.livro_b, status='aprovado')
+        self.item_a = Biblioteca.objects.create(
+            user=self.leitor, livro=self.livro_a, status='lendo', pagina_atual=50,
+            favorito=True,
+        )
+        self.item_b = Biblioteca.objects.create(
+            user=self.leitor, livro=self.livro_b, status='lendo', pagina_atual=10,
+        )
+        EventoLeitura.objects.create(
+            livro=self.livro_a, usuario=self.leitor, sessao_id=uuid.uuid4(),
+            pagina=50, percentual=25, duracao_segundos=90,
+        )
+        EventoLeitura.objects.create(
+            livro=self.livro_b, usuario=self.leitor, sessao_id=uuid.uuid4(),
+            pagina=10, percentual=10, duracao_segundos=30,
+        )
+
+    def test_resumo_limita_obras_e_metricas_ao_autor_autenticado(self):
+        client = APIClient()
+        client.force_authenticate(self.autor_a)
+        resposta = client.get('/api/v1/biblioteca/autor/analytics/resumo/?periodo=30')
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.data['total_publicadas'], 1)
+        self.assertEqual(resposta.data['kpis']['leituras']['valor'], 1)
+        self.assertEqual([obra['id'] for obra in resposta.data['obras']], [self.livro_a.id])
+        self.assertNotContains(resposta, 'Obra do Autor B')
+
+    def test_leitor_nao_acessa_painel_de_autor(self):
+        client = APIClient()
+        client.force_authenticate(self.leitor)
+        resposta = client.get('/api/v1/biblioteca/autor/analytics/resumo/')
+        self.assertEqual(resposta.status_code, 403)
+
+    def test_evento_calcula_percentual_no_backend(self):
+        client = APIClient()
+        client.force_authenticate(self.leitor)
+        resposta = client.post('/api/v1/biblioteca/leitura/eventos/', {
+            'livro': self.livro_a.id,
+            'pagina': 80,
+            'sessao_id': str(uuid.uuid4()),
+            'duracao_segundos': 45,
+            'percentual': 99,
+        }, format='json')
+
+        self.assertEqual(resposta.status_code, 201)
+        self.assertEqual(resposta.data['percentual'], 40)
+
+    def test_exportacao_de_obra_alheia_retorna_404_sem_vazar_existencia(self):
+        client = APIClient()
+        client.force_authenticate(self.autor_a)
+        resposta = client.get(
+            f'/api/v1/biblioteca/autor/analytics/exportar/?periodo=30&obra={self.livro_b.id}'
+        )
+        self.assertEqual(resposta.status_code, 404)
+
+    def test_csv_usa_bom_separador_pt_br_e_so_dados_do_autor(self):
+        client = APIClient()
+        client.force_authenticate(self.autor_a)
+        resposta = client.get('/api/v1/biblioteca/autor/analytics/exportar/?periodo=30')
+        conteudo = resposta.content.decode('utf-8-sig')
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertTrue(resposta.content.startswith(b'\xef\xbb\xbf'))
+        self.assertIn('data;obra;leituras;leitores_unicos;favoritos;conclusoes', conteudo)
+        self.assertIn('Obra da Autora A', conteudo)
+        self.assertNotIn('Obra do Autor B', conteudo)

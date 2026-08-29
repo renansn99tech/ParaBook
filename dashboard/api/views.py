@@ -19,10 +19,12 @@ from comunidades.models import Comunidade, DenunciaComunidade, PostagemComunidad
 from biblioteca.models import Livro, Denuncia, SolicitacaoPublicacao
 from usuarios.models import Usuario, AuditoriaAcao
 from usuarios.audit import registrar_acao
+from usuarios.identidade_publica import identidade_publica
 from notificacoes.models import Notificacao
 from dashboard.models import FeatureFlag
 from assinaturas.models import Assinatura, Plano
 from dashboard.api.permissions import IsParaBookAdmin
+from perfis.services import aplicar_frase_status_padrao_autor
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -303,6 +305,62 @@ class DashboardDenunciasAPIView(APIView):
         })
 
 
+class DashboardDenunciasComunidadeAPIView(APIView):
+    """Resumo operacional e fila de denúncias de uma comunidade específica."""
+
+    permission_classes = [IsParaBookAdmin]
+
+    def get(self, request, comunidade_id, *args, **kwargs):
+        comunidade = Comunidade.objects.filter(pk=comunidade_id).first()
+        if not comunidade:
+            return Response({'detail': 'Comunidade não encontrada.'}, status=404)
+
+        registros = DenunciaComunidade.objects.filter(
+            comunidade=comunidade,
+        ).select_related('usuario').order_by('-data_denuncia')
+
+        def serializar(denuncia):
+            identidade = (
+                identidade_publica(denuncia.usuario, request.user)
+                if denuncia.usuario
+                else {'username': 'anonimo', 'nome_exibicao': 'Anônimo'}
+            )
+            return {
+                'id': denuncia.pk,
+                'motivo': denuncia.motivo,
+                'status': denuncia.status,
+                'data': denuncia.data_denuncia,
+                'data_analise': denuncia.data_analise,
+                'denunciante': identidade['username'],
+                'denunciante_nome': identidade['nome_exibicao'],
+            }
+
+        pendentes = registros.filter(status='pendente')
+        historico = registros.exclude(status='pendente')[:12]
+        contagens = registros.values('status').annotate(total=Count('id'))
+        por_status = {item['status']: item['total'] for item in contagens}
+
+        return Response({
+            'comunidade': {
+                'id': comunidade.pk,
+                'nome': comunidade.nome,
+                'descricao': comunidade.descricao,
+                'criada_por_sistema': comunidade.criada_por_sistema,
+                'em_manutencao': comunidade.em_manutencao,
+                'total_membros': comunidade.membros.count(),
+                'total_postagens': comunidade.postagens.count(),
+            },
+            'resumo': {
+                'pendentes': por_status.get('pendente', 0),
+                'acolhidas': por_status.get('acolhida', 0),
+                'arquivadas': por_status.get('arquivada', 0),
+                'total': sum(por_status.values()),
+            },
+            'denuncias': [serializar(item) for item in pendentes],
+            'historico': [serializar(item) for item in historico],
+        })
+
+
 class DashboardModeracaoAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
@@ -323,6 +381,8 @@ class DashboardModeracaoAPIView(APIView):
             usuario.tipo = 'autor' if acao == 'aprovar' else 'leitor'
             usuario.notificacao_autor = acao == 'aprovar'
             usuario.save(update_fields=['tipo', 'notificacao_autor'])
+            if acao == 'aprovar':
+                aplicar_frase_status_padrao_autor(usuario)
             Notificacao.objects.create(
                 usuario=usuario.user_auth,
                 titulo='Solicitação de autor analisada',

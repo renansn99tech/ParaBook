@@ -54,7 +54,12 @@ test('informações oferece edição parcial, privacidade e drawers literários'
   assert.match(profile, /> Idade<\/dt>/);
   assert.match(profile, /> Aniversário<\/dt>/);
   assert.match(profile, /> E-mail<\/dt>/);
-  assert.match(profile, /'Privado'/);
+  assert.match(profile, /Privado para o público/);
+  assert.match(profile, /DadoPessoalProprio/);
+  assert.match(perfilPublico, /valorPublico\(pessoais\.exibir_idade/);
+  assert.match(perfilPublico, /pessoais\.exibir_data_nascimento === false \? 'Privado'/);
+  assert.match(perfilPublico, /valorPublico\(pessoais\.exibir_email/);
+  assert.match(css, /\.perfil-dado-privado/);
   assert.match(profile, /abrirDrawerAtividade\(evento, 'livros'\)/);
   assert.match(profile, /abrirDrawerAtividade\(evento, 'avaliacoes'\)/);
   assert.match(profile, /historicoRecentes\[drawerAtividade\]\.map/);

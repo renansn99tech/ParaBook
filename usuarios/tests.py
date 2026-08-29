@@ -458,6 +458,15 @@ class OnboardingPerfilPendenteTests(TestCase):
         _, usuario = self._criar()
         self.assertTrue(usuario.onboarding_perfil_pendente())
 
+    def test_status_padrao_de_autor_ainda_e_considerado_nao_personalizado(self):
+        from perfis.models import FRASE_STATUS_PADRAO_AUTOR
+
+        _, usuario = self._criar(descricao_perfil=FRASE_STATUS_PADRAO_AUTOR)
+        usuario.tipo = 'autor'
+        usuario.save(update_fields=['tipo'])
+
+        self.assertTrue(usuario.onboarding_perfil_pendente())
+
     def test_nao_reexibe_no_mesmo_dia_apos_dispensar(self):
         _, usuario = self._criar()
         usuario.onboarding_lembretes = 1

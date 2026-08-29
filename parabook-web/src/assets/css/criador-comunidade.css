@@ -1,0 +1,49 @@
+.criador-desconhecido {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-bottom: 1px dotted currentColor;
+  color: var(--text-secondary);
+  cursor: help;
+  outline: none;
+}
+
+.criador-desconhecido::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 40;
+  left: 50%;
+  bottom: calc(100% + 9px);
+  width: max-content;
+  max-width: min(260px, 72vw);
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: .72rem;
+  font-weight: 650;
+  line-height: 1.4;
+  text-align: left;
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-out);
+}
+
+.criador-desconhecido:hover::after,
+.criador-desconhecido:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.criador-desconhecido:focus-visible {
+  border-radius: 2px;
+  box-shadow: var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .criador-desconhecido::after { transition: none; }
+}

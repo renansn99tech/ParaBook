@@ -10,6 +10,7 @@ from datetime import timedelta
 from usuarios.models import Usuario
 from biblioteca.models import Livro, Categoria, SolicitacaoPublicacao, Denuncia
 from comunidades.models import Comunidade, DenunciaComunidade
+from perfis.services import aplicar_frase_status_padrao_autor
 
 def apenas_superuser(user):
     return user.is_authenticated and user.is_superuser
@@ -65,6 +66,7 @@ def painel_admin(request):
             usuario.tipo = 'autor'
             usuario.notificacao_autor = True  # NOVO: Dispara a celebração no perfil do usuário!
             usuario.save()
+            aplicar_frase_status_padrao_autor(usuario)
             messages.success(request, f"Upgrade aprovado: {usuario.nome} agora é um Autor Independente!")
             
         elif acao == 'rejeitar':

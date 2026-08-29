@@ -36,6 +36,7 @@
     display:grid;
     grid-template-columns:minmax(220px, 1fr) auto minmax(220px, 1fr);
     gap:clamp(20px, 3vw, 54px);
+    min-height:84px;
 
     align-items: center;
 
@@ -43,27 +44,35 @@
 }
 
 .logo-link{
+    display:inline-flex;
+    align-items:center;
     justify-self:start;
+    align-self:center;
 }
 
 .logo-container {
-
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 0;
+    min-height:52px;
 }
 
 .logo-img {
     /* O PNG tem bastante transparência ao redor do livro. A escala fluida
        mantém o símbolo legível sem deixar essa área invisível inflar a
        altura da barra no celular. */
+    display:block;
+    flex:0 0 auto;
     width:clamp(70px, 7vw, 95px);
     margin-right:clamp(-1.75rem, -2vw, -1.3rem);
-    margin-bottom: 0.3rem;
+    margin-bottom:0;
 }
 
 .logo {
+    display:inline-flex;
+    align-items:center;
     font-size: 2rem;
+    line-height:1;
 }
 
 .para {
@@ -78,6 +87,7 @@
 .menu {
 
     display: flex;
+    align-items:center;
     justify-self:center;
     gap:clamp(28px, 3.5vw, 54px);
     margin:0 !important;
@@ -85,7 +95,15 @@
     list-style: none;
 }
 
+.menu > li {
+    display:flex;
+    align-items:center;
+}
+
 .menu a {
+    min-height:var(--touch-target);
+    display:inline-flex;
+    align-items:center;
     text-decoration: none;
     color: var(--text-soft);
     transition: .3s;
@@ -93,6 +111,31 @@
 
 .menu a:hover {
     color: var(--purple);
+}
+
+.menu .navbar-publicar-livro {
+    min-height: var(--touch-target);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    border: 1px solid rgba(var(--vela-rgb), .46);
+    border-radius: var(--radius-md);
+    background: rgba(var(--vela-rgb), .12);
+    color: var(--vela);
+    font-weight: 700;
+}
+
+.menu .navbar-publicar-livro:hover,
+.menu .navbar-publicar-livro:focus-visible {
+    border-color: var(--vela);
+    background: rgba(var(--vela-rgb), .2);
+    color: var(--vela);
+}
+
+.menu .navbar-publicar-livro:focus-visible {
+    outline: 2px solid var(--vela);
+    outline-offset: 3px;
 }
 
 .nav-actions {

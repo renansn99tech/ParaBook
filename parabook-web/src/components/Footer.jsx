@@ -29,7 +29,7 @@ function Footer() {
 
         <div className="footer-column">
           <h4>Autores</h4>
-          <Link to="/publicar">Publicar Obra</Link>
+          <Link to="/para-autores">Para Autores</Link>
           <Link to="/diretrizes">Diretrizes</Link>
         </div>
 

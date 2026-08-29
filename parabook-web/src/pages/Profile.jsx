@@ -5,6 +5,8 @@ import useRevelacao from '../hooks/useRevelacao';
 import api from '../services/api';
 import { obterAvatarPerfil } from '../services/avatarPerfil';
 import { abrirOnboardingPerfil } from '../services/onboardingPerfil';
+import { formatarDataNascimento } from '../services/dadosPessoais';
+import { formatarTempoRelativo } from '../services/tempoRelativo';
 import swal, { BOTAO } from '../services/swal';
 import '../assets/css/perfil.css';
 
@@ -101,29 +103,25 @@ function ToastPerfil({ toast }) {
   return <div className={`perfil-toast perfil-toast--${toast.tipo}`} role="status"><i className="fa-solid fa-circle-check" aria-hidden="true"></i>{toast.mensagem}</div>;
 }
 
+function DadoPessoalProprio({ valor, privado }) {
+  return (
+    <dd className={privado ? 'is-private' : ''}>
+      <span>{valor}</span>
+      {privado && (
+        <small className="perfil-dado-privado">
+          <i className="fa-solid fa-lock" aria-hidden="true"></i>
+          Privado para o público
+        </small>
+      )}
+    </dd>
+  );
+}
+
 function formatarMembroDesde(data) {
   if (!data) return null;
   const valor = new Date(data);
   if (Number.isNaN(valor.getTime())) return null;
   return new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(valor);
-}
-
-function formatarDataNascimento(data) {
-  if (!data) return 'Não informada';
-  const partesIso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(data);
-  const partesBr = /^(\d{2})[/-](\d{2})[/-](\d{4})$/.exec(data);
-  const partes = partesIso
-    ? [partesIso[3], partesIso[2], partesIso[1]]
-    : partesBr?.slice(1);
-  if (!partes) return data;
-  const [dia, mes, ano] = partes.map(Number);
-  const valor = new Date(ano, mes - 1, dia);
-  if (valor.getFullYear() !== ano || valor.getMonth() !== mes - 1 || valor.getDate() !== dia) {
-    return 'Não informada';
-  }
-  return new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit', month: 'long', year: 'numeric',
-  }).format(valor);
 }
 
 function calcularIdade(data) {
@@ -137,18 +135,6 @@ function calcularIdade(data) {
     || (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() < nascimento.getDate())
       ? 1 : 0
   );
-}
-
-function formatarTempoRelativo(data) {
-  if (!data) return null;
-  const valor = new Date(data);
-  if (Number.isNaN(valor.getTime())) return null;
-  const minutos = Math.round((valor.getTime() - Date.now()) / 60000);
-  const formato = new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' });
-  if (Math.abs(minutos) < 60) return formato.format(minutos, 'minute');
-  const horas = Math.round(minutos / 60);
-  if (Math.abs(horas) < 24) return formato.format(horas, 'hour');
-  return formato.format(Math.round(horas / 24), 'day');
 }
 
 async function buscarDadosAdministrativos() {
@@ -701,7 +687,11 @@ function Profile() {
               <p className="sobre-texto">{fullProfile?.perfil?.bio || user?.bio || 'Nenhuma biografia informada.'}</p>
               <div className="perfil-sobre-divisor" aria-hidden="true"></div>
               <div className="perfil-dados-pessoais">
-                <dl><div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Idade</dt><dd>{user?.exibir_idade === false ? 'Privado' : Number.isInteger(user?.idade) ? `${user.idade} anos` : 'Não informada'}</dd></div><div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><dd>{user?.exibir_data_nascimento === false ? 'Privado' : formatarDataNascimento(user?.data_nascimento)}</dd></div><div><dt><i className="fa-solid fa-envelope" aria-hidden="true"></i> E-mail</dt><dd>{user?.exibir_email === false ? 'Privado' : user?.email || 'Não informado'}</dd></div></dl>
+                <dl>
+                  <div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Idade</dt><DadoPessoalProprio valor={Number.isInteger(user?.idade) ? `${user.idade} anos` : 'Não informada'} privado={user?.exibir_idade === false} /></div>
+                  <div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><DadoPessoalProprio valor={formatarDataNascimento(user?.data_nascimento)} privado={user?.exibir_data_nascimento === false} /></div>
+                  <div><dt><i className="fa-solid fa-envelope" aria-hidden="true"></i> E-mail</dt><DadoPessoalProprio valor={user?.email || 'Não informado'} privado={user?.exibir_email === false} /></div>
+                </dl>
                 <nav className="perfil-info-atalhos" aria-label="Atalhos da atividade literária"><button type="button" onClick={(evento) => abrirDrawerAtividade(evento, 'livros')} aria-haspopup="dialog" aria-controls="drawerAtividadePerfil"><i className="fa-solid fa-book-open" aria-hidden="true"></i><span><strong>{stats.total_lidos}</strong> livros lidos</span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></button><button type="button" onClick={(evento) => abrirDrawerAtividade(evento, 'avaliacoes')} aria-haspopup="dialog" aria-controls="drawerAtividadePerfil"><i className="fa-solid fa-star" aria-hidden="true"></i><span><strong>{stats.total_avaliados}</strong> avaliações</span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></button></nav>
               </div>
             </article>
@@ -743,7 +733,7 @@ function Profile() {
         <div className="perfil-atividade-drawer-corpo">{carregandoHistorico ? <p role="status">Carregando atividades...</p> : (historicoRecentes[drawerAtividade] || []).length > 0 ? <ol>{historicoRecentes[drawerAtividade].map((evento) => <li key={evento.id}><span><i className={`fa-solid ${drawerAtividade === 'avaliacoes' ? 'fa-star' : 'fa-check'}`} aria-hidden="true"></i></span><div><strong>{evento.titulo}</strong><p>{evento.descricao}</p><time dateTime={evento.data}>{formatarTempoRelativo(evento.data) || 'Registro anterior'}</time></div></li>)}</ol> : <div className="perfil-atividade-drawer-vazio"><i className={`fa-solid ${drawerAtividade === 'avaliacoes' ? 'fa-star-half-stroke' : 'fa-book'}`} aria-hidden="true"></i><strong>Nenhum registro por enquanto</strong><p>Suas próximas atividades aparecerão aqui.</p></div>}</div>
       </aside>
 
-      {user?.tipo === 'autor' && <section data-revelar className="special-panel autor-panel content-glass-card"><div className="panel-info"><h3><i className="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Painel do Autor Independente</h3><p>Gerencie suas publicações e compartilhe novas histórias.</p></div><Link to="/publicar" className="btn-primary-action"><i className="fa-solid fa-plus" aria-hidden="true"></i> Publicar novo livro</Link></section>}
+      {user?.tipo === 'autor' && <section data-revelar className="special-panel autor-panel content-glass-card"><div className="panel-info"><h3><i className="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Painel do Autor Independente</h3><p>Acompanhe suas obras, leituras e a recepção do público.</p></div><Link to="/autor/painel" className="btn-primary-action"><i className="fa-solid fa-chart-line" aria-hidden="true"></i> Acessar Painel</Link></section>}
       {user?.tipo === 'aguardando_aprovacao' && <section data-revelar className="special-panel pendente-panel content-glass-card"><div className="panel-info"><h3 className="perfil-analise-titulo"><i className="fa-solid fa-hourglass-half" aria-hidden="true"></i> Solicitação em análise</h3><p>Nossa equipe está avaliando seu pedido para se tornar Autor Independente.</p></div></section>}
       {user?.tipo === 'leitor' && <section data-revelar className="special-panel upgrade-panel content-glass-card"><div className="panel-info"><h3>Escreve ou deseja publicar suas próprias obras?</h3><p>Torne-se Autor Independente e comece a compartilhar suas histórias.</p></div><Link to="/autor/onboarding" className="btn-primary-action"><i className="fa-solid fa-feather" aria-hidden="true"></i> Quero ser um Autor</Link></section>}
       <ToastPerfil toast={toast} />

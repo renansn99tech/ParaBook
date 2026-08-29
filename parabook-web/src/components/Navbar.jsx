@@ -3,12 +3,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/auth-context'
 import useTema from '../hooks/useTema'
 import { obterAvatarPerfil } from '../services/avatarPerfil'
+import { obterCtaAutoria } from '../services/ctaAutoria'
 import logoNova from '../assets/img/logo-nova-160.webp'
 import logoNova2x from '../assets/img/logo-nova-320.webp'
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext)
   const avatarUsuario = obterAvatarPerfil(user)
+  const ctaPublicacao = user
+    ? obterCtaAutoria(user)
+    : { to: '/para-autores', label: 'Conhecer autoria' }
   const { alternar, icone, rotulo } = useTema()
   const navigate = useNavigate()
   const [contaAberta, setContaAberta] = useState(false)
@@ -68,6 +72,7 @@ function Navbar() {
             <li><Link to="/biblioteca">Explorar</Link></li>
             <li><Link to="/comunidades">Comunidades</Link></li>
             <li><Link to="/autores">Autores</Link></li>
+            {user?.tipo === 'autor' && <li><Link to="/publicar" className="navbar-publicar-livro"><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i> Publicar Livro</Link></li>}
           </ul>
 
           <div className="nav-actions">
@@ -106,9 +111,10 @@ function Navbar() {
             <Link to="/biblioteca" onClick={fecharMenu}><i className="fa-solid fa-book-open" aria-hidden="true"></i><span>Explorar livros</span></Link>
             <Link to="/comunidades" onClick={fecharMenu}><i className="fa-solid fa-people-group" aria-hidden="true"></i><span>Comunidades</span></Link>
             <Link to="/autores" onClick={fecharMenu}><i className="fa-solid fa-pen-nib" aria-hidden="true"></i><span>Autores</span></Link>
+            {user?.tipo === 'autor' && <Link to="/autor/painel" onClick={fecharMenu}><i className="fa-solid fa-chart-line" aria-hidden="true"></i><span>Painel do Autor</span></Link>}
           </div>
 
-          <div className="offcanvas-section offcanvas-section-publicar" aria-label="Publicação"><p className="offcanvas-kicker">Criar</p><Link to="/publicar" className="link-publicar" onClick={fecharMenu}><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i><span>Publicar livro</span></Link></div>
+          <div className="offcanvas-section offcanvas-section-publicar" aria-label="Publicação"><p className="offcanvas-kicker">Criar</p><Link to={ctaPublicacao.to} className="link-publicar" onClick={fecharMenu}><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i><span>{ctaPublicacao.label}</span></Link></div>
           <div className="offcanvas-divider" role="separator"></div>
 
           <div className="offcanvas-section" aria-label="Mais opções">

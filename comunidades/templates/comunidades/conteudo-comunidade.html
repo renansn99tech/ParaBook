@@ -118,9 +118,13 @@
                 <div>
                     <h4 class="post-title">{{ post.titulo }}</h4>
                     <p class="post-author">
-                        <a href="{% url 'perfis:perfil_publico' post.autor.username %}" style="color: #c4b5fd; text-decoration: none;">
-                            @{{ post.autor.username }}
-                        </a> 
+                        {% if not request.user.is_staff and post.autor.is_staff %}
+                            <span title="Conta administrativa do ParaBook">@admin</span>
+                        {% else %}
+                            <a href="{% url 'perfis:perfil_publico' post.autor.username %}" style="color: #c4b5fd; text-decoration: none;">
+                                @{{ post.autor.username }}
+                            </a>
+                        {% endif %}
                         <span class="post-date">• {{ post.criado_em|date:"d/m/Y" }}</span>
                     </p>
                 </div>

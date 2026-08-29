@@ -17,6 +17,17 @@ export interface CommunityPost {
   content: string;
   authorName: string;
   imageUrl?: string;
+  replyCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CommunityReply {
+  id: string | number;
+  postId: string | number;
+  postTitle: string;
+  authorName: string;
+  content: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +49,17 @@ type DjangoCommunityPost = {
   conteudo: string;
   autor_nome: string;
   imagem?: string | null;
+  total_respostas?: number;
+  criado_em: string;
+  atualizado_em: string;
+};
+
+type DjangoCommunityReply = {
+  id: string | number;
+  postagem: string | number;
+  postagem_titulo: string;
+  autor_nome: string;
+  conteudo: string;
   criado_em: string;
   atualizado_em: string;
 };
@@ -68,6 +90,17 @@ const normalizePost = (raw: DjangoCommunityPost): CommunityPost => ({
   content: raw.conteudo,
   authorName: raw.autor_nome,
   imageUrl: resolveDjangoUrl(raw.imagem),
+  replyCount: raw.total_respostas || 0,
+  createdAt: raw.criado_em,
+  updatedAt: raw.atualizado_em,
+});
+
+const normalizeReply = (raw: DjangoCommunityReply): CommunityReply => ({
+  id: raw.id,
+  postId: raw.postagem,
+  postTitle: raw.postagem_titulo,
+  authorName: raw.autor_nome,
+  content: raw.conteudo,
   createdAt: raw.criado_em,
   updatedAt: raw.atualizado_em,
 });
@@ -126,5 +159,21 @@ export const communityService = {
       conteudo: data.content,
     });
     return normalizePost(response.data);
+  },
+
+  getReplies: async (postId: string | number): Promise<CommunityReply[]> => {
+    const endpoint = '/comunidades/respostas/';
+    const response = await api.get(endpoint, {
+      params: { postagem: postId },
+    });
+    return parseCollection<DjangoCommunityReply>(response.data, endpoint).map(normalizeReply);
+  },
+
+  createReply: async (postId: string | number, content: string): Promise<CommunityReply> => {
+    const response = await api.post('/comunidades/respostas/', {
+      postagem: postId,
+      conteudo: content,
+    });
+    return normalizeReply(response.data);
   },
 };

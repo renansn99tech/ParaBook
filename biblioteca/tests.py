@@ -66,6 +66,45 @@ class SegurancaCatalogoTests(TestCase):
         self.assertTrue(Livro.objects.filter(pk=livro.pk).exists())
 
 
+class ResenhaIdentidadeAdministrativaTests(TestCase):
+    def setUp(self):
+        self.categoria = Categoria.objects.create(nome='Identidade em resenha')
+        self.livro = Livro.objects.create(
+            titulo='Livro avaliado', autor='Autoria', categoria=self.categoria, status='publicado',
+        )
+        self.leitor = User.objects.create_user(username='resenha-leitor', password='x')
+        Usuario.objects.create(user_auth=self.leitor, nome='Leitor', tipo='leitor')
+        self.admin = User.objects.create_user(
+            username='resenha-admin-real', password='x', is_staff=True,
+        )
+        Usuario.objects.create(user_auth=self.admin, nome='Admin de Resenha', tipo='admin')
+        Biblioteca.objects.create(
+            user=self.admin,
+            livro=self.livro,
+            status='lido',
+            nota=5,
+            resenha='Avaliação institucional.',
+        )
+        self.client = APIClient()
+        self.url = f'/api/v1/biblioteca/livros/{self.livro.id}/resenhas/'
+
+    def test_leitor_ve_resenha_administrativa_como_admin_generico(self):
+        self.client.force_authenticate(self.leitor)
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.data[0]['usuario_nome'], 'admin')
+        self.assertFalse(resposta.data[0]['usuario_perfil_clicavel'])
+        self.assertIsNone(resposta.data[0]['usuario_foto'])
+
+    def test_admin_ve_identificador_real_na_resenha(self):
+        self.client.force_authenticate(self.admin)
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.data[0]['usuario_nome'], self.admin.username)
+        self.assertTrue(resposta.data[0]['usuario_perfil_clicavel'])
+
+
 class ProgressoLeituraTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='progresso', password='x')

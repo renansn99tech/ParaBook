@@ -64,10 +64,12 @@ class LivroViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def resenhas(self, request, pk=None):
         livro = self.get_object()
-        resenhas = Biblioteca.objects.filter(
+        resenhas = Biblioteca.objects.select_related(
+            'user', 'user__perfil_customizado', 'user__perfil',
+        ).filter(
             livro=livro
         ).exclude(nota__isnull=True, resenha__isnull=True).exclude(resenha='')
-        serializer = ResenhaSerializer(resenhas, many=True)
+        serializer = ResenhaSerializer(resenhas, many=True, context={'request': request})
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])

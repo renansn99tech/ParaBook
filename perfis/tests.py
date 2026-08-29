@@ -523,6 +523,152 @@ class InteressesPerfilAPITests(TestCase):
         self.assertEqual(recomendacao['rotulo'], 'Recomendação do Autor')
 
 
+class PerfilPublicoAcessoEContratoTests(TestCase):
+    def setUp(self):
+        self.alvo = User.objects.create_user(username='perfil-publico-alvo', password='x')
+        self.perfil = Perfil.objects.create(
+            usuario=self.alvo,
+            bio='Biografia pública',
+            descricao_perfil='Lendo entre constelações',
+            localizacao='Belém, PA',
+        )
+        self.usuario = Usuario.objects.create(
+            user_auth=self.alvo,
+            nome='Pessoa Pública',
+            tipo='leitor',
+            perfil=self.perfil,
+        )
+        self.visitante = User.objects.create_user(username='visitante-perfil-publico', password='x')
+        perfil_visitante = Perfil.objects.create(usuario=self.visitante)
+        Usuario.objects.create(
+            user_auth=self.visitante,
+            nome='Visitante',
+            tipo='leitor',
+            perfil=perfil_visitante,
+        )
+        self.categoria = Categoria.objects.create(nome='Ficção pública')
+        self.client = APIClient()
+        self.url = reverse('api-perfil-publico', args=[self.alvo.username])
+
+    def test_visitante_anonimo_recebe_somente_identidade_e_biografia(self):
+        self.usuario.tipo = 'aguardando_aprovacao'
+        self.usuario.save(update_fields=['tipo'])
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.data['acesso'], {'autenticado': False, 'nivel': 'basico'})
+        self.assertEqual(resposta.data['usuario']['tipo'], 'leitor')
+        self.assertEqual(resposta.data['perfil']['bio'], 'Biografia pública')
+        self.assertNotIn('estatisticas', resposta.data)
+        self.assertNotIn('dados_pessoais', resposta.data)
+        self.assertNotIn('comunidades', resposta.data)
+
+    def test_perfil_privado_continua_bloqueado_para_anonimo(self):
+        self.perfil.perfil_privado = True
+        self.perfil.save(update_fields=['perfil_privado'])
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 403)
+        self.assertEqual(resposta.data['status_block'], 'privado')
+
+    def test_membro_autenticado_recebe_contrato_completo_e_comunidades_em_comum(self):
+        comum = Comunidade.objects.create(nome='Comunidade em comum')
+        comum.membros.add(self.alvo, self.visitante)
+        somente_alvo = Comunidade.objects.create(nome='Somente do alvo')
+        somente_alvo.membros.add(self.alvo)
+        self.client.force_authenticate(user=self.visitante)
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.data['acesso'], {'autenticado': True, 'nivel': 'completo'})
+        self.assertEqual(resposta.data['comunidades_em_comum'], [comum.id])
+        self.assertEqual(
+            {item['id'] for item in resposta.data['comunidades']},
+            {comum.id, somente_alvo.id},
+        )
+
+    def test_historico_enriquecido_exclui_obra_removida(self):
+        antiga = timezone.now() - timedelta(days=2)
+        publicada = Livro.objects.create(
+            titulo='Obra pública', autor='Autoria Visível', categoria=self.categoria,
+        )
+        removida = Livro.objects.create(
+            titulo='Obra removida', autor='Autoria Oculta', categoria=self.categoria,
+            status='removido', data_remocao=timezone.now(),
+        )
+        item_publico = Biblioteca.objects.create(
+            user=self.alvo, livro=publicada, status='lido', nota=4,
+            data_conclusao=antiga,
+        )
+        Biblioteca.objects.create(
+            user=self.alvo, livro=removida, status='lido', nota=5,
+            data_conclusao=timezone.now(),
+        )
+        self.client.force_authenticate(user=self.visitante)
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(len(resposta.data['historico']), 1)
+        historico = resposta.data['historico'][0]
+        self.assertEqual(historico['id'], item_publico.id)
+        self.assertEqual(historico['livro_id'], publicada.id)
+        self.assertEqual(historico['autor'], 'Autoria Visível')
+        self.assertEqual(historico['nota'], 4)
+        self.assertIsNotNone(historico['data'])
+
+    def test_autor_expoe_somente_obras_aprovadas_e_publicadas(self):
+        self.usuario.tipo = 'autor'
+        self.usuario.save(update_fields=['tipo'])
+        aprovada = Livro.objects.create(
+            titulo='Obra aprovada', autor='Pessoa Pública', categoria=self.categoria,
+            avaliacao='4.50',
+        )
+        pendente = Livro.objects.create(
+            titulo='Obra ainda pendente', autor='Pessoa Pública', categoria=self.categoria,
+            status='pendente',
+        )
+        SolicitacaoPublicacao.objects.create(
+            usuario=self.alvo, livro=aprovada, status='aprovado',
+        )
+        SolicitacaoPublicacao.objects.create(
+            usuario=self.alvo, livro=pendente, status='aprovado',
+        )
+        self.client.force_authenticate(user=self.visitante)
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual([obra['id'] for obra in resposta.data['obras']], [aprovada.id])
+        self.assertIn('capa', resposta.data['interesses']['recomendacao'])
+        self.assertEqual(resposta.data['interesses']['recomendacao']['id'], aprovada.id)
+
+    def test_permissoes_do_alvo_so_aparecem_em_visita_admin_para_admin(self):
+        self.alvo.is_staff = True
+        self.alvo.is_superuser = True
+        self.alvo.save(update_fields=['is_staff', 'is_superuser'])
+        self.usuario.tipo = 'admin'
+        self.usuario.save(update_fields=['tipo'])
+
+        admin = User.objects.create_user(
+            username='admin-visitante-publico', password='x', is_staff=True,
+        )
+        perfil_admin = Perfil.objects.create(usuario=admin)
+        Usuario.objects.create(
+            user_auth=admin, nome='Admin visitante', tipo='admin', perfil=perfil_admin,
+        )
+        self.client.force_authenticate(user=admin)
+
+        resposta = self.client.get(self.url)
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(
+            resposta.data['usuario']['permissoes'],
+            {'is_staff': True, 'is_superuser': True},
+        )
+
+
 class InicioPersonalizadoAPITests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='inicio-user', password='x')

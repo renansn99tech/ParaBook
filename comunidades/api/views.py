@@ -24,6 +24,7 @@ from .serializers import (
 )
 from usuarios.audit import registrar_acao
 from notificacoes.models import Notificacao
+from usuarios.identidade_publica import identidade_publica
 
 # REGRA 10: teto de comunidades criadas por um leitor/autor.
 LIMITE_COMUNIDADES_POR_USUARIO = 5
@@ -47,7 +48,7 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
         Membros e admin continuam enxergando (opaca, com badge no front),
         e o detalhe por id segue acessível para exibir o aviso de desativada.
         """
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().select_related('criador', 'criador__perfil_customizado')
 
         if self.action != 'list':
             return queryset
@@ -155,13 +156,13 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
     def membros(self, request, pk=None):
         """Lista os membros da comunidade para o painel de Configurações."""
         comunidade = self.get_object()
-        membros = comunidade.membros.all().order_by('username')
+        membros = comunidade.membros.select_related('perfil_customizado').order_by('username')
 
         return Response({
             'membros': MembroComunidadeSerializer(
                 membros,
                 many=True,
-                context={'comunidade': comunidade}
+                context={'comunidade': comunidade, 'request': request}
             ).data,
             'total': membros.count(),
             'max_participantes': comunidade.max_participantes,
@@ -225,7 +226,7 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAutorDaPostagemOuAdmin]
 
     def get_queryset(self):
-        queryset = super().get_queryset().select_related('autor').annotate(
+        queryset = super().get_queryset().select_related('autor', 'autor__perfil_customizado').annotate(
             total_respostas_anotado=Count('respostas', distinct=True),
         )
         comunidade_id = self.request.query_params.get('comunidade')
@@ -234,12 +235,20 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(autor=self.request.user)
+        comunidade = serializer.validated_data['comunidade']
+        usuario = self.request.user
+
+        if comunidade.em_manutencao and not usuario.is_superuser:
+            raise PermissionDenied('Esta comunidade está temporariamente desativada.')
+        if not usuario.is_superuser and not comunidade.membros.filter(pk=usuario.pk).exists():
+            raise PermissionDenied('Entre na comunidade antes de criar uma postagem.')
+
+        serializer.save(autor=usuario)
 
 
 class RespostaPostagemViewSet(viewsets.ModelViewSet):
     queryset = RespostaPostagem.objects.select_related(
-        'autor', 'postagem', 'postagem__comunidade',
+        'autor', 'autor__perfil_customizado', 'postagem', 'postagem__comunidade',
     )
     serializer_class = RespostaPostagemSerializer
     permission_classes = [IsAutorDaPostagemOuAdmin]
@@ -262,10 +271,11 @@ class RespostaPostagemViewSet(viewsets.ModelViewSet):
         with transaction.atomic():
             resposta = serializer.save(autor=usuario)
             if postagem.autor_id != usuario.id:
+                remetente = identidade_publica(usuario, postagem.autor)['username']
                 Notificacao.objects.create(
                     usuario=postagem.autor,
                     titulo='Nova resposta na sua postagem',
-                    mensagem=f'@{usuario.username} respondeu a “{postagem.titulo}”.',
+                    mensagem=f'@{remetente} respondeu a “{postagem.titulo}”.',
                     tipo='COMUNIDADE',
                     link=f'/comunidade/{comunidade.id}/conteudo',
                 )

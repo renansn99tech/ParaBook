@@ -1,47 +1,301 @@
 /* ===============================
    COMUNIDADES - PARABOOK
+   Variáveis novas: prefixo --com-, escopadas em .pagina-comunidade.
+   Três acentos, na ordem de raridade: roxo (marca e ação), vela (Oficial
+   e lotação apertada), danger (denúncia, só admin). Zero hex literal.
 ================================ */
 
 .pagina-comunidade {
+    --com-barra: var(--purple);
+
     max-width: var(--layout-max);
     margin: 0 auto;
-    padding: 30px 20px;
-    text-align: center;
+    padding: 15px 20px 30px;
+    text-align: left;
 }
 
+/* Título editorial — herdado também por MinhasComunidades. */
 .pagina-comunidade-titulo {
-    font-size: 3rem;
-    font-weight: 800;
+    font-family: var(--fonte-editorial);
+    font-size: 2.6rem;
+    font-weight: 600;
     color: var(--text);
+    letter-spacing: -.5px;
     margin-bottom: 12px;
-    letter-spacing: -1px;
 }
 
-/* CARD COMUNIDADE EXISTENTE */
+/* ==========================================================
+   HERO
+========================================================== */
+.com-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 38px;
+    margin-bottom: 24px;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(var(--purple-rgb),.22);
+    background: linear-gradient(150deg, rgba(var(--purple-dark-rgb),.34), rgba(var(--bg-card-rgb),.92));
+}
+
+.com-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--image-stars) center/cover;
+    mix-blend-mode: screen;
+    opacity: .3;
+    -webkit-mask-image: linear-gradient(115deg, rgba(var(--black-rgb),1), transparent 65%);
+    mask-image: linear-gradient(115deg, rgba(var(--black-rgb),1), transparent 65%);
+    pointer-events: none;
+}
+
+.com-hero-eyebrow {
+    position: relative;
+    margin-bottom: 10px;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    color: var(--purple-text);
+}
+
+.com-hero-titulo {
+    position: relative;
+    margin-bottom: 12px;
+    font-family: var(--fonte-editorial);
+    font-size: 2.6rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--text);
+}
+
+.com-hero-lead {
+    position: relative;
+    max-width: 620px;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-soft);
+    text-wrap: pretty;
+}
+
+/* Lead de admin é mais curto: sem o teto de 620px ele cabe em uma linha. */
+.com-hero-lead--full {
+    max-width: none;
+}
+
+/* Faixa de admin — único danger que um não-admin nunca vê. */
+.com-admin-faixa {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(var(--danger-rgb),.28);
+    background: rgba(var(--danger-rgb),.08);
+    color: var(--text-soft);
+    font-size: .92rem;
+}
+
+.com-admin-faixa i {
+    color: var(--danger-soft);
+    font-size: 1.1rem;
+}
+
+/* ==========================================================
+   TOOLBAR: filtro + busca (client-side)
+========================================================== */
+.com-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.com-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.com-filtro {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    min-height: var(--touch-target, 44px);
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-strong);
+    background: rgba(var(--white-rgb),.03);
+    color: var(--text-secondary);
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.com-filtro:hover {
+    color: var(--text);
+    border-color: rgba(var(--purple-rgb),.4);
+}
+
+.com-filtro.is-ativo {
+    background: rgba(var(--purple-rgb),.18);
+    border-color: rgba(var(--purple-rgb),.55);
+    color: var(--purple-text);
+}
+
+.com-filtro-contador {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    padding: 1px 7px;
+    border-radius: var(--radius-pill);
+    background: rgba(var(--white-rgb),.08);
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.com-filtro.is-ativo .com-filtro-contador {
+    background: rgba(var(--purple-rgb),.28);
+}
+
+.com-busca {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 44px;
+    min-width: 240px;
+    padding: 0 14px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-strong);
+    background: rgba(var(--white-rgb),.03);
+}
+
+.com-busca > i {
+    color: var(--text-dim);
+}
+
+/* O foco vai para a pílula inteira, não para o input — assim o halo do
+   design system contorna o campo certo em vez de flutuar desalinhado. */
+.com-busca:focus-within {
+    border-color: rgba(var(--purple-rgb),.55);
+    box-shadow: var(--focus-ring);
+}
+
+.com-busca input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: .95rem;
+}
+
+/* Anula o anel/halo que o input herda do base.css: o destaque é da pílula. */
+.com-busca input:focus,
+.com-busca input:focus-visible {
+    outline: none;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.com-busca input::placeholder {
+    color: var(--text-dim);
+}
+
+.com-busca-limpar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: var(--radius-circle);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+}
+
+.com-busca-limpar:hover {
+    color: var(--text);
+    background: rgba(var(--white-rgb),.08);
+}
+
+/* ==========================================================
+   CABEÇALHO DE SEÇÃO
+========================================================== */
+.com-secao {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin: 0 0 20px;
+}
+
+.com-secao-titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-family: var(--fonte-editorial);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.com-secao-titulo::before {
+    content: "";
+    width: 4px;
+    height: 20px;
+    border-radius: var(--radius-pill);
+    background: var(--com-barra);
+}
+
+.com-secao.is-oficial {
+    --com-barra: var(--vela);
+}
+
+.com-secao-nota {
+    margin: 0;
+    font-size: .88rem;
+    color: var(--text-dim);
+}
+
+/* ==========================================================
+   GRADE
+========================================================== */
+.grid-comunidades {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 20px;
+}
+
+.grid-comunidades.com-folga {
+    margin-bottom: 48px;
+}
+
+/* ==========================================================
+   CARD
+========================================================== */
 .card-comunidade {
     position: relative;
     overflow: hidden;
-    min-height: 230px;
-    padding: 26px;
     display: flex;
     flex-direction: column;
+    min-height: 230px;
+    padding: 24px;
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(var(--white-rgb),0.1);
+    border: 1px solid rgba(var(--white-rgb),.1);
     background: linear-gradient(145deg, rgba(var(--bg-card-rgb),.95), rgba(var(--bg-card-rgb),.72));
-    box-shadow: 0 10px 30px rgba(var(--black-rgb),0.2);
-    transition: .35s ease-in-out;
-}
-
-.card-comunidade::before {
-    content: "";
-    position: absolute;
-    width: 160px;
-    height: 160px;
-    right: -70px;
-    top: -70px;
-    background: radial-gradient(circle, rgba(var(--purple-rgb),.22), transparent 70%);
-    opacity: 0;
-    transition: .35s;
+    box-shadow: 0 10px 30px rgba(var(--black-rgb),.2);
+    transition: .35s ease;
 }
 
 .card-comunidade:hover {
@@ -50,264 +304,413 @@
     box-shadow: 0 22px 55px rgba(var(--black-rgb),.38), 0 0 35px rgba(var(--purple-rgb),.12);
 }
 
-.card-comunidade:hover::before {
-    opacity: 1;
+.card-comunidade.is-membro {
+    border-color: rgba(var(--purple-rgb),.3);
 }
 
-.comunidade-header {
-    position: relative;
-    z-index: 2;
+.card-comunidade.is-desativada {
+    opacity: .55;
+}
+
+.comunidade-topo {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    gap: 14px;
     margin-bottom: 14px;
 }
 
-.comunidade-nome {
-    color: var(--text);
-    font-size: 1.35rem;
-    margin-bottom: 8px;
-    font-weight: 700;
-    text-align: left;
-}
-
-/* Antes cada badge vinha de uma cor solta do Bootstrap (cinza, azul,
-   vermelho) — nenhuma delas da paleta do ParaBook. Agora são três
-   variantes da mesma peça. */
-.comunidade-badges {
+.comunidade-monograma {
+    flex: none;
+    width: 46px;
+    height: 46px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    font-family: var(--fonte-editorial);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--purple-text);
+    background: rgba(var(--purple-rgb),.14);
+    border: 1px solid rgba(var(--purple-rgb),.28);
 }
 
-.comunidade-badge {
+.comunidade-monograma--oficial {
+    color: var(--vela);
+    background: rgba(var(--vela-rgb),.14);
+    border-color: rgba(var(--vela-rgb),.3);
+}
+
+.comunidade-identidade {
+    flex: 1;
+    min-width: 0;
+}
+
+.comunidade-nome {
+    margin: 0 0 2px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.comunidade-autoria {
+    display: inline-block;
+    font-size: .82rem;
+    color: var(--text-dim);
+    text-decoration: none;
+}
+
+.comunidade-autoria--link:hover .comunidade-autoria-nome {
+    color: var(--purple-text);
+    text-decoration: underline;
+}
+
+.comunidade-selo {
+    flex: none;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-
-    font-size: 0.78rem;
-    font-weight: 600;
-    line-height: 1;
-    padding: 6px 10px;
+    padding: 5px 10px;
     border-radius: var(--radius-pill);
-
-    background: rgba(var(--white-rgb),0.08);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
+    font-size: .74rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
 }
 
-.comunidade-badge--oficial {
-    background: rgba(var(--purple-rgb),0.15);
-    border-color: rgba(var(--purple-rgb),0.4);
-    color: var(--purple-text);
+.comunidade-selo--oficial {
+    background: rgba(var(--vela-rgb),.14);
+    border: 1px solid rgba(var(--vela-rgb),.35);
+    color: var(--vela);
 }
 
-.comunidade-badge--inativa {
-    background: rgba(var(--danger-rgb),0.12);
-    border-color: rgba(var(--danger-rgb),0.35);
+.comunidade-selo--desativada {
+    background: rgba(var(--white-rgb),.06);
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+}
+
+.comunidade-selo--denuncia {
+    background: rgba(var(--danger-rgb),.12);
+    border: 1px solid rgba(var(--danger-rgb),.35);
     color: var(--danger-soft);
 }
 
 .comunidade-descricao {
-    position: relative;
-    z-index: 2;
-    color: var(--text-secondary, var(--text-secondary));
-    line-height: 1.7;
-    margin-bottom: 20px;
-    flex: 1;
-    text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0 0 16px;
+    font-size: .95rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+}
+
+.comunidade-lotacao {
+    margin: 0 0 18px;
+}
+
+.comunidade-lotacao-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+    font-size: .82rem;
+    color: var(--text-secondary);
+}
+
+.comunidade-lotacao-pct {
+    font-weight: 600;
+    color: var(--text-dim);
+}
+
+.comunidade-lotacao-pct.is-apertando {
+    color: var(--vela);
+}
+
+.comunidade-lotacao-barra {
+    height: 6px;
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background: rgba(var(--white-rgb),.07);
+}
+
+.comunidade-lotacao-barra > span {
+    display: block;
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(90deg, var(--purple), var(--purple-text));
+    transition: width .4s ease;
+}
+
+.comunidade-lotacao-barra.is-apertando > span {
+    background: linear-gradient(90deg, var(--purple), var(--vela));
 }
 
 .comunidade-footer {
-    position: relative;
-    z-index: 2;
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    align-items: stretch;
     gap: 10px;
     margin-top: auto;
 }
 
 /* ==========================================================
-   LISTAGEM DE COMUNIDADES
-   Estava tudo em style={{...}} no JSX: o grid, o cabeçalho de cada
-   seção e os estados vazios. Vira classe, com os tokens.
+   AÇÕES DO RODAPÉ
 ========================================================== */
-
-.pagina-comunidade-lead{
-    margin-bottom:40px;
-
-    font-size:1.1rem;
-    color:var(--text-soft);
+.comunidade-acessar {
+    flex: 1;
 }
 
-/* Grade das duas listagens (oficiais e da galera). Card-base 330px
-   (era 300px) — +10% de largura por card. */
-.grid-comunidades{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(330px, 1fr));
-    gap:20px;
+.comunidade-sair {
+    flex: none;
+    width: 46px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.grid-comunidades.com-folga{
-    margin-bottom:60px;
-}
-
-/* Cabeçalho de cada seção da página. */
-.secao-comunidades{
-    margin-bottom:30px;
-
-    text-align:left;
-}
-
-/* A segunda seção é separada da primeira por uma linha. */
-.secao-comunidades.separada{
-    padding-top:40px;
-
-    border-top:1px solid rgba(var(--white-rgb),.1);
-}
-
-.secao-comunidades h3{
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-    margin-bottom:5px;
-
-    font-size:1.5rem;
-    color:var(--text);
-}
-
-/* Roxo = espaço da casa, azul = espaço de usuário. Mesma leitura que o
-   painel admin usa na coluna "Tipo". */
-.secao-comunidades.oficiais h3 i{
-    color:var(--purple);
-}
-
-.secao-comunidades.da-galera h3 i{
-    color:var(--info);
-}
-
-.secao-comunidades p{
-    margin:0 0 20px;
-
-    font-size:.95rem;
-    color:var(--text-secondary);
-}
-
-/* Estado vazio ocupando a largura toda da grade. */
-.grid-comunidades .empty-state{
-    grid-column:1 / -1;
-
-    padding:40px;
-
-    text-align:center;
-}
-
-.grid-comunidades .empty-state i{
-    display:block;
-
-    margin-bottom:15px;
-
-    font-size:2.5rem;
-    color:var(--text-dim);
-}
-
-.grid-comunidades .empty-state p{
-    margin:0 auto;
-
-    font-size:1.1rem;
-}
-
-.grid-comunidades .empty-state p + p{
-    margin-top:5px;
-
-    font-size:.9rem;
-}
-
-/* CARD ESPECIAL: CRIAR COMUNIDADE */
-.card-criar-comunidade-link {
+/* Ação secundária de entrar: roxo suave, um degrau abaixo do gradiente. */
+.btn-purple-soft {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 18px;
+    min-height: var(--touch-target, 44px);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(var(--purple-rgb),.45);
+    background: rgba(var(--purple-rgb),.1);
+    color: var(--purple-text);
+    font-size: .95rem;
+    font-weight: 600;
     text-decoration: none;
-    color: inherit;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.btn-purple-soft:hover {
+    background: rgba(var(--purple-rgb),.2);
+}
+
+.com-inerte {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 18px;
+    min-height: var(--touch-target, 44px);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong);
+    background: rgba(var(--white-rgb),.02);
+    color: var(--text-dim);
+    font-size: .92rem;
+    font-weight: 600;
+}
+
+/* ==========================================================
+   CARD DE CRIAR
+========================================================== */
+.card-criar-comunidade-link {
     display: block;
+    color: inherit;
+    text-decoration: none;
 }
 
 .card-criar-comunidade {
-    position: relative;
-    min-height: 230px;
-    padding: 26px;
-    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 14px;
+    height: 100%;
+    min-height: 210px;
+    padding: 26px;
     text-align: center;
     border-radius: var(--radius-lg);
-    border: 2px dashed rgba(var(--purple-rgb),0.4);
-    background: rgba(var(--bg-card-rgb),0.4);
-    transition: transform 0.35s ease-in-out, border-color 0.35s, background 0.35s;
+    border: 1px dashed rgba(var(--purple-rgb),.4);
+    background: rgba(var(--purple-rgb),.04);
     cursor: pointer;
+    transition: .3s ease;
 }
 
 .card-criar-comunidade:hover {
     transform: translateY(var(--lift-md));
-    border-color: rgba(var(--purple-rgb),0.8);
-    background: rgba(var(--purple-rgb),0.1);
+    border-color: rgba(var(--purple-rgb),.7);
+    background: rgba(var(--purple-rgb),.09);
 }
 
 .card-criar-icone {
-    width: 60px;
-    height: 60px;
-    border-radius: var(--radius-circle);
-    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-    display: flex;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
-    box-shadow: 0 8px 20px rgba(var(--purple-rgb),0.2);
-    transition: transform 0.35s;
-}
-
-.card-criar-icone i {
-    font-size: 1.6rem;
-    color: white;
-}
-
-.card-criar-comunidade:hover .card-criar-icone {
-    transform: scale(1.1);
+    border-radius: var(--radius-md);
+    background: rgba(var(--purple-rgb),.16);
+    color: var(--purple-text);
+    font-size: 1.3rem;
 }
 
 .card-criar-content h4 {
-    color: var(--text);
-    font-size: 1.35rem;
+    margin: 0 0 4px;
+    font-size: 1.15rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    color: var(--text);
 }
 
 .card-criar-content p {
-    color: var(--text-secondary, var(--text-secondary));
-    font-size: 0.95rem;
-    line-height: 1.5;
+    max-width: 26ch;
     margin: 0;
+    font-size: .9rem;
+    color: var(--text-dim);
 }
 
-.empty-state {
-    text-align: center;
-    padding: 40px;
-    background: rgba(var(--white-rgb),0.02);
-    border-radius: var(--radius);
-    border: 1px dashed rgba(var(--white-rgb),0.1);
-    color: var(--text-secondary, var(--text-secondary));
-}
 /* ==========================================================
-   RESPONSIVIDADE MOBILE
-   O patch global do base.css já reduz o padding do container e
-   trava o overflow-x. Aqui a grade vira 1 coluna (o minmax de
-   330px estourava em telas de ~360px) e os cards ficam enxutos.
+   ESTADO VAZIO
+========================================================== */
+.com-vazio {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 72px 30px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-strong);
+    color: var(--text-secondary);
+}
+
+.com-vazio i {
+    margin-bottom: 4px;
+    font-size: 2rem;
+    color: var(--purple-text);
+}
+
+.com-vazio h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.com-vazio p {
+    margin: 0 0 8px;
+    font-size: .92rem;
+    color: var(--text-dim);
+}
+
+/* Base neutra do empty-state legado (MinhasComunidades ainda o usa). */
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================
+   SKELETON (nova anatomia)
+========================================================== */
+.card-comunidade--skeleton {
+    pointer-events: none;
+}
+
+.sk-monograma {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--radius-md);
+    background: rgba(var(--white-rgb),.06);
+}
+
+.sk-linha {
+    display: block;
+    height: 12px;
+    margin-bottom: 8px;
+    border-radius: var(--radius-pill);
+    background: rgba(var(--white-rgb),.06);
+}
+
+.sk-linha--titulo {
+    width: 70%;
+    height: 16px;
+}
+
+.sk-linha--curta {
+    width: 50%;
+}
+
+.sk-barra {
+    display: block;
+    height: 6px;
+    margin: 14px 0;
+    border-radius: var(--radius-pill);
+    background: rgba(var(--white-rgb),.06);
+}
+
+.sk-pill {
+    display: block;
+    height: 44px;
+    margin-top: auto;
+    border-radius: var(--radius-md);
+    background: rgba(var(--white-rgb),.05);
+}
+
+@keyframes com-pulse {
+    0%, 100% { opacity: .6; }
+    50% { opacity: 1; }
+}
+
+.card-comunidade--skeleton .sk-monograma,
+.card-comunidade--skeleton .sk-linha,
+.card-comunidade--skeleton .sk-barra,
+.card-comunidade--skeleton .sk-pill {
+    animation: com-pulse 1.4s ease-in-out infinite;
+}
+
+/* ==========================================================
+   MOVIMENTO REDUZIDO
+========================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .card-comunidade,
+    .card-criar-comunidade,
+    .btn-purple-soft,
+    .com-filtro,
+    .comunidade-lotacao-barra > span {
+        transition: none;
+    }
+
+    .card-comunidade:hover,
+    .card-criar-comunidade:hover {
+        transform: none;
+    }
+
+    .card-comunidade--skeleton .sk-monograma,
+    .card-comunidade--skeleton .sk-linha,
+    .card-comunidade--skeleton .sk-barra,
+    .card-comunidade--skeleton .sk-pill {
+        animation: none;
+    }
+}
+
+/* ==========================================================
+   RESPONSIVO
 ========================================================== */
 @media (max-width: 768px) {
+    .pagina-comunidade { padding: 24px 16px; }
+    .com-hero { padding: 26px 22px; }
+    .com-hero-titulo { font-size: 2rem; }
+    .com-toolbar { flex-direction: column; align-items: stretch; }
+    .com-busca { width: 100%; }
+    .com-filtros { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .com-filtros::-webkit-scrollbar { display: none; }
+    .com-filtro { flex: none; }
+    .com-busca-limpar { width: 44px; height: 44px; }
     .grid-comunidades { grid-template-columns: 1fr; }
-    .pagina-comunidade-lead { font-size: 1rem; margin-bottom: 24px; }
-    .secao-comunidades h3 { font-size: 1.25rem; }
     .card-comunidade { padding: 20px; min-height: 0; }
 }

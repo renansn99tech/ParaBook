@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
 import { obterAvatarPerfil } from '../services/avatarPerfil';
@@ -31,6 +31,8 @@ const ACOES_AMIGAVEIS = {
   'moderacao.comunidade.aprovar': 'acolheu uma denúncia de comunidade',
   'moderacao.comunidade.recusar': 'arquivou uma denúncia de comunidade',
 };
+
+const ABAS_DASHBOARD = ['dashboard', 'livros', 'comunidades', 'usuarios', 'aprovacoes', 'denuncias', 'lixeira'];
 
 function useMovimentoReduzido() {
   const [reduzir, setReduzir] = useState(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -105,8 +107,12 @@ function CartaoMetrica({ rotulo, valor, detalhe, icone, tom, onClick, animar }) 
 function Dashboard() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const reduzirMovimento = useMovimentoReduzido();
-  const [abaAtiva, setAbaAtiva] = useState('dashboard');
+  const [abaAtiva, setAbaAtiva] = useState(() => {
+    const abaSolicitada = new URLSearchParams(location.search).get('aba');
+    return ABAS_DASHBOARD.includes(abaSolicitada) ? abaSolicitada : 'dashboard';
+  });
   const [resumo, setResumo] = useState(RESUMO_INICIAL);
   const [carregandoResumo, setCarregandoResumo] = useState(true);
   const [erroResumo, setErroResumo] = useState(false);
@@ -128,6 +134,10 @@ function Dashboard() {
   }, []);
 
   useEffect(() => { carregarResumo(); }, [carregarResumo]);
+  useEffect(() => {
+    const abaSolicitada = new URLSearchParams(location.search).get('aba');
+    if (ABAS_DASHBOARD.includes(abaSolicitada)) setAbaAtiva(abaSolicitada);
+  }, [location.search]);
   useEffect(() => {
     const abrirPaleta = (evento) => {
       if ((evento.ctrlKey || evento.metaKey) && evento.key.toLocaleLowerCase() === 'k') {

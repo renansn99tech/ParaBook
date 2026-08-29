@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,15 +11,29 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { CompositeNavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { MainTabParamList, RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { bookService, LibraryStatus, UserBookItem } from '../services/bookService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MyLibrary'>;
+type LibraryParams = RootStackParamList['MyLibrary'];
+type LibraryTabNavigation = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Biblioteca'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
-export const MyLibraryScreen = ({ navigation, route }: Props) => {
-  const [activeTab, setActiveTab] = useState<LibraryStatus>(route.params?.initialStatus || 'lendo');
+type LibraryContentProps = {
+  params?: LibraryParams;
+  showBackButton: boolean;
+  onBack?: () => void;
+  onOpenBook: (bookId: string, title: string) => void;
+};
+
+const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryContentProps) => {
+  const [activeTab, setActiveTab] = useState<LibraryStatus>(params?.initialStatus || 'lendo');
   const [books, setBooks] = useState<UserBookItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -28,11 +42,11 @@ export const MyLibraryScreen = ({ navigation, route }: Props) => {
   const fetchLibrary = useCallback(async () => {
     setErrorMessage(null);
     try {
-      const showAllStatuses = route.params?.favoritesOnly || route.params?.reviewedOnly;
+      const showAllStatuses = params?.favoritesOnly || params?.reviewedOnly;
       const data = await bookService.getUserLibrary(showAllStatuses ? undefined : activeTab);
       setBooks(data.filter((item) => {
-        if (route.params?.favoritesOnly) return Boolean(item.favorite);
-        if (route.params?.reviewedOnly) return item.rating !== null && item.rating !== undefined;
+        if (params?.favoritesOnly) return Boolean(item.favorite);
+        if (params?.reviewedOnly) return item.rating !== null && item.rating !== undefined;
         return true;
       }));
     } catch (error) {
@@ -42,12 +56,12 @@ export const MyLibraryScreen = ({ navigation, route }: Props) => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [activeTab, route.params?.favoritesOnly, route.params?.reviewedOnly]);
+  }, [activeTab, params?.favoritesOnly, params?.reviewedOnly]);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     setLoading(true);
-    fetchLibrary();
-  }, [fetchLibrary]);
+    void fetchLibrary();
+  }, [fetchLibrary]));
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -56,21 +70,22 @@ export const MyLibraryScreen = ({ navigation, route }: Props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{route.params?.favoritesOnly ? 'Favoritos' : route.params?.reviewedOnly ? 'Avaliacoes' : 'Minha Biblioteca'}</Text>
+        {showBackButton ? (
+          <TouchableOpacity
+            onPress={onBack}
+            style={styles.backButton}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+          </TouchableOpacity>
+        ) : <View style={styles.headerPlaceholder} />}
+        <Text style={styles.headerTitle}>{params?.favoritesOnly ? 'Favoritos' : params?.reviewedOnly ? 'Avaliacoes' : 'Minha Biblioteca'}</Text>
         <View style={styles.headerPlaceholder} />
       </View>
 
       {/* Abas da Biblioteca */}
-      {!route.params?.favoritesOnly && !route.params?.reviewedOnly && <View style={styles.tabsContainer}>
+      {!params?.favoritesOnly && !params?.reviewedOnly && <View style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'lendo' && styles.activeTab]}
           onPress={() => setActiveTab('lendo')}
@@ -134,12 +149,7 @@ export const MyLibraryScreen = ({ navigation, route }: Props) => {
             <TouchableOpacity
               style={styles.bookCard}
               activeOpacity={0.7}
-              onPress={() =>
-                navigation.navigate('BookDetail', {
-                  bookId: String(item.book.id),
-                  title: item.book.title,
-                })
-              }
+              onPress={() => onOpenBook(String(item.book.id), item.book.title)}
             >
               {item.book.cover_url ? (
                 <Image source={{ uri: item.book.cover_url }} style={styles.coverImage} resizeMode="cover" />
@@ -173,6 +183,25 @@ export const MyLibraryScreen = ({ navigation, route }: Props) => {
         />
       )}
     </SafeAreaView>
+  );
+};
+
+export const MyLibraryScreen = ({ navigation, route }: Props) => (
+  <LibraryContent
+    params={route.params}
+    showBackButton
+    onBack={() => navigation.goBack()}
+    onOpenBook={(bookId, title) => navigation.navigate('BookDetail', { bookId, title })}
+  />
+);
+
+export const LibraryTabScreen = () => {
+  const navigation = useNavigation<LibraryTabNavigation>();
+  return (
+    <LibraryContent
+      showBackButton={false}
+      onOpenBook={(bookId, title) => navigation.navigate('BookDetail', { bookId, title })}
+    />
   );
 };
 

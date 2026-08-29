@@ -31,7 +31,7 @@ export const ExploreScreen = () => {
       setLoading(true);
       setErrorMessage(null);
       try {
-        const data = await bookService.getFeaturedBooks(search.trim() || undefined);
+        const data = await bookService.getBooks(search.trim() || undefined);
         setBooks(data);
       } catch (error) {
         setBooks([]);
@@ -59,7 +59,7 @@ export const ExploreScreen = () => {
         <Ionicons name="search-outline" size={20} color={colors.textMuted} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Pesquisar por titulo, autor ou genero..."
+          placeholder="Pesquisar por titulo ou autor..."
           placeholderTextColor={colors.textMuted}
           value={search}
           onChangeText={setSearch}

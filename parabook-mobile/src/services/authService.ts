@@ -1,9 +1,21 @@
 import axios from 'axios';
-import { api, clearAuthTokens, resolveDjangoUrl, setAuthTokens } from './api';
+import { api, getRefreshToken, resolveDjangoUrl, setAuthTokens } from './api';
 
 export interface AuthTokens {
   access: string;
   refresh?: string;
+}
+
+export type LoginResponse =
+  | { requiresTwoFactor: true; detail: string }
+  | { requiresTwoFactor: false; tokens: AuthTokens };
+
+export interface RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+  termosAceitos: boolean;
 }
 
 export interface AuthenticatedUser {
@@ -83,6 +95,8 @@ export interface FullUserProfile {
   }>;
 }
 
+type ApiErrorBody = Record<string, unknown> | unknown[];
+
 const normalizeCurrentUserProfile = (raw: CurrentUserProfile): CurrentUserProfile => ({
   ...raw,
   foto: resolveDjangoUrl(raw.foto) || null,
@@ -103,6 +117,74 @@ const normalizeFullUserProfile = (raw: FullUserProfile): FullUserProfile => ({
   },
 });
 
+const parseTokens = (data: unknown): AuthTokens => {
+  if (!data || typeof data !== 'object' || !('access' in data) || typeof data.access !== 'string') {
+    throw new Error('A API nao retornou uma sessao valida.');
+  }
+
+  const refresh = 'refresh' in data && typeof data.refresh === 'string' ? data.refresh : undefined;
+  return { access: data.access, refresh };
+};
+
+const isDevelopmentRuntime = () => {
+  return typeof __DEV__ !== 'undefined' && __DEV__;
+};
+
+const sanitizeApiErrorBody = (value: unknown): unknown => {
+  const sensitiveKeys = new Set([
+    'access', 'codigo_2fa', 'nova_senha', 'password', 'password_confirm',
+    'refresh', 'senha', 'senha_atual', 'token',
+  ]);
+
+  if (Array.isArray(value)) {
+    return value.map(sanitizeApiErrorBody);
+  }
+
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+      key,
+      sensitiveKeys.has(key.toLowerCase()) && typeof item === 'string'
+        ? '[redacted]'
+        : sanitizeApiErrorBody(item),
+    ])
+  );
+};
+
+const extractValidationMessages = (value: unknown): string[] => {
+  if (typeof value === 'string') {
+    return [value];
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap(extractValidationMessages);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.values(value).flatMap(extractValidationMessages);
+  }
+
+  return [];
+};
+
+const logApiValidationError = (endpoint: string, error: unknown) => {
+  if (!isDevelopmentRuntime() || !axios.isAxiosError(error)) {
+    return;
+  }
+
+  const status = error.response?.status;
+  const body = error.response?.data as ApiErrorBody | undefined;
+
+  console.error('[authService] API request failed', {
+    endpoint,
+    status,
+    body: sanitizeApiErrorBody(body),
+  });
+};
+
 export const extractApiErrorMessage = (error: unknown, fallback: string) => {
   if (!axios.isAxiosError(error)) {
     return fallback;
@@ -119,9 +201,7 @@ export const extractApiErrorMessage = (error: unknown, fallback: string) => {
   }
 
   if (data && typeof data === 'object') {
-    const messages = Object.values(data)
-      .flatMap((value) => Array.isArray(value) ? value : [value])
-      .filter((value): value is string => typeof value === 'string');
+    const messages = extractValidationMessages(data);
 
     if (messages.length > 0) {
       return messages.join(' ');
@@ -136,34 +216,41 @@ export const extractApiErrorMessage = (error: unknown, fallback: string) => {
 };
 
 export const authService = {
-  login: async (username: string, password: string): Promise<AuthTokens> => {
-    const response = await api.post('/auth/mobile-login/', { username, password });
-    const tokens = {
-      access: response.data.access,
-      refresh: response.data.refresh,
-    };
+  login: async (username: string, password: string, twoFactorCode?: string): Promise<LoginResponse> => {
+    const response = await api.post('/auth/mobile-login/', {
+      username,
+      password,
+      ...(twoFactorCode ? { codigo_2fa: twoFactorCode } : {}),
+    });
+    if (response.status === 202 && response.data?.requires_2fa === true) {
+      return {
+        requiresTwoFactor: true,
+        detail: response.data.detail || 'Informe o codigo do aplicativo autenticador.',
+      };
+    }
+    const tokens = parseTokens(response.data);
     setAuthTokens(tokens);
-    return tokens;
+    return { requiresTwoFactor: false, tokens };
   },
 
-  register: async (
-    username: string,
-    email: string,
-    password: string,
-    termosAceitos: boolean
-  ): Promise<AuthTokens> => {
-    const response = await api.post('/auth/mobile-register/', {
-      username,
-      email,
-      password,
-      termos_aceitos: termosAceitos,
-    });
-    const tokens = {
-      access: response.data.access,
-      refresh: response.data.refresh,
-    };
-    setAuthTokens(tokens);
-    return tokens;
+  register: async (payload: RegisterPayload): Promise<AuthTokens> => {
+    const endpoint = '/auth/mobile-register/';
+
+    try {
+      const response = await api.post(endpoint, {
+        username: payload.username,
+        email: payload.email,
+        password: payload.password,
+        password_confirm: payload.passwordConfirm,
+        termos_aceitos: payload.termosAceitos,
+      });
+      const tokens = parseTokens(response.data);
+      setAuthTokens(tokens);
+      return tokens;
+    } catch (error) {
+      logApiValidationError(endpoint, error);
+      throw error;
+    }
   },
 
   getAuthenticatedUser: async (): Promise<AuthenticatedUser> => {
@@ -177,11 +264,13 @@ export const authService = {
   },
 
   getFullUserProfile: async (username: string): Promise<FullUserProfile> => {
-    const response = await api.get(`/perfis/${username}/`);
+    const response = await api.get(`/perfis/${encodeURIComponent(username)}/`);
     return normalizeFullUserProfile(response.data);
   },
 
-  logout: () => {
-    clearAuthTokens();
+  logout: async () => {
+    const refresh = getRefreshToken();
+    if (!refresh) return;
+    await api.post('/auth/mobile-logout/', { refresh });
   },
 };

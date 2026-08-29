@@ -16,6 +16,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { Book, BookReview, bookService, getStatusLabel, LibraryStatus } from '../services/bookService';
+import { extractApiErrorMessage } from '../services/authService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookDetail'>;
 
@@ -38,6 +39,7 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
   const [myRating, setMyRating] = useState(0);
   const [myReview, setMyReview] = useState('');
   const [savingReview, setSavingReview] = useState(false);
+  const [removingFromLibrary, setRemovingFromLibrary] = useState(false);
 
   const fetchBookDetails = useCallback(async () => {
     if (!bookId) {
@@ -81,8 +83,10 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
       setSelectedStatus(item.status);
       Alert.alert('Estante atualizada', `Livro marcado como ${getStatusLabel(item.status).toLowerCase()}.`);
     } catch (error) {
-      Alert.alert('Login necessario', 'Entre para atualizar sua biblioteca.');
-      navigation.navigate('Login');
+      Alert.alert(
+        'Nao foi possivel atualizar',
+        extractApiErrorMessage(error, 'Verifique sua conexao e tente novamente.'),
+      );
     } finally {
       setUpdatingStatus(false);
     }
@@ -90,13 +94,20 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
   const handleStartReading = async () => {
     if (!bookId) return;
+    if (!book?.pdfAvailable) {
+      Alert.alert('Leitura indisponivel', 'Este livro nao possui um arquivo PDF disponivel.');
+      return;
+    }
 
     try {
       await bookService.updateBookStatus(bookId, 'lendo');
       setSelectedStatus('lendo');
       navigation.navigate('Reader', { bookId, title: book?.title || initialTitle });
     } catch (error) {
-      navigation.navigate('Reader', { bookId, title: book?.title || initialTitle });
+      Alert.alert(
+        'Nao foi possivel iniciar a leitura',
+        extractApiErrorMessage(error, 'Verifique sua conexao e tente novamente.'),
+      );
     }
   };
 
@@ -107,9 +118,41 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
       const item = await bookService.updateBookInteraction(bookId, { favorite: !favorite });
       setFavorite(Boolean(item.favorite));
     } catch (error) {
-      Alert.alert('Login necessario', 'Entre para favoritar livros.');
-      navigation.navigate('Login');
+      Alert.alert(
+        'Nao foi possivel favoritar',
+        extractApiErrorMessage(error, 'Verifique sua conexao e tente novamente.'),
+      );
     }
+  };
+
+  const removeFromLibrary = () => {
+    if (!bookId || !selectedStatus) return;
+
+    Alert.alert('Remover da biblioteca', 'Deseja remover este livro da sua estante?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Remover',
+        style: 'destructive',
+        onPress: async () => {
+          setRemovingFromLibrary(true);
+          try {
+            await bookService.removeFromLibrary(bookId);
+            setSelectedStatus(null);
+            setFavorite(false);
+            setMyRating(0);
+            setMyReview('');
+            Alert.alert('Livro removido', 'O livro foi removido da sua biblioteca.');
+          } catch (error) {
+            Alert.alert(
+              'Nao foi possivel remover',
+              extractApiErrorMessage(error, 'Verifique sua conexao e tente novamente.'),
+            );
+          } finally {
+            setRemovingFromLibrary(false);
+          }
+        },
+      },
+    ]);
   };
 
   const handleSaveReview = async () => {
@@ -192,14 +235,25 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
           <View style={styles.metaRow}>
             {book.category && <Text style={styles.metaPill}>{book.category}</Text>}
             {book.pages && <Text style={styles.metaPill}>{book.pages} paginas</Text>}
+            {book.year && <Text style={styles.metaPill}>{book.year}</Text>}
             {book.rating !== undefined && <Text style={styles.metaPill}>{book.rating.toFixed(1)} estrelas</Text>}
+            {book.isbn && <Text style={styles.metaPill}>ISBN {book.isbn}</Text>}
+            {book.origin && (
+              <Text style={styles.metaPill}>
+                {book.origin === 'autor_independente' ? 'Autor independente' : 'Dominio publico'}
+              </Text>
+            )}
           </View>
         </View>
 
-        <TouchableOpacity style={styles.readButton} onPress={handleStartReading} activeOpacity={0.8}>
-          <Ionicons name="reader-outline" size={20} color={colors.textPrimary} />
-          <Text style={styles.readButtonText}>Ler agora</Text>
-        </TouchableOpacity>
+        {book.pdfAvailable ? (
+          <TouchableOpacity style={styles.readButton} onPress={handleStartReading} activeOpacity={0.8}>
+            <Ionicons name="reader-outline" size={20} color={colors.textPrimary} />
+            <Text style={styles.readButtonText}>Ler agora</Text>
+          </TouchableOpacity>
+        ) : (
+          <Text style={styles.pdfUnavailable}>Leitura digital indisponivel para este titulo.</Text>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Status de Leitura</Text>
@@ -226,6 +280,19 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
               );
             })}
           </View>
+          {selectedStatus && (
+            <TouchableOpacity
+              style={styles.removeButton}
+              onPress={removeFromLibrary}
+              disabled={removingFromLibrary}
+            >
+              {removingFromLibrary ? (
+                <ActivityIndicator color={colors.textSecondary} />
+              ) : (
+                <Text style={styles.removeButtonText}>Remover da biblioteca</Text>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.section}>
@@ -240,12 +307,6 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
           {reviews.length === 0 ? <Text style={styles.description}>Este livro ainda nao recebeu resenhas.</Text> : reviews.map((review) => <View key={review.id} style={styles.reviewCard}><View style={styles.reviewHeader}><Text style={styles.reviewAuthor}>@{review.username}</Text><Text style={styles.reviewRating}>{review.rating ? `${review.rating}/5` : 'Sem nota'}</Text></View><Text style={styles.reviewBody}>{review.review || 'Avaliacao sem texto.'}</Text></View>)}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sinopse</Text>
-          <Text style={styles.description}>
-            {book.description || 'Nenhuma descricao fornecida para este livro.'}
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -356,6 +417,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  pdfUnavailable: {
+    color: colors.textMuted,
+    fontSize: 13,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
   section: {
     marginBottom: 24,
   },
@@ -392,6 +459,17 @@ const styles = StyleSheet.create({
   },
   statusButtonTextActive: {
     color: colors.textPrimary,
+  },
+  removeButton: {
+    minHeight: 42,
+    marginTop: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  removeButtonText: {
+    color: colors.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
   },
   description: {
     fontSize: 14,

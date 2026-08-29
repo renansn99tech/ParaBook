@@ -23,6 +23,8 @@ export const LoginScreen = ({ navigation }: Props) => {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [requiresTwoFactor, setRequiresTwoFactor] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -33,8 +35,11 @@ export const LoginScreen = ({ navigation }: Props) => {
 
     setLoading(true);
     try {
-      const result = await login(username.trim(), password);
+      const result = await login(username.trim(), password, twoFactorCode.trim() || undefined);
       if (!result.success) {
+        if (result.requiresTwoFactor) {
+          setRequiresTwoFactor(true);
+        }
         Alert.alert('Nao foi possivel entrar', result.error || 'Confira seus dados e tente novamente.');
       }
     } finally {
@@ -77,6 +82,22 @@ export const LoginScreen = ({ navigation }: Props) => {
                 onChangeText={setUsername}
               />
             </View>
+
+            {requiresTwoFactor && (
+              <View style={styles.inputContainer}>
+                <Ionicons name="keypad-outline" size={20} color={colors.textMuted} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Codigo do autenticador"
+                  placeholderTextColor={colors.textMuted}
+                  keyboardType="number-pad"
+                  autoCapitalize="none"
+                  maxLength={6}
+                  value={twoFactorCode}
+                  onChangeText={setTwoFactorCode}
+                />
+              </View>
+            )}
 
             <View style={styles.inputContainer}>
               <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} />

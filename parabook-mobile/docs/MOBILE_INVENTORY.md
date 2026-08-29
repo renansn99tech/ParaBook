@@ -27,10 +27,10 @@ Levantamento feito a partir de `parabook-web/src/App.jsx`, das chamadas em `para
 ## Funcional com API atual
 
 - Login e cadastro nativos com JWT Bearer.
-- Restauracao de sessao enquanto o access token for valido.
+- Restauracao de sessao com rotacao do refresh quando o access token expirar.
 - Perfil autenticado e perfil publico.
 - Catalogo, pesquisa, categorias, detalhes e resenhas.
-- Estante, status de leitura, favoritos, nota e resenha.
+- Estante, status de leitura, remocao, progresso, favoritos, nota e resenha.
 - PDF autenticado.
 - Comunidades, associacao, feed e criacao de postagens/comunidades.
 - Autores, notificacoes, conquistas e ranking.
@@ -46,15 +46,6 @@ Levantamento feito a partir de `parabook-web/src/App.jsx`, das chamadas em `para
 - Arquivos provavelmente envolvidos: `comunidades/models.py`, `comunidades/api/serializers.py`, `comunidades/api/views.py`, `comunidades/api/urls.py` e migrations.
 - Impacto Web: opcional, mas o mesmo contrato permitiria adicionar comentarios em `ConteudoComunidade.jsx`.
 - Risco: moderacao, autorizacao e volume de conteudo gerado por usuario.
-
-### Renovacao de JWT nativo
-
-- Situacao: o backend entrega refresh token no login/cadastro mobile, mas `/auth/refresh/` le somente o cookie HttpOnly da Web.
-- Endpoint necessario: renovacao exclusiva para cliente nativo recebendo refresh token no corpo e devolvendo novo par rotacionado.
-- Comportamento: validar, rotacionar e invalidar o refresh anterior conforme `SIMPLE_JWT`.
-- Arquivos provavelmente envolvidos: `usuarios/api/views.py`, `usuarios/api/urls.py`, schema/testes de autenticacao.
-- Impacto Web: nenhum se a rota mobile continuar separada.
-- Risco: tokens de longa duracao exigem rate limit, rotacao e blacklist corretos.
 
 ## Compatibilidade do leitor
 

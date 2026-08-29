@@ -30,6 +30,7 @@ const Leitura = lazy(() => import('./pages/Leitura'))
 const PerfilPublico = lazy(() => import('./pages/PerfilPublico'))
 const Novidades = lazy(() => import('./pages/Novidades'))
 const ConteudoComunidade = lazy(() => import('./pages/ConteudoComunidade'))
+const PainelDenunciasComunidade = lazy(() => import('./pages/PainelDenunciasComunidade'))
 const AlterarSenha = lazy(() => import('./pages/AlterarSenha'))
 const ConfiguracoesAvancadas = lazy(() => import('./pages/ConfiguracoesAvancadas'))
 const CentralConta = lazy(() => import('./pages/CentralConta'))
@@ -139,6 +140,7 @@ function App() {
           <Route path="/biblioteca" element={<Biblioteca />} />
           <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/comunidade/:id/conteudo" element={<ConteudoComunidade />} />
+          <Route path="/comunidade/:id/denuncias" element={<RotaAdmin><PainelDenunciasComunidade /></RotaAdmin>} />
           <Route path="/dashboard" element={<RotaAdmin><Dashboard /></RotaAdmin>} />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/backlog" element={<Backlog />} />

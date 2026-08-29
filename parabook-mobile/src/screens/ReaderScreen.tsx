@@ -195,35 +195,61 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
   const { bookId, title } = route.params;
   const webViewRef = useRef<WebView>(null);
   const shelfItemIdRef = useRef<string | number | null>(null);
-  const accessToken = getAccessToken();
+  const currentAccessToken = getAccessToken();
+  const [readerAccessToken, setReaderAccessToken] = useState<string | null>(currentAccessToken);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [preparingReader, setPreparingReader] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [readerVersion, setReaderVersion] = useState(0);
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!currentAccessToken) {
       Alert.alert('Login necessario', 'Entre para acessar o leitor digital.', [
         { text: 'Entrar', onPress: () => navigation.replace('Login') },
       ]);
       return;
     }
 
+    let active = true;
+    setPreparingReader(true);
     bookService.updateBookStatus(bookId, 'lendo')
       .then((item) => {
+        if (!active) return;
         shelfItemIdRef.current = item.id;
+        const nextToken = getAccessToken();
+        setReaderAccessToken(nextToken);
+        if (!nextToken) {
+          setErrorMessage('Sua sessao expirou. Entre novamente para abrir este livro.');
+        }
       })
       .catch(() => {
-        Alert.alert('Modo leitura', 'Nao foi possivel sincronizar o status agora.');
+        if (!active) return;
+        const nextToken = getAccessToken();
+        setReaderAccessToken(nextToken);
+        if (nextToken) {
+          Alert.alert('Modo leitura', 'Nao foi possivel sincronizar o status agora.');
+        } else {
+          setErrorMessage('Sua sessao expirou. Entre novamente para abrir este livro.');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setPreparingReader(false);
+        }
       });
-  }, [accessToken, bookId, navigation]);
+
+    return () => {
+      active = false;
+    };
+  }, [currentAccessToken, bookId, navigation]);
 
   const readerHtml = useMemo(() => {
-    if (!accessToken) return '';
-    return buildReaderHtml(bookService.getBookPdfUrl(bookId), accessToken, title || 'Livro');
-  }, [accessToken, bookId, title, readerVersion]);
+    if (!readerAccessToken) return '';
+    return buildReaderHtml(bookService.getBookPdfUrl(bookId), readerAccessToken, title || 'Livro');
+  }, [readerAccessToken, bookId, title, readerVersion]);
 
   const retryReader = () => {
     setLoading(true);
@@ -274,7 +300,7 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
     }
   };
 
-  if (!accessToken) {
+  if (!currentAccessToken) {
     return <SafeAreaView style={styles.container} />;
   }
 
@@ -306,12 +332,12 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
       </View>
 
       <View style={styles.readerContainer}>
-        {loading && (
+        {(loading || preparingReader) && (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         )}
-        {!errorMessage ? (
+        {!errorMessage && !preparingReader ? (
           <WebView
             key={readerVersion}
             ref={webViewRef}

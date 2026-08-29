@@ -14,13 +14,14 @@ class CategoriaSerializer(serializers.ModelSerializer):
 class LivroSerializer(serializers.ModelSerializer):
     categoria_nome = serializers.CharField(source='categoria.nome', read_only=True)
     capa_url = serializers.SerializerMethodField()
+    pdf_disponivel = serializers.SerializerMethodField()
 
     class Meta:
         model = Livro
         fields = [
             'id', 'titulo', 'autor', 'categoria', 'categoria_nome', 
             'origem', 'status', 'ano_publicacao', 'paginas', 
-            'avaliacao', 'isbn', 'capa_url'
+            'avaliacao', 'isbn', 'capa_url', 'pdf_disponivel'
         ]
         read_only_fields = ['origem', 'status', 'avaliacao']
 
@@ -29,15 +30,19 @@ class LivroSerializer(serializers.ModelSerializer):
             return obj.capa.url
         return None
 
+    def get_pdf_disponivel(self, obj):
+        return bool(obj.pdf)
+
 class EstanteSerializer(serializers.ModelSerializer):
     livro_titulo = serializers.CharField(source='livro.titulo', read_only=True)
     livro_autor = serializers.CharField(source='livro.autor', read_only=True)
     livro_capa = serializers.SerializerMethodField()
+    livro_paginas = serializers.IntegerField(source='livro.paginas', read_only=True)
 
     class Meta:
         model = Biblioteca
-        fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'status', 'favorito', 'favoritado_em', 'nota', 'resenha', 'pagina_atual', 'ultima_leitura_em', 'data_conclusao', 'avaliada_em', 'data_adicao']
-        read_only_fields = ['user', 'favoritado_em', 'avaliada_em']
+        fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'livro_paginas', 'status', 'favorito', 'nota', 'resenha', 'pagina_atual', 'ultima_leitura_em', 'data_conclusao', 'avaliada_em', 'data_adicao']
+        read_only_fields = ['user', 'avaliada_em']
 
     def get_livro_capa(self, obj):
         if obj.livro and obj.livro.capa:

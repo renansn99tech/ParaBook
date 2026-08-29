@@ -194,6 +194,7 @@ const buildReaderHtml = (pdfUrl: string, accessToken: string, title: string) => 
 export const ReaderScreen = ({ route, navigation }: Props) => {
   const { bookId, title } = route.params;
   const webViewRef = useRef<WebView>(null);
+  const shelfItemIdRef = useRef<string | number | null>(null);
   const accessToken = getAccessToken();
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -210,9 +211,13 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
       return;
     }
 
-    bookService.updateBookStatus(bookId, 'lendo').catch(() => {
-      Alert.alert('Modo leitura', 'Nao foi possivel sincronizar o status agora.');
-    });
+    bookService.updateBookStatus(bookId, 'lendo')
+      .then((item) => {
+        shelfItemIdRef.current = item.id;
+      })
+      .catch(() => {
+        Alert.alert('Modo leitura', 'Nao foi possivel sincronizar o status agora.');
+      });
   }, [accessToken, bookId, navigation]);
 
   const readerHtml = useMemo(() => {
@@ -242,6 +247,11 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
         setPage(message.page || 1);
         setTotal(message.total || 0);
         setProgress(message.progress || 0);
+        if (message.type === 'page' && message.page && shelfItemIdRef.current) {
+          void bookService.updateReadingProgress(shelfItemIdRef.current, message.page).catch(() => {
+            // A leitura continua; a sincronizacao sera tentada na proxima pagina.
+          });
+        }
       }
 
       if (message.type === 'error') {

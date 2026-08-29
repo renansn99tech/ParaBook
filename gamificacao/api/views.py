@@ -22,7 +22,7 @@ class RankingAPIView(APIView):
     def get(self, request):
         top_leitores = (
             ProgressoLeitor.objects
-            .select_related('user')
+            .select_related('user', 'user__perfil_customizado')
             .order_by('-pontos_xp', 'user__username')[:TOP_RANKING]
         )
 
@@ -35,12 +35,12 @@ class RankingAPIView(APIView):
 
         ranking = []
         for indice, progresso in enumerate(top_leitores, start=1):
-            linha = ProgressoLeitorSerializer(progresso).data
+            linha = ProgressoLeitorSerializer(progresso, context={'request': request}).data
             linha['posicao'] = indice
             linha['sou_eu'] = progresso.user_id == request.user.id
             ranking.append(linha)
 
-        meu_progresso = ProgressoLeitorSerializer(progresso_atual).data
+        meu_progresso = ProgressoLeitorSerializer(progresso_atual, context={'request': request}).data
         meu_progresso['posicao'] = acima_de_mim + 1
 
         return Response({
@@ -80,7 +80,10 @@ class MinhasConquistasAPIView(APIView):
             'xp_conquistado': sum(
                 c.pontos_recompensa for c in conquistas if c.id in desbloqueadas_map
             ),
-            'meu_progresso': ProgressoLeitorSerializer(progresso).data,
+            'meu_progresso': ProgressoLeitorSerializer(
+                progresso,
+                context={'request': request},
+            ).data,
         })
 
 

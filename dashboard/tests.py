@@ -8,6 +8,11 @@ from comunidades.models import Comunidade, DenunciaComunidade
 from notificacoes.models import Notificacao
 from usuarios.models import Usuario, AuditoriaAcao
 from dashboard.models import FeatureFlag
+from perfis.models import (
+    FRASE_STATUS_PADRAO_AUTOR,
+    FRASE_STATUS_PADRAO_LEITOR,
+    Perfil,
+)
 
 
 def criar_admin(username):
@@ -110,10 +115,15 @@ class DashboardModeracaoAPIViewTests(TestCase):
     def setUp(self):
         self.admin = criar_admin('admin-moderacao')
         self.autor = User.objects.create_user(username='autor-pendente', password='x')
+        self.perfil_autor = Perfil.objects.create(
+            usuario=self.autor,
+            descricao_perfil=FRASE_STATUS_PADRAO_LEITOR,
+        )
         self.usuario = Usuario.objects.create(
             user_auth=self.autor,
             nome='Autor Pendente',
             tipo='aguardando_aprovacao',
+            perfil=self.perfil_autor,
         )
         self.client = APIClient()
         self.client.force_authenticate(self.admin)
@@ -127,7 +137,23 @@ class DashboardModeracaoAPIViewTests(TestCase):
         self.usuario.refresh_from_db()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.usuario.tipo, 'autor')
+        self.perfil_autor.refresh_from_db()
+        self.assertEqual(self.perfil_autor.descricao_perfil, FRASE_STATUS_PADRAO_AUTOR)
         self.assertTrue(AuditoriaAcao.objects.filter(acao='moderacao.autor.aprovar').exists())
+
+    def test_aprovacao_preserva_status_personalizado_do_autor(self):
+        self.perfil_autor.descricao_perfil = 'Escrevo fantasia amazônica.'
+        self.perfil_autor.save(update_fields=['descricao_perfil'])
+
+        response = self.client.post(
+            reverse('api-dashboard-moderacao', args=['autor', self.usuario.pk]),
+            {'acao': 'aprovar'},
+            format='json',
+        )
+
+        self.perfil_autor.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.perfil_autor.descricao_perfil, 'Escrevo fantasia amazônica.')
 
     def test_decisao_duplicada_e_barrada(self):
         url = reverse('api-dashboard-moderacao', args=['autor', self.usuario.pk])
@@ -157,6 +183,76 @@ class DashboardModeracaoAPIViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         notificacao = Notificacao.objects.get(usuario=self.autor, titulo='Publicação analisada')
         self.assertIn('A capa precisa identificar corretamente a obra.', notificacao.mensagem)
+
+    def test_arquiva_falso_positivo_de_comunidade_e_atualiza_resumo(self):
+        comunidade = Comunidade.objects.create(
+            nome='Comunidade denunciada', descricao='Em análise.', total_denuncias=1,
+        )
+        denuncia = DenunciaComunidade.objects.create(
+            comunidade=comunidade, usuario=self.autor, motivo='Possível falso positivo',
+        )
+
+        decisao = self.client.post(
+            reverse('api-dashboard-moderacao', args=['comunidade', denuncia.pk]),
+            {'acao': 'recusar'},
+            format='json',
+        )
+        painel = self.client.get(
+            reverse('api-dashboard-denuncias-comunidade', args=[comunidade.pk]),
+        )
+
+        comunidade.refresh_from_db()
+        denuncia.refresh_from_db()
+        self.assertEqual(decisao.status_code, 200)
+        self.assertEqual(denuncia.status, 'arquivada')
+        self.assertEqual(comunidade.total_denuncias, 0)
+        self.assertEqual(painel.data['resumo']['pendentes'], 0)
+        self.assertEqual(painel.data['resumo']['arquivadas'], 1)
+        self.assertEqual(painel.data['historico'][0]['id'], denuncia.pk)
+
+
+class DashboardDenunciasComunidadeAPIViewTests(TestCase):
+    def setUp(self):
+        self.admin = criar_admin('admin-painel-comunidade')
+        self.leitor = User.objects.create_user(username='denunciante-painel', password='x')
+        Usuario.objects.create(user_auth=self.leitor, nome='Denunciante', tipo='leitor')
+        self.comunidade = Comunidade.objects.create(
+            nome='Comunidade em análise', descricao='Contexto do painel.', total_denuncias=2,
+        )
+        self.outra = Comunidade.objects.create(nome='Outra comunidade', descricao='Outro contexto.')
+        self.pendente = DenunciaComunidade.objects.create(
+            comunidade=self.comunidade, usuario=self.leitor, motivo='Conteúdo inadequado',
+        )
+        DenunciaComunidade.objects.create(
+            comunidade=self.comunidade, usuario=self.leitor, motivo='Já analisada', status='arquivada',
+        )
+        DenunciaComunidade.objects.create(
+            comunidade=self.outra, usuario=self.leitor, motivo='Não deve aparecer',
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(self.admin)
+
+    def test_retorna_resumo_fila_e_historico_apenas_da_comunidade(self):
+        resposta = self.client.get(
+            reverse('api-dashboard-denuncias-comunidade', args=[self.comunidade.pk]),
+        )
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(resposta.data['comunidade']['id'], self.comunidade.pk)
+        self.assertEqual(resposta.data['resumo'], {
+            'pendentes': 1, 'acolhidas': 0, 'arquivadas': 1, 'total': 2,
+        })
+        self.assertEqual([item['id'] for item in resposta.data['denuncias']], [self.pendente.pk])
+        self.assertEqual(len(resposta.data['historico']), 1)
+
+    def test_leitor_nao_acessa_painel_especifico(self):
+        self.client.force_authenticate(self.leitor)
+
+        resposta = self.client.get(
+            reverse('api-dashboard-denuncias-comunidade', args=[self.comunidade.pk]),
+        )
+
+        self.assertEqual(resposta.status_code, 403)
 
 
 class DashboardAdministracaoAvancadaAPIViewTests(TestCase):

@@ -66,7 +66,7 @@ class Usuario(models.Model):
         """
         from datetime import timedelta
         from django.utils import timezone
-        from perfis.models import FRASE_STATUS_PADRAO_LEITOR
+        from perfis.models import FRASE_STATUS_PADRAO_AUTOR, FRASE_STATUS_PADRAO_LEITOR
 
         user_auth = self.user_auth
         if user_auth is None:
@@ -80,7 +80,7 @@ class Usuario(models.Model):
         personalizou = (
             (nome and nome != user_auth.username)
             or bool(localizacao)
-            or (frase and frase != FRASE_STATUS_PADRAO_LEITOR)
+            or (frase and frase not in {FRASE_STATUS_PADRAO_LEITOR, FRASE_STATUS_PADRAO_AUTOR})
         )
         if personalizou:
             return False

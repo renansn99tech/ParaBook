@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 # Centralizada aqui para que o cadastro (que a grava) e a checagem de
 # "perfil já personalizado" (onboarding) usem exatamente o mesmo texto.
 FRASE_STATUS_PADRAO_LEITOR = "Olá! Sou um novo leitor do ParaBook."
+FRASE_STATUS_PADRAO_AUTOR = "Olá! Sou um novo autor do ParaBook."
 
 class Perfil(models.Model):
     class Tipografia(models.TextChoices):

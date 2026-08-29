@@ -1,7 +1,7 @@
 # pyrefly: ignore [missing-import]
 from rest_framework import generics
 # pyrefly: ignore [missing-import]
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from perfis.models import Perfil
 from .serializers import (
     PerfilSerializer,
@@ -429,6 +429,8 @@ class InicioPersonalizadoAPIView(APIView):
 
 
 class PerfilPublicoAPIView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request, username, *args, **kwargs):
         try:
             dados_usuario = Usuario.objects.get(user_auth__username=username)
@@ -469,7 +471,48 @@ class PerfilPublicoAPIView(APIView):
             if perfil_do_usuario.perfil_privado:
                 return Response({"erro": "Este perfil é privado.", "status_block": "privado"}, status=403)
 
-        meus_livros = Biblioteca.objects.filter(user=user_auth_obj)
+        tipo_publico = (
+            'leitor'
+            if dados_usuario.tipo == 'aguardando_aprovacao'
+            else dados_usuario.tipo
+        )
+        usuario_publico = {
+            "username": user_auth_obj.username,
+            "nome": dados_usuario.nome,
+            "tipo": tipo_publico,
+        }
+        if alvo_admin and solicitante_admin:
+            usuario_publico["permissoes"] = {
+                "is_staff": user_auth_obj.is_staff,
+                "is_superuser": user_auth_obj.is_superuser,
+            }
+
+        perfil_basico = {
+            "foto": request.build_absolute_uri(perfil_do_usuario.foto.url) if perfil_do_usuario.foto else None,
+            "capa": request.build_absolute_uri(perfil_do_usuario.capa.url) if perfil_do_usuario.capa else None,
+            "bio": perfil_do_usuario.bio,
+            "descricao_perfil": perfil_do_usuario.descricao_perfil,
+            "localizacao": perfil_do_usuario.localizacao,
+        }
+
+        # Fora da sessão, o perfil funciona como cartão de apresentação. Dados
+        # literários, comunidades e estatísticas exigem uma conta autenticada.
+        if not request.user.is_authenticated:
+            return Response({
+                "is_owner": False,
+                "acesso": {"autenticado": False, "nivel": "basico"},
+                "usuario": usuario_publico,
+                "perfil": perfil_basico,
+            })
+
+        meus_livros = (
+            Biblioteca.objects.filter(
+                user=user_auth_obj,
+                livro__status='publicado',
+                livro__data_remocao__isnull=True,
+            )
+            .select_related('livro', 'livro__categoria')
+        )
         qnt_livros_lidos = meus_livros.filter(status='lido').count()
         lidos_ano = meus_livros.filter(
             status='lido',
@@ -478,7 +521,10 @@ class PerfilPublicoAPIView(APIView):
         qnt_lendo_agora = meus_livros.filter(status='lendo').count()
         qnt_avaliados = meus_livros.filter(nota__isnull=False).count()
 
-        minhas_comunidades = Comunidade.objects.filter(membros=user_auth_obj)
+        minhas_comunidades = Comunidade.objects.filter(
+            membros=user_auth_obj,
+            em_manutencao=False,
+        )
         qnt_comunidades = minhas_comunidades.count()
 
         top_generos = list(
@@ -491,9 +537,9 @@ class PerfilPublicoAPIView(APIView):
         top_autores = meus_livros.values('livro__autor').annotate(total=Count('livro__autor')).order_by('-total')[:3]
         lista_autores_favoritos = [item['livro__autor'] for item in top_autores if item['livro__autor']]
 
-        ultimo_lido = meus_livros.filter(status='lido').order_by('-id').first()
+        ultimo_lido = meus_livros.filter(status='lido').order_by('-data_conclusao', '-id').first()
         leitura_em_andamento = meus_livros.filter(status='lendo').select_related('livro').order_by('-ultima_leitura_em', '-data_adicao').first()
-        historico_livros = meus_livros.filter(status='lido').order_by('-id')[:10]
+        historico_livros = meus_livros.filter(status='lido').order_by('-data_conclusao', '-id')[:10]
 
         # Livros marcados com o coração na tela de leitura. O front lê
         # `favoritos.livros`, que antes nunca era preenchido.
@@ -512,17 +558,22 @@ class PerfilPublicoAPIView(APIView):
             .order_by('-participacoes', 'nome')[:3]
         )
 
-        recomendacao = None
+        obras_autor = []
         if dados_usuario.tipo == 'autor':
-            livro_recomendado = (
+            obras_autor = list(
                 Livro.objects.filter(
                     solicitacao_publicacao__usuario=user_auth_obj,
                     solicitacao_publicacao__status='aprovado',
                     status='publicado',
+                    data_remocao__isnull=True,
                 )
+                .select_related('categoria')
                 .order_by('-avaliacao', '-id')
-                .first()
             )
+
+        recomendacao = None
+        if dados_usuario.tipo == 'autor':
+            livro_recomendado = obras_autor[0] if obras_autor else None
             if livro_recomendado:
                 recomendacao = {
                     'id': livro_recomendado.id,
@@ -532,8 +583,9 @@ class PerfilPublicoAPIView(APIView):
                     'rotulo': 'Recomendação do Autor',
                     'criterio': 'Obra própria publicada em destaque',
                     'nota': float(livro_recomendado.avaliacao),
+                    'capa': request.build_absolute_uri(livro_recomendado.capa.url) if livro_recomendado.capa else None,
                 }
-        else:
+        elif tipo_publico == 'leitor':
             item_recomendado = (
                 meus_livros.filter(nota__isnull=False, livro__status='publicado')
                 .select_related('livro')
@@ -553,21 +605,25 @@ class PerfilPublicoAPIView(APIView):
                     'rotulo': 'Recomendação do Leitor',
                     'criterio': 'Sua obra mais bem avaliada' if item_recomendado.nota else 'Obra marcada como favorita',
                     'nota': item_recomendado.nota,
+                    'capa': request.build_absolute_uri(item_recomendado.livro.capa.url) if item_recomendado.livro.capa else None,
                 }
 
-        return Response({
+        comunidades_em_comum = list(
+            Comunidade.objects.filter(
+                membros=user_auth_obj,
+                em_manutencao=False,
+            )
+            .filter(membros=request.user)
+            .values_list('id', flat=True)
+            .distinct()
+        )
+
+        resposta = {
             "is_owner": is_owner,
-            "usuario": {
-                "username": user_auth_obj.username,
-                "nome": dados_usuario.nome,
-                "tipo": dados_usuario.tipo
-            },
+            "acesso": {"autenticado": True, "nivel": "completo"},
+            "usuario": usuario_publico,
             "perfil": {
-                "foto": request.build_absolute_uri(perfil_do_usuario.foto.url) if perfil_do_usuario.foto else None,
-                "capa": request.build_absolute_uri(perfil_do_usuario.capa.url) if perfil_do_usuario.capa else None,
-                "bio": perfil_do_usuario.bio,
-                "descricao_perfil": perfil_do_usuario.descricao_perfil,
-                "localizacao": perfil_do_usuario.localizacao,
+                **perfil_basico,
                 "historico_txt": perfil_do_usuario.historico,
                 "meta_leitura_anual": perfil_do_usuario.meta_leitura_anual,
             },
@@ -628,7 +684,16 @@ class PerfilPublicoAPIView(APIView):
                 "ultima_leitura_em": leitura_em_andamento.ultima_leitura_em,
             } if leitura_em_andamento else None,
             "historico": [
-                {"id": h.id, "titulo": h.livro.titulo, "data": "Recente"} for h in historico_livros
+                {
+                    "id": h.id,
+                    "livro_id": h.livro_id,
+                    "titulo": h.livro.titulo,
+                    "autor": h.livro.autor,
+                    "capa": request.build_absolute_uri(h.livro.capa.url) if h.livro.capa else None,
+                    "nota": h.nota,
+                    "data": h.data_conclusao.isoformat() if h.data_conclusao else None,
+                }
+                for h in historico_livros
             ],
             "comunidades": [
                 {"id": c.id, "nome": c.nome, "descricao": c.descricao} for c in minhas_comunidades
@@ -649,7 +714,22 @@ class PerfilPublicoAPIView(APIView):
                 ],
                 "recomendacao": recomendacao,
             },
-        })
+            "comunidades_em_comum": comunidades_em_comum,
+        }
+        if dados_usuario.tipo == 'autor':
+            resposta["obras"] = [
+                {
+                    "id": livro.id,
+                    "titulo": livro.titulo,
+                    "categoria": livro.categoria.nome,
+                    "paginas": livro.paginas,
+                    "capa": request.build_absolute_uri(livro.capa.url) if livro.capa else None,
+                    "avaliacao": float(livro.avaliacao),
+                }
+                for livro in obras_autor
+            ]
+
+        return Response(resposta)
 
 class SolicitarAutorAPIView(APIView):
     """Registra o aceite do onboarding e envia o usuario para a fila de aprovacao de autor.

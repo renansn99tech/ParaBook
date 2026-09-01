@@ -4,7 +4,6 @@ class Categorias:
     RELIGIOSOS = "religiosos"
     EXATAS = "exatas"
     INFANTIS = "infantis"
-    INDEPENDENTE = "independente"
 
 
 CATEGORIAS_PADRAO = [
@@ -13,7 +12,6 @@ CATEGORIAS_PADRAO = [
     Categorias.RELIGIOSOS,
     Categorias.EXATAS,
     Categorias.INFANTIS,
-    Categorias.INDEPENDENTE,
 ]
 
 

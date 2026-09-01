@@ -4,6 +4,7 @@ from rest_framework import serializers
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao
 from django.contrib.auth.models import User
 from biblioteca.validators import validar_pdf_livro
+from biblioteca.services import verificar_acesso_obra
 from usuarios.identidade_publica import identidade_publica
 
 class CategoriaSerializer(serializers.ModelSerializer):
@@ -14,20 +15,60 @@ class CategoriaSerializer(serializers.ModelSerializer):
 class LivroSerializer(serializers.ModelSerializer):
     categoria_nome = serializers.CharField(source='categoria.nome', read_only=True)
     capa_url = serializers.SerializerMethodField()
+    capa = serializers.ImageField(write_only=True, required=False, allow_null=True)
+    pdf = serializers.FileField(write_only=True, required=False, allow_null=True)
+    pdf_amostra = serializers.FileField(write_only=True, required=False, allow_null=True)
+    origem_label = serializers.CharField(source='get_origem_display', read_only=True)
+    modelo_acesso_label = serializers.CharField(source='get_modelo_acesso_display', read_only=True)
+    selo_independente = serializers.SerializerMethodField()
+    acesso = serializers.SerializerMethodField()
 
     class Meta:
         model = Livro
         fields = [
-            'id', 'titulo', 'autor', 'categoria', 'categoria_nome', 
-            'origem', 'status', 'ano_publicacao', 'paginas', 
-            'avaliacao', 'isbn', 'capa_url'
+            'id', 'titulo', 'autor', 'categoria', 'categoria_nome',
+            'origem', 'origem_label', 'selo_independente', 'status',
+            'modelo_acesso', 'modelo_acesso_label', 'acesso',
+            'disponivel_de', 'disponivel_ate', 'territorio_cultural',
+            'ano_publicacao', 'paginas', 'edicao', 'avaliacao', 'isbn',
+            'capa', 'capa_url', 'pdf', 'pdf_amostra',
         ]
-        read_only_fields = ['origem', 'status', 'avaliacao']
+        read_only_fields = ['avaliacao']
 
     def get_capa_url(self, obj):
         if obj.capa:
             return obj.capa.url
         return None
+
+    def get_selo_independente(self, obj):
+        return obj.origem == 'autor_independente'
+
+    def get_acesso(self, obj):
+        request = self.context.get('request')
+        user = request.user if request else None
+        return verificar_acesso_obra(user, obj).para_api()
+
+    def validate_pdf(self, value):
+        return validar_pdf_livro(value) if value else value
+
+    def validate_pdf_amostra(self, value):
+        return validar_pdf_livro(value) if value else value
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        inicio = attrs.get('disponivel_de', getattr(self.instance, 'disponivel_de', None))
+        fim = attrs.get('disponivel_ate', getattr(self.instance, 'disponivel_ate', None))
+        modelo = attrs.get('modelo_acesso', getattr(self.instance, 'modelo_acesso', 'gratuito'))
+        amostra = attrs.get('pdf_amostra', getattr(self.instance, 'pdf_amostra', None))
+        if inicio and fim and inicio >= fim:
+            raise serializers.ValidationError({
+                'disponivel_ate': 'A data final deve ser posterior à data inicial.'
+            })
+        if modelo == 'amostra' and not amostra:
+            raise serializers.ValidationError({
+                'pdf_amostra': 'Envie um PDF de amostra para este modelo de acesso.'
+            })
+        return attrs
 
 class EstanteSerializer(serializers.ModelSerializer):
     livro_titulo = serializers.CharField(source='livro.titulo', read_only=True)

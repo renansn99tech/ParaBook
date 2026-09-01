@@ -19,7 +19,7 @@ from usuarios.models import Usuario
 from assinaturas.decorators import requer_premium
 from .models import Categoria, Livro, Biblioteca, Denuncia, SolicitacaoPublicacao, DeclaracaoAutoria
 from .forms import ObraAutorForm
-from .querysets import livros_por_categorias, livros_independentes
+from .querysets import livros_por_categorias
 from .constants import StatusBiblioteca
 
 # Importação da camada de serviço da Gamificação
@@ -47,7 +47,6 @@ def biblioteca(request):
         'livros_religiosos': livros_map['religiosos'],
         'livros_exatas': livros_map['exatas'],
         'livros_infantis': livros_map['infantis'],
-        'livros_independentes': livros_independentes(),
     })
 
 

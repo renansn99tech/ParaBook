@@ -1,7 +1,29 @@
 from django.contrib import admin
-from biblioteca.models import Denuncia, EventoLeitura
+from biblioteca.models import Denuncia, EventoLeitura, Livro
 
 # Register your models here.
+
+
+@admin.register(Livro)
+class LivroAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'autor', 'categoria', 'origem', 'modelo_acesso', 'status', 'disponivel_ate')
+    list_filter = ('origem', 'modelo_acesso', 'status', 'categoria')
+    search_fields = ('titulo', 'autor', 'territorio_cultural')
+    readonly_fields = ('data_remocao',)
+    fieldsets = (
+        ('Dados editoriais', {
+            'fields': ('titulo', 'autor', 'categoria', 'ano_publicacao', 'isbn', 'paginas', 'edicao', 'capa'),
+        }),
+        ('Origem e acesso', {
+            'fields': (
+                'origem', 'modelo_acesso', 'territorio_cultural',
+                'disponivel_de', 'disponivel_ate', 'pdf', 'pdf_amostra',
+            ),
+        }),
+        ('Moderação', {
+            'fields': ('status', 'data_remocao', 'avaliacao'),
+        }),
+    )
 
 @admin.register(Denuncia)
 class DenunciaAdmin(admin.ModelAdmin):

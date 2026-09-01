@@ -320,6 +320,10 @@
 }
 
 /* ================= ABAS (TABS) ================= */
+.perfil-tabs-drawer-trigger {
+    display: none;
+}
+
 .tabs-nav {
     display: flex;
     gap: 15px;
@@ -915,7 +919,7 @@
     .perfil-page {
         width:100%;
         margin:0;
-        padding:20px max(var(--layout-gutter), var(--safe-right)) 20px max(var(--layout-gutter), var(--safe-left));
+        padding:20px max(var(--layout-gutter), var(--safe-right)) max(20px, var(--safe-bottom)) max(var(--layout-gutter), var(--safe-left));
     }
 
     .perfil-cover {
@@ -3609,9 +3613,23 @@
 }
 
 @media (max-width: 992px) {
-    .perfil-page--proprio .perfil-cover-selo,
-    .perfil-page--proprio .btn-capa {
+    .perfil-page input,
+    .perfil-page select,
+    .perfil-page textarea {
+        font-size: 1rem;
+    }
+
+    .perfil-page--proprio .perfil-cover-selo {
         display: none;
+    }
+
+    .perfil-page--proprio .btn-capa {
+        top: max(14px, var(--safe-top));
+        right: max(14px, var(--safe-right));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        max-width: calc(100% - 28px - var(--safe-left) - var(--safe-right));
     }
 
     .perfil-page--proprio .perfil-content-wrapper {
@@ -4879,5 +4897,252 @@
     .perfil-publico-page .btn-primary-action:hover,
     .perfil-publico-page .btn-outline:hover {
         transform: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .perfil-atividade-backdrop {
+        overscroll-behavior: contain;
+    }
+
+    .perfil-atividade-drawer {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-width: none;
+        max-height: min(88dvh, 760px);
+        padding-bottom: var(--safe-bottom);
+        border-top: 1px solid var(--border-strong);
+        border-left: 0;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        transform: translateY(104%);
+    }
+
+    .perfil-atividade-drawer.is-open {
+        transform: translateY(0);
+    }
+
+    .perfil-atividade-drawer > header {
+        position: sticky;
+        z-index: 1;
+        top: 0;
+        padding: 16px max(16px, var(--safe-right)) 14px max(16px, var(--safe-left));
+        background: rgba(var(--bg-card-rgb), .97);
+    }
+
+    .perfil-atividade-drawer-corpo {
+        overscroll-behavior: contain;
+        padding: 14px max(16px, var(--safe-right)) max(18px, var(--safe-bottom)) max(16px, var(--safe-left));
+    }
+}
+
+@media (max-width: 560px) {
+    .perfil-configuracoes-page .config-avancado-conteudo,
+    .perfil-configuracoes-page .configuracoes-page-danger {
+        padding: 16px;
+    }
+
+    .perfil-configuracoes-page .config-avancado-item {
+        grid-template-columns: 40px minmax(0, 1fr);
+        min-height: var(--touch-target);
+    }
+
+    .perfil-configuracoes-page .config-avancado-item-seta,
+    .perfil-configuracoes-page .config-avancado-em-breve {
+        grid-column: 2;
+        position: static;
+        justify-self: start;
+    }
+
+    .perfil-configuracoes-page .config-avancado-tooltip {
+        right: 8px;
+        left: 8px;
+        width: auto;
+        max-width: none;
+    }
+
+    .perfil-configuracoes-page .configuracoes-page-danger {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .perfil-configuracoes-page .configuracoes-page-danger .btn-danger-outline {
+        width: 100%;
+        min-height: var(--touch-target);
+        justify-content: center;
+    }
+}
+
+/* No celular a capa volta a ser uma superfície visual própria. O card de
+   identidade cobre os 100px finais, enquanto o avatar permanece centralizado
+   na linha de encontro entre as duas camadas. */
+@media (max-width: 768px) {
+    .perfil-page--proprio .perfil-header-container {
+        width: 100%;
+        margin-top: 16px;
+    }
+
+    .perfil-page--proprio .perfil-cover {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: 97vw !important;
+        height: clamp(270px, 72vw, 500px) !important;
+        max-height: 500px;
+        margin: 0 0 0 calc(50% - 48.5vw) !important;
+        border-radius: var(--radius-xl);
+        transform: none !important;
+    }
+
+    .perfil-page--proprio .perfil-cover-imagem {
+        object-position: center;
+    }
+
+    .perfil-page--proprio .btn-capa {
+        top: 14px;
+        right: 14px;
+        max-width: calc(100% - 28px);
+    }
+
+    .perfil-page--proprio .perfil-content-wrapper {
+        position: relative;
+        width: 93vw;
+        margin: -100px 0 0 calc(50% - 46.5vw) !important;
+        padding-top: 0;
+        align-items: stretch;
+    }
+
+    .perfil-page--proprio .perfil-sidebar {
+        position: absolute;
+        z-index: 10;
+        top: -74px;
+        left: 50%;
+        width: auto;
+        transform: translateX(-50%);
+    }
+
+    .perfil-page--proprio .perfil-avatar-box {
+        width: 148px;
+        height: 148px;
+        margin: 0 !important;
+    }
+
+    .perfil-page--proprio .perfil-main-info {
+        padding-top: 94px !important;
+    }
+
+    .perfil-page--proprio .stat-glass-card {
+        align-items: center;
+        text-align: center;
+    }
+
+    .perfil-page--proprio .stat-info {
+        width: 100%;
+        text-align: center;
+    }
+
+    .perfil-page--proprio .stat-number,
+    .perfil-page--proprio .stat-label {
+        text-align: center;
+    }
+
+    .perfil-tabs-controle {
+        position: relative;
+        margin-bottom: 16px;
+    }
+
+    .perfil-page--proprio .perfil-tabs-drawer-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        width: 100%;
+        min-height: 64px;
+        padding: 10px 14px;
+        border: 1px solid rgba(var(--purple-light-rgb), .32);
+        border-radius: var(--radius-lg);
+        background:
+            radial-gradient(circle at 100% 0, rgba(var(--purple-rgb), .2), transparent 50%),
+            rgba(var(--bg-card-rgb), .94);
+        color: var(--text);
+        box-shadow: var(--shadow);
+        cursor: pointer;
+    }
+
+    .perfil-tabs-drawer-trigger > span {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        text-align: left;
+    }
+
+    .perfil-tabs-drawer-trigger > span > i {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        border-radius: var(--radius-md);
+        background: rgba(var(--purple-rgb), .15);
+        color: var(--purple-text);
+    }
+
+    .perfil-tabs-drawer-trigger > span > span {
+        display: grid;
+        min-width: 0;
+    }
+
+    .perfil-tabs-drawer-trigger small {
+        color: var(--text-dim);
+        font-size: .67rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .perfil-tabs-drawer-trigger strong {
+        overflow: hidden;
+        color: var(--text);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .perfil-tabs-drawer-trigger > i {
+        color: var(--purple-text);
+        transition: transform var(--dur-fast) var(--ease-standard);
+    }
+
+    .perfil-page--proprio .tabs-nav {
+        display: none;
+        flex-direction: column;
+        gap: 7px;
+        max-height: min(62dvh, 520px);
+        margin: 10px 0 22px;
+        padding: 10px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: rgba(var(--bg-card-rgb), .97);
+        box-shadow: var(--shadow-lg);
+        overscroll-behavior: contain;
+    }
+
+    .perfil-page--proprio .tabs-nav.is-open {
+        display: flex;
+        margin-top: 16px;
+    }
+
+    .perfil-page--proprio .tab-btn {
+        justify-content: space-between;
+        width: 100%;
+        flex: 0 0 auto;
+        padding: 12px 14px;
+        text-align: left;
     }
 }

@@ -69,3 +69,10 @@ test('CSS usa tokens escopados, aside de 340px, quebra em 1024px e movimento red
   assert.match(css, /@media \(max-width: 1024px\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
+
+test('feed móvel preserva autoria visual, campos de 16px e safe areas', () => {
+  assert.doesNotMatch(css, /\.cc-post-monograma\s*\{\s*display:\s*none/);
+  assert.doesNotMatch(css, /\.cc-resposta-monograma\s*\{\s*display:\s*none/);
+  assert.match(css, /\.cc-campo textarea \{[\s\S]*?font-size: 1rem/);
+  assert.match(css, /padding: 10px max\(16px, var\(--safe-right\)\) max\(48px, var\(--safe-bottom\)\)/);
+});

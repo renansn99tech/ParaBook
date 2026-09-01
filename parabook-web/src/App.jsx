@@ -7,6 +7,7 @@ import Footer from './components/Footer'
 import RouteAccessibility from './components/RouteAccessibility'
 import RotaAdmin from './components/admin/RotaAdmin'
 import RotaPublicacao from './components/RotaPublicacao'
+import RotaAutenticada from './components/RotaAutenticada'
 import api from './services/api'
 
 const Home = lazy(() => import('./pages/Home'))
@@ -129,9 +130,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/perfil" element={<Profile />} />
+          <Route path="/perfil" element={<RotaAutenticada><Profile /></RotaAutenticada>} />
           <Route path="/perfil/alterar-senha" element={<AlterarSenha />} />
-          <Route path="/perfil/configuracoes" element={<ConfiguracoesAvancadas />} />
+          <Route path="/perfil/configuracoes" element={<RotaAutenticada><ConfiguracoesAvancadas /></RotaAutenticada>} />
           <Route path="/perfil/configuracoes/django-admin" element={<RotaAdmin><AdminDjango /></RotaAdmin>} />
           <Route path="/perfil/configuracoes/auditoria" element={<RotaAdmin><AdminAuditoria /></RotaAdmin>} />
           <Route path="/perfil/configuracoes/feature-flags" element={<RotaAdmin><AdminFeatureFlags /></RotaAdmin>} />
@@ -168,8 +169,8 @@ function App() {
           <Route path="/aceitar-termos" element={<AceitarTermos />} />
           <Route path="/autor/onboarding" element={<OnboardingAutor />} />
           <Route path="/recomendacao-ia" element={<RecomendacaoIA />} />
-          <Route path="/minhas-comunidades" element={<MinhasComunidades />} />
-          <Route path="/comunidades/criar" element={<CriarComunidade />} />
+          <Route path="/minhas-comunidades" element={<RotaAutenticada><MinhasComunidades /></RotaAutenticada>} />
+          <Route path="/comunidades/criar" element={<RotaAutenticada><CriarComunidade /></RotaAutenticada>} />
 
           {/* Gamificação */}
           <Route path="/ranking" element={<Ranking />} />

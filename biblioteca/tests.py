@@ -3,13 +3,18 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.staticfiles import finders
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from biblioteca.models import Categoria
 from biblioteca.models import Livro, Biblioteca
 from biblioteca.models import EventoLeitura, SolicitacaoPublicacao
 from biblioteca.api.serializers import SolicitacaoPublicacaoSerializer
+from biblioteca.api.serializers import LivroSerializer
+from biblioteca.services import verificar_acesso_obra
+from assinaturas.models import Assinatura, Plano
 from usuarios.models import Usuario
+from datetime import timedelta
 import uuid
 
 
@@ -64,6 +69,111 @@ class SegurancaCatalogoTests(TestCase):
         response = client.get('/api/v1/dashboard/lixeira/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Livro.objects.filter(pk=livro.pk).exists())
+
+
+class AcessoAcervoTests(TestCase):
+    def setUp(self):
+        self.categoria = Categoria.objects.create(nome='Acervo regional')
+        self.leitor = User.objects.create_user(username='acervo-leitor', password='x')
+        self.client = APIClient()
+        self.client.force_authenticate(self.leitor)
+
+    def test_selo_independente_deriva_da_origem_em_qualquer_categoria(self):
+        livro = Livro.objects.create(
+            titulo='Poesia amazônica',
+            autor='Autora local',
+            categoria=self.categoria,
+            origem='autor_independente',
+            status='publicado',
+        )
+
+        dados = LivroSerializer(livro).data
+
+        self.assertTrue(dados['selo_independente'])
+        self.assertEqual(dados['categoria_nome'], self.categoria.nome)
+
+    def test_leitor_sem_assinatura_nao_acessa_pdf_de_assinante(self):
+        livro = Livro.objects.create(
+            titulo='Licenciado',
+            autor='Editora',
+            categoria=self.categoria,
+            origem='licenciado',
+            modelo_acesso='assinante',
+            status='publicado',
+        )
+
+        resposta = self.client.get(f'/api/v1/biblioteca/livros/{livro.pk}/ler_pdf/')
+
+        self.assertEqual(resposta.status_code, 403)
+        self.assertEqual(resposta.data['codigo'], 'requer_assinatura')
+
+    def test_assinatura_ativa_libera_decisao_de_acesso(self):
+        plano = Plano.objects.create(nome='Premium', preco='19.90', limite_livros=0, anuncios=False)
+        Assinatura.objects.create(usuario=self.leitor, plano=plano, ativa=True)
+        livro = Livro.objects.create(
+            titulo='Licenciado premium',
+            autor='Editora',
+            categoria=self.categoria,
+            origem='licenciado',
+            modelo_acesso='assinante',
+            status='publicado',
+        )
+
+        decisao = verificar_acesso_obra(self.leitor, livro)
+
+        self.assertTrue(decisao.pode_ler)
+        self.assertEqual(decisao.codigo, 'assinante')
+
+    def test_plano_gratuito_nao_desbloqueia_acervo_de_assinante(self):
+        plano = Plano.objects.create(nome='Gratuito', preco='0.00', limite_livros=10, anuncios=True)
+        Assinatura.objects.create(usuario=self.leitor, plano=plano, ativa=True)
+        livro = Livro.objects.create(
+            titulo='Exclusivo pago', autor='Editora', categoria=self.categoria,
+            origem='licenciado', modelo_acesso='assinante', status='publicado',
+        )
+
+        decisao = verificar_acesso_obra(self.leitor, livro)
+
+        self.assertFalse(decisao.pode_ler)
+        self.assertTrue(decisao.requer_assinatura)
+
+    def test_vigencia_encerrada_bloqueia_leitura_e_telemetria(self):
+        livro = Livro.objects.create(
+            titulo='Licença encerrada',
+            autor='Editora',
+            categoria=self.categoria,
+            origem='licenciado',
+            modelo_acesso='gratuito',
+            status='publicado',
+            disponivel_ate=timezone.now() - timedelta(minutes=1),
+        )
+        Biblioteca.objects.create(user=self.leitor, livro=livro, status='lendo')
+
+        resposta_pdf = self.client.get(f'/api/v1/biblioteca/livros/{livro.pk}/ler_pdf/')
+        resposta_evento = self.client.post('/api/v1/biblioteca/leitura/eventos/', {
+            'livro': livro.pk,
+            'pagina': 1,
+            'sessao_id': str(uuid.uuid4()),
+            'duracao_segundos': 30,
+        }, format='json')
+
+        self.assertEqual(resposta_pdf.status_code, 403)
+        self.assertEqual(resposta_pdf.data['codigo'], 'licenca_encerrada')
+        self.assertEqual(resposta_evento.status_code, 403)
+        self.assertFalse(EventoLeitura.objects.filter(livro=livro).exists())
+
+    def test_serializer_exige_arquivo_quando_modelo_for_somente_amostra(self):
+        serializer = LivroSerializer(data={
+            'titulo': 'Prévia sem arquivo',
+            'autor': 'Autora',
+            'categoria': self.categoria.pk,
+            'origem': 'autor_independente',
+            'modelo_acesso': 'amostra',
+            'status': 'publicado',
+        })
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('pdf_amostra', serializer.errors)
 
 
 class ResenhaIdentidadeAdministrativaTests(TestCase):

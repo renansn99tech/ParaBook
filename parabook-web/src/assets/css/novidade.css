@@ -22,6 +22,24 @@
 .novidades-grid { justify-content:center; }
 .card-novidade-evolved .btn-info-livro { z-index:20; }
 
+.badge-independente-novidade {
+    position:absolute;
+    z-index:3;
+    top:44px;
+    left:12px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:4px 9px;
+    border:1px solid rgba(var(--white-rgb),.25);
+    border-radius:var(--radius-pill);
+    background:rgba(var(--bg-main-rgb),.86);
+    color:var(--text);
+    backdrop-filter:blur(10px);
+    font-size:.68rem;
+    font-weight:800;
+}
+
 /* Efeito Glow nos Cards de Lançamento */
 .news-marketing-page .book-card:hover {
     transform: translateY(var(--lift-md));

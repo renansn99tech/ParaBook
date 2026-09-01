@@ -198,7 +198,7 @@ DATABASES = {
     )
 }
 
-# DATABASES = {
+# DATABASES =  {
 
 # "default": {
 

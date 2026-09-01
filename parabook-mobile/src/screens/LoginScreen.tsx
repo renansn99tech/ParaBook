@@ -4,18 +4,19 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { colors } from '../theme/colors';
+import { colors, controlHeight, radii, spacing } from '../theme/colors';
 import { useAuth } from '../context/AuthContext';
+import { FormField } from '../components/FormField';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -29,7 +30,7 @@ export const LoginScreen = ({ navigation }: Props) => {
 
   const handleLogin = async () => {
     if (!username.trim() || !password) {
-      Alert.alert('Campos obrigatorios', 'Informe usuario e senha para entrar.');
+      Alert.alert('Campos obrigatórios', 'Informe usuário e senha para entrar.');
       return;
     }
 
@@ -40,7 +41,7 @@ export const LoginScreen = ({ navigation }: Props) => {
         if (result.requiresTwoFactor) {
           setRequiresTwoFactor(true);
         }
-        Alert.alert('Nao foi possivel entrar', result.error || 'Confira seus dados e tente novamente.');
+        Alert.alert('Não foi possível entrar', result.error || 'Confira seus dados e tente novamente.');
       }
     } finally {
       setLoading(false);
@@ -53,6 +54,11 @@ export const LoginScreen = ({ navigation }: Props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardContainer}
       >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -71,45 +77,13 @@ export const LoginScreen = ({ navigation }: Props) => {
           <Text style={styles.subtitle}>Continue sua leitura, estante e comunidades.</Text>
 
           <View style={styles.form}>
-            <View style={styles.inputContainer}>
-              <Ionicons name="person-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Usuario"
-                placeholderTextColor={colors.textMuted}
-                autoCapitalize="none"
-                value={username}
-                onChangeText={setUsername}
-              />
-            </View>
+            <FormField label="Usuário" icon="person-outline" placeholder="Seu usuário" autoCapitalize="none" autoComplete="username" value={username} onChangeText={setUsername} />
 
             {requiresTwoFactor && (
-              <View style={styles.inputContainer}>
-                <Ionicons name="keypad-outline" size={20} color={colors.textMuted} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Codigo do autenticador"
-                  placeholderTextColor={colors.textMuted}
-                  keyboardType="number-pad"
-                  autoCapitalize="none"
-                  maxLength={6}
-                  value={twoFactorCode}
-                  onChangeText={setTwoFactorCode}
-                />
-              </View>
+              <FormField label="Código de verificação" icon="keypad-outline" placeholder="Código do autenticador" keyboardType="number-pad" autoCapitalize="none" autoComplete="one-time-code" maxLength={6} value={twoFactorCode} onChangeText={setTwoFactorCode} />
             )}
 
-            <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Senha"
-                placeholderTextColor={colors.textMuted}
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </View>
+            <FormField label="Senha" icon="lock-closed-outline" placeholder="Sua senha" isPassword autoComplete="current-password" value={password} onChangeText={setPassword} onSubmitEditing={() => void handleLogin()} returnKeyType="done" />
 
             <TouchableOpacity
               style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
@@ -132,11 +106,12 @@ export const LoginScreen = ({ navigation }: Props) => {
           </View>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Register')} activeOpacity={0.7}>
+        <TouchableOpacity onPress={() => navigation.navigate('Register')} activeOpacity={0.7} style={styles.footerButton}>
           <Text style={styles.footerText}>
-            Ainda nao tem conta? <Text style={styles.footerLink}>Criar cadastro</Text>
+            Ainda não tem conta? <Text style={styles.footerLink}>Criar cadastro</Text>
           </Text>
         </TouchableOpacity>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -149,14 +124,17 @@ const styles = StyleSheet.create({
   },
   keyboardContainer: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 20,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.xxl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 16,
   },
   backButton: {
     padding: 4,
@@ -164,7 +142,7 @@ const styles = StyleSheet.create({
   logoBadge: {
     width: 42,
     height: 42,
-    borderRadius: 14,
+    borderRadius: radii.md,
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -187,37 +165,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     marginTop: 8,
-    marginBottom: 28,
+    marginBottom: spacing.xxl,
     lineHeight: 20,
   },
   form: {
-    gap: 12,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: 14,
-    height: 54,
-  },
-  input: {
-    flex: 1,
-    color: colors.textPrimary,
-    marginLeft: 10,
-    fontSize: 15,
+    gap: spacing.md,
   },
   primaryButton: {
-    height: 54,
-    borderRadius: 27,
+    height: controlHeight,
+    borderRadius: radii.pill,
     backgroundColor: colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: 8,
+    marginTop: spacing.xs,
   },
   primaryButtonDisabled: {
     opacity: 0.7,
@@ -231,7 +193,10 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     fontSize: 14,
-    marginBottom: 12,
+  },
+  footerButton: {
+    minHeight: 44,
+    justifyContent: 'center',
   },
   footerLink: {
     color: colors.primary,

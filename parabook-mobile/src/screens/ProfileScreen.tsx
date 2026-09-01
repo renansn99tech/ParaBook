@@ -5,12 +5,12 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../theme/colors';
+import { colors, radii, spacing } from '../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
@@ -39,7 +39,7 @@ export const ProfileScreen = () => {
       setFullProfile(response);
     } catch {
       setFullProfile(null);
-      setErrorMessage('Nao foi possivel carregar seu perfil agora.');
+      setErrorMessage('Não foi possível carregar seu perfil agora.');
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ export const ProfileScreen = () => {
     return (
       <SafeAreaView style={[styles.container, styles.centerState]}>
         <Ionicons name="person-outline" size={42} color={colors.textMuted} />
-        <Text style={styles.statusText}>Faca login para ver seu perfil.</Text>
+        <Text style={styles.statusText}>Faça login para ver seu perfil.</Text>
       </SafeAreaView>
     );
   }
@@ -70,7 +70,7 @@ export const ProfileScreen = () => {
   const stats = fullProfile?.estatisticas;
   const displayName = fullProfile?.usuario?.nome || user.nome || user.username;
   const displayUsername = fullProfile?.usuario?.username || user.username;
-  const description = fullProfile?.perfil?.descricao_perfil || user.descricao_perfil || 'Sem descricao cadastrada.';
+  const description = fullProfile?.perfil?.descricao_perfil || user.descricao_perfil || 'Sem descrição cadastrada.';
   const totalLidos = stats?.total_lidos ?? 0;
   const lendoAgora = stats?.lendo_agora ?? 0;
   const totalComunidades = stats?.total_comunidades ?? 0;
@@ -80,7 +80,7 @@ export const ProfileScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Perfil</Text>
-          <TouchableOpacity style={styles.iconButton} onPress={() => void loadProfile()}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => void loadProfile()} activeOpacity={0.7} accessibilityLabel="Atualizar perfil">
             <Ionicons name="refresh-outline" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
@@ -91,7 +91,7 @@ export const ProfileScreen = () => {
           ) : (
             <View style={styles.avatarContainer}><Ionicons name="person" size={36} color={colors.primary} /></View>
           )}
-          <Text style={styles.userName}>{displayName}</Text>
+          <Text style={styles.userName} numberOfLines={2}>{displayName}</Text>
           <Text style={styles.userTag}>@{displayUsername}</Text>
           <Text style={styles.userDescription}>{description}</Text>
         </View>
@@ -116,11 +116,11 @@ export const ProfileScreen = () => {
         <View style={styles.goalCard}>
           <View style={styles.infoRow}>
             <Ionicons name="location-outline" size={18} color={colors.primary} />
-            <Text style={styles.infoText}>{fullProfile?.perfil?.localizacao || user.localizacao || 'Localizacao nao informada'}</Text>
+            <Text style={styles.infoText} numberOfLines={2}>{fullProfile?.perfil?.localizacao || user.localizacao || 'Localização não informada'}</Text>
           </View>
           <View style={styles.infoRow}>
             <Ionicons name="mail-outline" size={18} color={colors.primary} />
-            <Text style={styles.infoText}>{user.email}</Text>
+            <Text style={styles.infoText} numberOfLines={2}>{user.email}</Text>
           </View>
           <View style={styles.infoRow}>
             <Ionicons name="shield-checkmark-outline" size={18} color={colors.primary} />
@@ -146,7 +146,7 @@ export const ProfileScreen = () => {
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('MyLibrary', { initialStatus: 'lido' })}>
             <View style={styles.menuItemLeft}>
               <Ionicons name="time-outline" size={20} color={colors.primary} />
-              <Text style={styles.menuItemText}>Historico de Leitura</Text>
+              <Text style={styles.menuItemText}>Histórico de Leitura</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
@@ -157,7 +157,7 @@ export const ProfileScreen = () => {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Notifications')}>
-            <View style={styles.menuItemLeft}><Ionicons name="notifications-outline" size={20} color={colors.primary} /><Text style={styles.menuItemText}>Notificacoes</Text></View>
+            <View style={styles.menuItemLeft}><Ionicons name="notifications-outline" size={20} color={colors.primary} /><Text style={styles.menuItemText}>Notificações</Text></View>
             <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
 
@@ -169,14 +169,14 @@ export const ProfileScreen = () => {
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('MyLibrary', { reviewedOnly: true })}>
             <View style={styles.menuItemLeft}>
               <Ionicons name="heart-outline" size={20} color={colors.primary} />
-              <Text style={styles.menuItemText}>Avaliacoes e Resenhas</Text>
+              <Text style={styles.menuItemText}>Avaliações e Resenhas</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={() => void logout()}>
-          <Ionicons name="log-out-outline" size={18} color={colors.textPrimary} />
+          <Ionicons name="log-out-outline" size={18} color={colors.error} />
           <Text style={styles.logoutText}>Sair da conta</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -190,8 +190,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 24,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xxl,
   },
   centerState: {
     alignItems: 'center',
@@ -207,8 +207,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 16,
-    paddingBottom: 12,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
   headerTitle: {
     fontSize: 24,
@@ -216,11 +216,19 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   iconButton: {
-    padding: 6,
+    width: 42,
+    height: 42,
+    borderRadius: radii.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   userCard: {
     alignItems: 'center',
-    marginVertical: 16,
+    marginVertical: spacing.lg,
+    paddingHorizontal: spacing.lg,
   },
   avatarContainer: {
     width: 80,
@@ -255,10 +263,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.cardBackground,
-    borderRadius: 14,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    marginVertical: 12,
+    borderRadius: radii.lg,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.md,
+    marginVertical: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -283,9 +291,9 @@ const styles = StyleSheet.create({
   },
   goalCard: {
     backgroundColor: colors.cardBackground,
-    borderRadius: 14,
-    padding: 16,
-    marginVertical: 8,
+    borderRadius: radii.md,
+    padding: spacing.lg,
+    marginVertical: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -293,7 +301,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 10,
+    minHeight: 28,
+    marginBottom: spacing.sm,
   },
   infoText: {
     fontSize: 14,
@@ -301,7 +310,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuSection: {
-    marginTop: 20,
+    marginTop: spacing.xl,
   },
   sectionTitle: {
     fontSize: 16,
@@ -314,10 +323,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.cardBackground,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginBottom: 8,
+    minHeight: 52,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radii.md,
+    marginBottom: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -332,7 +342,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   errorText: {
-    color: '#F87171',
+    color: colors.error,
     fontSize: 13,
     lineHeight: 18,
     marginTop: 8,
@@ -340,15 +350,17 @@ const styles = StyleSheet.create({
   logoutButton: {
     marginTop: 18,
     minHeight: 48,
-    borderRadius: 14,
-    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.error,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
   },
   logoutText: {
-    color: colors.textPrimary,
+    color: colors.error,
     fontSize: 15,
     fontWeight: '700',
   },

@@ -118,10 +118,12 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Deve ficar antes de middlewares que podem responder antecipadamente
+    # (SecurityMiddleware/WhiteNoise), inclusive para preflights OPTIONS.
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -156,7 +158,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
-    default="http://localhost:5173,http://127.0.0.1:5173",
+    default=(
+        "http://localhost:5173,http://127.0.0.1:5173,"
+        "http://localhost:8081,http://127.0.0.1:8081"
+    ),
 ).split(",")
 
 # Libera automaticamente qualquer subdomínio das plataformas de deploy
@@ -194,29 +199,29 @@ DATABASES = {
 }
 
 # DATABASES = {
-#
+
 # "default": {
-#
+
 # "ENGINE": "django.db.backends.mysql",
-#
+
 # "NAME": "mydb",
-#
+
 # "USER": "root",
-#
+
 # "PASSWORD": "admin",
-#
+
 # "HOST": "127.0.0.1",
-#
+
 # "PORT": "3306",
-#
+
 # "OPTIONS": {
-#
+
 # "charset": "utf8mb4",
-#
-# },
-#
+
+# } ,
+
 # }
-#
+
 # }
 
 # Password validation

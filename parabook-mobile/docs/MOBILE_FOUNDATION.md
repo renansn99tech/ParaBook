@@ -1,0 +1,59 @@
+# Mobile Foundation
+
+Diagnostico e contrato da fundacao mobile, validado em 2026-08-26 contra o codigo Django, a aplicacao Web e as rotas publicadas no Render.
+
+## Contrato de autenticacao nativa
+
+Base remota padrao: `https://parabook-nl8o.onrender.com/api/v1`. O app pode sobrescrever esse valor com `EXPO_PUBLIC_API_URL`, sem depender de `localhost` no iPhone fisico.
+
+| Fluxo | Endpoint | Contrato mobile |
+| --- | --- | --- |
+| Login | `POST /auth/mobile-login/` | Envia `username` e `password`; quando houver 2FA, solicita `codigo_2fa`; recebe `access` e `refresh`. |
+| Cadastro | `POST /auth/mobile-register/` | Envia `username`, `email`, `password`, `password_confirm` e `termos_aceitos`; recebe `access` e `refresh`. |
+| Renovacao | `POST /auth/mobile-refresh/` | Envia `refresh`; recebe o access e o refresh rotacionado. |
+| Usuario autenticado | `GET /auth/profile/` | Bearer; retorna o registro `Usuario` e `user_auth`. |
+| Perfil atual | `GET /perfis/meu-perfil/` | Bearer; retorna identidade e dados do perfil. |
+| Perfil completo | `GET /perfis/:username/` | Bearer; retorna perfil, estatisticas, favoritos, historico e comunidades. |
+| Logout | `POST /auth/mobile-logout/` | Invalida o refresh no servidor e limpa memoria e `SecureStore` mesmo em falha de rede. |
+
+O Web usa rotas separadas (`/auth/login/`, `/auth/register/`, `/auth/refresh/` e `/auth/logout/`) com JWT em cookies HttpOnly e CSRF. Esse fluxo nao deve ser reutilizado pelo Expo Go.
+
+## Estados de inicializacao
+
+- Sem tokens: encerra a inicializacao e abre Login/Cadastro.
+- Token aceito: carrega usuario e perfil em paralelo e abre as cinco abas autenticadas.
+- Resposta 401: tenta uma unica renovacao; se o refresh for invalido, limpa a sessao e abre Login.
+- Timeout ou falha de rede: preserva a sessao persistida, mostra uma tela recuperavel e oferece nova tentativa ou retorno ao Login.
+- Falha ou atraso do `SecureStore`: a interface muda de estado antes da limpeza persistente e nunca fica bloqueada indefinidamente.
+
+## Backend nativo implementado
+
+### Renovacao do JWT nativo
+
+- `POST /api/v1/auth/mobile-refresh/` recebe o refresh no corpo, aplica rotacao/blacklist do SimpleJWT e devolve o novo par.
+- O interceptor repete uma vez a requisicao original depois da renovacao, inclusive durante a restauracao do app.
+
+### Logout e revogacao nativos
+
+- Login e cadastro registram `SessaoDispositivo` e incluem seu `sid` nos tokens.
+- `POST /api/v1/auth/mobile-logout/` revoga a sessao e coloca o refresh apresentado na blacklist; o access com o mesmo `sid` deixa de autenticar imediatamente.
+
+### Paridade de 2FA no login mobile
+
+- `POST /api/v1/auth/mobile-login/` agora devolve `202 requires_2fa` para contas protegidas.
+- A tela exibe o campo TOTP apenas depois do desafio e reenvia `codigo_2fa`.
+
+## Checklist manual no Expo Go
+
+- [ ] Abrir sem sessao e confirmar que Login/Cadastro aparece sem loading infinito.
+- [ ] Entrar com credenciais validas e confirmar Home com o nome real.
+- [ ] Fechar completamente e reabrir o Expo Go; confirmar restauracao da sessao valida.
+- [ ] Testar senha incorreta e confirmar mensagem do backend sem usuario ficticio.
+- [ ] Cadastrar uma conta com senha e confirmacao; testar tambem senhas diferentes e termos desmarcados.
+- [ ] Confirmar dados reais nas telas Home e Perfil.
+- [ ] Abrir Home, Catalogo, Biblioteca, Comunidades e Perfil pelas cinco abas.
+- [ ] Abrir um livro pela aba Biblioteca e voltar sem erro de rota.
+- [ ] Desligar a rede durante a restauracao, confirmar estado recuperavel e usar `Tentar novamente` apos reconectar.
+- [ ] Usar `Ir para o login` no erro de rede e confirmar a limpeza local.
+- [ ] Fazer logout no Perfil e confirmar retorno ao fluxo publico.
+- [ ] Reabrir o app depois do logout e confirmar que a sessao nao reaparece.

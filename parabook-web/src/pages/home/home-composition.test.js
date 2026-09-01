@@ -6,6 +6,17 @@ const coordenador = readFileSync(new URL('../Home.jsx', import.meta.url), 'utf8'
 const desktop = readFileSync(new URL('./HomeDesktop.jsx', import.meta.url), 'utf8');
 const mobile = readFileSync(new URL('./HomeMobile.jsx', import.meta.url), 'utf8');
 const mobileCss = readFileSync(new URL('../../assets/css/home-mobile.css', import.meta.url), 'utf8');
+const dashboard = readFileSync(new URL('../../components/DashboardLeituraResumo.jsx', import.meta.url), 'utf8');
+const dashboardCss = readFileSync(new URL('../../assets/css/home-dashboard.css', import.meta.url), 'utf8');
+const homeData = readFileSync(new URL('../../hooks/useHomeData.js', import.meta.url), 'utf8');
+const comunidade = readFileSync(new URL('../ConteudoComunidade.jsx', import.meta.url), 'utf8');
+const app = readFileSync(new URL('../../App.jsx', import.meta.url), 'utf8');
+const experiencia = readFileSync(new URL('../../components/ExperienciaPublica.jsx', import.meta.url), 'utf8');
+const experienciaCss = readFileSync(new URL('../../assets/css/experiencia-publica.css', import.meta.url), 'utf8');
+const homeCss = readFileSync(new URL('../../assets/css/home.css', import.meta.url), 'utf8');
+const proximoCapituloCss = readFileSync(new URL('../../assets/css/home-personalizada.css', import.meta.url), 'utf8');
+const proximoCapitulo = readFileSync(new URL('../../components/ProximoCapitulo.jsx', import.meta.url), 'utf8');
+const rotaPublicacao = readFileSync(new URL('../../components/RotaPublicacao.jsx', import.meta.url), 'utf8');
 const mobileRootCss = mobileCss.match(/\.home-mobile\s*\{([\s\S]*?)\}/)?.[1] || '';
 
 test('Home escolhe composições independentes no breakpoint da navegação', () => {
@@ -17,6 +28,77 @@ test('Home escolhe composições independentes no breakpoint da navegação', ()
 test('dados da Home são compartilhados antes da escolha visual', () => {
   assert.match(coordenador, /const dados = useHomeData\(\)/);
   assert.match(coordenador, /<Composicao \{\.\.\.dados\} \/>/);
+});
+
+test('cards da landing usam o resumo autenticado e abrem o dashboard privado', () => {
+  assert.match(homeData, /api\.get\('\/perfis\/resumo-leitura\/'/);
+  assert.match(desktop, /resumoLeitura\?\.leitura_destaque/);
+  assert.match(desktop, /leituraDestaque\.progresso_percentual/);
+  assert.match(desktop, /setDashboardAberto\(true\)/);
+  assert.match(desktop, /formatarTempoResumo/);
+  assert.match(mobile, /className="hm-reading"/);
+  assert.match(mobile, /> Abrir dashboard<\/button>/);
+});
+
+test('card do usuário usa a foto do perfil com fallback adequado ao papel', () => {
+  assert.match(desktop, /import \{ obterAvatarPerfil \} from '\.\.\/\.\.\/services\/avatarPerfil'/);
+  assert.match(desktop, /const avatarUsuario = obterAvatarPerfil\(user\)/);
+  assert.match(desktop, /className="floating-avatar"[\s\S]*src=\{avatarUsuario\}/);
+  assert.doesNotMatch(desktop, /<div className="floating-avatar">👩<\/div>/);
+});
+
+test('cards institucionais ganham páginas próprias e são substituídos após login', () => {
+  assert.match(app, /path="\/para-leitores"/);
+  assert.match(app, /path="\/para-autores"/);
+  assert.match(desktop, /!isAuthenticated \? <section className="features"/);
+  assert.match(desktop, /<ProximoCapitulo dados=\{inicioPersonalizado\}/);
+  assert.match(mobile, /!user && <section className="hm-audiences"/);
+  assert.match(experiencia, /Recursos que já fazem parte do ParaBook/);
+  assert.match(experiencia, /Analytics do Autor/);
+  assert.match(experiencia, /Em breve/);
+});
+
+test('páginas institucionais respeitam o container global de 1600px', () => {
+  assert.match(experienciaCss, /\.experiencia-page\s*\{[\s\S]*width:100%;[\s\S]*max-width:var\(--layout-max\);[\s\S]*margin:0 auto/);
+  assert.match(experienciaCss, /max\(var\(--layout-gutter\), var\(--safe-right\)\)/);
+  assert.match(experienciaCss, /max\(var\(--layout-gutter\), var\(--safe-left\)\)/);
+});
+
+test('landing alinha cards institucionais e seções seguintes no container de 1600px', () => {
+  assert.match(homeCss, /\.features,[\s\S]*\.books,[\s\S]*\.communities\s*\{[\s\S]*width:100%;[\s\S]*max-width:var\(--layout-max\);[\s\S]*var\(--layout-gutter\)/);
+  assert.match(proximoCapituloCss, /\.proximo-capitulo\s*\{[\s\S]*width:100%;[\s\S]*max-width:var\(--layout-max\);[\s\S]*var\(--layout-gutter\)/);
+});
+
+test('início personalizado usa endpoint privado e ações internas por papel', () => {
+  assert.match(homeData, /api\.get\('\/perfis\/inicio\/'/);
+  assert.match(proximoCapitulo, /Seu próximo capítulo/);
+  assert.match(proximoCapitulo, /Descobertas para você/);
+  assert.match(proximoCapitulo, /acao\?\.link \|\| '\/perfil'/);
+});
+
+test('rota de publicação impede acesso de visitantes e papéis não aprovados', () => {
+  assert.match(app, /<RotaPublicacao><PublicarLivro \/><\/RotaPublicacao>/);
+  assert.match(rotaPublicacao, /!user[\s\S]*Navigate to="\/para-autores"/);
+  assert.match(rotaPublicacao, /aguardando_aprovacao[\s\S]*Navigate to="\/perfil"/);
+  assert.match(rotaPublicacao, /user\.tipo !== 'autor' && user\.tipo !== 'admin'/);
+});
+
+test('dashboard breve explica e apresenta as quatro métricas solicitadas', () => {
+  assert.match(dashboard, /rotulo="Média por sessão"/);
+  assert.match(dashboard, /rotulo="Gêneros explorados"/);
+  assert.match(dashboard, /rotulo="Avaliações feitas"/);
+  assert.match(dashboard, /rotulo="Posts relevantes"/);
+  assert.match(dashboard, /postagem\.respostas/);
+  assert.match(dashboard, /Este resumo é visível apenas para você/);
+  assert.match(dashboard, /role="dialog" aria-modal="true"/);
+  assert.match(dashboardCss, /@media \(max-width: 820px\)/);
+});
+
+test('respostas reais alimentam o engajamento das postagens', () => {
+  assert.match(comunidade, /api\.get\(`\/comunidades\/respostas\/\?postagem=\$\{postId\}`\)/);
+  assert.match(comunidade, /api\.post\('\/comunidades\/respostas\/'/);
+  assert.match(comunidade, /total_respostas/);
+  assert.match(comunidade, /Escreva uma resposta construtiva/);
 });
 
 test('landing móvel não importa imagens narrativas pesadas do desktop', () => {

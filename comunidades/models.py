@@ -70,12 +70,47 @@ class PostagemComunidade(models.Model):
 
     def __str__(self):
         return self.titulo
-    
+
+
+class RespostaPostagem(models.Model):
+    postagem = models.ForeignKey(
+        PostagemComunidade,
+        on_delete=models.CASCADE,
+        related_name='respostas',
+    )
+    autor = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='respostas_comunidade',
+    )
+    conteudo = models.TextField(max_length=1200)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['criado_em']
+        indexes = [
+            models.Index(fields=['postagem', 'criado_em'], name='com_post_criado_idx'),
+            models.Index(fields=['autor', 'criado_em'], name='com_resp_autor_criado_idx'),
+        ]
+
+    def __str__(self):
+        return f'Resposta de {self.autor} em {self.postagem}'
+
+
 class DenunciaComunidade(models.Model):
+    STATUS_CHOICES = [
+        ('pendente', 'Pendente'),
+        ('acolhida', 'Acolhida'),
+        ('arquivada', 'Arquivada'),
+    ]
+
     comunidade = models.ForeignKey(Comunidade, on_delete=models.CASCADE, related_name='denuncias_registradas')
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     motivo = models.CharField(max_length=100)
     data_denuncia = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente', db_index=True)
+    data_analise = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'denuncias_comunidades'

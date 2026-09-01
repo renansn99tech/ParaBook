@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  Image,
   StyleSheet,
   Text,
   View,
@@ -13,17 +15,54 @@ import { colors } from '../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { Book, bookService, Category } from '../services/bookService';
+import { useAuth } from '../context/AuthContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const MOCK_BOOKS = [
-  { id: '1', title: 'O Hobbit', author: 'J.R.R. Tolkien' },
-  { id: '2', title: '1984', author: 'George Orwell' },
-  { id: '3', title: 'Clean Code', author: 'Robert C. Martin' },
-];
-
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { user } = useAuth();
+  const [books, setBooks] = useState<Book[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingBooks, setLoadingBooks] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [booksError, setBooksError] = useState<string | null>(null);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+
+  const fetchHomeData = async (query?: string) => {
+    setLoadingBooks(true);
+    setLoadingCategories(true);
+    setBooksError(null);
+    setCategoriesError(null);
+
+    const [bookResult, categoryResult] = await Promise.allSettled([
+      bookService.getBooks(query?.trim() || undefined),
+      bookService.getCategories(),
+    ]);
+
+    if (bookResult.status === 'fulfilled') {
+      setBooks(bookResult.value.slice(0, 6));
+    } else {
+      setBooks([]);
+      setBooksError('Falha ao carregar os livros. Tente novamente.');
+    }
+
+    if (categoryResult.status === 'fulfilled') {
+      setCategories(categoryResult.value.slice(0, 4));
+    } else {
+      setCategories([]);
+      setCategoriesError('Falha ao carregar as categorias. Tente novamente.');
+    }
+
+    setLoadingBooks(false);
+    setLoadingCategories(false);
+  };
+
+  useEffect(() => {
+    void fetchHomeData();
+  }, []);
 
   const navigateToStack = (screenName: 'MyLibrary' | 'BookDetail', params?: { bookId: string; title?: string }) => {
     if (screenName === 'MyLibrary') {
@@ -33,6 +72,10 @@ export const HomeScreen = () => {
     }
   };
 
+  const firstBook = books[0] || null;
+  const greetingName = user?.nome || user?.username || 'leitor';
+  const avatarLetter = (user?.nome || user?.username || 'P').charAt(0).toUpperCase();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -40,12 +83,12 @@ export const HomeScreen = () => {
         {/* Header - Saudação */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greetingTitle}>Olá, Rodrigo! 👋</Text>
-            <Text style={styles.greetingSubtitle}>O que você vai ler hoje?</Text>
+            <Text style={styles.greetingTitle}>Ola, {greetingName}!{'\u00A0'}👋</Text>
+            <Text style={styles.greetingSubtitle}>O que voce vai ler hoje?</Text>
           </View>
           <TouchableOpacity onPress={() => navigateToStack('MyLibrary')}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>R</Text>
+              <Text style={styles.avatarText}>{avatarLetter}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -55,11 +98,15 @@ export const HomeScreen = () => {
           <Ionicons name="search-outline" size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar livros, autores, categorias..."
+            placeholder="Buscar por titulo ou autor..."
             placeholderTextColor={colors.textMuted}
+            value={search}
+            onChangeText={setSearch}
+            returnKeyType="search"
+            onSubmitEditing={() => void fetchHomeData(search)}
           />
-          <TouchableOpacity onPress={() => navigateToStack('BookDetail', { bookId: '1', title: 'O Hobbit' })}>
-            <Ionicons name="options-outline" size={20} color={colors.textMuted} />
+          <TouchableOpacity onPress={() => void fetchHomeData(search)}>
+            <Ionicons name="arrow-forward-circle-outline" size={22} color={colors.primary} />
           </TouchableOpacity>
         </View>
 
@@ -75,85 +122,103 @@ export const HomeScreen = () => {
           <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
         </TouchableOpacity>
 
-        {/* Banner Destaque */}
+        {/* Banner do acervo */}
         <View style={styles.banner}>
-          <Text style={styles.bannerBadge}>DESTAQUE</Text>
+          <Text style={styles.bannerBadge}>ACERVO</Text>
           <Text style={styles.bannerTitle}>Descubra novos mundos</Text>
-          <Text style={styles.bannerSubtitle}>Explore milhares de livros e amplie seus horizontes.</Text>
-          <TouchableOpacity
-            style={styles.bannerButton}
-            onPress={() => navigateToStack('BookDetail', { bookId: '1', title: 'O Hobbit' })}
-          >
-            <Text style={styles.bannerButtonText}>Explorar →</Text>
-          </TouchableOpacity>
+          <Text style={styles.bannerSubtitle}>Explore os livros disponiveis no ParaBook e amplie seus horizontes.</Text>
+          {firstBook && (
+            <TouchableOpacity
+              style={styles.bannerButton}
+              onPress={() => navigateToStack('BookDetail', { bookId: String(firstBook.id), title: firstBook.title })}
+            >
+              <Text style={styles.bannerButtonText}>Explorar</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Seção Categorias */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Categorias</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Catalogo' })}>
             <Text style={styles.seeAllText}>Ver todas</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.categoriesGrid}>
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() => navigateToStack('BookDetail', { bookId: '1', title: 'Ficção' })}
-          >
-            <Ionicons name="book-outline" size={24} color={colors.primary} />
-            <Text style={styles.categoryTitle}>Ficção</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() => navigateToStack('BookDetail', { bookId: '2', title: 'Filosofia' })}
-          >
-            <Ionicons name="school-outline" size={24} color="#10B981" />
-            <Text style={styles.categoryTitle}>Filosofia</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() => navigateToStack('BookDetail', { bookId: '3', title: 'Ciência' })}
-          >
-            <Ionicons name="flask-outline" size={24} color="#EC4899" />
-            <Text style={styles.categoryTitle}>Ciência</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() => navigateToStack('BookDetail', { bookId: '4', title: 'História' })}
-          >
-            <Ionicons name="hourglass-outline" size={24} color="#F59E0B" />
-            <Text style={styles.categoryTitle}>História</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Seção Livros Recomendados */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Continuar Lendo</Text>
-        </View>
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
-          {MOCK_BOOKS.map((book) => (
-            <TouchableOpacity
-              key={book.id}
-              style={styles.bookCard}
-              onPress={() => navigateToStack('BookDetail', { bookId: book.id, title: book.title })}
-            >
-              <View style={styles.bookCover}>
-                <Ionicons name="book" size={32} color={colors.primary} />
-              </View>
-              <Text style={styles.bookTitle} numberOfLines={1}>
-                {book.title}
-              </Text>
-              <Text style={styles.bookAuthor} numberOfLines={1}>
-                {book.author}
-              </Text>
+        {loadingCategories ? (
+          <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
+        ) : categoriesError ? (
+          <View style={styles.stateCard}>
+            <Ionicons name="cloud-offline-outline" size={36} color={colors.textMuted} />
+            <Text style={styles.stateText}>{categoriesError}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)}>
+              <Text style={styles.retryButtonText}>Tentar novamente</Text>
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+          </View>
+        ) : categories.length === 0 ? (
+          <Text style={styles.stateText}>Nenhuma categoria cadastrada no acervo.</Text>
+        ) : (
+          <View style={styles.categoriesGrid}>
+            {categories.map((category, index) => {
+              const iconColors = [colors.primary, colors.accentGreen, '#EC4899', colors.accentYellow];
+              return (
+                <View key={category.id} style={styles.categoryCard}>
+                  <Ionicons name="book-outline" size={24} color={iconColors[index] || colors.primary} />
+                  <Text style={styles.categoryTitle} numberOfLines={1}>
+                    {category.name}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* Seção Livros do acervo */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{search.trim() ? 'Resultados da busca' : 'Livros do acervo'}</Text>
+        </View>
+
+        {loadingBooks ? (
+          <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
+        ) : booksError ? (
+          <View style={styles.stateCard}>
+            <Ionicons name="cloud-offline-outline" size={36} color={colors.textMuted} />
+            <Text style={styles.stateText}>{booksError}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)}>
+              <Text style={styles.retryButtonText}>Tentar novamente</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          books.length === 0 ? (
+            <Text style={styles.stateText}>
+              {search.trim() ? 'Nenhum livro encontrado para essa busca.' : 'Nenhum livro cadastrado no acervo.'}
+            </Text>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
+              {books.map((book) => (
+                <TouchableOpacity
+                  key={book.id}
+                  style={styles.bookCard}
+                  onPress={() => navigateToStack('BookDetail', { bookId: String(book.id), title: book.title })}
+                >
+                  {book.cover_url ? (
+                    <Image source={{ uri: book.cover_url }} style={styles.bookCoverImage} resizeMode="cover" />
+                  ) : (
+                    <View style={styles.bookCover}>
+                      <Ionicons name="book" size={32} color={colors.primary} />
+                    </View>
+                  )}
+                  <Text style={styles.bookTitle} numberOfLines={1}>
+                    {book.title}
+                  </Text>
+                  <Text style={styles.bookAuthor} numberOfLines={1}>
+                    {book.author}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )
+        )}
 
       </ScrollView>
     </SafeAreaView>
@@ -273,6 +338,36 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
   },
+  stateCard: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    paddingHorizontal: 18,
+    borderRadius: 16,
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  stateText: {
+    color: colors.textSecondary,
+    fontSize: 13,
+    marginTop: 12,
+    textAlign: 'center',
+    lineHeight: 19,
+  },
+  retryButton: {
+    marginTop: 16,
+    minHeight: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    color: colors.textPrimary,
+    fontWeight: '700',
+    fontSize: 13,
+  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -324,6 +419,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  bookCoverImage: {
+    width: 110,
+    height: 150,
+    borderRadius: 12,
+    backgroundColor: colors.cardBackground,
+    marginBottom: 8,
+  },
+  loadingIndicator: {
+    marginVertical: 24,
   },
   bookTitle: {
     fontSize: 13,

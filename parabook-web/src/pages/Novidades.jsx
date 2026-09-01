@@ -82,6 +82,11 @@ function Novidades() {
                     </div>
                   )}
                   <span className="badge-novidade">Novo</span>
+                  {livro.selo_independente && (
+                    <span className="badge-independente-novidade">
+                      <i className="fa-solid fa-feather-pointed" aria-hidden="true"></i> Independente
+                    </span>
+                  )}
                 </div>
 
                 <div className="book-info">
@@ -89,7 +94,7 @@ function Novidades() {
                   <p className="book-author">{livro.autor}</p>
                   <div className="book-rating mt-2">
                     <span className="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 rounded-pill small">
-                      {livro.categoria_nome || "Independente"}
+                      {livro.categoria_nome || "Sem categoria"}
                     </span>
                   </div>
                 </div>

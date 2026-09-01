@@ -1,6 +1,39 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function Footer() {
+  const [rolagem, setRolagem] = useState({ mobile: false, mostrarTopo: false })
+
+  useEffect(() => {
+    const consultaMobile = window.matchMedia('(max-width: 768px)')
+    let quadro = null
+    const atualizar = () => {
+      quadro = null
+      const alturaRolavel = document.documentElement.scrollHeight - window.innerHeight
+      const progresso = alturaRolavel > 0 ? window.scrollY / alturaRolavel : 0
+      const proximoEstado = { mobile: consultaMobile.matches, mostrarTopo: progresso >= 0.75 }
+      setRolagem((estadoAtual) => (
+        estadoAtual.mobile === proximoEstado.mobile && estadoAtual.mostrarTopo === proximoEstado.mostrarTopo
+          ? estadoAtual
+          : proximoEstado
+      ))
+    }
+    const agendarAtualizacao = () => {
+      if (quadro !== null) return
+      quadro = window.requestAnimationFrame(atualizar)
+    }
+    atualizar()
+    window.addEventListener('scroll', agendarAtualizacao, { passive: true })
+    window.addEventListener('resize', agendarAtualizacao)
+    consultaMobile.addEventListener('change', agendarAtualizacao)
+    return () => {
+      if (quadro !== null) window.cancelAnimationFrame(quadro)
+      window.removeEventListener('scroll', agendarAtualizacao)
+      window.removeEventListener('resize', agendarAtualizacao)
+      consultaMobile.removeEventListener('change', agendarAtualizacao)
+    }
+  }, [])
+
   const scrollToTop = () => {
     const reduzirMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({ top: 0, behavior: reduzirMovimento ? 'auto' : 'smooth' });
@@ -29,7 +62,7 @@ function Footer() {
 
         <div className="footer-column">
           <h4>Autores</h4>
-          <Link to="/publicar">Publicar Obra</Link>
+          <Link to="/para-autores">Para Autores</Link>
           <Link to="/diretrizes">Diretrizes</Link>
         </div>
 
@@ -41,8 +74,8 @@ function Footer() {
 
       <div className="footer-bottom">
         <p>© 2026 ParaBook • Todos os direitos reservados</p>
-        <button type="button" className="btn-scroll-top" title="Voltar ao topo" aria-label="Voltar ao topo" onClick={scrollToTop}>
-          <i className="fa-solid fa-arrow-up"></i>
+        <button type="button" className={`btn-scroll-top ${rolagem.mostrarTopo ? 'is-mobile-visible' : ''}`} title="Voltar ao topo" aria-label="Voltar ao topo" aria-hidden={rolagem.mobile && !rolagem.mostrarTopo} tabIndex={rolagem.mobile && !rolagem.mostrarTopo ? -1 : undefined} onClick={scrollToTop}>
+          <i className="fa-solid fa-arrow-up" aria-hidden="true"></i>
         </button>
       </div>
     </footer>

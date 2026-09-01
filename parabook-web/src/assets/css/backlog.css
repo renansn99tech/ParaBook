@@ -2,10 +2,10 @@
    NOVIDADES / TIMELINE - DEEP BLUE & CRIMSON PULSE
 ========================================================================== */
 
-.news-page-main {
+.backlog-page-main {
     min-height: 100vh;
     overflow-x: hidden;
-    padding-bottom: 0;
+    padding-bottom: 2vh;
 }
 
 /* ================= HERO SECTION E LETREIRO (TICKER) ================= */

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useContext } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect, useRef, useContext, useCallback } from 'react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import swal, { BOTAO } from '../services/swal';
 import api from '../services/api';
 import { AuthContext } from '../context/auth-context';
@@ -9,6 +9,15 @@ import '../assets/css/leitura.css';
 const PDF_JS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 const PDF_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 let carregamentoPdfJs = null;
+
+function criarIdSessao() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (caractere) => {
+    const aleatorio = Math.floor(Math.random() * 16);
+    const valor = caractere === 'x' ? aleatorio : ((aleatorio & 0x3) | 0x8);
+    return valor.toString(16);
+  });
+}
 
 function carregarPdfJs() {
   if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
@@ -33,7 +42,9 @@ function carregarPdfJs() {
 
 function Leitura() {
   const { id } = useParams();
-  const { user } = useContext(AuthContext);
+  const [searchParams] = useSearchParams();
+  const modoAmostra = searchParams.get('amostra') === '1';
+  const { user, loading: authLoading } = useContext(AuthContext);
   
   // PDF.js State
   const canvasRef = useRef(null);
@@ -48,6 +59,7 @@ function Leitura() {
   const [expandir, setExpandir] = useState(false);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+  const [tituloLivro, setTituloLivro] = useState('Obra');
   
   // Estante states
   const [idEstante, setIdEstante] = useState(null);
@@ -55,6 +67,23 @@ function Leitura() {
   const [favorito, setFavorito] = useState(false);
   
   const [inputPag, setInputPag] = useState('');
+  const sessaoLeituraRef = useRef(criarIdSessao());
+  const ultimoEventoRef = useRef({ enviadoEm: Date.now(), pagina: null });
+
+  const registrarEventoLeitura = useCallback((pagina, forcar = false) => {
+    if (modoAmostra || !user || !pdfDoc || loading) return;
+    const agora = Date.now();
+    const duracaoSegundos = Math.min(1800, Math.max(0, Math.round((agora - ultimoEventoRef.current.enviadoEm) / 1000)));
+    if (forcar && ultimoEventoRef.current.pagina === pagina && duracaoSegundos === 0) return;
+    if (!forcar && ultimoEventoRef.current.pagina === pagina && duracaoSegundos < 25) return;
+    ultimoEventoRef.current = { enviadoEm: agora, pagina };
+    api.post('/biblioteca/leitura/eventos/', {
+      livro: Number(id),
+      pagina,
+      sessao_id: sessaoLeituraRef.current,
+      duracao_segundos: duracaoSegundos,
+    }).catch((error) => console.error('Erro ao registrar evento de leitura', error));
+  }, [id, loading, modoAmostra, pdfDoc, user]);
 
   // Só a moldura do leitor entra animada: o <article> do canvas fica de
   // fora de propósito, para não animar o elemento que o PDF.js mede e
@@ -63,13 +92,29 @@ function Leitura() {
 
   // Initial load
   useEffect(() => {
-    if (!user) return; // Aguarda o user estar logado (protegido por rotas)
+    if (authLoading) return;
 
     setLoading(true);
     setErro(null);
 
     const fetchData = async () => {
       try {
+        const resLivro = await api.get(`/biblioteca/livros/${id}/`);
+        const livro = resLivro.data;
+        const acesso = livro.acesso || {};
+        setTituloLivro(livro.titulo || 'Obra');
+
+        if (modoAmostra && !acesso.pode_ler_amostra) {
+          setErro('Esta obra não possui uma amostra disponível.');
+          setLoading(false);
+          return;
+        }
+        if (!modoAmostra && !acesso.pode_ler) {
+          setErro(acesso.mensagem || 'Você não tem permissão para ler esta obra.');
+          setLoading(false);
+          return;
+        }
+
         const pdfjsLib = await carregarPdfJs();
         if (!pdfjsLib) {
           throw new Error("Biblioteca PDF.js não encontrada.");
@@ -77,18 +122,32 @@ function Leitura() {
         
         pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 
-        // 1. Busca os detalhes da estante (para saber se já está lido, favorito, etc)
-        const resEstante = await api.get('/biblioteca/estante/');
-        const estanteData = resEstante.data.results || resEstante.data;
-        const entry = estanteData.find(e => e.livro === parseInt(id));
-        if (entry) {
-          setIdEstante(entry.id);
-          setLido(entry.status === 'lido');
-          setFavorito(entry.favorito);
+        let entry = null;
+        if (user && !modoAmostra) {
+          // A amostra pública não altera estante, progresso, gamificação ou analytics.
+          const resEstante = await api.get('/biblioteca/estante/');
+          const estanteData = resEstante.data.results || resEstante.data;
+          entry = estanteData.find(e => e.livro === parseInt(id));
+          if (entry) {
+            setIdEstante(entry.id);
+            setLido(entry.status === 'lido');
+            setFavorito(entry.favorito);
+          } else {
+            try {
+              const criada = await api.post('/biblioteca/estante/', {
+                livro: parseInt(id),
+                status: 'lendo',
+                pagina_atual: 1,
+              });
+              setIdEstante(criada.data.id);
+            } catch (erroEstante) {
+              console.warn('Leitura aberta sem sincronização na estante', erroEstante);
+            }
+          }
         }
 
-        // 2. Busca o arquivo PDF
-        const response = await api.get(`/biblioteca/livros/${id}/ler_pdf/`, {
+        const endpointLeitura = modoAmostra ? 'ler_amostra' : 'ler_pdf';
+        const response = await api.get(`/biblioteca/livros/${id}/${endpointLeitura}/`, {
           responseType: 'arraybuffer'
         });
 
@@ -97,8 +156,12 @@ function Leitura() {
         setTotalPaginas(pdf.numPages);
         
         // Recuperar progresso
-        const pagSalva = localStorage.getItem(`pagina_${id}`);
-        if (pagSalva && parseInt(pagSalva) <= pdf.numPages) {
+        const paginaServidor = Number(entry?.pagina_atual || 0);
+        const chavePagina = modoAmostra ? `pagina_amostra_${id}` : `pagina_${id}`;
+        const pagSalva = localStorage.getItem(chavePagina);
+        if (paginaServidor > 0 && paginaServidor <= pdf.numPages) {
+          setPaginaAtual(paginaServidor);
+        } else if (pagSalva && parseInt(pagSalva) <= pdf.numPages) {
           setPaginaAtual(parseInt(pagSalva));
         } else {
           setPaginaAtual(1);
@@ -117,7 +180,7 @@ function Leitura() {
     };
 
     fetchData();
-  }, [id, user]);
+  }, [authLoading, id, modoAmostra, user]);
 
   // Render page when pdfDoc, page or zoom changes
   useEffect(() => {
@@ -143,7 +206,8 @@ function Leitura() {
         await page.render(renderContext).promise;
         
         if (!isRenderCancelled) {
-          localStorage.setItem(`pagina_${id}`, paginaAtual);
+          const chavePagina = modoAmostra ? `pagina_amostra_${id}` : `pagina_${id}`;
+          localStorage.setItem(chavePagina, paginaAtual);
         }
       } catch (err) {
         console.error("Render error:", err);
@@ -155,7 +219,35 @@ function Leitura() {
     return () => {
       isRenderCancelled = true;
     };
-  }, [pdfDoc, paginaAtual, zoomAtual, id]);
+  }, [pdfDoc, paginaAtual, zoomAtual, id, modoAmostra]);
+
+  useEffect(() => {
+    if (!idEstante || !pdfDoc || loading) return undefined;
+    const timer = window.setTimeout(() => {
+      api.patch(`/biblioteca/estante/${idEstante}/`, { pagina_atual: paginaAtual })
+        .catch((error) => console.error('Erro ao sincronizar progresso de leitura', error));
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, [idEstante, loading, paginaAtual, pdfDoc]);
+
+  useEffect(() => {
+    if (!idEstante || !pdfDoc || loading) return undefined;
+    const timer = window.setTimeout(() => registrarEventoLeitura(paginaAtual), 30000);
+    return () => window.clearTimeout(timer);
+  }, [idEstante, loading, paginaAtual, pdfDoc, registrarEventoLeitura]);
+
+  useEffect(() => {
+    const finalizarMarcador = () => registrarEventoLeitura(paginaAtual, true);
+    const registrarAoOcultar = () => {
+      if (document.visibilityState === 'hidden') finalizarMarcador();
+    };
+    window.addEventListener('pagehide', finalizarMarcador);
+    document.addEventListener('visibilitychange', registrarAoOcultar);
+    return () => {
+      window.removeEventListener('pagehide', finalizarMarcador);
+      document.removeEventListener('visibilitychange', registrarAoOcultar);
+    };
+  }, [paginaAtual, registrarEventoLeitura]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -292,7 +384,7 @@ function Leitura() {
       <section className="container leitura-container">
         
         <header className="leitura-acessivel-header">
-          <h1 className="sr-only">Lendo: Obra de Teste</h1>
+          <h1 className="sr-only">{modoAmostra ? 'Amostra' : 'Lendo'}: {tituloLivro}</h1>
         </header>
 
         <nav className="barra-ferramentas-leitura" aria-label="Ferramentas de customização da leitura" data-revelar>
@@ -328,6 +420,9 @@ function Leitura() {
 
         {loading && <div className="loading-state">Carregando PDF imersivo... aguarde.</div>}
         {erro && <div className="loading-state" style={{ color: '#f87171' }}>⚠️ {erro}</div>}
+        {modoAmostra && !erro && (
+          <div className="loading-state" role="status">Você está lendo a amostra pública de {tituloLivro}.</div>
+        )}
 
         <article 
           className={`leitor-pdf ${altoContraste ? 'alto-contraste-filtro' : ''} ${modoInvertido ? 'modo-invertido-filtro' : ''}`}
@@ -375,10 +470,12 @@ function Leitura() {
         </nav>
 
         <div className="acoes" data-revelar>
-          <Link to="/minha-biblioteca" className="btn secondary">
-            Voltar à Biblioteca
+          <Link to={modoAmostra ? `/livro/${id}` : '/minha-biblioteca'} className="btn secondary">
+            {modoAmostra ? 'Voltar aos detalhes' : 'Voltar à Biblioteca'}
           </Link>
 
+          {!modoAmostra && (
+            <>
           <button
             className="btn btn-success interactive"
             /* O verde vem de --success agora; era #10b981/#059669, um
@@ -409,6 +506,8 @@ function Leitura() {
           >
             <i className="fa-solid fa-star"></i> Avaliar
           </button>
+            </>
+          )}
         </div>
 
       </section>

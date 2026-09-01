@@ -16,9 +16,13 @@ function Navbar() {
   const { alternar, icone, rotulo } = useTema()
   const navigate = useNavigate()
   const [contaAberta, setContaAberta] = useState(false)
+  const [menuAberto, setMenuAberto] = useState(false)
   const cliqueContaRef = useRef(null)
   const botaoContaRef = useRef(null)
   const fecharContaRef = useRef(null)
+  const botaoMenuRef = useRef(null)
+  const fecharMenuRef = useRef(null)
+  const menuCardRef = useRef(null)
 
   useEffect(() => () => window.clearTimeout(cliqueContaRef.current), [])
 
@@ -35,15 +39,53 @@ function Navbar() {
     return () => document.removeEventListener('keydown', fecharComEscape)
   }, [contaAberta])
 
-  const fecharMenu = () => {
-    const elemento = document.getElementById('offcanvasMenuReact')
-    const instancia = elemento ? window.bootstrap?.Offcanvas.getInstance(elemento) : null
-    instancia?.hide()
+  useEffect(() => {
+    if (!menuAberto) return undefined
+    const overflowAnterior = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    fecharMenuRef.current?.focus()
+    const controlarTeclado = (evento) => {
+      if (evento.key === 'Escape') {
+        setMenuAberto(false)
+        botaoMenuRef.current?.focus()
+        return
+      }
+      if (evento.key !== 'Tab') return
+      const focaveis = [...menuCardRef.current.querySelectorAll('button:not([disabled]), a[href]')]
+      const primeiro = focaveis[0]
+      const ultimo = focaveis.at(-1)
+      if (evento.shiftKey && document.activeElement === primeiro) {
+        evento.preventDefault()
+        ultimo.focus()
+      } else if (!evento.shiftKey && document.activeElement === ultimo) {
+        evento.preventDefault()
+        primeiro.focus()
+      }
+    }
+    document.addEventListener('keydown', controlarTeclado)
+    return () => {
+      document.body.style.overflow = overflowAnterior
+      document.removeEventListener('keydown', controlarTeclado)
+    }
+  }, [menuAberto])
+
+  const fecharMenu = (devolverFoco = false) => {
+    setMenuAberto(false)
+    if (devolverFoco === true) window.requestAnimationFrame(() => botaoMenuRef.current?.focus())
+  }
+
+  const alternarMenu = () => {
+    window.clearTimeout(cliqueContaRef.current)
+    setContaAberta(false)
+    setMenuAberto((aberto) => !aberto)
   }
 
   const abrirConta = () => {
     window.clearTimeout(cliqueContaRef.current)
-    cliqueContaRef.current = window.setTimeout(() => setContaAberta(true), 220)
+    cliqueContaRef.current = window.setTimeout(() => {
+      setMenuAberto(false)
+      setContaAberta(true)
+    }, 220)
   }
 
   const abrirPerfilDireto = () => {
@@ -81,6 +123,7 @@ function Navbar() {
             {user ? (
               <button ref={botaoContaRef} type="button" className="nav-perfil-circular" onClick={abrirConta} onDoubleClick={abrirPerfilDireto} aria-expanded={contaAberta} aria-controls="drawerContaReact" aria-label="Abrir menu da conta; clique duas vezes para ir ao perfil" title="Conta — duplo clique abre o perfil"><img src={avatarUsuario} alt="" aria-hidden="true" width="48" height="48" /><span className="nav-perfil-status" aria-hidden="true"></span></button>
             ) : <Link to="/login" className="btn-nav btn-outline nav-entrar">Entrar</Link>}
+            <button ref={botaoMenuRef} type="button" className="navbar-menu-trigger" onClick={alternarMenu} aria-expanded={menuAberto} aria-controls="menuCardReact" aria-label={`${menuAberto ? 'Fechar' : 'Abrir'} menu principal`} title="Menu principal"><i className="fa-solid fa-bars" aria-hidden="true"></i></button>
           </div>
         </div>
       </nav>
@@ -102,17 +145,21 @@ function Navbar() {
         </aside>
       </>}
 
-      <div className="edge-menu-zone"><button className="edge-menu-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenuReact" aria-controls="offcanvasMenuReact" aria-label="Abrir menu completo" title="Abrir menu completo"><i className="fa-solid fa-bars" aria-hidden="true"></i></button></div>
-
-      <div className="offcanvas offcanvas-end" tabIndex="-1" id="offcanvasMenuReact" aria-labelledby="offcanvasMenuLabel">
-        <div className="offcanvas-header border-bottom border-secondary border-opacity-25"><h5 className="offcanvas-title" id="offcanvasMenuLabel">Menu Principal</h5><button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button></div>
-        <div className="offcanvas-body">
+      <div className={`nav-menu-backdrop ${menuAberto ? 'is-open' : ''}`} onClick={() => fecharMenu(true)} aria-hidden="true"></div>
+      <aside ref={menuCardRef} id="menuCardReact" className={`nav-menu-card ${menuAberto ? 'is-open' : ''}`} role="dialog" aria-modal="true" aria-hidden={!menuAberto} inert={!menuAberto} aria-labelledby="menuCardTitulo">
+        <header className="nav-menu-card-header">
+          <span className="nav-menu-card-icon"><i className="fa-solid fa-bars" aria-hidden="true"></i></span>
+          <span><small>Navegação</small><strong id="menuCardTitulo">Menu principal</strong></span>
+          <button ref={fecharMenuRef} type="button" onClick={() => fecharMenu(true)} aria-label="Fechar menu principal"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </header>
+        <div className="nav-menu-card-body">
           <div className="offcanvas-section offcanvas-section-primary offcanvas-mobile-only" aria-label="Destinos principais">
             <Link to="/biblioteca" onClick={fecharMenu}><i className="fa-solid fa-book-open" aria-hidden="true"></i><span>Explorar livros</span></Link>
             <Link to="/comunidades" onClick={fecharMenu}><i className="fa-solid fa-people-group" aria-hidden="true"></i><span>Comunidades</span></Link>
             <Link to="/autores" onClick={fecharMenu}><i className="fa-solid fa-pen-nib" aria-hidden="true"></i><span>Autores</span></Link>
             {user?.tipo === 'autor' && <Link to="/autor/painel" onClick={fecharMenu}><i className="fa-solid fa-chart-line" aria-hidden="true"></i><span>Painel do Autor</span></Link>}
           </div>
+          <div className="offcanvas-divider offcanvas-divider--primary offcanvas-mobile-only" role="separator"></div>
 
           <div className="offcanvas-section offcanvas-section-publicar" aria-label="Publicação"><p className="offcanvas-kicker">Criar</p><Link to={ctaPublicacao.to} className="link-publicar" onClick={fecharMenu}><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i><span>{ctaPublicacao.label}</span></Link></div>
           <div className="offcanvas-divider" role="separator"></div>
@@ -134,7 +181,7 @@ function Navbar() {
 
           {!user && <><div className="offcanvas-divider" role="separator"></div><div className="offcanvas-section"><Link to="/planos" className="offcanvas-subscription" onClick={fecharMenu}><i className="fa-solid fa-crown" aria-hidden="true"></i><span>Conhecer assinatura</span></Link></div></>}
         </div>
-      </div>
+      </aside>
     </>
   )
 }

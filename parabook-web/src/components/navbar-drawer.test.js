@@ -34,16 +34,26 @@ test('botão circular oferece drawer de conta e atalho de duplo clique', () => {
   for (const opcao of ['Perfil', 'Sair', 'Minha Assinatura', 'Ranking']) {
     assert.ok(navbar.includes(`<strong>${opcao}</strong>`), `${opcao} precisa estar no drawer da conta`);
   }
-  assert.match(css, /\.nav-account-drawer\.is-open\s*{/);
+  assert.match(css, /\.nav-account-drawer\.is-open,[\s\S]*?\.nav-menu-card\.is-open\s*{/);
 });
 
-test('menu completo surge pela borda e permanece acessível em telas de toque', () => {
-  assert.match(navbar, /className="edge-menu-zone"/);
-  assert.match(navbar, /className="edge-menu-trigger"/);
-  assert.doesNotMatch(navbar, /navbar-mobile-trigger/);
-  assert.match(css, /\.edge-menu-zone\s*{[\s\S]*?top:max\(6px, var\(--safe-top\)\);[\s\S]*?height:84px/);
-  assert.match(css, /\.edge-menu-zone:hover \.edge-menu-trigger/);
-  assert.match(css, /@media \(hover:none\), \(pointer:coarse\)/);
+test('menu principal fica ao lado do perfil e abre como card acessível', () => {
+  assert.match(navbar, /className="navbar-menu-trigger"/);
+  assert.match(navbar, /className={`nav-menu-card \$\{menuAberto \? 'is-open' : ''\}`}/);
+  assert.match(navbar, /ref={menuCardRef}/);
+  assert.match(navbar, /document\.body\.style\.overflow = 'hidden'/);
+  assert.match(navbar, /evento\.key !== 'Tab'/);
+  assert.doesNotMatch(navbar, /data-bs-toggle="offcanvas"/);
+  assert.doesNotMatch(navbar, /edge-menu-zone/);
+  assert.match(css, /\.navbar-menu-trigger\s*{[\s\S]*?width:44px;[\s\S]*?height:44px/);
+  assert.match(css, /\.navbar-menu-trigger::before\s*{[\s\S]*?inset:0 2px/);
+  assert.match(css, /\.nav-menu-card\s*{[\s\S]*?width:min\(420px, calc\(100vw - 32px\)\)/);
+});
+
+test('menu móvel separa os destinos principais da subseção Criar', () => {
+  assert.match(navbar, /offcanvas-section-primary offcanvas-mobile-only[\s\S]*?offcanvas-divider offcanvas-divider--primary offcanvas-mobile-only[\s\S]*?offcanvas-section offcanvas-section-publicar/);
+  assert.match(navbar, /offcanvas-divider--primary offcanvas-mobile-only" role="separator"/);
+  assert.match(css, /\.offcanvas-divider--primary\s*\{[\s\S]*?margin:\.9rem \.25rem 1rem/);
 });
 
 test('todos os destinos complementares do drawer possuem rota React', () => {
@@ -90,7 +100,7 @@ test('atalhos âmbar têm contraste, hover e foco visível próprios', () => {
   assert.match(css, /\.offcanvas-section \.link-ia\s*{/);
   assert.match(css, /\.offcanvas-section \.link-ia:hover,[\s\S]*?\.offcanvas-section \.offcanvas-subscription:hover/);
   assert.match(css, /\.offcanvas-section a:focus-visible/);
-  assert.match(css, /:root\[data-tema="claro"\] \.offcanvas\s*{[\s\S]*?background-color:#cbd3e0;[\s\S]*?rgba\(88,70,130,\.28\)/);
+  assert.match(css, /\.nav-account-drawer,[\s\S]*?\.nav-menu-card\s*{[\s\S]*?rgba\(var\(--bg-card-rgb\), \.98\)/);
   assert.match(css, /:root\[data-tema="claro"\] \.offcanvas-section \.link-ia\s*{[\s\S]*?\.096/);
   assert.match(css, /:root\[data-tema="claro"\] \.offcanvas-section \.offcanvas-subscription\s*{[\s\S]*?\.216[\s\S]*?\.096/);
 });

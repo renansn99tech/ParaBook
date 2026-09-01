@@ -272,7 +272,8 @@
     background:var(--success);
 }
 
-.nav-account-backdrop{
+.nav-account-backdrop,
+.nav-menu-backdrop{
     position:fixed;
     z-index:1050;
     inset:0;
@@ -283,12 +284,14 @@
     transition:opacity var(--dur-base) var(--ease-standard);
 }
 
-.nav-account-backdrop.is-open{
+.nav-account-backdrop.is-open,
+.nav-menu-backdrop.is-open{
     opacity:1;
     pointer-events:auto;
 }
 
-.nav-account-drawer{
+.nav-account-drawer,
+.nav-menu-card{
     position:fixed;
     z-index:1060;
     top:calc(max(82px, var(--safe-top) + 74px));
@@ -311,7 +314,8 @@
     transition:opacity var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-out);
 }
 
-.nav-account-drawer.is-open{
+.nav-account-drawer.is-open,
+.nav-menu-card.is-open{
     opacity:1;
     pointer-events:auto;
     transform:translateX(0) translateY(0) scale(1);
@@ -441,78 +445,98 @@
     color:var(--danger-soft);
 }
 
-.edge-menu-zone{
-    position:fixed;
-    z-index:1035;
-    top:max(6px, var(--safe-top));
-    right:0;
-    width:24px;
-    height:84px;
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-}
-
-.edge-menu-zone::before{
-    position:absolute;
-    right:0;
-    width:3px;
-    height:56px;
-    border-radius:var(--radius-pill) 0 0 var(--radius-pill);
-    background:linear-gradient(180deg, transparent, var(--purple), transparent);
-    box-shadow:0 0 14px rgba(var(--purple-rgb), .55);
-    content:'';
-    opacity:.5;
-    transition:opacity var(--dur-fast) var(--ease-standard), width var(--dur-fast) var(--ease-standard);
-}
-
-.edge-menu-trigger{
-    position:absolute;
-    right:8px;
-    width:48px;
-    height:48px;
-    border:1px solid rgba(var(--purple-light-rgb), .44);
-    border-radius:var(--radius-circle);
-    background:linear-gradient(145deg, rgba(var(--purple-rgb), .92), rgba(var(--purple-dark-rgb), .96));
-    color:white;
-    box-shadow:0 14px 34px rgba(var(--purple-rgb), .34);
+.navbar-menu-trigger{
+    position:relative;
+    isolation:isolate;
+    width:44px;
+    min-width:44px;
+    height:44px;
+    flex:0 0 44px;
+    padding:0;
+    border:0;
+    border-radius:var(--radius-md);
+    background:transparent;
+    color:var(--text);
     cursor:pointer;
-    opacity:0;
-    pointer-events:none;
-    transform:translateX(44px) scale(.84);
-    transition:opacity var(--dur-fast) var(--ease-standard), transform var(--dur-base) var(--ease-out);
 }
 
-.edge-menu-zone:hover::before,
-.edge-menu-zone:focus-within::before{
-    width:5px;
-    opacity:1;
+/* A área de toque preserva 44px; a superfície desenhada tem 40px para ficar
+   visualmente um pouco mais estreita que o botão de tema. */
+.navbar-menu-trigger::before{
+    position:absolute;
+    z-index:-1;
+    inset:0 2px;
+    border:1px solid rgba(var(--purple-light-rgb), .42);
+    border-radius:var(--radius-md);
+    background:linear-gradient(145deg, rgba(var(--purple-rgb), .18), rgba(var(--bg-card-rgb), .9));
+    content:'';
+    transition:border-color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-out);
 }
 
-.edge-menu-zone:hover .edge-menu-trigger,
-.edge-menu-trigger:focus-visible{
-    opacity:1;
-    pointer-events:auto;
-    transform:translateX(0) scale(1);
+.navbar-menu-trigger:hover::before,
+.navbar-menu-trigger[aria-expanded="true"]::before{
+    border-color:var(--purple-light);
+    background:linear-gradient(145deg, rgba(var(--purple-rgb), .34), rgba(var(--bg-card-rgb), .96));
+    transform:translateY(var(--lift-sm));
 }
 
-@media (hover:none), (pointer:coarse){
-    .edge-menu-zone{
-        top:auto;
-        bottom:max(18px, var(--safe-bottom));
-        width:64px;
-        height:64px;
-    }
+.nav-menu-card{
+    width:min(420px, calc(100vw - 32px));
+    overflow:hidden;
+}
 
-    .edge-menu-zone::before{
-        display:none;
-    }
+.nav-menu-card-header{
+    display:grid;
+    grid-template-columns:44px minmax(0, 1fr) 44px;
+    align-items:center;
+    gap:12px;
+    padding:8px 6px 16px;
+    border-bottom:1px solid var(--border);
+}
 
-    .edge-menu-trigger{
-        opacity:.9;
-        pointer-events:auto;
-        transform:none;
-    }
+.nav-menu-card-icon,
+.nav-menu-card-header > button{
+    display:grid;
+    place-items:center;
+    width:44px;
+    height:44px;
+    border-radius:var(--radius-md);
+}
+
+.nav-menu-card-icon{
+    background:rgba(var(--purple-rgb), .14);
+    color:var(--purple-text);
+}
+
+.nav-menu-card-header > span:nth-child(2){
+    display:grid;
+    min-width:0;
+}
+
+.nav-menu-card-header small{
+    color:var(--vela);
+    font-size:.67rem;
+    font-weight:800;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+}
+
+.nav-menu-card-header strong{
+    color:var(--text);
+}
+
+.nav-menu-card-header > button{
+    border:1px solid var(--border);
+    background:rgba(var(--white-rgb), .04);
+    color:var(--text-secondary);
+    cursor:pointer;
+}
+
+.nav-menu-card-body{
+    max-height:calc(100dvh - 200px);
+    padding:14px 4px max(6px, var(--safe-bottom));
+    overflow-y:auto;
+    overscroll-behavior:contain;
 }
 
 @media (max-width:620px){
@@ -535,7 +559,8 @@
         padding-inline:16px;
     }
 
-    .nav-account-drawer{
+    .nav-account-drawer,
+    .nav-menu-card{
         top:calc(max(76px, var(--safe-top) + 68px));
         right:12px;
         width:calc(100vw - 24px);
@@ -562,40 +587,6 @@
 .link-ia {
     color: var(--warning);
     font-weight: 600;
-}
-
-/* Menu lateral (offcanvas). O fundo estava inline com dois hex fixos,
-   então ele continuaria escuro no tema claro. */
-.offcanvas {
-    width:min(420px, 100%) !important;
-    height:100vh;
-    height:100dvh;
-
-    background-color:var(--bg-deep);
-    background-image:linear-gradient(145deg, transparent 0%, rgba(var(--purple-dark-rgb), .35) 100%);
-    color: var(--text);
-}
-
-:root[data-tema="claro"] .offcanvas{
-    background-color:#cbd3e0;
-    background-image:linear-gradient(145deg, rgba(71,85,105,.08), rgba(88,70,130,.28));
-}
-
-.offcanvas-header{
-    min-height:72px;
-    padding:max(1rem, var(--safe-top)) max(1.25rem, var(--safe-right)) 1rem max(1.25rem, var(--safe-left));
-}
-
-.offcanvas-header .btn-close{
-    box-sizing:border-box;
-    width:var(--touch-target);
-    height:var(--touch-target);
-    padding:.75rem;
-    border-radius:var(--radius-md);
-}
-
-.offcanvas-body{
-    padding:1rem max(1.25rem, var(--safe-right)) max(2rem, var(--safe-bottom)) max(1.25rem, var(--safe-left));
 }
 
 .offcanvas-section{
@@ -682,6 +673,10 @@
     background:var(--border);
 }
 
+.offcanvas-divider--primary{
+    margin:.9rem .25rem 1rem;
+}
+
 .offcanvas-badge{
     min-width:24px;
     padding:.15rem .45rem;
@@ -730,11 +725,12 @@
 
 @media (prefers-reduced-motion:reduce){
     .nav-account-backdrop,
+    .nav-menu-backdrop,
     .nav-account-drawer,
+    .nav-menu-card,
     .nav-account-links > a,
     .nav-account-links > button,
-    .edge-menu-zone::before,
-    .edge-menu-trigger{
+    .navbar-menu-trigger::before{
         transition-duration:1ms;
     }
 }
@@ -753,15 +749,4 @@
 
 :root[data-tema="claro"] .offcanvas-section .offcanvas-subscription{
     background:linear-gradient(135deg, rgba(var(--warning-rgb), .216), rgba(var(--warning-rgb), .096));
-}
-
-.offcanvas .text-white,
-.offcanvas .text-white-50 {
-    color: var(--text) !important;
-}
-
-/* O X de fechar do Bootstrap é um SVG preto; a variante -white inverte.
-   No tema claro queremos o preto de volta. */
-:root[data-tema="claro"] .btn-close-white {
-    filter: none;
 }

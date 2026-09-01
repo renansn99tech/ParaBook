@@ -5,6 +5,10 @@ import test from 'node:test';
 const pagina = readFileSync(new URL('./Comunidades.jsx', import.meta.url), 'utf8');
 const card = readFileSync(new URL('../components/CardComunidade.jsx', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../assets/css/comunidade.css', import.meta.url), 'utf8');
+const minhas = readFileSync(new URL('./MinhasComunidades.jsx', import.meta.url), 'utf8');
+const criar = readFileSync(new URL('./CriarComunidade.jsx', import.meta.url), 'utf8');
+const app = readFileSync(new URL('../App.jsx', import.meta.url), 'utf8');
+const rotaAutenticada = readFileSync(new URL('../components/RotaAutenticada.jsx', import.meta.url), 'utf8');
 
 test('Comunidades.jsx não usa cor hex literal', () => {
   assert.doesNotMatch(pagina, /#[0-9a-fA-F]{3,8}\b/);
@@ -44,6 +48,24 @@ test('CSS não declara :root e usa variáveis --com-', () => {
 
 test('CSS trata prefers-reduced-motion', () => {
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
+test('fluxos móveis cancelam buscas obsoletas, oferecem retry e bloqueiam ações repetidas', () => {
+  assert.match(pagina, /new AbortController\(\)/);
+  assert.match(pagina, /signal: controller\.signal/);
+  assert.match(pagina, /setTentativa\(\(valor\) => valor \+ 1\)/);
+  assert.match(pagina, /disabled=\{processando\.includes\(comunidade\.id\)\}/);
+  assert.match(minhas, /title: `Sair de \$\{comunidade\.nome\}\?`/);
+  assert.match(minhas, /disabled=\{saindo\.includes\(comunidade\.id\)\}/);
+  assert.match(criar, /if \(enviando\) return/);
+  assert.match(criar, /beforeunload/);
+});
+
+test('áreas pessoais de comunidades bloqueiam navegação forçada antes de chamar a API', () => {
+  assert.match(app, /path="\/minhas-comunidades" element=\{<RotaAutenticada><MinhasComunidades \/><\/RotaAutenticada>\}/);
+  assert.match(app, /path="\/comunidades\/criar" element=\{<RotaAutenticada><CriarComunidade \/><\/RotaAutenticada>\}/);
+  assert.match(rotaAutenticada, /if \(!user\)/);
+  assert.match(rotaAutenticada, /<Navigate to="\/login" replace/);
 });
 
 test('autoria de comunidade usa sistema, username ou fallback legado', () => {

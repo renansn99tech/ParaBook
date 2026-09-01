@@ -96,7 +96,7 @@
   .pdc-lateral { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 760px) {
-  .pdc-pagina { padding: 10px 16px 48px; }
+  .pdc-pagina { padding: 10px max(16px, var(--safe-right)) max(48px, var(--safe-bottom)) max(16px, var(--safe-left)); }
   .pdc-hero { align-items: stretch; flex-direction: column; padding: 22px; }
   .pdc-hero-acoes { align-items: stretch; flex-direction: column; }
   .pdc-hero-acoes a { justify-content: center; }
@@ -104,6 +104,8 @@
   .pdc-denuncia header time { grid-column: 2; }
   .pdc-denuncia footer { align-items: stretch; flex-direction: column; }
   .pdc-denuncia footer > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .pdc-denuncia footer button,
+  .pdc-hero-acoes a { min-height: var(--touch-target); }
   .pdc-lateral { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {

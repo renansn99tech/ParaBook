@@ -702,15 +702,159 @@
    RESPONSIVO
 ========================================================== */
 @media (max-width: 768px) {
-    .pagina-comunidade { padding: 24px 16px; }
+    .pagina-comunidade { padding: 24px max(16px, var(--safe-right)) max(48px, var(--safe-bottom)) max(16px, var(--safe-left)); }
     .com-hero { padding: 26px 22px; }
     .com-hero-titulo { font-size: 2rem; }
     .com-toolbar { flex-direction: column; align-items: stretch; }
     .com-busca { width: 100%; }
+    .com-busca input { font-size: 1rem; }
+    .comunidade-nome { overflow: visible; text-overflow: clip; white-space: normal; }
     .com-filtros { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
     .com-filtros::-webkit-scrollbar { display: none; }
     .com-filtro { flex: none; }
     .com-busca-limpar { width: 44px; height: 44px; }
     .grid-comunidades { grid-template-columns: 1fr; }
     .card-comunidade { padding: 20px; min-height: 0; }
+}
+
+.com-busca input {
+    font-size: 1rem;
+}
+
+.com-erro,
+.com-vazio--minhas {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    padding: clamp(28px, 6vw, 52px);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-xl);
+    background: rgba(var(--bg-card-rgb), .55);
+    color: var(--text);
+    text-align: center;
+}
+
+.com-erro > i,
+.com-vazio--minhas > i {
+    color: var(--purple-text);
+    font-size: 2rem;
+}
+
+.com-erro h2,
+.com-erro p,
+.com-vazio--minhas h3,
+.com-vazio--minhas p {
+    margin: 0;
+}
+
+.com-erro p,
+.com-vazio--minhas p {
+    color: var(--text-secondary);
+}
+
+.comunidade-footer button:disabled {
+    cursor: wait;
+    opacity: .68;
+}
+
+.com-criar-page {
+    min-height: 100svh;
+    padding-bottom: max(3rem, var(--safe-bottom)) !important;
+}
+
+.com-criar-card .form-control {
+    min-height: var(--touch-target);
+    font-size: 1rem;
+}
+
+.com-criar-card textarea.form-control {
+    min-height: 148px;
+}
+
+.com-campo-ajuda {
+    display: block;
+    margin-top: 6px;
+    color: var(--text-dim);
+    text-align: right;
+}
+
+.com-cota-erro {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border: 1px solid rgba(var(--warning-rgb), .32);
+    border-radius: var(--radius-md);
+    background: rgba(var(--warning-rgb), .08);
+    color: var(--warning-soft);
+    font-size: .86rem;
+}
+
+.com-cota-erro button {
+    min-height: var(--touch-target);
+    padding-inline: 12px;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: inherit;
+    font-weight: 750;
+}
+
+@media (max-width: 480px) {
+    .com-hero {
+        padding: 22px 18px;
+    }
+
+    .com-hero-titulo {
+        font-size: clamp(1.8rem, 11vw, 2.35rem);
+    }
+
+    .comunidade-topo {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .comunidade-selo {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .comunidade-nome {
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+    }
+
+    .comunidade-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .comunidade-footer > *,
+    .comunidade-footer .comunidade-acessar,
+    .comunidade-footer .comunidade-sair {
+        width: 100%;
+        min-height: var(--touch-target);
+    }
+
+    .com-criar-page {
+        padding-top: 20px !important;
+        padding-inline: max(12px, var(--safe-left), var(--safe-right)) !important;
+    }
+
+    .com-criar-card .card-body {
+        padding: 22px 18px !important;
+    }
+
+    .com-criar-card form > .d-flex,
+    .com-cota-erro {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .com-criar-card form > .d-flex > * {
+        width: 100%;
+        justify-content: center;
+    }
 }

@@ -69,3 +69,21 @@ test('cores semânticas, toque, responsividade e movimento reduzido ficam explí
   assert.match(css, /@media \(max-width:992px\)/);
   assert.match(css, /@media \(prefers-reduced-motion:reduce\)/);
 });
+
+test('navegação móvel usa drawer modal, trava o fundo e devolve o foco', () => {
+  assert.match(dashboard, /matchMedia\('\(max-width: 992px\)'\)/);
+  assert.match(dashboard, /aria-expanded=\{menuMovelAberto\}/);
+  assert.match(dashboard, /aria-controls="admin-navegacao"/);
+  assert.match(dashboard, /inert=\{navegacaoCompacta && !menuMovelAberto\}/);
+  assert.match(dashboard, /document\.body\.style\.overflow = 'hidden'/);
+  assert.match(dashboard, /const gatilhoMenu = gatilhoMenuMovelRef\.current/);
+  assert.match(dashboard, /gatilhoMenu\?\.focus\(\)/);
+  assert.match(dashboard, /evento\.key !== 'Tab'/);
+  assert.match(css, /\.admin-sidebar\.is-open[\s\S]*?transform:translateX\(0\)/);
+  assert.match(css, /height:100dvh/);
+});
+
+test('botão de fechar do drawer mantém o X centralizado no mobile', () => {
+  assert.match(css, /\.admin-sidebar > \.admin-sidebar-fechar\s*\{[\s\S]*?display:grid;[\s\S]*?align-items:center;[\s\S]*?justify-content:center/);
+  assert.match(css, /\.admin-sidebar > \.admin-sidebar-fechar > i\s*\{[\s\S]*?width:auto;[\s\S]*?line-height:1/);
+});

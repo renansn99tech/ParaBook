@@ -164,6 +164,18 @@ function LivroInfo() {
     );
   }
 
+  const acesso = livro.acesso || {};
+  let acaoLeitura;
+  if (acesso.pode_ler) {
+    acaoLeitura = { to: `/leitura/${livro.id}`, icone: 'fa-book-open-reader', texto: 'Ler obra' };
+  } else if (acesso.pode_ler_amostra) {
+    acaoLeitura = { to: `/leitura/${livro.id}?amostra=1`, icone: 'fa-book-open', texto: 'Ler amostra' };
+  } else if (acesso.requer_assinatura) {
+    acaoLeitura = { to: '/planos', icone: 'fa-gem', texto: 'Conhecer planos' };
+  } else if (acesso.codigo === 'requer_autenticacao') {
+    acaoLeitura = { to: '/login', icone: 'fa-right-to-bracket', texto: 'Entrar para ler' };
+  }
+
   return (
     <main className="container livro-info-page" ref={paginaRef}>
       <section className="livro-info-container glass-card" data-revelar>
@@ -184,9 +196,13 @@ function LivroInfo() {
             </div>
           )}
 
-          <Link to={`/leitura/${livro.id}`} className="btn-preview">
-            <i className="fa-solid fa-book-open-reader"></i> Ver Prévia
-          </Link>
+          {acaoLeitura ? (
+            <Link to={acaoLeitura.to} className="btn-preview">
+              <i className={`fa-solid ${acaoLeitura.icone}`}></i> {acaoLeitura.texto}
+            </Link>
+          ) : (
+            <p className="livro-acesso-indisponivel" role="status">{acesso.mensagem || 'Obra indisponível.'}</p>
+          )}
         </div>
 
         <div className="livro-dados-col">
@@ -196,6 +212,12 @@ function LivroInfo() {
               <p className="autor-destaque">
                 <i className="fa-solid fa-pen-nib"></i> {livro.autor}
               </p>
+              <div className="livro-selos" aria-label="Classificação e acesso da obra">
+                {livro.selo_independente && <span className="livro-selo livro-selo--independente"><i className="fa-solid fa-feather-pointed"></i> Autor independente</span>}
+                {livro.origem === 'licenciado' && <span className="livro-selo"><i className="fa-solid fa-certificate"></i> Acervo licenciado</span>}
+                <span className="livro-selo">{livro.modelo_acesso_label}</span>
+                {livro.territorio_cultural && <span className="livro-selo"><i className="fa-solid fa-location-dot"></i> {livro.territorio_cultural}</span>}
+              </div>
             </div>
             <button onClick={abrirDenuncia} className="btn-denuncia">
               <i className="fa-solid fa-flag"></i> Relatar Problema

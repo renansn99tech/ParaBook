@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import ConfiguracoesAvancadasConteudo from '../components/ConfiguracoesAvancadas';
 import { AuthContext } from '../context/auth-context';
@@ -9,8 +9,10 @@ import '../assets/css/perfil.css';
 function ConfiguracoesAvancadas() {
   const { user, loading, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [excluindo, setExcluindo] = useState(false);
 
   const handleExcluirConta = async () => {
+    if (excluindo) return;
     const confirmacao = await swal.fire({
       title: 'Confirme sua senha',
       text: 'Esta ação é irreversível. Sua conta, perfil e histórico serão apagados.',
@@ -27,6 +29,7 @@ function ConfiguracoesAvancadas() {
       inputValidator: (value) => !value && 'Informe sua senha atual.',
     });
     if (!confirmacao.isConfirmed) return;
+    setExcluindo(true);
     try {
       await api.delete('/auth/excluir-conta/', { data: { senha_atual: confirmacao.value } });
       await logout();
@@ -34,6 +37,8 @@ function ConfiguracoesAvancadas() {
       navigate('/');
     } catch (error) {
       swal.fire({ icon: 'error', title: 'Erro', text: error.response?.data?.detail || 'Não foi possível excluir sua conta. Tente novamente.' });
+    } finally {
+      setExcluindo(false);
     }
   };
 
@@ -65,7 +70,7 @@ function ConfiguracoesAvancadas() {
 
       <section className="danger-zone content-glass-card configuracoes-page-danger" aria-labelledby="encerrar-conta-titulo">
         <div className="danger-text"><h2 id="encerrar-conta-titulo">Encerrar conta</h2><p>Esta ação apaga definitivamente sua conta, seu perfil e seu histórico. A senha atual será exigida.</p></div>
-        <button type="button" className="btn-danger-outline" onClick={handleExcluirConta}><i className="fa-solid fa-trash" aria-hidden="true"></i> Excluir conta</button>
+        <button type="button" className="btn-danger-outline" onClick={handleExcluirConta} disabled={excluindo} aria-busy={excluindo}><i className={`fa-solid ${excluindo ? 'fa-spinner fa-spin' : 'fa-trash'}`} aria-hidden="true"></i> {excluindo ? 'Excluindo...' : 'Excluir conta'}</button>
       </section>
     </main>
   );

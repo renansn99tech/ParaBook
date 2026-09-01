@@ -1,5 +1,5 @@
 """
-Popula o catálogo do ParaBook com as 12 categorias oficiais e um acervo
+Popula o catálogo do ParaBook com as categorias editoriais e um acervo
 inicial de obras em domínio público.
 
 REGRA DE DOMÍNIO PÚBLICO (Lei 9.610/98, art. 41)
@@ -38,8 +38,8 @@ from django.db import transaction
 from biblioteca.models import Categoria, Livro
 
 
-# As 12 categorias oficiais. "Independentes" é a vitrine dos autores da
-# plataforma — não recebe semente, é preenchida por quem publica.
+# Categorias editoriais. Autoria independente é uma origem/selo da obra,
+# nunca uma categoria literária.
 CATEGORIAS = [
     'Ficção Científica',
     'Filosofia',
@@ -52,7 +52,6 @@ CATEGORIAS = [
     'Fantasia',
     'Biografia',
     'Desenvolvimento Pessoal',
-    'Independentes',
 ]
 
 # (título, autor, ano da publicação original, ano de morte do autor, língua original)
@@ -143,7 +142,7 @@ LIMITE_OBITO = ANO_CORRENTE - 70
 
 
 class Command(BaseCommand):
-    help = 'Cria as 12 categorias oficiais e o acervo inicial de obras em domínio público.'
+    help = 'Cria as categorias editoriais e o acervo inicial de obras em domínio público.'
 
     def add_arguments(self, parser):
         parser.add_argument(

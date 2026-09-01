@@ -12,15 +12,3 @@ def livros_por_categorias(categorias: list):
         .filter(categoria__nome__in=categorias, status='publicado')
         .order_by('-id')
     )
-
-
-def livros_independentes():
-    """
-    Retorna os livros enviados por autores independentes que já foram aprovados e publicados.
-    Substitui a consulta ao antigo ObraAutor pela estrutura unificada do model Livro.
-    """
-    return (
-        Livro.objects.select_related('categoria')
-        .filter(origem='autor_independente', status='publicado')
-        .order_by('-id')
-    )

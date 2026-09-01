@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao, DeclaracaoAutoria
+from biblioteca.services import verificar_acesso_obra
 from assinaturas.utils import usuario_eh_premium
 from .serializers import (
     LivroSerializer, CategoriaSerializer, EstanteSerializer, ResenhaSerializer,
@@ -40,11 +41,21 @@ class LivroViewSet(viewsets.ModelViewSet):
     serializer_class = LivroSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['titulo', 'autor']
+    search_fields = ['titulo', 'autor', 'territorio_cultural']
 
     def get_queryset(self):
-        qs = Livro.objects.exclude(status='removido')
+        qs = Livro.objects.exclude(status='removido').select_related('categoria')
         user = self.request.user
+
+        origem = self.request.query_params.get('origem')
+        modelo_acesso = self.request.query_params.get('modelo_acesso')
+        categoria = self.request.query_params.get('categoria')
+        if origem:
+            qs = qs.filter(origem=origem)
+        if modelo_acesso:
+            qs = qs.filter(modelo_acesso=modelo_acesso)
+        if categoria:
+            qs = qs.filter(categoria_id=categoria)
         
         if not user.is_authenticated:
             return qs.filter(status='publicado')
@@ -75,6 +86,12 @@ class LivroViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def ler_pdf(self, request, pk=None):
         livro = self.get_object()
+        decisao = verificar_acesso_obra(request.user, livro)
+        if not decisao.pode_ler:
+            return Response(
+                {"detail": decisao.mensagem, "codigo": decisao.codigo, "acesso": decisao.para_api()},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         if not livro.pdf:
             return Response({"detail": "PDF não encontrado para este livro."}, status=status.HTTP_404_NOT_FOUND)
         
@@ -84,6 +101,24 @@ class LivroViewSet(viewsets.ModelViewSet):
             logger.exception('Falha ao abrir PDF do livro %s', livro.pk)
             return Response(
                 {"detail": "Não foi possível abrir este livro."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
+    def ler_amostra(self, request, pk=None):
+        livro = self.get_object()
+        decisao = verificar_acesso_obra(request.user, livro)
+        if not decisao.pode_ler_amostra:
+            return Response(
+                {"detail": "Esta obra não possui uma amostra disponível.", "codigo": "amostra_indisponivel"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        try:
+            return FileResponse(livro.pdf_amostra.open('rb'), content_type='application/pdf')
+        except Exception:
+            logger.exception('Falha ao abrir a amostra do livro %s', livro.pk)
+            return Response(
+                {"detail": "Não foi possível abrir a amostra desta obra."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 

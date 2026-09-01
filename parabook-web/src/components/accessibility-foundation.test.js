@@ -5,6 +5,7 @@ import test from 'node:test';
 const app = readFileSync(new URL('../App.jsx', import.meta.url), 'utf8');
 const navbar = readFileSync(new URL('./Navbar.jsx', import.meta.url), 'utf8');
 const footer = readFileSync(new URL('./Footer.jsx', import.meta.url), 'utf8');
+const footerCss = readFileSync(new URL('../assets/css/footer.css', import.meta.url), 'utf8');
 const rotas = readFileSync(new URL('./RouteAccessibility.jsx', import.meta.url), 'utf8');
 const login = readFileSync(new URL('../pages/Login.jsx', import.meta.url), 'utf8');
 const cadastro = readFileSync(new URL('../pages/Register.jsx', import.meta.url), 'utf8');
@@ -55,4 +56,13 @@ test('livro do cadastro ignora o limite fluido do wrapper de ancoragem', () => {
 test('rolagem ao topo respeita preferência por movimento reduzido', () => {
   assert.match(footer, /prefers-reduced-motion: reduce/);
   assert.match(footer, /reduzirMovimento \? 'auto' : 'smooth'/);
+});
+
+test('rolagem ao topo fica fixa no mobile depois de 75% da página', () => {
+  assert.match(footer, /progresso >= 0\.75/);
+  assert.match(footer, /matchMedia\('\(max-width: 768px\)'\)/);
+  assert.match(footer, /is-mobile-visible/);
+  assert.match(footer, /tabIndex=\{rolagem\.mobile && !rolagem\.mostrarTopo \? -1 : undefined\}/);
+  assert.match(footerCss, /@media \(max-width: 768px\)[\s\S]*?\.btn-scroll-top\s*\{[\s\S]*?position:fixed;[\s\S]*?right:max\(16px, var\(--safe-right\)\);[\s\S]*?bottom:max\(16px, var\(--safe-bottom\)\)/);
+  assert.match(footerCss, /\.btn-scroll-top\.is-mobile-visible\s*\{[\s\S]*?opacity:1;[\s\S]*?pointer-events:auto/);
 });

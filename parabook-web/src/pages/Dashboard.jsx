@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
@@ -117,23 +117,32 @@ function Dashboard() {
   const [carregandoResumo, setCarregandoResumo] = useState(true);
   const [erroResumo, setErroResumo] = useState(false);
   const [paletaAberta, setPaletaAberta] = useState(false);
+  const [navegacaoCompacta, setNavegacaoCompacta] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 992px)').matches);
+  const [menuMovelAberto, setMenuMovelAberto] = useState(false);
   const [processandoTurno, setProcessandoTurno] = useState([]);
   const [toast, setToast] = useState(null);
+  const menuMovelRef = useRef(null);
+  const gatilhoMenuMovelRef = useRef(null);
+  const resumoRequestRef = useRef(0);
 
   const carregarResumo = useCallback(async () => {
+    const requestId = ++resumoRequestRef.current;
     try {
       const resposta = await api.get('/dashboard/estatisticas/');
+      if (requestId !== resumoRequestRef.current) return;
       setResumo({ ...RESUMO_INICIAL, ...resposta.data });
       setErroResumo(false);
     } catch (error) {
+      if (requestId !== resumoRequestRef.current) return;
       console.error('Erro ao carregar o resumo administrativo', error);
       setErroResumo(true);
     } finally {
-      setCarregandoResumo(false);
+      if (requestId === resumoRequestRef.current) setCarregandoResumo(false);
     }
   }, []);
 
   useEffect(() => { carregarResumo(); }, [carregarResumo]);
+  useEffect(() => () => { resumoRequestRef.current += 1; }, []);
   useEffect(() => {
     const abaSolicitada = new URLSearchParams(location.search).get('aba');
     if (ABAS_DASHBOARD.includes(abaSolicitada)) setAbaAtiva(abaSolicitada);
@@ -148,6 +157,31 @@ function Dashboard() {
     document.addEventListener('keydown', abrirPaleta);
     return () => document.removeEventListener('keydown', abrirPaleta);
   }, []);
+  useEffect(() => {
+    const consulta = window.matchMedia('(max-width: 992px)');
+    const atualizar = (evento) => {
+      setNavegacaoCompacta(evento.matches);
+      if (!evento.matches) setMenuMovelAberto(false);
+    };
+    consulta.addEventListener('change', atualizar);
+    return () => consulta.removeEventListener('change', atualizar);
+  }, []);
+  useEffect(() => {
+    if (!navegacaoCompacta || !menuMovelAberto) return undefined;
+    const overflowAnterior = document.body.style.overflow;
+    const gatilhoMenu = gatilhoMenuMovelRef.current;
+    document.body.style.overflow = 'hidden';
+    window.requestAnimationFrame(() => menuMovelRef.current?.querySelector('.admin-sidebar-fechar')?.focus());
+    const fecharComEscape = (evento) => {
+      if (evento.key === 'Escape') setMenuMovelAberto(false);
+    };
+    document.addEventListener('keydown', fecharComEscape);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener('keydown', fecharComEscape);
+      gatilhoMenu?.focus();
+    };
+  }, [menuMovelAberto, navegacaoCompacta]);
 
   const notificar = useCallback((mensagem, tipo = 'sucesso') => setToast({ id: Date.now(), mensagem, tipo }), []);
   const menu = [
@@ -159,7 +193,24 @@ function Dashboard() {
     { id: 'denuncias', icon: 'fa-flag', label: 'Denúncias', warning: true, contador: resumo.pendencias.denuncias },
     { id: 'lixeira', icon: 'fa-trash-can', label: 'Lixeira', danger: true, contador: resumo.pendencias.lixeira },
   ];
-  const navegarPara = useCallback((aba) => setAbaAtiva(aba), []);
+  const navegarPara = useCallback((aba) => {
+    setAbaAtiva(aba);
+    setMenuMovelAberto(false);
+  }, []);
+
+  const controlarFocoMenu = (evento) => {
+    if (evento.key !== 'Tab' || !navegacaoCompacta || !menuMovelAberto) return;
+    const focaveis = [...menuMovelRef.current.querySelectorAll('button:not([disabled]), a[href]')];
+    const primeiro = focaveis[0];
+    const ultimo = focaveis.at(-1);
+    if (evento.shiftKey && document.activeElement === primeiro) {
+      evento.preventDefault();
+      ultimo.focus();
+    } else if (!evento.shiftKey && document.activeElement === ultimo) {
+      evento.preventDefault();
+      primeiro.focus();
+    }
+  };
 
   const resolverTurno = async (item) => {
     const chave = `${item.categoria}-${item.id}`;
@@ -200,10 +251,19 @@ function Dashboard() {
 
   return (
     <div className="admin-container">
-      <aside className="admin-sidebar">
+      <header className="admin-mobile-header">
+        <button ref={gatilhoMenuMovelRef} type="button" className="admin-mobile-menu" aria-expanded={menuMovelAberto} aria-controls="admin-navegacao" onClick={() => setMenuMovelAberto(true)}>
+          <i className="fa-solid fa-bars" aria-hidden="true"></i>
+          <span><small>Administração</small><strong>{menu.find((item) => item.id === abaAtiva)?.label}</strong></span>
+        </button>
+        <button type="button" className="admin-mobile-busca" onClick={() => setPaletaAberta(true)} aria-label="Buscar ação administrativa"><i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+      </header>
+      <div className={`admin-sidebar-backdrop ${menuMovelAberto ? 'is-open' : ''}`} onMouseDown={(evento) => evento.target === evento.currentTarget && setMenuMovelAberto(false)} aria-hidden="true"></div>
+      <aside ref={menuMovelRef} id="admin-navegacao" className={`admin-sidebar ${menuMovelAberto ? 'is-open' : ''}`} aria-label="Navegação administrativa" aria-hidden={navegacaoCompacta && !menuMovelAberto} inert={navegacaoCompacta && !menuMovelAberto} onKeyDown={controlarFocoMenu}>
+        <button type="button" className="admin-sidebar-fechar" onClick={() => setMenuMovelAberto(false)} aria-label="Fechar navegação"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button>
         <div className="brand-logo-admin"><i className="fa-solid fa-book-open-reader" aria-hidden="true"></i><h2>Para<span>Book</span></h2></div>
         <button type="button" className="dash-command-trigger" onClick={() => setPaletaAberta(true)}><i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span>Buscar ação</span><kbd>⌘K</kbd></button>
-        {menu.map((item) => <button key={item.id} type="button" className={`${abaAtiva === item.id ? 'active' : ''} ${item.danger ? 'danger' : ''} ${item.warning ? 'warning' : ''}`} onClick={() => setAbaAtiva(item.id)} aria-current={abaAtiva === item.id ? 'page' : undefined}><i className={`fa-solid ${item.icon}`} aria-hidden="true"></i><span>{item.label}</span>{item.contador > 0 && <span className={`nav-contador nav-contador--${item.id}`}>{item.contador}</span>}</button>)}
+        {menu.map((item) => <button key={item.id} type="button" className={`${abaAtiva === item.id ? 'active' : ''} ${item.danger ? 'danger' : ''} ${item.warning ? 'warning' : ''}`} onClick={() => navegarPara(item.id)} aria-current={abaAtiva === item.id ? 'page' : undefined}><i className={`fa-solid ${item.icon}`} aria-hidden="true"></i><span>{item.label}</span>{item.contador > 0 && <span className={`nav-contador nav-contador--${item.id}`}>{item.contador}</span>}</button>)}
         <div className="admin-sidebar-rodape"><Link to={`/perfil/${user?.username}`}><i className="fa-solid fa-user" aria-hidden="true"></i> Meu Perfil</Link><Link to="/"><i className="fa-solid fa-house" aria-hidden="true"></i> Página Inicial</Link><button type="button" className="danger" onClick={handleLogout}><i className="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Sair</button></div>
       </aside>
 

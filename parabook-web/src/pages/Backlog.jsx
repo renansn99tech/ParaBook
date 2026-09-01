@@ -179,7 +179,7 @@ function Backlog() {
           </div>
         </article>
 
-        <article className="timeline-entry current-milestone" data-revelar>
+        <article className="timeline-entry" data-revelar>
           <div className="timeline-pointer"></div>
           <div className="glass-card-news">
             <div className="card-header">
@@ -188,6 +188,42 @@ function Backlog() {
             </div>
             <h3>Migração para Supabase</h3>
             <p>Adoção do Supabase (PostgreSQL) para hospedar o banco de dados da aplicação, trazendo maior robustez, escalabilidade na nuvem e flexibilidade para o ecossistema.</p>
+          </div>
+        </article>
+
+        <article className="timeline-entry inverse" data-revelar>
+          <div className="timeline-pointer"></div>
+          <div className="glass-card-news">
+            <div className="card-header">
+              <span className="date-tag">Ago 2026</span>
+              <span className="status-badge">UI/UX &amp; Design System</span>
+            </div>
+            <h3>Modernização Visual Completa</h3>
+            <p>Revisão ampla do frontend React iniciada após 31/07: nova identidade cósmica e editorial, temas escuro, fim de tarde e claro, componentes responsivos, navegação reorganizada e padrões consistentes de acessibilidade, movimento e feedback.</p>
+          </div>
+        </article>
+
+        <article className="timeline-entry" data-revelar>
+          <div className="timeline-pointer"></div>
+          <div className="glass-card-news">
+            <div className="card-header">
+              <span className="date-tag">Ago 2026</span>
+              <span className="status-badge">Produto &amp; Novas Features</span>
+            </div>
+            <h3>Novas Jornadas da Plataforma</h3>
+            <p>Expansão das experiências de leitores, autores e administradores com perfis modernizados, comunidades e moderação, painel do autor, gamificação, notificações, assinaturas, leitura e gestão avançada do acervo.</p>
+          </div>
+        </article>
+
+        <article className="timeline-entry inverse current-milestone" data-revelar>
+          <div className="timeline-pointer"></div>
+          <div className="glass-card-news">
+            <div className="card-header">
+              <span className="date-tag">Ago 2026</span>
+              <span className="status-badge">Biblioteca &amp; Marketplace</span>
+            </div>
+            <h3>ParaBook como Ecossistema Literário</h3>
+            <p>Consolidação da marca como biblioteca digital e base de marketplace da economia criativa: autores independentes ganham visibilidade por selo editorial, enquanto domínio público, acervo licenciado, planos e experimentos Beta de coleções e apoio preparam uma monetização responsável.</p>
           </div>
         </article>
 

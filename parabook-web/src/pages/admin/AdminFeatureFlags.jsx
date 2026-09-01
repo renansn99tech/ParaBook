@@ -30,6 +30,11 @@ const APRESENTACAO_FLAGS = {
     icone: 'fa-chart-line',
     categoria: 'Inteligência editorial',
   },
+  acervo_avancado_beta: {
+    nome: 'Acervo avançado Beta',
+    icone: 'fa-flask',
+    categoria: 'Monetização e curadoria',
+  },
 };
 
 function apresentacaoDaFlag(chave) {

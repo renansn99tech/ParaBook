@@ -374,4 +374,19 @@ class DashboardAdministracaoAvancadaAPIViewTests(TestCase):
         response = self.client.get(reverse('api-dashboard-feature-flags-publicas'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {'banner_anuncios': True})
+        self.assertEqual(response.data, {
+            'banner_anuncios': True,
+            'acervo_avancado_beta': False,
+        })
+
+    def test_flag_acervo_beta_nasce_desligada_e_e_exposta_publicamente(self):
+        flag = FeatureFlag.objects.get(chave='acervo_avancado_beta')
+        self.assertTrue(flag.disponivel)
+        self.assertFalse(flag.habilitada)
+
+        self.client.force_authenticate(user=None)
+        response = self.client.get(reverse('api-dashboard-feature-flags-publicas'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('acervo_avancado_beta', response.data)
+        self.assertFalse(response.data['acervo_avancado_beta'])

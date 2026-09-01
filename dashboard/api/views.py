@@ -29,7 +29,7 @@ from perfis.services import aplicar_frase_status_padrao_autor
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
-FEATURE_FLAGS_PUBLICAS = ('banner_anuncios',)
+FEATURE_FLAGS_PUBLICAS = ('banner_anuncios', 'acervo_avancado_beta')
 
 
 AUDITORIA_PREFIXOS = {

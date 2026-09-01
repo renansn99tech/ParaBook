@@ -207,3 +207,34 @@ test('identidade visível usa ADM e Autor sem categoria Pro', () => {
   assert.match(perfilPublico, /badge-autor[\s\S]*?> Autor<\/span>/);
   assert.doesNotMatch(`${profile}\n${perfilPublico}`, /Autor Pro/i);
 });
+
+test('perfil móvel preserva troca de capa e transforma atividade em bottom sheet acessível', () => {
+  assert.match(css, /\.perfil-page--proprio \.btn-capa\s*\{[\s\S]*?display: inline-flex/);
+  assert.doesNotMatch(css, /\.perfil-page--proprio \.perfil-cover-selo,\s*\.perfil-page--proprio \.btn-capa\s*\{\s*display: none/);
+  assert.match(profile, /drawerAtividadeRef/);
+  assert.match(profile, /document\.body\.style\.overflow = 'hidden'/);
+  assert.match(profile, /evento\.key !== 'Tab'/);
+  assert.match(css, /\.perfil-atividade-drawer\s*\{[\s\S]*?max-height: min\(88dvh, 760px\)[\s\S]*?transform: translateY\(104%\)/);
+});
+
+test('perfil móvel usa capa de 97vw, sobreposição e navegação vertical recolhível', () => {
+  assert.match(css, /@media \(max-width: 768px\)[\s\S]*?\.perfil-page--proprio \.perfil-cover\s*\{[\s\S]*?width: 97vw !important;[\s\S]*?height: clamp\(270px, 72vw, 500px\) !important;[\s\S]*?max-height: 500px/);
+  assert.match(css, /\.perfil-page--proprio \.perfil-content-wrapper\s*\{[\s\S]*?margin: -100px 0 0 calc\(50% - 46\.5vw\) !important/);
+  assert.match(css, /\.perfil-page--proprio \.perfil-sidebar\s*\{[\s\S]*?left: 50%;[\s\S]*?transform: translateX\(-50%\)/);
+  assert.match(profile, /menuAbasAberto/);
+  assert.match(profile, /className="perfil-tabs-drawer-trigger"/);
+  assert.match(profile, /aria-controls="perfilTabsNavegacao"/);
+  assert.match(css, /\.perfil-page--proprio \.tabs-nav\s*\{[\s\S]*?display: none;[\s\S]*?flex-direction: column/);
+  assert.match(css, /\.perfil-page--proprio \.tabs-nav\.is-open\s*\{\s*display: flex/);
+  assert.match(profile, /'ArrowUp', 'ArrowDown', 'Home', 'End'/);
+});
+
+test('indicadores administrativos ficam integralmente centralizados no perfil móvel', () => {
+  assert.match(css, /@media \(max-width: 768px\)[\s\S]*?\.perfil-page--proprio \.stat-glass-card\s*\{[\s\S]*?align-items: center;[\s\S]*?text-align: center/);
+  assert.match(css, /\.perfil-page--proprio \.stat-info\s*\{[\s\S]*?width: 100%;[\s\S]*?text-align: center/);
+  assert.match(css, /\.perfil-page--proprio \.stat-number,[\s\S]*?\.perfil-page--proprio \.stat-label\s*\{\s*text-align: center/);
+});
+
+test('drawer de abas aberto preserva respiro em relação ao seletor mobile', () => {
+  assert.match(css, /\.perfil-page--proprio \.tabs-nav\.is-open\s*\{[\s\S]*?display: flex;[\s\S]*?margin-top: 16px/);
+});

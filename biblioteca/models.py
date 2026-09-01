@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 
 
 class Categoria(models.Model):
@@ -25,7 +26,13 @@ class Livro(models.Model):
     ORIGEM_CHOICES = [
         ("dominio_publico", "Domínio Público"),
         ("autor_independente", "Autor Independente"),
-    ]     
+        ("licenciado", "Acervo Licenciado"),
+    ]
+    MODELO_ACESSO_CHOICES = [
+        ("gratuito", "Leitura gratuita"),
+        ("assinante", "Incluído na assinatura"),
+        ("amostra", "Somente amostra"),
+    ]
     STATUS_CHOICES = [
         ("pendente", "Pendente"),
         ("publicado", "Publicado"),
@@ -42,8 +49,26 @@ class Livro(models.Model):
     edicao = models.CharField(max_length=100, null=True, blank=True, help_text="Ex: 1ª Edição, Traduzido por...", verbose_name="Edição")
     capa = models.ImageField(upload_to='capas/', null=True, blank=True, verbose_name="Imagem de Capa")
     pdf = models.FileField(upload_to='livros/', null=True, blank=True, verbose_name="Arquivo PDF")
+    pdf_amostra = models.FileField(
+        upload_to='livros/amostras/', null=True, blank=True, verbose_name="PDF da amostra"
+    )
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='livros', verbose_name="Categoria")
     origem = models.CharField(max_length=25, choices=ORIGEM_CHOICES, default="dominio_publico", verbose_name="Origem da Obra")
+    modelo_acesso = models.CharField(
+        max_length=12,
+        choices=MODELO_ACESSO_CHOICES,
+        default="gratuito",
+        db_index=True,
+        verbose_name="Modelo de acesso",
+    )
+    disponivel_de = models.DateTimeField(null=True, blank=True, verbose_name="Disponível a partir de")
+    disponivel_ate = models.DateTimeField(null=True, blank=True, verbose_name="Disponível até")
+    territorio_cultural = models.CharField(
+        max_length=120,
+        blank=True,
+        verbose_name="Território cultural",
+        help_text="Identificação editorial voluntária, como Belém/PA ou Amazônia.",
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="publicado", verbose_name="Status de Publicação")
     data_remocao = models.DateTimeField(null=True, blank=True, verbose_name="Data de Remoção") # NOVO
 
@@ -59,6 +84,17 @@ class Livro(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    def clean(self):
+        super().clean()
+        if self.disponivel_de and self.disponivel_ate and self.disponivel_de >= self.disponivel_ate:
+            raise ValidationError({
+                'disponivel_ate': 'A data final deve ser posterior à data inicial.'
+            })
+        if self.modelo_acesso == 'amostra' and not self.pdf_amostra:
+            raise ValidationError({
+                'pdf_amostra': 'Envie um PDF de amostra para este modelo de acesso.'
+            })
 
     # =========================================================================
     # PROPRIEDADES DE RETROCOMPATIBILIDADE (Evita quebra nos templates de lista)

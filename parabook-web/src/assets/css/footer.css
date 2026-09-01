@@ -189,5 +189,29 @@
     
     .footer-bottom { flex-direction: column; gap: 30px; padding-top: 30px; }
     .footer-bottom p { font-size: .95rem !important; }
-    .btn-scroll-top { width: 56px !important; height: 56px !important; font-size: 1rem !important; }
+    .btn-scroll-top {
+        position:fixed;
+        z-index:1040;
+        right:max(16px, var(--safe-right));
+        bottom:max(16px, var(--safe-bottom));
+        width:52px !important;
+        height:52px !important;
+        font-size:1rem !important;
+        opacity:0;
+        pointer-events:none;
+        transform:translateY(14px) scale(.92);
+        box-shadow:0 14px 34px rgba(var(--purple-rgb), .34);
+    }
+
+    .btn-scroll-top.is-mobile-visible {
+        opacity:1;
+        pointer-events:auto;
+        transform:translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-scroll-top {
+        transition-duration:1ms;
+    }
 }

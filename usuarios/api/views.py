@@ -154,6 +154,9 @@ class MobileTokenObtainPairAPIView(APIView):
     authentication_classes = []
     throttle_classes = [AuthRateThrottle]
 
+    def get_authenticate_header(self, request):
+        return 'Bearer realm="api"'
+
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

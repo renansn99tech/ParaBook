@@ -129,11 +129,11 @@
 .cc-busca,
 .cc-ordenacao { position: relative; display: flex; align-items: center; min-height: 44px; border: 1px solid var(--cc-borda); border-radius: var(--radius-pill); background: rgba(var(--bg-main-rgb), .58); color: var(--text-dim); }
 .cc-busca { min-width: min(280px, 34vw); padding-left: 15px; }
-.cc-busca input { width: 100%; min-width: 0; padding: 9px 42px 9px 10px; border: 0; outline: 0; background: transparent; color: var(--text); }
+.cc-busca input { width: 100%; min-width: 0; padding: 9px 42px 9px 10px; border: 0; outline: 0; background: transparent; color: var(--text); font-size: 1rem; }
 .cc-busca input::-webkit-search-cancel-button { display: none; }
 .cc-busca button { position: absolute; right: 4px; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: var(--text-dim); cursor: pointer; }
 .cc-ordenacao { padding: 0 14px; }
-.cc-ordenacao select { min-height: 42px; padding: 0 24px 0 0; border: 0; outline: 0; appearance: none; background: transparent; color: var(--text-secondary); cursor: pointer; }
+.cc-ordenacao select { min-height: 42px; padding: 0 24px 0 0; border: 0; outline: 0; appearance: none; background: transparent; color: var(--text-secondary); font-size: 1rem; cursor: pointer; }
 .cc-ordenacao i { position: absolute; right: 12px; font-size: .65rem; pointer-events: none; }
 .cc-busca:focus-within,
 .cc-ordenacao:focus-within { border-color: var(--purple); box-shadow: var(--focus-ring); }
@@ -182,7 +182,7 @@
 .cc-respostas form { display: grid; gap: 8px; margin-top: 3px; }
 .cc-respostas textarea,
 .cc-campo input,
-.cc-campo textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--cc-borda); border-radius: var(--radius-md); outline: 0; resize: vertical; background: rgba(var(--bg-main-rgb), .55); color: var(--text); }
+.cc-campo textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--cc-borda); border-radius: var(--radius-md); outline: 0; resize: vertical; background: rgba(var(--bg-main-rgb), .55); color: var(--text); font-size: 1rem; }
 .cc-respostas textarea:focus,
 .cc-campo input:focus,
 .cc-campo textarea:focus { border-color: var(--purple); box-shadow: var(--focus-ring); }
@@ -286,7 +286,7 @@
 }
 
 @media (max-width: 760px) {
-  .pagina-comunidade { padding: 10px 16px 48px; }
+  .pagina-comunidade { padding: 10px max(16px, var(--safe-right)) max(48px, var(--safe-bottom)) max(16px, var(--safe-left)); }
   .cc-banner { grid-template-columns: auto minmax(0, 1fr); gap: 16px; padding: 22px; }
   .cc-monograma { width: 58px; height: 58px; border-radius: 17px; font-size: 1.15rem; }
   .cc-banner h1 { font-size: 1.85rem; }
@@ -295,6 +295,8 @@
   .cc-feed-toolbar { align-items: stretch; flex-direction: column; }
   .cc-feed-controles { align-items: stretch; flex-direction: column; }
   .cc-busca { width: 100%; min-width: 0; }
+  .cc-busca input,
+  .cc-ordenacao select { font-size: 1rem; }
   .cc-ordenacao { width: 100%; }
   .cc-ordenacao select { width: 100%; }
   .cc-post { padding: 17px; border-radius: var(--radius-md); }
@@ -313,9 +315,12 @@
   .cc-banner { grid-template-columns: 1fr; }
   .cc-banner-acoes { grid-column: auto; }
   .cc-meta { align-items: flex-start; flex-direction: column; gap: 7px; }
-  .cc-post-monograma { display: none; }
-  .cc-post-header { grid-template-columns: minmax(0, 1fr); }
-  .cc-post-acoes { grid-column: 1; }
-  .cc-respostas > article { grid-template-columns: 1fr; }
-  .cc-resposta-monograma { display: none; }
+  .cc-post-monograma { width: 40px; height: 40px; border-radius: 12px; }
+  .cc-post-header { grid-template-columns: 40px minmax(0, 1fr); }
+  .cc-post-acoes { grid-column: 2; }
+  .cc-respostas > article { grid-template-columns: 30px minmax(0, 1fr); padding-inline: 9px; }
+  .cc-resposta-monograma { width: 30px; height: 30px; }
+  .cc-respostas article header { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .cc-composer-acoes { align-items: stretch; flex-direction: column-reverse; }
+  .cc-composer-acoes > * { width: 100%; justify-content: center; }
 }

@@ -20,7 +20,7 @@ test('fundação móvel expõe safe areas e unidades modernas de viewport', () =
   }
 
   assert.match(baseCss, /min-height:100svh/);
-  assert.match(navbarCss, /height:100dvh/);
+  assert.match(navbarCss, /max-height:calc\(100dvh/);
   assert.match(navbarCss, /max\(var\(--layout-gutter\), var\(--safe-left\)\)/);
 });
 

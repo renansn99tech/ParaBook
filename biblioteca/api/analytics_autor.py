@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from biblioteca.models import Biblioteca, EventoLeitura, Livro
+from biblioteca.services import verificar_acesso_obra
 
 
 PERIODOS_VALIDOS = {7, 30, 90}
@@ -156,6 +157,12 @@ class EventoLeituraCreateAPIView(APIView):
         entrada.is_valid(raise_exception=True)
         dados = entrada.validated_data
         livro = get_object_or_404(Livro.objects.filter(status='publicado'), pk=dados['livro'])
+        decisao = verificar_acesso_obra(request.user, livro)
+        if not decisao.pode_ler:
+            return Response(
+                {'detail': decisao.mensagem, 'codigo': decisao.codigo},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         if not Biblioteca.objects.filter(user=request.user, livro=livro).exists():
             return Response(
                 {'detail': 'Adicione a obra à sua estante antes de registrar a leitura.'},

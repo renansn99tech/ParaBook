@@ -44,21 +44,32 @@ function Comunidades() {
   const [comunidadesOficiais, setComunidadesOficiais] = useState([]);
   const [comunidadesDaGalera, setComunidadesDaGalera] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [erroCarregamento, setErroCarregamento] = useState(false);
+  const [tentativa, setTentativa] = useState(0);
+  const [processando, setProcessando] = useState([]);
   const [filtro, setFiltro] = useState('todas');
   const [busca, setBusca] = useState('');
 
   const paginaRef = useRevelacao([comunidadesOficiais, comunidadesDaGalera, loading, filtro, busca]);
 
   useEffect(() => {
-    api.get('/comunidades/comunidades/')
+    const controller = new AbortController();
+    setLoading(true);
+    setErroCarregamento(false);
+    api.get('/comunidades/comunidades/', { signal: controller.signal })
       .then(res => {
         const data = res.data;
         setComunidadesOficiais(data.filter(c => c.criada_por_sistema));
         setComunidadesDaGalera(data.filter(c => !c.criada_por_sistema));
       })
-      .catch(err => console.error("Erro ao carregar comunidades:", err))
-      .finally(() => setLoading(false));
-  }, []);
+      .catch(err => {
+        if (err.code === 'ERR_CANCELED') return;
+        console.error("Erro ao carregar comunidades:", err);
+        setErroCarregamento(true);
+      })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [tentativa]);
 
   const handleToggleParticipacao = async (comunidade) => {
     if (!user) {
@@ -66,6 +77,20 @@ function Comunidades() {
       return;
     }
 
+    if (processando.includes(comunidade.id)) return;
+    if (comunidade.usuario_participa) {
+      const confirmacao = await swal.fire({
+        icon: 'question',
+        title: `Sair de ${comunidade.nome}?`,
+        text: 'Você poderá entrar novamente enquanto houver vagas.',
+        showCancelButton: true,
+        confirmButtonText: 'Sair da comunidade',
+        cancelButtonText: 'Continuar participando',
+      });
+      if (!confirmacao.isConfirmed) return;
+    }
+
+    setProcessando((atuais) => [...atuais, comunidade.id]);
     try {
       const response = await api.post(`/comunidades/comunidades/${comunidade.id}/entrar/`);
       const entrou = response.data.status === 'entrou na comunidade';
@@ -88,6 +113,8 @@ function Comunidades() {
     } catch (error) {
       console.error("Erro ao alterar participação:", error);
       toast('Não foi possível concluir agora. Tente de novo.', 'error');
+    } finally {
+      setProcessando((atuais) => atuais.filter((id) => id !== comunidade.id));
     }
   };
 
@@ -139,8 +166,10 @@ function Comunidades() {
             onClick={() => handleToggleParticipacao(comunidade)}
             className="btn-ghost comunidade-sair"
             aria-label={`Sair de ${comunidade.nome}`}
+            disabled={processando.includes(comunidade.id)}
+            aria-busy={processando.includes(comunidade.id)}
           >
-            <i className="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+            <i className={`fa-solid ${processando.includes(comunidade.id) ? 'fa-spinner fa-spin' : 'fa-arrow-right-from-bracket'}`} aria-hidden="true"></i>
           </button>
         </>
       );
@@ -164,8 +193,10 @@ function Comunidades() {
         type="button"
         onClick={() => handleToggleParticipacao(comunidade)}
         className="btn-purple-soft w-100"
+        disabled={processando.includes(comunidade.id)}
+        aria-busy={processando.includes(comunidade.id)}
       >
-        Entrar
+        {processando.includes(comunidade.id) ? 'Entrando...' : 'Entrar'}
       </button>
     );
   };
@@ -299,7 +330,14 @@ function Comunidades() {
         </div>
 
         {/* Grade — só ela mostra skeleton enquanto carrega. */}
-        {loading ? (
+        {erroCarregamento ? (
+          <div className="com-erro" role="alert">
+            <i className="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+            <h2>Não foi possível carregar as comunidades</h2>
+            <p>As comunidades existentes foram preservadas. Verifique sua conexão e tente novamente.</p>
+            <button type="button" className="btn-primary" onClick={() => setTentativa((valor) => valor + 1)}>Tentar novamente</button>
+          </div>
+        ) : loading ? (
           <div className="grid-comunidades" aria-busy="true">
             {[0, 1, 2].map(cardSkeleton)}
           </div>

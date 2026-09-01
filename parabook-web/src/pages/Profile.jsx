@@ -164,14 +164,18 @@ function Profile() {
   const [perfilPrivado, setPerfilPrivado] = useState(false);
   const [toast, setToast] = useState(null);
   const [menuInformacoesAberto, setMenuInformacoesAberto] = useState(false);
+  const [menuAbasAberto, setMenuAbasAberto] = useState(false);
   const [drawerAtividade, setDrawerAtividade] = useState(null);
   const fotoInputRef = useRef(null);
   const capaInputRef = useRef(null);
   const metaLeituraInputRef = useRef(null);
   const tabRefs = useRef([]);
   const menuInformacoesRef = useRef(null);
+  const menuAbasRef = useRef(null);
+  const menuAbasGatilhoRef = useRef(null);
   const drawerFecharRef = useRef(null);
   const drawerGatilhoRef = useRef(null);
+  const drawerAtividadeRef = useRef(null);
   const reduzirMovimento = useMovimentoReduzido();
   const adminAutorizado = user?.tipo === 'admin' && Boolean(user?.is_staff || user?.is_superuser);
   const tabs = [
@@ -227,16 +231,53 @@ function Profile() {
   }, [menuInformacoesAberto]);
 
   useEffect(() => {
-    if (!drawerAtividade) return undefined;
-    drawerFecharRef.current?.focus();
-    const fecharComEscape = (evento) => {
+    if (!menuAbasAberto) return undefined;
+    const fechar = (evento) => {
       if (evento.key === 'Escape') {
-        setDrawerAtividade(null);
-        drawerGatilhoRef.current?.focus();
+        setMenuAbasAberto(false);
+        menuAbasGatilhoRef.current?.focus();
+        return;
+      }
+      if (evento.type === 'pointerdown' && !menuAbasRef.current?.contains(evento.target)) {
+        setMenuAbasAberto(false);
       }
     };
-    document.addEventListener('keydown', fecharComEscape);
-    return () => document.removeEventListener('keydown', fecharComEscape);
+    document.addEventListener('keydown', fechar);
+    document.addEventListener('pointerdown', fechar);
+    return () => {
+      document.removeEventListener('keydown', fechar);
+      document.removeEventListener('pointerdown', fechar);
+    };
+  }, [menuAbasAberto]);
+
+  useEffect(() => {
+    if (!drawerAtividade) return undefined;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    drawerFecharRef.current?.focus();
+    const controlarTeclado = (evento) => {
+      if (evento.key === 'Escape') {
+        setDrawerAtividade(null);
+        return;
+      }
+      if (evento.key !== 'Tab') return;
+      const focaveis = [...drawerAtividadeRef.current.querySelectorAll('button:not([disabled]), a[href], [tabindex="0"]')];
+      const primeiro = focaveis[0];
+      const ultimo = focaveis.at(-1);
+      if (evento.shiftKey && document.activeElement === primeiro) {
+        evento.preventDefault();
+        ultimo.focus();
+      } else if (!evento.shiftKey && document.activeElement === ultimo) {
+        evento.preventDefault();
+        primeiro.focus();
+      }
+    };
+    document.addEventListener('keydown', controlarTeclado);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener('keydown', controlarTeclado);
+      drawerGatilhoRef.current?.focus();
+    };
   }, [drawerAtividade]);
 
   useEffect(() => {
@@ -348,15 +389,22 @@ function Profile() {
     }
   };
   const trocarAba = (tab) => {
+    const devolverFocoAoDrawer = menuAbasAberto && window.matchMedia('(max-width: 768px)').matches;
     setActiveTab(tab);
+    setMenuAbasAberto(false);
     setSearchParams(tab === 'info' ? {} : { tab }, { replace: true });
+    if (devolverFocoAoDrawer) window.requestAnimationFrame(() => menuAbasGatilhoRef.current?.focus());
   };
   const handleTabKeyDown = (evento, indice) => {
-    if (!['ArrowLeft', 'ArrowRight'].includes(evento.key)) return;
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(evento.key)) return;
     evento.preventDefault();
-    const proximo = (indice + (evento.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    const proximo = evento.key === 'Home'
+      ? 0
+      : evento.key === 'End'
+        ? tabs.length - 1
+        : (indice + (['ArrowRight', 'ArrowDown'].includes(evento.key) ? 1 : -1) + tabs.length) % tabs.length;
     trocarAba(tabs[proximo].id);
-    tabRefs.current[proximo]?.focus();
+    if (!window.matchMedia('(max-width: 768px)').matches) tabRefs.current[proximo]?.focus();
   };
   const abrirDrawerAtividade = (evento, tipo) => {
     drawerGatilhoRef.current = evento.currentTarget;
@@ -366,6 +414,7 @@ function Profile() {
     setDrawerAtividade(null);
     drawerGatilhoRef.current?.focus();
   };
+  const tabAtiva = tabs.find((tab) => tab.id === activeTab) || tabs[0];
 
   const handleCompartilhar = async () => {
     const url = `${window.location.origin}/perfil/${user.username}`;
@@ -671,8 +720,14 @@ function Profile() {
       </section>
 
       <section className="perfil-tabs-section" data-revelar>
-        <div className="tabs-nav" role="tablist" aria-label="Seções do perfil">
-          {tabs.map((tab, indice) => <button key={tab.id} ref={(elemento) => { tabRefs.current[indice] = elemento; }} type="button" id={`tab-${tab.id}`} className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`} role="tab" aria-selected={activeTab === tab.id} aria-controls={`painel-${tab.id}`} tabIndex={activeTab === tab.id ? 0 : -1} onClick={() => trocarAba(tab.id)} onKeyDown={(evento) => handleTabKeyDown(evento, indice)}><span><i className={`fa-solid ${tab.icon}`} aria-hidden="true"></i> {tab.label}</span>{tab.id === 'moderacao' && totalModeracao > 0 && <span className="tab-contador">{totalModeracao}</span>}</button>)}
+        <div ref={menuAbasRef} className="perfil-tabs-controle">
+          <button ref={menuAbasGatilhoRef} type="button" className="perfil-tabs-drawer-trigger" aria-expanded={menuAbasAberto} aria-controls="perfilTabsNavegacao" onClick={() => setMenuAbasAberto((aberto) => !aberto)}>
+            <span><i className={`fa-solid ${tabAtiva.icon}`} aria-hidden="true"></i><span><small>Seção do perfil</small><strong>{tabAtiva.label}</strong></span></span>
+            <i className={`fa-solid fa-chevron-${menuAbasAberto ? 'up' : 'down'}`} aria-hidden="true"></i>
+          </button>
+          <div id="perfilTabsNavegacao" className={`tabs-nav ${menuAbasAberto ? 'is-open' : ''}`} role="tablist" aria-label="Seções do perfil">
+            {tabs.map((tab, indice) => <button key={tab.id} ref={(elemento) => { tabRefs.current[indice] = elemento; }} type="button" id={`tab-${tab.id}`} className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`} role="tab" aria-selected={activeTab === tab.id} aria-controls={`painel-${tab.id}`} tabIndex={activeTab === tab.id ? 0 : -1} onClick={() => trocarAba(tab.id)} onKeyDown={(evento) => handleTabKeyDown(evento, indice)}><span><i className={`fa-solid ${tab.icon}`} aria-hidden="true"></i> {tab.label}</span>{tab.id === 'moderacao' && totalModeracao > 0 && <span className="tab-contador">{totalModeracao}</span>}</button>)}
+          </div>
         </div>
 
         <div className="tab-content active" id={`painel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`}>
@@ -728,7 +783,7 @@ function Profile() {
       </section>
 
       <div className={`perfil-atividade-backdrop ${drawerAtividade ? 'is-open' : ''}`} onClick={fecharDrawerAtividade} aria-hidden="true"></div>
-      <aside id="drawerAtividadePerfil" className={`perfil-atividade-drawer ${drawerAtividade ? 'is-open' : ''}`} role="dialog" aria-modal="true" aria-hidden={!drawerAtividade} inert={!drawerAtividade} aria-labelledby="drawerAtividadeTitulo">
+      <aside ref={drawerAtividadeRef} id="drawerAtividadePerfil" className={`perfil-atividade-drawer ${drawerAtividade ? 'is-open' : ''}`} role="dialog" aria-modal="true" aria-hidden={!drawerAtividade} inert={!drawerAtividade} aria-labelledby="drawerAtividadeTitulo">
         <header><span className="perfil-atividade-drawer-icone"><i className={`fa-solid ${drawerAtividade === 'avaliacoes' ? 'fa-star' : 'fa-book-open'}`} aria-hidden="true"></i></span><div><small>Resumo da sua jornada</small><h2 id="drawerAtividadeTitulo">{drawerAtividade === 'avaliacoes' ? 'Últimas avaliações' : 'Últimos livros lidos'}</h2></div><button ref={drawerFecharRef} type="button" onClick={fecharDrawerAtividade} aria-label="Fechar resumo"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button></header>
         <div className="perfil-atividade-drawer-corpo">{carregandoHistorico ? <p role="status">Carregando atividades...</p> : (historicoRecentes[drawerAtividade] || []).length > 0 ? <ol>{historicoRecentes[drawerAtividade].map((evento) => <li key={evento.id}><span><i className={`fa-solid ${drawerAtividade === 'avaliacoes' ? 'fa-star' : 'fa-check'}`} aria-hidden="true"></i></span><div><strong>{evento.titulo}</strong><p>{evento.descricao}</p><time dateTime={evento.data}>{formatarTempoRelativo(evento.data) || 'Registro anterior'}</time></div></li>)}</ol> : <div className="perfil-atividade-drawer-vazio"><i className={`fa-solid ${drawerAtividade === 'avaliacoes' ? 'fa-star-half-stroke' : 'fa-book'}`} aria-hidden="true"></i><strong>Nenhum registro por enquanto</strong><p>Suas próximas atividades aparecerão aqui.</p></div>}</div>
       </aside>

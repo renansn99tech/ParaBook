@@ -1,12 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import swal from '../services/swal';
+import { AuthContext } from '../context/auth-context';
 import useRevelacao from '../hooks/useRevelacao';
 
 function Planos() {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [planos, setPlanos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+  const [contratando, setContratando] = useState(null);
   const paginaRef = useRevelacao([planos, loading]);
 
   useEffect(() => {
@@ -18,6 +23,22 @@ function Planos() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const contratarPlano = async (plano) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    setContratando(plano.id);
+    try {
+      const resposta = await api.post('/assinaturas/checkout/', { plano_id: plano.id });
+      window.location.assign(resposta.data.url);
+    } catch (err) {
+      const mensagem = err.response?.data?.detail || 'Não foi possível iniciar a contratação.';
+      await swal.fire({ icon: 'error', title: 'Assinatura indisponível', text: mensagem });
+      setContratando(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -112,9 +133,16 @@ function Planos() {
                   </ul>
 
                   <div className="mt-auto">
-                    <Link to="/minha-assinatura" className={`${preco > 0 ? 'btn-primary shadow-lg' : 'btn-ghost'} w-100`}>
-                      {preco === 0 ? 'Começar Grátis' : `Assinar ${plano.nome}`}
-                    </Link>
+                    <button
+                      type="button"
+                      className={`${preco > 0 ? 'btn-primary shadow-lg' : 'btn-ghost'} w-100`}
+                      onClick={() => contratarPlano(plano)}
+                      disabled={contratando !== null}
+                    >
+                      {contratando === plano.id
+                        ? 'Abrindo checkout...'
+                        : (preco === 0 ? 'Começar Grátis' : `Assinar ${plano.nome}`)}
+                    </button>
                   </div>
                 </div>
               </div>

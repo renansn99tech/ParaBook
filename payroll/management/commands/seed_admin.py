@@ -8,7 +8,6 @@ class Command(BaseCommand):
     help = 'Cria o superusuario inicial automaticamente caso ele nao exista.'
 
     def handle(self, *args, **options):
-        # Le as variaveis do arquivo .env ou do ambiente do Render
         username = os.getenv('SEED_ADMIN_USERNAME', 'renan-adm')
         email = os.getenv('SEED_ADMIN_EMAIL', 'renan.nascimento6@gmail.com')
         password = os.getenv('SEED_ADMIN_PASSWORD', 'parabook123')

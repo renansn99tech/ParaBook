@@ -114,6 +114,7 @@ INSTALLED_APPS = [
     'assinaturas',
     'notificacoes',
     'gamificacao',
+    'payroll',
     'biblioteca.api.apps.ApiConfig',
 ]
 

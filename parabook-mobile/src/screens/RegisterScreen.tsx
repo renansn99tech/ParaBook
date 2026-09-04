@@ -4,18 +4,19 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
-import { colors } from '../theme/colors';
+import { colors, controlHeight, radii, spacing } from '../theme/colors';
 import { useAuth } from '../context/AuthContext';
+import { FormField } from '../components/FormField';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
@@ -25,7 +26,7 @@ const validatePassword = (value: string) => {
   }
 
   if (/^\d+$/.test(value)) {
-    return 'A senha nao pode ser inteiramente numerica.';
+    return 'A senha não pode ser inteiramente numérica.';
   }
 
   return null;
@@ -42,13 +43,13 @@ export const RegisterScreen = ({ navigation }: Props) => {
 
   const handleRegister = async () => {
     if (!username.trim() || !email.trim() || !password || !passwordConfirm) {
-      Alert.alert('Campos obrigatorios', 'Preencha usuario, email, senha e confirmacao da senha.');
+      Alert.alert('Campos obrigatórios', 'Preencha usuário, e-mail, senha e confirmação da senha.');
       return;
     }
 
     const passwordError = validatePassword(password);
     if (passwordError) {
-      Alert.alert('Senha invalida', passwordError);
+      Alert.alert('Senha inválida', passwordError);
       return;
     }
 
@@ -73,7 +74,7 @@ export const RegisterScreen = ({ navigation }: Props) => {
       });
 
       if (!result.success) {
-        Alert.alert('Cadastro nao concluido', result.error || 'Revise os dados informados e tente novamente.');
+        Alert.alert('Cadastro não concluído', result.error || 'Revise os dados informados e tente novamente.');
       }
     } finally {
       setLoading(false);
@@ -86,6 +87,11 @@ export const RegisterScreen = ({ navigation }: Props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardContainer}
       >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -103,54 +109,13 @@ export const RegisterScreen = ({ navigation }: Props) => {
           <Text style={styles.subtitle}>Monte sua estante e acompanhe suas leituras no app.</Text>
 
           <View style={styles.form}>
-            <View style={styles.inputContainer}>
-              <Ionicons name="person-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Usuario"
-                placeholderTextColor={colors.textMuted}
-                autoCapitalize="none"
-                value={username}
-                onChangeText={setUsername}
-              />
-            </View>
+            <FormField label="Usuário" icon="person-outline" placeholder="Escolha um usuário" autoCapitalize="none" autoComplete="username-new" value={username} onChangeText={setUsername} />
 
-            <View style={styles.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor={colors.textMuted}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
+            <FormField label="E-mail" icon="mail-outline" placeholder="voce@exemplo.com" autoCapitalize="none" autoComplete="email" keyboardType="email-address" value={email} onChangeText={setEmail} />
 
-            <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Senha"
-                placeholderTextColor={colors.textMuted}
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </View>
+            <FormField label="Senha" icon="lock-closed-outline" placeholder="Crie uma senha" isPassword autoComplete="new-password" value={password} onChangeText={setPassword} />
 
-            <View style={styles.inputContainer}>
-              <Ionicons name="shield-checkmark-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Confirmar senha"
-                placeholderTextColor={colors.textMuted}
-                secureTextEntry
-                value={passwordConfirm}
-                onChangeText={setPasswordConfirm}
-              />
-            </View>
+            <FormField label="Confirmar senha" icon="shield-checkmark-outline" placeholder="Repita sua senha" isPassword autoComplete="new-password" value={passwordConfirm} onChangeText={setPasswordConfirm} onSubmitEditing={() => void handleRegister()} returnKeyType="done" />
 
             <TouchableOpacity
               style={styles.termsRow}
@@ -181,11 +146,12 @@ export const RegisterScreen = ({ navigation }: Props) => {
           </View>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} activeOpacity={0.7}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')} activeOpacity={0.7} style={styles.footerButton}>
           <Text style={styles.footerText}>
-            Ja tem cadastro? <Text style={styles.footerLink}>Entrar</Text>
+            Já tem cadastro? <Text style={styles.footerLink}>Entrar</Text>
           </Text>
         </TouchableOpacity>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -198,14 +164,17 @@ const styles = StyleSheet.create({
   },
   keyboardContainer: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 20,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.xxl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 16,
   },
   backButton: {
     padding: 4,
@@ -231,27 +200,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     marginTop: 8,
-    marginBottom: 28,
+    marginBottom: spacing.xxl,
     lineHeight: 20,
   },
   form: {
-    gap: 12,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: 14,
-    height: 54,
-  },
-  input: {
-    flex: 1,
-    color: colors.textPrimary,
-    marginLeft: 10,
-    fontSize: 15,
+    gap: spacing.md,
   },
   termsRow: {
     flexDirection: 'row',
@@ -262,7 +215,7 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 22,
     height: 22,
-    borderRadius: 6,
+    borderRadius: radii.sm,
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
@@ -280,14 +233,14 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   primaryButton: {
-    height: 54,
-    borderRadius: 27,
+    height: controlHeight,
+    borderRadius: radii.pill,
     backgroundColor: colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: 8,
+    marginTop: spacing.xs,
   },
   primaryButtonDisabled: {
     opacity: 0.7,
@@ -301,7 +254,10 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     fontSize: 14,
-    marginBottom: 12,
+  },
+  footerButton: {
+    minHeight: 44,
+    justifyContent: 'center',
   },
   footerLink: {
     color: colors.primary,

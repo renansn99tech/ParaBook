@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 
@@ -30,7 +31,7 @@ export const AppNavigator = () => {
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Carregando sua sessao...</Text>
+        <Text style={styles.loadingText}>Carregando sua sessão...</Text>
       </SafeAreaView>
     );
   }
@@ -38,7 +39,7 @@ export const AppNavigator = () => {
   if (status === 'error') {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Text style={styles.errorTitle}>Sessao indisponivel</Text>
+        <Text style={styles.errorTitle}>Sessão indisponível</Text>
         <Text style={styles.loadingText}>{sessionError}</Text>
         <TouchableOpacity style={styles.primaryButton} onPress={() => void retrySession()}>
           <Text style={styles.primaryButtonText}>Tentar novamente</Text>

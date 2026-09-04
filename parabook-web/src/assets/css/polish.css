@@ -91,6 +91,42 @@
 .subscription-card { height:100%; }
 .subscription-card--featured { border-color:rgba(var(--purple-rgb),.55); }
 
+/* A feature continua descobrível, mas não simula disponibilidade comercial. */
+.feature-indisponivel {
+    position: relative;
+    cursor: help;
+    filter: saturate(.55);
+}
+
+.feature-indisponivel::after {
+    position: absolute;
+    z-index: 30;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    width: max-content;
+    max-width: min(280px, 80vw);
+    padding: 8px 11px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-md);
+    color: var(--text);
+    content: attr(data-feature-tooltip);
+    font-size: .8rem;
+    line-height: 1.35;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 4px);
+    transition: opacity var(--dur-fast) var(--ease-standard),
+                transform var(--dur-fast) var(--ease-out);
+}
+
+.feature-indisponivel:hover::after,
+.feature-indisponivel:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
 .subscription-metric,
 .subscription-benefit {
     background:var(--bg-input);

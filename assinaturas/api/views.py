@@ -9,10 +9,12 @@ from .serializers import PlanoSerializer, AssinaturaSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 
+
 class PlanoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Plano.objects.all().order_by('preco')
     serializer_class = PlanoSerializer
     permission_classes = [permissions.AllowAny]
+
 
 class MinhaAssinaturaAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -36,6 +38,16 @@ class CheckoutSessionAPIView(APIView):
 
     def post(self, request):
         plano = get_object_or_404(Plano, pk=request.data.get('plano_id'))
+
+        if plano.preco > 0 and not settings.PAYMENTS_ENABLED:
+            return Response(
+                {
+                    'detail': 'Assinaturas pagas estarão disponíveis em uma próxima etapa do ParaBook.',
+                    'code': 'feature_indisponivel',
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
         assinatura_atual = Assinatura.objects.filter(usuario=request.user, ativa=True).select_related('plano').first()
 
         if assinatura_atual and assinatura_atual.stripe_subscription_id:
@@ -95,6 +107,15 @@ class PortalSessionAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        if not settings.PAYMENTS_ENABLED:
+            return Response(
+                {
+                    'detail': 'O gerenciamento de pagamentos ainda não está disponível.',
+                    'code': 'feature_indisponivel',
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
         stripe_key = getattr(settings, 'STRIPE_SECRET_KEY', None) or os.getenv('STRIPE_SECRET_KEY')
         if not stripe_key:
             return Response(

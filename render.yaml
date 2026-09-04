@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: parabook-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health/
+    autoDeployTrigger: commit
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_CONN_MAX_AGE
+        value: "600"
+      - key: DATABASE_DISABLE_SERVER_SIDE_CURSORS
+        value: "False"
+      - key: SERVERLESS
+        value: "False"
+      - key: SUPABASE_STORAGE_ENABLED
+        value: "True"
+      - key: SUPABASE_STORAGE_BUCKET_NAME
+        value: parabook-media
+      - key: SUPABASE_STORAGE_ENDPOINT
+        sync: false
+      - key: SUPABASE_STORAGE_REGION
+        sync: false
+      - key: SUPABASE_STORAGE_ACCESS_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_SECRET_KEY
+        sync: false
+      - key: PAYMENTS_ENABLED
+        value: "False"
+      - key: EMAIL_ENABLED
+        value: "False"
+      - key: JWT_COOKIE_SECURE
+        value: "True"
+      - key: CSRF_COOKIE_SECURE
+        value: "True"
+      - key: JWT_COOKIE_SAMESITE
+        value: "None"
+      - key: CSRF_COOKIE_SAMESITE
+        value: "None"
+      - key: SESSION_COOKIE_SAMESITE
+        value: "None"
+      - key: RUN_MIGRATIONS
+        value: "true"
+      - key: GUNICORN_WORKERS
+        value: "1"
+      - key: GUNICORN_THREADS
+        value: "2"
+      - key: GUNICORN_TIMEOUT
+        value: "90"

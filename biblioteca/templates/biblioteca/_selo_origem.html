@@ -1,0 +1,9 @@
+{% if livro.origem == "autor_independente" %}
+<span class="selo-livro selo-livro--independente" style="position:absolute;top:12px;left:12px;z-index:3">
+  <i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> Independente
+</span>
+{% elif livro.origem == "licenciado" %}
+<span class="selo-livro selo-livro--licenciado" style="position:absolute;top:12px;left:12px;z-index:3">
+  <i class="fa-solid fa-certificate" aria-hidden="true"></i> Licenciado
+</span>
+{% endif %}

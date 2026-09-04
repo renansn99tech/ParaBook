@@ -110,6 +110,42 @@
   margin-bottom: 2rem;
 }
 
+.livro-info-page .livro-selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -1rem 0 2rem;
+}
+
+.livro-info-page .livro-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid rgba(var(--info-rgb),.28);
+  border-radius: var(--radius-pill);
+  background: rgba(var(--info-rgb),.08);
+  color: var(--info-soft);
+  font-size: .78rem;
+  font-weight: 750;
+}
+
+.livro-info-page .livro-selo--independente {
+  border-color: rgba(var(--purple-rgb),.42);
+  background: rgba(var(--purple-rgb),.14);
+  color: var(--purple-text);
+}
+
+.livro-info-page .livro-acesso-indisponivel {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid rgba(var(--warning-rgb),.3);
+  border-radius: var(--btn-radius);
+  background: rgba(var(--warning-rgb),.08);
+  color: var(--warning-soft);
+  text-align: center;
+}
+
 .livro-info-page .btn-denuncia {
   background: transparent;
   border: 1px solid rgba(var(--danger-rgb),0.3);

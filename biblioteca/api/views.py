@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao, DeclaracaoAutoria
+from biblioteca.services import verificar_acesso_obra
 from assinaturas.utils import usuario_eh_premium
 from .serializers import (
     LivroSerializer, CategoriaSerializer, EstanteSerializer, ResenhaSerializer,
@@ -15,6 +16,7 @@ from django.http import FileResponse
 from usuarios.api.throttles import UploadRateThrottle
 from django.conf import settings
 from django.utils.crypto import salted_hmac
+from django.utils import timezone
 from usuarios.audit import registrar_acao
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -39,11 +41,21 @@ class LivroViewSet(viewsets.ModelViewSet):
     serializer_class = LivroSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['titulo', 'autor']
+    search_fields = ['titulo', 'autor', 'territorio_cultural']
 
     def get_queryset(self):
-        qs = Livro.objects.exclude(status='removido')
+        qs = Livro.objects.exclude(status='removido').select_related('categoria')
         user = self.request.user
+
+        origem = self.request.query_params.get('origem')
+        modelo_acesso = self.request.query_params.get('modelo_acesso')
+        categoria = self.request.query_params.get('categoria')
+        if origem:
+            qs = qs.filter(origem=origem)
+        if modelo_acesso:
+            qs = qs.filter(modelo_acesso=modelo_acesso)
+        if categoria:
+            qs = qs.filter(categoria_id=categoria)
         
         if not user.is_authenticated:
             return qs.filter(status='publicado')
@@ -63,15 +75,23 @@ class LivroViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def resenhas(self, request, pk=None):
         livro = self.get_object()
-        resenhas = Biblioteca.objects.filter(
+        resenhas = Biblioteca.objects.select_related(
+            'user', 'user__perfil_customizado', 'user__perfil',
+        ).filter(
             livro=livro
         ).exclude(nota__isnull=True, resenha__isnull=True).exclude(resenha='')
-        serializer = ResenhaSerializer(resenhas, many=True)
+        serializer = ResenhaSerializer(resenhas, many=True, context={'request': request})
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def ler_pdf(self, request, pk=None):
         livro = self.get_object()
+        decisao = verificar_acesso_obra(request.user, livro)
+        if not decisao.pode_ler:
+            return Response(
+                {"detail": decisao.mensagem, "codigo": decisao.codigo, "acesso": decisao.para_api()},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         if not livro.pdf:
             return Response({"detail": "PDF não encontrado para este livro."}, status=status.HTTP_404_NOT_FOUND)
         
@@ -81,6 +101,24 @@ class LivroViewSet(viewsets.ModelViewSet):
             logger.exception('Falha ao abrir PDF do livro %s', livro.pk)
             return Response(
                 {"detail": "Não foi possível abrir este livro."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
+    def ler_amostra(self, request, pk=None):
+        livro = self.get_object()
+        decisao = verificar_acesso_obra(request.user, livro)
+        if not decisao.pode_ler_amostra:
+            return Response(
+                {"detail": "Esta obra não possui uma amostra disponível.", "codigo": "amostra_indisponivel"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        try:
+            return FileResponse(livro.pdf_amostra.open('rb'), content_type='application/pdf')
+        except Exception:
+            logger.exception('Falha ao abrir a amostra do livro %s', livro.pk)
+            return Response(
+                {"detail": "Não foi possível abrir a amostra desta obra."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -95,7 +133,17 @@ class EstanteViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Biblioteca.objects.filter(user=self.request.user).order_by('-data_adicao')
+        queryset = Biblioteca.objects.filter(user=self.request.user).order_by('-data_adicao')
+        status_filtro = self.request.query_params.get('status')
+        livro_id = self.request.query_params.get('livro')
+
+        if status_filtro:
+            queryset = queryset.filter(status=status_filtro)
+
+        if livro_id:
+            queryset = queryset.filter(livro_id=livro_id)
+
+        return queryset
 
     def create(self, request, *args, **kwargs):
         # 1. Checagem de Limite de Assinatura
@@ -144,7 +192,16 @@ class EstanteViewSet(viewsets.ModelViewSet):
             return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        extras = {'user': self.request.user}
+        if serializer.validated_data.get('pagina_atual', 0) > 0:
+            extras['ultima_leitura_em'] = timezone.now()
+        if serializer.validated_data.get('status') == 'lido':
+            extras['data_conclusao'] = timezone.now()
+        if serializer.validated_data.get('nota') is not None or serializer.validated_data.get('resenha'):
+            extras['avaliada_em'] = timezone.now()
+        if serializer.validated_data.get('favorito'):
+            extras['favoritado_em'] = timezone.now()
+        serializer.save(**extras)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -165,6 +222,24 @@ class EstanteViewSet(viewsets.ModelViewSet):
 
         # 3. Gatilhos de Gamificação após atualização
         obj = serializer.instance
+        campos_temporais = []
+        if 'pagina_atual' in serializer.validated_data:
+            obj.ultima_leitura_em = timezone.now()
+            campos_temporais.append('ultima_leitura_em')
+            if obj.status == 'quero_ler':
+                obj.status = 'lendo'
+                campos_temporais.append('status')
+        if status_anterior != 'lido' and obj.status == 'lido':
+            obj.data_conclusao = timezone.now()
+            campos_temporais.append('data_conclusao')
+        if 'nota' in serializer.validated_data or 'resenha' in serializer.validated_data:
+            obj.avaliada_em = timezone.now() if obj.nota is not None or obj.resenha else None
+            campos_temporais.append('avaliada_em')
+        if not estava_favoritado and obj.favorito:
+            obj.favoritado_em = timezone.now()
+            campos_temporais.append('favoritado_em')
+        if campos_temporais:
+            obj.save(update_fields=campos_temporais)
         msg_extra = []
 
         try:

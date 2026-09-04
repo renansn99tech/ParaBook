@@ -9,6 +9,8 @@ function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [requires2fa, setRequires2fa] = useState(false);
+  const [codigo2fa, setCodigo2fa] = useState('');
   const paginaRef = useRevelacao([]);
 
   const { login } = useContext(AuthContext);
@@ -19,11 +21,14 @@ function Login() {
     e.preventDefault();
     setError('');
 
-    const success = await login(username, password);
-    if (success) {
+    const resultado = await login(username, password, codigo2fa);
+    if (resultado.success) {
       navigate('/perfil');
+    } else if (resultado.requires2fa) {
+      setRequires2fa(true);
+      setError('Digite o código exibido no seu aplicativo autenticador.');
     } else {
-      setError('Credenciais inválidas. Tente novamente.');
+      setError(resultado.error || 'Credenciais inválidas. Tente novamente.');
     }
   };
 
@@ -93,6 +98,23 @@ function Login() {
                 />
               </div>
 
+              {requires2fa && (
+                <div className="auth-field">
+                  <label htmlFor="login-codigo-2fa">Código de verificação</label>
+                  <input
+                    id="login-codigo-2fa"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength="6"
+                    value={codigo2fa}
+                    onChange={(e) => setCodigo2fa(e.target.value.replace(/\D/g, ''))}
+                    required
+                    placeholder="000000"
+                  />
+                </div>
+              )}
+
               <div className="auth-field">
                 <label htmlFor="login-senha">Senha</label>
                 <input
@@ -110,7 +132,7 @@ function Login() {
 
               <Link to="/esqueci-senha" className="auth-forgot-link">Esqueceu a senha?</Link>
 
-              <button type="submit" className="auth-btn-submit">Acessar Conta</button>
+              <button type="submit" className="auth-btn-submit">{requires2fa ? 'Verificar e entrar' : 'Acessar Conta'}</button>
 
               <p className="auth-footer-text">
                 Ainda não tem conta? <Link to="/register">Cadastre-se</Link>

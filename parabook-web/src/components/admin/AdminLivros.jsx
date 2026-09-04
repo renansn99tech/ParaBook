@@ -15,10 +15,15 @@ function AdminLivros() {
     isbn: '',
     edicao: '',
     ano_publicacao: '',
-    origem: 'dominio_publico'
+    origem: 'dominio_publico',
+    modelo_acesso: 'gratuito',
+    territorio_cultural: '',
+    disponivel_de: '',
+    disponivel_ate: ''
   });
   const [capa, setCapa] = useState(null);
   const [pdf, setPdf] = useState(null);
+  const [pdfAmostra, setPdfAmostra] = useState(null);
 
   useEffect(() => {
     const fetchDados = async () => {
@@ -45,25 +50,32 @@ function AdminLivros() {
   const handleFileChange = (e) => {
     if (e.target.name === 'capa') setCapa(e.target.files[0]);
     if (e.target.name === 'pdf') setPdf(e.target.files[0]);
+    if (e.target.name === 'pdf_amostra') setPdfAmostra(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
     for (const key in formData) {
-      data.append(key, formData[key]);
+      if (formData[key] !== '') data.append(key, formData[key]);
     }
     if (capa) data.append('capa', capa);
     if (pdf) data.append('pdf', pdf);
+    if (pdfAmostra) data.append('pdf_amostra', pdfAmostra);
 
     try {
       const res = await api.post('/biblioteca/livros/', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setLivros([res.data, ...livros]);
-      setFormData({ titulo: '', categoria: '', autor: '', isbn: '', edicao: '', ano_publicacao: '', origem: 'dominio_publico' });
+      setFormData({
+        titulo: '', categoria: '', autor: '', isbn: '', edicao: '', ano_publicacao: '',
+        origem: 'dominio_publico', modelo_acesso: 'gratuito', territorio_cultural: '',
+        disponivel_de: '', disponivel_ate: ''
+      });
       setCapa(null);
       setPdf(null);
+      setPdfAmostra(null);
       alert('Livro adicionado com sucesso!');
     } catch (error) {
       console.error(error);
@@ -130,6 +142,35 @@ function AdminLivros() {
         <input type="text" name="edicao" placeholder="Edição (Ex: 1ª Edição)" value={formData.edicao} onChange={handleChange} />
         <input type="number" name="ano_publicacao" placeholder="Ano de Publicação (Ex: 2026)" value={formData.ano_publicacao} onChange={handleChange} />
 
+        <select name="origem" value={formData.origem} onChange={handleChange} required>
+          <option value="dominio_publico">Domínio Público</option>
+          <option value="autor_independente">Autor Independente</option>
+          <option value="licenciado">Acervo Licenciado</option>
+        </select>
+
+        <select name="modelo_acesso" value={formData.modelo_acesso} onChange={handleChange} required>
+          <option value="gratuito">Leitura gratuita</option>
+          <option value="assinante">Incluído na assinatura</option>
+          <option value="amostra">Somente amostra</option>
+        </select>
+
+        <input
+          type="text"
+          name="territorio_cultural"
+          placeholder="Território cultural (Ex: Belém/PA)"
+          value={formData.territorio_cultural}
+          onChange={handleChange}
+        />
+
+        <label>
+          Disponível a partir de
+          <input type="datetime-local" name="disponivel_de" value={formData.disponivel_de} onChange={handleChange} />
+        </label>
+        <label>
+          Disponível até
+          <input type="datetime-local" name="disponivel_ate" value={formData.disponivel_ate} onChange={handleChange} />
+        </label>
+
         <div className="campo-arquivo">
           <label htmlFor="admin-livro-capa">Capa (Imagem):</label>
           <input id="admin-livro-capa" type="file" name="capa" onChange={handleFileChange} accept="image/*" />
@@ -137,6 +178,10 @@ function AdminLivros() {
         <div className="campo-arquivo">
           <label htmlFor="admin-livro-pdf">Arquivo (PDF):</label>
           <input id="admin-livro-pdf" type="file" name="pdf" onChange={handleFileChange} accept="application/pdf" />
+        </div>
+        <div className="campo-arquivo">
+          <label htmlFor="admin-livro-pdf-amostra">Amostra pública (PDF):</label>
+          <input id="admin-livro-pdf-amostra" type="file" name="pdf_amostra" onChange={handleFileChange} accept="application/pdf" />
         </div>
 
         <button type="submit" className="col-full">Adicionar</button>
@@ -152,6 +197,8 @@ function AdminLivros() {
                 <th>Título</th>
                 <th>Autor</th>
                 <th>Categoria</th>
+                <th>Origem</th>
+                <th>Acesso</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -161,6 +208,8 @@ function AdminLivros() {
                   <td>{livro.titulo}</td>
                   <td>{livro.autor}</td>
                   <td>{livro.categoria_nome || 'N/A'}</td>
+                  <td>{livro.origem_label}</td>
+                  <td>{livro.modelo_acesso_label}</td>
                   <td>
                     <button className="admin-table-acao" aria-label={`Excluir ${livro.titulo}`}>
                       <i className="fa-solid fa-trash"></i>

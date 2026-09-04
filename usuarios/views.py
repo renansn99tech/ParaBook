@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from .models import Usuario, Notificacao
 from comunidades.models import Comunidade
 from biblioteca.models import Livro
-from perfis.models import Perfil # Importa a classe Perfil das models do app perfis
+from perfis.models import FRASE_STATUS_PADRAO_LEITOR, Perfil
 from .forms import RegistroUsuarioForm  # <-- Importa o novo formulário customizado
 
 
@@ -78,7 +78,7 @@ def register(request):
             auth_user.first_name = nome_completo
             auth_user.save()
             
-            novo_perfil = Perfil.objects.create(usuario=auth_user, descricao_perfil="Olá! Sou um novo leitor do ParaBook.", historico="Nenhum livro lido ainda.")
+            novo_perfil = Perfil.objects.create(usuario=auth_user, descricao_perfil=FRASE_STATUS_PADRAO_LEITOR, historico="Nenhum livro lido ainda.")
             
             # ATUALIZAÇÃO AQUI: Registrando o aceite e o timestamp exato da criação
             Usuario.objects.create(

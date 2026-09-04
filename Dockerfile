@@ -1,28 +1,53 @@
-FROM python:3.11-slim
+# syntax=docker/dockerfile:1.7
+ARG PYTHON_VERSION=3.14
 
-# Evita que o Python grave arquivos .pyc e força que os logs não passem por buffer
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+FROM python:${PYTHON_VERSION}-slim AS builder
 
-# Define o diretório de trabalho no container
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    VIRTUAL_ENV=/opt/venv
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc libpq-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && python -m venv "$VIRTUAL_ENV"
+
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+WORKDIR /app
+COPY requirements.txt ./
+RUN pip install --upgrade pip \
+    && pip install -r requirements.txt
+
+FROM python:${PYTHON_VERSION}-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    PORT=8000
+
 WORKDIR /app
 
-# Instala dependências do sistema necessárias para o psycopg2
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        gcc \
-        libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends libpq5 curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && addgroup --system parabook \
+    && adduser --system --ingroup parabook --home /app parabook
 
-# Copia e instala as dependências do Python
-COPY requirements.txt /app/
-RUN pip install --upgrade pip && pip install -r requirements.txt
+COPY --from=builder /opt/venv /opt/venv
+COPY --chown=parabook:parabook . .
 
-# Copia o código da aplicação
-COPY . /app/
+RUN mkdir -p /app/staticfiles /app/media \
+    && chown -R parabook:parabook /app/staticfiles /app/media \
+    && chmod +x /app/scripts/start.sh
 
-# Expõe a porta
+USER parabook
+
 EXPOSE 8000
 
-# Executa as migrações e inicia o servidor (Gunicorn)
-CMD sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl --fail --silent "http://127.0.0.1:${PORT}/health/" || exit 1
+
+# O script permite migrations no plano gratuito do Render e as desativa quando
+# existir uma etapa de release dedicada.
+CMD ["sh", "/app/scripts/start.sh"]

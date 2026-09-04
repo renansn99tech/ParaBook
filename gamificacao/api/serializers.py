@@ -1,21 +1,34 @@
 from rest_framework import serializers
 
 from gamificacao.models import Conquista, ProgressoLeitor
+from usuarios.identidade_publica import identidade_publica
 
 
 class ProgressoLeitorSerializer(serializers.ModelSerializer):
     """Linha do ranking: identifica o leitor sem expor dados sensíveis do User."""
 
     user_id = serializers.IntegerField(source='user.id', read_only=True)
-    username = serializers.CharField(source='user.username', read_only=True)
+    username = serializers.SerializerMethodField()
     nome_exibicao = serializers.SerializerMethodField()
+    perfil_clicavel = serializers.SerializerMethodField()
 
     class Meta:
         model = ProgressoLeitor
-        fields = ['user_id', 'username', 'nome_exibicao', 'pontos_xp', 'nivel', 'dias_seguidos']
+        fields = ['user_id', 'username', 'nome_exibicao', 'perfil_clicavel', 'pontos_xp', 'nivel', 'dias_seguidos']
+
+    def get_username(self, obj):
+        return self._identidade(obj)['username']
 
     def get_nome_exibicao(self, obj):
-        return obj.user.get_full_name() or obj.user.username
+        return self._identidade(obj)['nome_exibicao']
+
+    def get_perfil_clicavel(self, obj):
+        return self._identidade(obj)['perfil_clicavel']
+
+    def _identidade(self, obj):
+        request = self.context.get('request')
+        viewer = request.user if request else None
+        return identidade_publica(obj.user, viewer)
 
 
 class ConquistaSerializer(serializers.ModelSerializer):

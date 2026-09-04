@@ -30,6 +30,9 @@ def stripe_webhook(request):
     Endpoint isento de CSRF que recebe eventos assíncronos enviados pela Stripe
     e registra notificações para o usuário.
     """
+    if not settings.PAYMENTS_ENABLED:
+        return HttpResponse(status=503)
+
     stripe_key = getattr(settings, 'STRIPE_SECRET_KEY', None) or os.getenv('STRIPE_SECRET_KEY')
     webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', None) or os.getenv('STRIPE_WEBHOOK_SECRET')
 

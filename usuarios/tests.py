@@ -5,7 +5,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.test import TestCase
 
-from usuarios.models import Usuario
+from usuarios.models import Usuario, SessaoDispositivo, AutenticacaoDoisFatores
+from usuarios.security import _codigo_totp, criptografar_segredo
 from usuarios.api.serializers import RegisterSerializer
 from perfis.api.serializers import PerfilSerializer
 from perfis.models import Perfil
@@ -88,6 +89,7 @@ class CookieAuthenticationTests(TestCase):
         self.assertNotIn('refresh', response.data)
         self.assertTrue(response.cookies[self.ACCESS]['httponly'])
         self.assertTrue(response.cookies[self.REFRESH]['httponly'])
+        self.assertEqual(SessaoDispositivo.objects.filter(usuario=self.user).count(), 1)
 
         sem_csrf_mutavel = self.client.post(
             '/api/v1/auth/alterar-senha/',
@@ -95,6 +97,107 @@ class CookieAuthenticationTests(TestCase):
             format='json',
         )
         self.assertEqual(sem_csrf_mutavel.status_code, 403)
+
+    def test_login_mobile_retorna_tokens_sem_exigir_csrf(self):
+        mobile = APIClient(enforce_csrf_checks=True)
+        response = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.username, 'password': self.SENHA},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('access', response.data)
+        self.assertIn('refresh', response.data)
+        self.assertNotIn(self.ACCESS, response.cookies)
+        self.assertNotIn(self.REFRESH, response.cookies)
+        self.assertEqual(SessaoDispositivo.objects.filter(usuario=self.user).count(), 1)
+
+    def test_login_mobile_invalido_nao_retorna_usuario_ou_tokens(self):
+        mobile = APIClient(enforce_csrf_checks=True)
+        response = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.username, 'password': 'SenhaIncorreta123!'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertNotIn('access', response.data)
+        self.assertNotIn('refresh', response.data)
+        self.assertNotIn('user', response.data)
+
+    def test_login_mobile_respeita_segundo_fator(self):
+        segredo = 'JBSWY3DPEHPK3PXP'
+        AutenticacaoDoisFatores.objects.create(
+            usuario=self.user,
+            segredo_criptografado=criptografar_segredo(segredo),
+            habilitada=True,
+        )
+        mobile = APIClient(enforce_csrf_checks=True)
+
+        sem_codigo = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.username, 'password': self.SENHA},
+            format='json',
+        )
+        self.assertEqual(sem_codigo.status_code, 202)
+        self.assertTrue(sem_codigo.data['requires_2fa'])
+
+        com_codigo = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {
+                'username': self.user.username,
+                'password': self.SENHA,
+                'codigo_2fa': _codigo_totp(segredo),
+            },
+            format='json',
+        )
+        self.assertEqual(com_codigo.status_code, 200)
+        self.assertIn('access', com_codigo.data)
+        self.assertIn('refresh', com_codigo.data)
+
+    def test_refresh_e_logout_mobile_rotacionam_e_invalidam_refresh(self):
+        mobile = APIClient(enforce_csrf_checks=True)
+        login = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.username, 'password': self.SENHA},
+            format='json',
+        )
+        refresh_antigo = login.data['refresh']
+        access_antigo = login.data['access']
+
+        renovacao = mobile.post(
+            '/api/v1/auth/mobile-refresh/',
+            {'refresh': refresh_antigo},
+            format='json',
+        )
+        self.assertEqual(renovacao.status_code, 200)
+        self.assertIn('access', renovacao.data)
+        self.assertIn('refresh', renovacao.data)
+        self.assertNotEqual(renovacao.data['refresh'], refresh_antigo)
+
+        reuso = mobile.post(
+            '/api/v1/auth/mobile-refresh/',
+            {'refresh': refresh_antigo},
+            format='json',
+        )
+        self.assertEqual(reuso.status_code, 401)
+
+        logout = mobile.post(
+            '/api/v1/auth/mobile-logout/',
+            {'refresh': renovacao.data['refresh']},
+            format='json',
+        )
+        self.assertEqual(logout.status_code, 200)
+        mobile.credentials(HTTP_AUTHORIZATION=f'Bearer {access_antigo}')
+        self.assertEqual(mobile.get('/api/v1/auth/profile/').status_code, 401)
+        mobile.credentials()
+        depois_logout = mobile.post(
+            '/api/v1/auth/mobile-refresh/',
+            {'refresh': renovacao.data['refresh']},
+            format='json',
+        )
+        self.assertEqual(depois_logout.status_code, 401)
 
     # --- acesso a rota protegida ------------------------------------------
 
@@ -174,6 +277,47 @@ class CookieAuthenticationTests(TestCase):
         renova = self.client.post('/api/v1/auth/refresh/', HTTP_X_CSRFTOKEN=self._csrf())
         self.assertEqual(renova.status_code, 401)
 
+    def test_usuario_consegue_entrar_novamente_apos_logout(self):
+        primeiro_login = self._login()
+        self.assertEqual(primeiro_login.status_code, 200)
+
+        logout = self.client.post(
+            '/api/v1/auth/logout/',
+            HTTP_X_CSRFTOKEN=self._csrf(),
+        )
+        self.assertEqual(logout.status_code, 200)
+
+        segundo_login = self._login()
+        self.assertEqual(segundo_login.status_code, 200)
+        self.assertTrue(segundo_login.cookies[self.ACCESS].value)
+        self.assertEqual(
+            SessaoDispositivo.objects.filter(
+                usuario=self.user,
+                revogada_em__isnull=True,
+            ).count(),
+            1,
+        )
+
+        perfil = self.client.get('/api/v1/perfis/meu-perfil/')
+        self.assertEqual(perfil.status_code, 200)
+        self.assertIn('exibir_idade', perfil.data)
+
+    def test_sessao_revogada_invalida_access_imediatamente(self):
+        self._login()
+        access_antigo = self.client.cookies[self.ACCESS].value
+        sessao = self.client.get('/api/v1/auth/sessoes/').data[0]
+
+        resposta = self.client.delete(
+            '/api/v1/auth/sessoes/',
+            {'sessao_id': sessao['id']},
+            format='json',
+            HTTP_X_CSRFTOKEN=self._csrf(),
+        )
+        self.assertEqual(resposta.status_code, 200)
+
+        self.client.cookies[self.ACCESS] = access_antigo
+        self.assertEqual(self.client.get('/api/v1/auth/profile/').status_code, 401)
+
 
 class AceiteTermosVersionadoTests(TestCase):
     def test_cadastro_api_rejeita_aceite_ausente(self):
@@ -192,6 +336,7 @@ class AceiteTermosVersionadoTests(TestCase):
             'username': 'com-aceite',
             'email': 'com-aceite@example.com',
             'password': 'SenhaForte123!',
+            'password_confirm': 'SenhaForte123!',
             'termos_aceitos': True,
         })
         serializer.is_valid(raise_exception=True)
@@ -201,6 +346,18 @@ class AceiteTermosVersionadoTests(TestCase):
             user.perfil_customizado.versao_termos_aceita,
             settings.TERMS_VERSION,
         )
+
+    def test_cadastro_rejeita_confirmacao_de_senha_divergente(self):
+        serializer = RegisterSerializer(data={
+            'username': 'senha-diferente',
+            'email': 'senha-diferente@example.com',
+            'password': 'SenhaForte123!',
+            'password_confirm': 'OutraSenha456!',
+            'termos_aceitos': True,
+        })
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('password_confirm', serializer.errors)
 
     def test_novo_aceite_substitui_versao_antiga(self):
         user = User.objects.create_user(username='aceite-antigo', password='x')
@@ -235,3 +392,110 @@ class AceiteTermosVersionadoTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['versao_termos'], settings.TERMS_VERSION)
         self.assertEqual(response.data['jurisdicao'], 'Brasil')
+
+
+class RecursosContaTests(TestCase):
+    SENHA = 'SenhaForte123!'
+
+    def setUp(self):
+        cache.clear()
+        self.user = User.objects.create_user(
+            username='conta-segura', email='segura@example.com', password=self.SENHA,
+        )
+        self.client = APIClient()
+
+    def test_login_com_2fa_exige_e_valida_codigo_totp(self):
+        segredo = 'JBSWY3DPEHPK3PXP'
+        AutenticacaoDoisFatores.objects.create(
+            usuario=self.user,
+            segredo_criptografado=criptografar_segredo(segredo),
+            habilitada=True,
+        )
+        sem_codigo = self.client.post(
+            '/api/v1/auth/login/',
+            {'username': self.user.username, 'password': self.SENHA},
+            format='json',
+        )
+        self.assertEqual(sem_codigo.status_code, 202)
+        self.assertTrue(sem_codigo.data['requires_2fa'])
+
+        com_codigo = self.client.post(
+            '/api/v1/auth/login/',
+            {'username': self.user.username, 'password': self.SENHA, 'codigo_2fa': _codigo_totp(segredo)},
+            format='json',
+        )
+        self.assertEqual(com_codigo.status_code, 200)
+        self.assertIn(settings.JWT_ACCESS_COOKIE_NAME, com_codigo.cookies)
+
+    def test_exportacao_lgpd_nao_expoe_senha_ou_tokens(self):
+        self.client.force_authenticate(self.user)
+        resposta = self.client.get('/api/v1/auth/exportar-dados/')
+        conteudo = resposta.content.decode('utf-8')
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn('attachment;', resposta['Content-Disposition'])
+        self.assertNotIn('password', conteudo.lower())
+        self.assertNotIn('refresh', conteudo.lower())
+
+
+class OnboardingPerfilPendenteTests(TestCase):
+    """Cobre a regra do modal 'Termine seu cadastro': no máximo duas exibições
+    (uma logo após o cadastro, outra depois de 1 semana) e supressão assim que
+    o usuário personaliza o perfil."""
+
+    def _criar(self, **perfil_kwargs):
+        from perfis.models import FRASE_STATUS_PADRAO_LEITOR
+
+        user = User.objects.create_user(username='novato', password='x')
+        defaults = {'usuario': user, 'descricao_perfil': FRASE_STATUS_PADRAO_LEITOR}
+        defaults.update(perfil_kwargs)
+        perfil = Perfil.objects.create(**defaults)
+        usuario = Usuario.objects.create(
+            user_auth=user, nome=user.username, perfil=perfil,
+        )
+        return user, usuario
+
+    def test_primeira_exibicao_logo_apos_cadastro(self):
+        _, usuario = self._criar()
+        self.assertTrue(usuario.onboarding_perfil_pendente())
+
+    def test_status_padrao_de_autor_ainda_e_considerado_nao_personalizado(self):
+        from perfis.models import FRASE_STATUS_PADRAO_AUTOR
+
+        _, usuario = self._criar(descricao_perfil=FRASE_STATUS_PADRAO_AUTOR)
+        usuario.tipo = 'autor'
+        usuario.save(update_fields=['tipo'])
+
+        self.assertTrue(usuario.onboarding_perfil_pendente())
+
+    def test_nao_reexibe_no_mesmo_dia_apos_dispensar(self):
+        _, usuario = self._criar()
+        usuario.onboarding_lembretes = 1
+        usuario.save(update_fields=['onboarding_lembretes'])
+        # Recém-cadastrado: ainda não passou 1 semana.
+        self.assertFalse(usuario.onboarding_perfil_pendente())
+
+    def test_reexibe_uma_semana_depois(self):
+        from django.utils import timezone
+        user, usuario = self._criar()
+        usuario.onboarding_lembretes = 1
+        usuario.save(update_fields=['onboarding_lembretes'])
+        User.objects.filter(pk=user.pk).update(
+            date_joined=timezone.now() - timedelta(days=8)
+        )
+        usuario.user_auth.refresh_from_db()
+        self.assertTrue(usuario.onboarding_perfil_pendente())
+
+    def test_nunca_exibe_uma_terceira_vez(self):
+        from django.utils import timezone
+        user, usuario = self._criar()
+        usuario.onboarding_lembretes = 2
+        usuario.save(update_fields=['onboarding_lembretes'])
+        User.objects.filter(pk=user.pk).update(
+            date_joined=timezone.now() - timedelta(days=30)
+        )
+        usuario.user_auth.refresh_from_db()
+        self.assertFalse(usuario.onboarding_perfil_pendente())
+
+    def test_perfil_personalizado_suprime_lembrete(self):
+        _, usuario = self._criar(localizacao='Belém, PA')
+        self.assertFalse(usuario.onboarding_perfil_pendente())

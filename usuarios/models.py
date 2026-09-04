@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from perfis.models import Perfil
+import uuid
 
 class Usuario(models.Model):
     TIPO_USUARIO_CHOICES = [
@@ -22,6 +23,9 @@ class Usuario(models.Model):
         default='leitor'
     )
     notificacao_autor = models.BooleanField(default=False)
+    notificacoes_email = models.BooleanField(default=True)
+    notificacoes_comunidades = models.BooleanField(default=True)
+    notificacoes_assinaturas = models.BooleanField(default=True)
     data_nascimento = models.CharField(max_length=45, blank=True, null=True)
     telefone = models.CharField(max_length=45, blank=True, null=True)
     foto = models.CharField(max_length=45, blank=True, null=True)
@@ -32,6 +36,12 @@ class Usuario(models.Model):
     termos_aceitos = models.BooleanField(default=False)
     data_aceite_termos = models.DateTimeField(null=True, blank=True)
     versao_termos_aceita = models.CharField(max_length=30, blank=True, default='')
+
+    # Quantas vezes o lembrete "Termine seu cadastro" já foi exibido/dispensado.
+    # Regra: 0 -> mostra logo após o cadastro; 1 -> mostra de novo só depois de
+    # 1 semana; >= 2 -> nunca mais. Personalizar o perfil suprime o lembrete
+    # antes de chegar ao teto (ver onboarding_perfil_pendente).
+    onboarding_lembretes = models.PositiveSmallIntegerField(default=0)
 
     # Novo campo CPF para atender a LGPD, com validação de formato
     cpf = models.CharField(max_length=14, blank=True, null=True, unique=True)
@@ -45,6 +55,44 @@ class Usuario(models.Model):
         blank=True, 
         related_name='usuarios_vinculados' 
     )
+    def onboarding_perfil_pendente(self):
+        """Decide se o modal "Termine seu cadastro" deve aparecer para este usuário.
+
+        Considera o perfil já personalizado (e portanto o lembrete resolvido) se
+        a pessoa mexeu em qualquer um dos três campos: nome de exibição,
+        localização ou frase de status. Caso contrário, respeita o teto de duas
+        exibições: a primeira logo após o cadastro e a segunda só depois de uma
+        semana do cadastro.
+        """
+        from datetime import timedelta
+        from django.utils import timezone
+        from perfis.models import FRASE_STATUS_PADRAO_AUTOR, FRASE_STATUS_PADRAO_LEITOR
+
+        user_auth = self.user_auth
+        if user_auth is None:
+            return False
+
+        perfil = getattr(user_auth, 'perfil', None)
+        nome = (self.nome or '').strip()
+        localizacao = (getattr(perfil, 'localizacao', '') or '').strip()
+        frase = (getattr(perfil, 'descricao_perfil', '') or '').strip()
+
+        personalizou = (
+            (nome and nome != user_auth.username)
+            or bool(localizacao)
+            or (frase and frase not in {FRASE_STATUS_PADRAO_LEITOR, FRASE_STATUS_PADRAO_AUTOR})
+        )
+        if personalizou:
+            return False
+
+        lembretes = self.onboarding_lembretes or 0
+        if lembretes == 0:
+            return True
+        if lembretes == 1:
+            entrou_em = user_auth.date_joined
+            return bool(entrou_em and timezone.now() >= entrou_em + timedelta(days=7))
+        return False
+
     @property
     def is_premium(self):
         """Retorna True se o usuário possui uma assinatura ativa de plano pago."""
@@ -110,3 +158,36 @@ class AuditoriaAcao(models.Model):
     class Meta:
         db_table = 'auditoria_acoes'
         ordering = ['-criado_em']
+
+
+class SessaoDispositivo(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sessoes_dispositivo')
+    refresh_jti = models.CharField(max_length=255, unique=True)
+    user_agent = models.CharField(max_length=255, blank=True)
+    ip_hash = models.CharField(max_length=64, blank=True)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    ultima_atividade_em = models.DateTimeField(auto_now=True)
+    expira_em = models.DateTimeField()
+    revogada_em = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'sessoes_dispositivo'
+        ordering = ['-ultima_atividade_em']
+        indexes = [models.Index(fields=['usuario', 'revogada_em'])]
+
+    @property
+    def ativa(self):
+        from django.utils import timezone
+        return self.revogada_em is None and self.expira_em > timezone.now()
+
+
+class AutenticacaoDoisFatores(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='autenticacao_2fa')
+    segredo_criptografado = models.TextField()
+    habilitada = models.BooleanField(default=False)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    atualizada_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'autenticacao_dois_fatores'

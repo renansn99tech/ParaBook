@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import swal, { BOTAO } from '../../services/swal';
 import api from '../../services/api';
+import CriadorDesconhecido, { EXPLICACAO_CRIADOR_DESCONHECIDO } from '../CriadorDesconhecido';
 
 // Espelha MIN_DENUNCIAS_PARA_EXCLUSAO da API: aqui é só para o aviso ao admin;
 // quem barra de fato a exclusão é o servidor.
@@ -88,7 +89,7 @@ function AdminComunidades() {
       icon: atingiuMinimo ? 'warning' : 'info',
       title: atingiuMinimo ? 'Excluir comunidade denunciada?' : 'Denúncias insuficientes',
       html: `
-        <p style="margin-bottom:14px"><strong>${comunidade.nome}</strong> — criada por @${comunidade.criador_nome || 'desconhecido'}</p>
+        <p style="margin-bottom:14px"><strong>${comunidade.nome}</strong> — criado por ${comunidade.criador_nome ? `@${comunidade.criador_nome}` : `<span class="criador-desconhecido" tabindex="0" data-tooltip="${EXPLICACAO_CRIADOR_DESCONHECIDO}">Desconhecido</span>`}</p>
         <p style="margin-bottom:6px">Denúncias registradas:
           <strong style="color:${atingiuMinimo ? '#fca5a5' : '#fcd34d'}">${denuncias}</strong> de ${MIN_DENUNCIAS_EXCLUSAO}
         </p>
@@ -197,7 +198,7 @@ function AdminComunidades() {
               {filtradas.map(comum => (
                 <tr key={comum.id}>
                   <td>{comum.nome}</td>
-                  <td>{comum.criador_nome || 'Sistema'}</td>
+                  <td>{comum.criada_por_sistema ? 'Sistema do ParaBook' : comum.criador_nome ? `@${comum.criador_nome}` : <CriadorDesconhecido />}</td>
                   <td>{comum.total_membros || 0}</td>
                   <td>
                     {comum.criada_por_sistema ? (

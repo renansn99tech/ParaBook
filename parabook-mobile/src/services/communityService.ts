@@ -1,3 +1,4 @@
+import { getCollection } from './collection';
 import { api, resolveDjangoUrl } from './api';
 
 export interface Community {
@@ -108,13 +109,13 @@ const normalizeReply = (raw: DjangoCommunityReply): CommunityReply => ({
 export const communityService = {
   getCommunities: async (): Promise<Community[]> => {
     const endpoint = '/comunidades/comunidades/';
-    const response = await api.get(endpoint);
+    const response = await getCollection(endpoint);
     return parseCollection<DjangoCommunity>(response.data, endpoint).map(normalizeCommunity);
   },
 
   getMyCommunities: async (): Promise<Community[]> => {
     const endpoint = '/comunidades/comunidades/minhas/';
-    const response = await api.get(endpoint);
+    const response = await getCollection(endpoint);
     return parseCollection<DjangoCommunity>(response.data, endpoint).map(normalizeCommunity);
   },
 
@@ -138,9 +139,7 @@ export const communityService = {
 
   getPosts: async (communityId: string | number): Promise<CommunityPost[]> => {
     const endpoint = '/comunidades/postagens/';
-    const response = await api.get(endpoint, {
-      params: { comunidade: communityId },
-    });
+    const response = await getCollection(endpoint, { comunidade: communityId });
     return parseCollection<DjangoCommunityPost>(response.data, endpoint).map(normalizePost);
   },
 
@@ -163,9 +162,7 @@ export const communityService = {
 
   getReplies: async (postId: string | number): Promise<CommunityReply[]> => {
     const endpoint = '/comunidades/respostas/';
-    const response = await api.get(endpoint, {
-      params: { postagem: postId },
-    });
+    const response = await getCollection(endpoint, { postagem: postId });
     return parseCollection<DjangoCommunityReply>(response.data, endpoint).map(normalizeReply);
   },
 

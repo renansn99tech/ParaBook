@@ -145,6 +145,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
             <TouchableOpacity
               style={styles.bookCard}
               activeOpacity={0.7}
+              disabled={Boolean(item.book.publicationStatus && item.book.publicationStatus !== 'publicado')}
               onPress={() => onOpenBook(String(item.book.id), item.book.title)}
             >
               <BookCover uri={item.book.cover_url} width={52} height={76} />
@@ -157,6 +158,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
                   {item.book.author}
                 </Text>
 
+                {item.book.publicationStatus && item.book.publicationStatus !== 'publicado' && <Text style={styles.bookAuthor}>Obra indisponível</Text>}
                 {item.status === 'lendo' && (
                   <View style={styles.progressSection}>
                     <View style={styles.progressBarBg}>

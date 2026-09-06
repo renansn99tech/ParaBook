@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  AppState,
   Alert,
   SafeAreaView,
   StyleSheet,
@@ -14,7 +15,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { bookService } from '../services/bookService';
-import { getAccessToken } from '../services/api';
+import { api, getAccessToken } from '../services/api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Reader'>;
 
@@ -26,7 +27,7 @@ type ReaderMessage = {
   message?: string;
 };
 
-const buildReaderHtml = (pdfUrl: string, accessToken: string, title: string) => `
+const buildReaderHtml = (pdfData: number[], initialPage: number) => `
 <!doctype html>
 <html>
 <head>
@@ -68,16 +69,15 @@ const buildReaderHtml = (pdfUrl: string, accessToken: string, title: string) => 
   </style>
 </head>
 <body>
-  <div id="status">Carregando ${title}...</div>
+  <div id="status">Carregando livro...</div>
   <main id="reader" aria-label="Leitor digital">
     <canvas id="pageCanvas"></canvas>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
-    const pdfUrl = ${JSON.stringify(pdfUrl)};
-    const accessToken = ${JSON.stringify(accessToken)};
+    const pdfBytes = ${JSON.stringify(pdfData)};
     let pdfDoc = null;
-    let pageNumber = 1;
+    let pageNumber = ${initialPage};
     let totalPages = 0;
     let zoom = 1;
     let rendering = false;
@@ -145,16 +145,7 @@ const buildReaderHtml = (pdfUrl: string, accessToken: string, title: string) => 
     async function loadPdf() {
       try {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        const response = await fetch(pdfUrl, {
-          headers: { Authorization: 'Bearer ' + accessToken }
-        });
-
-        if (!response.ok) {
-          throw new Error('HTTP ' + response.status);
-        }
-
-        const data = await response.arrayBuffer();
-        pdfDoc = await pdfjsLib.getDocument({ data }).promise;
+        pdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(pdfBytes), isEvalSupported: false }).promise;
         totalPages = pdfDoc.numPages || 1;
         send({ type: 'loaded', page: pageNumber, total: totalPages, progress: 0 });
         renderPage(pageNumber);
@@ -196,7 +187,8 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
   const webViewRef = useRef<WebView>(null);
   const shelfItemIdRef = useRef<string | number | null>(null);
   const currentAccessToken = getAccessToken();
-  const [readerAccessToken, setReaderAccessToken] = useState<string | null>(currentAccessToken);
+  const [pdfData, setPdfData] = useState<number[] | null>(null);
+  const [initialPage, setInitialPage] = useState(1);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -215,41 +207,44 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
 
     let active = true;
     setPreparingReader(true);
-    bookService.updateBookStatus(bookId, 'lendo')
-      .then((item) => {
-        if (!active) return;
-        shelfItemIdRef.current = item.id;
-        const nextToken = getAccessToken();
-        setReaderAccessToken(nextToken);
-        if (!nextToken) {
-          setErrorMessage('Sua sessao expirou. Entre novamente para abrir este livro.');
-        }
-      })
-      .catch(() => {
-        if (!active) return;
-        const nextToken = getAccessToken();
-        setReaderAccessToken(nextToken);
-        if (nextToken) {
-          Alert.alert('Modo leitura', 'Nao foi possivel sincronizar o status agora.');
-        } else {
-          setErrorMessage('Sua sessao expirou. Entre novamente para abrir este livro.');
-        }
-      })
-      .finally(() => {
+    setPdfData(null);
+    setErrorMessage(null);
+    (async () => {
+      // Toda abertura passa pela autorização real; o JWT fica no cliente nativo.
+      const response = await api.get(`/biblioteca/livros/${bookId}/ler_pdf/`, { responseType: 'arraybuffer' });
+      if (!active) return;
+      try {
+        let item = await bookService.getShelfItemByBook(bookId);
+        if (!item || item.status === 'quero_ler') item = await bookService.updateBookStatus(bookId, 'lendo');
         if (active) {
-          setPreparingReader(false);
+          shelfItemIdRef.current = item.id;
+          setInitialPage(Math.max(1, item.currentPage));
         }
-      });
+      } catch {
+        if (active) Alert.alert('Estante não sincronizada', 'A leitura está autorizada. Confira sua estante antes de repetir a alteração.');
+      }
+      if (active) { setPdfData(Array.from(new Uint8Array(response.data))); setLoading(false); }
+    })().catch(() => {
+      if (active) { setLoading(false); setErrorMessage('Livro indisponível ou conexão interrompida. Tente novamente para conferir o acesso.'); }
+    }).finally(() => { if (active) setPreparingReader(false); });
 
     return () => {
       active = false;
     };
-  }, [currentAccessToken, bookId, navigation]);
+  }, [bookId, navigation, readerVersion]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      setPdfData(null);
+      if (state === 'active') setReaderVersion((version) => version + 1);
+    });
+    return () => subscription.remove();
+  }, []);
 
   const readerHtml = useMemo(() => {
-    if (!readerAccessToken) return '';
-    return buildReaderHtml(bookService.getBookPdfUrl(bookId), readerAccessToken, title || 'Livro');
-  }, [readerAccessToken, bookId, title, readerVersion]);
+    if (!pdfData) return '';
+    return buildReaderHtml(pdfData, initialPage);
+  }, [pdfData, initialPage]);
 
   const retryReader = () => {
     setLoading(true);
@@ -337,14 +332,18 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         )}
-        {!errorMessage && !preparingReader ? (
+        {!errorMessage && !preparingReader && pdfData ? (
           <WebView
             key={readerVersion}
             ref={webViewRef}
             source={{ html: readerHtml }}
             originWhitelist={['*']}
             javaScriptEnabled
-            domStorageEnabled
+            cacheEnabled={false}
+            incognito
+            domStorageEnabled={false}
+            allowFileAccess={false}
+            onShouldStartLoadWithRequest={(request) => request.url === 'about:blank'}
             onMessage={handleMessage}
             onError={() => {
               setLoading(false);

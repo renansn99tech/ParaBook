@@ -1,3 +1,4 @@
+import { getCollection } from './collection';
 import { api, resolveDjangoUrl } from './api';
 
 export type LibraryStatus = 'quero_ler' | 'lendo' | 'lido';
@@ -13,8 +14,8 @@ export interface Book {
   year?: number;
   isbn?: string;
   pdfAvailable: boolean;
-  origin?: 'dominio_publico' | 'autor_independente';
-  publicationStatus?: 'pendente' | 'publicado' | 'rejeitado' | 'removido';
+  origin?: 'dominio_publico' | 'autor_independente' | 'licenciado';
+  publicationStatus?: 'pendente' | 'publicado' | 'rejeitado' | 'removido' | 'suspenso' | 'retirado';
 }
 
 export interface UserBookItem {
@@ -53,8 +54,8 @@ type DjangoBook = {
   ano_publicacao?: number | null;
   isbn?: string | null;
   pdf_disponivel?: boolean;
-  origem?: 'dominio_publico' | 'autor_independente';
-  status?: 'pendente' | 'publicado' | 'rejeitado' | 'removido';
+  origem?: 'dominio_publico' | 'autor_independente' | 'licenciado';
+  status?: 'pendente' | 'publicado' | 'rejeitado' | 'removido' | 'suspenso' | 'retirado';
 };
 
 type DjangoShelfItem = {
@@ -64,6 +65,7 @@ type DjangoShelfItem = {
   livro_autor: string;
   livro_capa?: string | null;
   livro_paginas?: number | null;
+  livro_status?: Book['publicationStatus'];
   pagina_atual?: number;
   status: LibraryStatus;
   favorito?: boolean;
@@ -105,6 +107,7 @@ const normalizeShelfItem = (raw: DjangoShelfItem): UserBookItem => {
     capa_url: raw.livro_capa,
     paginas: raw.livro_paginas,
     pdf_disponivel: false,
+    status: raw.livro_status,
   });
 
   const currentPage = raw.pagina_atual || 0;
@@ -133,9 +136,7 @@ export const getStatusLabel = (status: LibraryStatus) => {
 export const bookService = {
   getBooks: async (search?: string): Promise<Book[]> => {
     const endpoint = '/biblioteca/livros/';
-    const response = await api.get(endpoint, {
-      params: search ? { search } : {},
-    });
+    const response = await getCollection(endpoint, search ? { search } : {});
     return parseCollection<DjangoBook>(response.data, endpoint).map(normalizeBook);
   },
 
@@ -150,7 +151,7 @@ export const bookService = {
 
   getBookReviews: async (id: string | number): Promise<BookReview[]> => {
     const endpoint = `/biblioteca/livros/${id}/resenhas/`;
-    const response = await api.get(endpoint);
+    const response = await getCollection(endpoint);
     return parseCollection<Record<string, unknown>>(response.data, endpoint).map((raw) => ({
       id: raw.id as string | number,
       username: String(raw.usuario_nome || 'Leitor'),
@@ -163,7 +164,7 @@ export const bookService = {
 
   getCategories: async (): Promise<Category[]> => {
     const endpoint = '/biblioteca/categorias/';
-    const response = await api.get(endpoint);
+    const response = await getCollection(endpoint);
     return parseCollection<{ id: string | number; nome: string }>(response.data, endpoint).map((category) => ({
       id: category.id,
       name: category.nome,
@@ -172,17 +173,13 @@ export const bookService = {
 
   getUserLibrary: async (status?: LibraryStatus): Promise<UserBookItem[]> => {
     const endpoint = '/biblioteca/estante/';
-    const response = await api.get(endpoint, {
-      params: status ? { status } : {},
-    });
+    const response = await getCollection(endpoint, status ? { status } : {});
     return parseCollection<DjangoShelfItem>(response.data, endpoint).map(normalizeShelfItem);
   },
 
   getShelfItemByBook: async (bookId: string | number): Promise<UserBookItem | null> => {
     const endpoint = '/biblioteca/estante/';
-    const response = await api.get(endpoint, {
-      params: { livro: bookId },
-    });
+    const response = await getCollection(endpoint, { livro: bookId });
     const items = parseCollection<DjangoShelfItem>(response.data, endpoint).map(normalizeShelfItem);
     return items[0] || null;
   },

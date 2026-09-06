@@ -12,7 +12,7 @@ test('CTA de autoria nunca envia visitante ou leitor direto para publicação', 
 test('CTA de autoria acompanha análise e libera somente papéis autorizados', () => {
   assert.equal(obterCtaAutoria({ tipo: 'aguardando_aprovacao' }).to, '/perfil');
   assert.equal(obterCtaAutoria({ tipo: 'autor' }).to, '/publicar');
-  assert.equal(obterCtaAutoria({ tipo: 'admin' }).to, '/publicar');
+  assert.equal(obterCtaAutoria({ tipo: 'admin' }).to, '/dashboard?aba=livros');
 });
 
 test('CTA secundária da landing oferece destinos úteis por estado', () => {

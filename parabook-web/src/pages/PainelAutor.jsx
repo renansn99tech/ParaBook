@@ -138,7 +138,7 @@ function PainelAutor() {
               <small className="pautor-chip"><i className="fa-solid fa-lock" aria-hidden="true"></i> Visível só para você</small>
             </div>
           </div>
-          <div className="pautor-hero-acoes">
+          <div className="pautor-hero-acoes"><Link to="/minhas-publicacoes" className="btn-outline">Gerenciar publicações</Link>
             <button type="button" className="btn-outline" onClick={exportarCsv} disabled={exportando || !totalPublicadas}>
               <i className="fa-solid fa-file-arrow-down" aria-hidden="true"></i> {exportando ? 'Exportando…' : 'Exportar CSV'}
             </button>

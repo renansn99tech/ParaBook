@@ -32,6 +32,16 @@ function PublicarLivro() {
 
   const [categorias, setCategorias] = useState([]);
   const [enviando, setEnviando] = useState(false);
+  const [bloqueioAte, setBloqueioAte] = useState(null);
+  useEffect(() => {
+    if (user?.tipo !== 'autor') return;
+    const controller = new AbortController();
+    api.get('/biblioteca/minhas-publicacoes/disponibilidade/', { signal: controller.signal })
+      .then(({ data }) => setBloqueioAte(data.novas_obras_apos))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [user]);
+  const bloqueado = bloqueioAte && new Date(bloqueioAte).getTime() > Date.now();
   const paginaRef = useRevelacao([loading, user]);
 
   useEffect(() => {
@@ -64,7 +74,7 @@ function PublicarLivro() {
           <i className="fa-solid fa-lock mb-3" style={{ fontSize: '3rem', color: '#f87171' }}></i>
           <h2 style={{ color: 'var(--text)', marginBottom: '15px' }}>Acesso Restrito</h2>
           <p style={{ color: '#94a3b8', marginBottom: '30px' }}>
-            Esta página é exclusiva para Autores Independentes aprovados e Administradores do ParaBook.
+            Esta página é exclusiva para Autores Independentes aprovados. Administradores gerenciam o acervo pelo Dashboard.
           </p>
           <Link to="/perfil" className="submit-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>
             Ir para Meu Perfil
@@ -84,6 +94,7 @@ function PublicarLivro() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (bloqueado) return;
     setEnviando(true);
 
     const dadosFormulario = new FormData(e.target);
@@ -105,7 +116,7 @@ function PublicarLivro() {
         title: 'Obra enviada!',
         text: 'Sua obra foi enviada com sucesso para análise de publicação.'
       });
-      navigate('/biblioteca');
+      navigate('/minhas-publicacoes');
     } catch (error) {
       console.error("Erro ao enviar obra", error);
 
@@ -130,7 +141,7 @@ function PublicarLivro() {
   return (
     <div className="publicar-container" ref={paginaRef} style={{ paddingTop: '100px', paddingBottom: '40px' }}>
       <div className="form-box" data-revelar>
-        <h1>Enviar Nova Obra</h1>
+        <h1>Enviar Nova Obra</h1>{bloqueado && <p role="status">Envio de obras novas disponível a partir de {new Date(bloqueioAte).toLocaleString('pt-BR')}. Você pode editar e acompanhar suas obras existentes.</p>}<Link to="/minhas-publicacoes">Acompanhar minhas publicações</Link>
         <p>Preencha os dados abaixo para enviar seu manuscrito para análise de publicação.</p>
 
         <form onSubmit={handleSubmit} noValidate>
@@ -279,7 +290,7 @@ function PublicarLivro() {
           </div>
 
           <div className="d-flex flex-column gap-3 mt-4">
-            <button type="submit" className="submit-btn" disabled={enviando}>
+            <button type="submit" className="submit-btn" disabled={enviando || bloqueado}>
               {enviando ? 'Enviando...' : 'Enviar Obra para Moderação'}
             </button>
             <Link to="/biblioteca" className="btn-ghost">

@@ -39,7 +39,8 @@ test('filas usam SweetAlert, atualização otimista e restauração em erro', ()
   assert.match(aprovacoes, /inputValidator: \(valor\) => valor\.trim\(\)/);
   assert.match(aprovacoes, /const \[filtroFila, setFiltroFila\]/);
   assert.match(denuncias, /dash-fila-card--denuncia/);
-  assert.match(lixeira, /Excluir permanentemente\?/);
+  assert.match(lixeira, /reabrir_denuncia/);
+  assert.doesNotMatch(lixeira, /excluir_livro_permanente/);
 });
 
 test('usuários mantêm busca e filtro próprios, motivo de vazio e exportação segura', () => {

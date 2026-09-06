@@ -23,6 +23,7 @@ const Diretrizes = lazy(() => import('./pages/Diretrizes'))
 const Autores = lazy(() => import('./pages/Autores'))
 const ParaLeitores = lazy(() => import('./pages/ParaLeitores'))
 const ParaAutores = lazy(() => import('./pages/ParaAutores'))
+const MinhasPublicacoes = lazy(() => import('./pages/MinhasPublicacoes'))
 const PublicarLivro = lazy(() => import('./pages/PublicarLivro'))
 const PainelAutor = lazy(() => import('./pages/PainelAutor'))
 const MinhaBiblioteca = lazy(() => import('./pages/MinhaBiblioteca'))
@@ -149,6 +150,7 @@ function App() {
           <Route path="/autores" element={<Autores />} />
           <Route path="/para-leitores" element={<ParaLeitores />} />
           <Route path="/para-autores" element={<ParaAutores />} />
+          <Route path="/minhas-publicacoes" element={<RotaPublicacao><MinhasPublicacoes /></RotaPublicacao>} />
           <Route path="/publicar" element={<RotaPublicacao><PublicarLivro /></RotaPublicacao>} />
           <Route path="/autor/painel" element={<RotaPublicacao><PainelAutor /></RotaPublicacao>} />
           <Route path="/minha-biblioteca" element={<MinhaBiblioteca />} />

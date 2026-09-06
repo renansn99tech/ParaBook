@@ -183,9 +183,9 @@ function MinhaBiblioteca() {
                 <p className="book-author">Por {item.livro_autor}</p>
                 
                 <div className="card-actions">
-                  <Link to={`/leitura/${item.livro}`} className="btn-ler" title="Abrir leitor digital do livro">
+                  {item.livro_status && item.livro_status !== 'publicado' ? <span role="status">Obra indisponível</span> : <Link to={`/leitura/${item.livro}`} className="btn-ler" title="Abrir leitor digital do livro">
                     <i className="fa-solid fa-book-open-reader"></i> Ler
-                  </Link>
+                  </Link>}
                   <button 
                     type="button" 
                     className="btn-remover" 

@@ -45,45 +45,18 @@ function LivroInfo() {
     fetchLivroInfo();
   }, [id, user]);
 
-  const abrirDenuncia = () => {
-    swal.fire({
-      title: "Relatar Problema",
-      text: `Selecione o motivo da denúncia para a obra "${livro?.titulo}":`,
-      input: "select",
-      inputOptions: {
-        Pirataria: "Violação de Direitos Autorais",
-        Plagio: "Plágio / Cópia Ilegal",
-        Ofensivo: "Conteúdo Ofensivo / Ilegal",
-        Erro: "Arquivo corrompido / Outro erro",
-      },
-      inputPlaceholder: "Selecione um motivo...",
-      showCancelButton: true,
-      confirmButtonText: "Enviar Denúncia",
-      cancelButtonText: "Cancelar",
-      confirmButtonColor: BOTAO.perigo,
-      cancelButtonColor: BOTAO.neutro,
-      background: "#0f172a",
-      color: "#f8fafc",
-      inputValidator: (value) => {
-        return new Promise((resolve) => {
-          if (value) {
-            resolve();
-          } else {
-            resolve("Você precisa selecionar um motivo.");
-          }
-        });
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        swal.fire({
-          title: "Denúncia Recebida!",
-          text: "Nossa equipe de moderação analisará o caso em até 48 horas.",
-          icon: "success",
-          background: "#0f172a",
-          color: "#f8fafc",
-        });
-      }
-    });
+  const abrirDenuncia = async () => {
+    if (!user) { await swal.fire({ icon: 'info', title: 'Entre para denunciar', text: 'Use sua conta para registrar e acompanhar a denúncia.' }); return; }
+    const motivo = await swal.fire({ title: 'Relatar problema', input: 'text', inputLabel: 'Motivo', inputAttributes: { maxlength: 150 }, inputValidator: (v) => !v.trim() && 'Informe o motivo.', showCancelButton: true, cancelButtonText: 'Cancelar', confirmButtonText: 'Continuar' });
+    if (!motivo.isConfirmed) return;
+    const evidencias = await swal.fire({ title: 'Evidências e contexto', input: 'textarea', inputLabel: 'Descreva o problema e indique páginas ou referências. Evite dados pessoais.', inputAttributes: { maxlength: 4000 }, inputValidator: (v) => !v.trim() && 'Informe evidências para análise.', showCancelButton: true, cancelButtonText: 'Cancelar', confirmButtonText: 'Registrar denúncia' });
+    if (!evidencias.isConfirmed) return;
+    try {
+      const { data } = await api.post('/biblioteca/denuncias/', { livro: Number(id), motivo: motivo.value, evidencias: evidencias.value });
+      await swal.fire({ icon: 'success', title: 'Denúncia registrada', text: `Protocolo: ${data.protocolo}. A denúncia será analisada pela moderação.` });
+    } catch (erro) {
+      await swal.fire({ icon: 'error', title: 'Denúncia não registrada', text: Object.values(erro.response?.data || {}).flat().join(' ') || 'Tente novamente.' });
+    }
   };
 
   const confirmarRemocaoAvaliacao = () => {

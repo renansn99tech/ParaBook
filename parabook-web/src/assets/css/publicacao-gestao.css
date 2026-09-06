@@ -1,0 +1,13 @@
+.publicacao-gestao { max-width: 1080px; margin: 3rem auto; padding: 1rem; color: var(--text-main); }
+.publicacao-gestao .content-glass-card { padding: clamp(1rem, 3vw, 2rem); margin-bottom: 1rem; overflow-wrap: anywhere; border: 1px solid var(--border); border-radius: 1.25rem; background: linear-gradient(135deg, rgba(var(--purple-rgb), .07), transparent 60%), var(--bg-card); }
+.publicacao-obras { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
+.publicacao-gestao button, .publicacao-gestao a { margin: .35rem; min-height: 44px; }
+.publicacao-gestao button:not(.btn-primary):not(.btn-outline) { border: 1px solid var(--border); border-radius: .6rem; background: var(--bg-card); color: var(--text-main); padding: .5rem 1rem; }
+.publicacao-gestao button:disabled { opacity: .55; cursor: not-allowed; }
+.publicacao-gestao h2 { font-size: clamp(1.2rem, 3vw, 1.6rem); }
+.publicacao-form { display: grid; gap: 1rem; margin-block: 1rem; }
+.publicacao-form label { display: grid; gap: .4rem; }
+.publicacao-form input, .publicacao-form select { width: 100%; min-width: 0; padding: .7rem; color: inherit; background: var(--bg-card); border: 1px solid var(--border); border-radius: .5rem; }
+.publicacao-gestao li { margin-block: 1rem; }
+.publicacao-gestao nav { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.publicacao-gestao :focus-visible { outline: 3px solid var(--purple, #8b5cf6); outline-offset: 3px; }

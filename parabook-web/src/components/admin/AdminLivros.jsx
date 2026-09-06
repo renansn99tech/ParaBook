@@ -144,7 +144,6 @@ function AdminLivros() {
 
         <select name="origem" value={formData.origem} onChange={handleChange} required>
           <option value="dominio_publico">Domínio Público</option>
-          <option value="autor_independente">Autor Independente</option>
           <option value="licenciado">Acervo Licenciado</option>
         </select>
 
@@ -211,7 +210,7 @@ function AdminLivros() {
                   <td>{livro.origem_label}</td>
                   <td>{livro.modelo_acesso_label}</td>
                   <td>
-                    <button className="admin-table-acao" aria-label={`Excluir ${livro.titulo}`}>
+                    <button className="admin-table-acao" disabled title="Remoção exige decisão na fila de moderação" aria-label={`Excluir ${livro.titulo}`}>
                       <i className="fa-solid fa-trash"></i>
                     </button>
                   </td>

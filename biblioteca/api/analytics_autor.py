@@ -71,7 +71,6 @@ def _obras_do_autor(user):
 def _obras_publicadas(user):
     return _obras_do_autor(user).filter(
         status='publicado',
-        solicitacao_publicacao__status='aprovado',
     )
 
 

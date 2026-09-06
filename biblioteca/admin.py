@@ -1,11 +1,20 @@
 from django.contrib import admin
 from biblioteca.models import Denuncia, EventoLeitura, Livro
 
-# Register your models here.
+class SomenteConsultaAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 
 @admin.register(Livro)
-class LivroAdmin(admin.ModelAdmin):
+class LivroAdmin(SomenteConsultaAdmin):
     list_display = ('titulo', 'autor', 'categoria', 'origem', 'modelo_acesso', 'status', 'disponivel_ate')
     list_filter = ('origem', 'modelo_acesso', 'status', 'categoria')
     search_fields = ('titulo', 'autor', 'territorio_cultural')
@@ -26,7 +35,7 @@ class LivroAdmin(admin.ModelAdmin):
     )
 
 @admin.register(Denuncia)
-class DenunciaAdmin(admin.ModelAdmin):
+class DenunciaAdmin(SomenteConsultaAdmin):
     list_display = ('livro', 'motivo', 'usuario', 'data_denuncia', 'status')
     list_filter = ('status', 'motivo')
     search_fields = ('livro__nome', 'usuario__username')

@@ -5,6 +5,7 @@ from django.utils import timezone
 from assinaturas.utils import usuario_eh_premium
 
 from .models import Livro
+from usuarios.permissions import eh_admin_parabook
 
 
 def livros_por_categoria(nome_categoria: str):
@@ -28,7 +29,7 @@ def verificar_acesso_obra(user, livro, agora=None):
     agora = agora or timezone.now()
     autenticado = bool(user and user.is_authenticated)
     administrador = bool(
-        autenticado and (user.is_staff or user.is_superuser)
+        autenticado and eh_admin_parabook(user)
     )
 
     if administrador:

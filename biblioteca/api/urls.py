@@ -14,12 +14,16 @@ from .analytics_autor import (
     EventoLeituraCreateAPIView,
 )
 
+from .publicacao import MinhasPublicacoesViewSet, DenunciaObraAPIView
+
 router = DefaultRouter()
+router.register(r'minhas-publicacoes', MinhasPublicacoesViewSet, basename='minhas-publicacoes')
 router.register(r'livros', LivroViewSet, basename='livro')
 router.register(r'categorias', CategoriaViewSet, basename='categoria')
 router.register(r'estante', EstanteViewSet, basename='estante')
 
 urlpatterns = [
+    path('denuncias/', DenunciaObraAPIView.as_view(), name='denuncia-obra'),
     path('', include(router.urls)),
     path('solicitacoes-publicacao/', SolicitacaoPublicacaoCreateAPIView.as_view(), name='solicitacao_publicacao_create'),
     path('recomendacoes-ia/', RecomendacoesIAAPIView.as_view(), name='recomendacoes_ia'),

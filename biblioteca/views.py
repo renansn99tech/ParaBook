@@ -195,72 +195,36 @@ def concluir_leitura(request, livro_id):
 
 
 def is_approved_author(user):
-    if user.is_anonymous:
+    from biblioteca.publicacao import exigir_autor
+    from rest_framework.exceptions import PermissionDenied
+    try:
+        exigir_autor(user)
+        return True
+    except PermissionDenied:
         return False
-    if user.is_superuser or user.is_staff:
-        return True
-
-    perfil_custom = getattr(user, 'perfil_customizado', None)
-    if perfil_custom and getattr(perfil_custom, 'tipo', None) in ['autor', 'admin']:
-        return True
-
-    perfil_biblioteca = getattr(user, 'perfil_da_biblioteca', None)
-    if perfil_biblioteca:
-        status_biblio = getattr(perfil_biblioteca, 'status', None)
-        if status_biblio in ['perfil_aprovado', 'aprovado']:
-            return True
-
-    return False
 
 
 @login_required
 def solicitacoes_publicacao(request):
-    perfil_customizado = getattr(request.user, 'perfil_customizado', None)
-    if not perfil_customizado or perfil_customizado.tipo not in ['autor', 'admin']:
-        messages.warning(request, "Acesso negado. Apenas Autores Independentes podem acessar.")
-        return redirect('perfis:onboarding_autor')
-
+    from biblioteca.publicacao import enviar_obra
+    from biblioteca.api.serializers import SolicitacaoPublicacaoSerializer
+    from rest_framework.exceptions import APIException
+    if not is_approved_author(request.user):
+        return JsonResponse({'detail': 'Publicação independente é exclusiva para autores aprovados.'}, status=403)
     categorias = Categoria.objects.all()
-
+    form = ObraAutorForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':
-        form = ObraAutorForm(request.POST, request.FILES)
-        if form.is_valid():
-            with transaction.atomic():
-                livro = form.save(commit=False)
-                livro.autor = request.user.get_full_name() or request.user.username
-                livro.origem = "autor_independente"
-                livro.status = "pendente"
-                livro.save()
-
-                solicitacao = SolicitacaoPublicacao.objects.create(
-                    usuario=request.user,
-                    livro=livro,
-                    status="pendente"
-                )
-                cpf = ''.join(filter(str.isdigit, form.cleaned_data['cpf_autor']))
-                DeclaracaoAutoria.objects.create(
-                    solicitacao=solicitacao,
-                    cpf_digest=salted_hmac('parabook.declaracao.cpf', cpf).hexdigest(),
-                    cpf_final=cpf[-4:],
-                    registro_autoral=form.cleaned_data.get('registro_autoral', ''),
-                    numero_registro=form.cleaned_data.get('numero_registro', ''),
-                    versao_termos=settings.TERMS_VERSION,
-                    ip_origem=request.META.get('REMOTE_ADDR'),
-                )
-
-                if perfil_customizado:
-                    perfil_customizado.notificacao_autor = True
-                    perfil_customizado.save()
-
-            messages.success(request, 'Sua obra foi enviada com sucesso para aprovação!')
+        dados = request.POST.copy()
+        dados.update(request.FILES)
+        serializer = SolicitacaoPublicacaoSerializer(data=dados)
+        if serializer.is_valid():
+            try:
+                enviar_obra(request.user, serializer.validated_data, request.META.get('REMOTE_ADDR'))
+            except APIException as exc:
+                return JsonResponse({'detail': exc.detail}, status=exc.status_code)
+            messages.success(request, 'Sua obra foi enviada para análise.')
             return redirect('solicitacoes_publicacao')
-    else:
-        initial_data = {
-            'nome': request.user.get_full_name() or request.user.username,
-            'email': request.user.email
-        }
-        form = ObraAutorForm(initial=initial_data)
-
+        return JsonResponse(serializer.errors, status=400)
     return render(request, 'biblioteca/obras-autores.html', {'form': form, 'categorias': categorias})
 
 
@@ -276,11 +240,7 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def deletar_livro(request, id):
-    livro = get_object_or_404(Livro, id=id)
-    if request.method == 'POST':
-        livro.delete()
-        messages.success(request, "Livro removido com sucesso.")
-    return redirect('biblioteca')
+    return JsonResponse({'detail': 'Use a moderação no Dashboard. Exclusão definitiva indisponível.'}, status=403)
 
 
 @login_required
@@ -480,24 +440,16 @@ def livro_info(request, id):
 @login_required
 @require_POST
 def registrar_denuncia(request, id):
-    livro = get_object_or_404(Livro, id=id)
+    from biblioteca.publicacao import denunciar
+    from rest_framework.exceptions import APIException
     try:
         data = json.loads(request.body)
-        motivo = data.get('motivo', '').strip()
-
-        if not motivo:
-            return JsonResponse({'success': False, 'error': 'O motivo da denúncia não pode estar vazio.'}, status=400)
-
-        Denuncia.objects.create(
-            livro=livro,
-            usuario=request.user,
-            motivo=motivo
-        )
-        return JsonResponse({'success': True, 'message': 'Denúncia registrada com sucesso.'})
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'error': 'Payload JSON inválido.'}, status=400)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        denuncia = denunciar(request.user, id, data.get('motivo', ''), data.get('evidencias', ''))
+        return JsonResponse({'success': True, 'protocolo': str(denuncia.protocolo)})
+    except (json.JSONDecodeError, AttributeError):
+        return JsonResponse({'detail': 'Payload JSON inválido.'}, status=400)
+    except APIException as exc:
+        return JsonResponse({'detail': exc.detail}, status=exc.status_code)
 
 
 @login_required

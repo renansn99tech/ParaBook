@@ -14,7 +14,11 @@ from .views import (
     DashboardDjangoAdminAcessoAPIView,
 )
 
+from biblioteca.api.publicacao import RevisaoAdminAPIView, RecursosAdminAPIView
+
 urlpatterns = [
+    path('publicacoes/<int:solicitacao_id>/revisao/', RevisaoAdminAPIView.as_view(), name='revisao-publicacao'),
+    path('recursos-publicacao/', RecursosAdminAPIView.as_view(), name='recursos-publicacao'),
     path('estatisticas/', EstatisticasDashboardAPIView.as_view(), name='api-dashboard-estatisticas'),
     path('usuarios/', DashboardUsuariosAPIView.as_view(), name='api-dashboard-usuarios'),
     path('aprovacoes/', DashboardAprovacoesAPIView.as_view(), name='api-dashboard-aprovacoes'),

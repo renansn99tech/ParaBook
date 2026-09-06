@@ -1,10 +1,14 @@
 # api/views.py
+from django.db import transaction
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
+from usuarios.permissions import eh_admin_parabook
+from biblioteca import publicacao as fluxo
+from rest_framework.exceptions import PermissionDenied, ValidationError as ApiValidationError
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao, DeclaracaoAutoria
 from biblioteca.services import verificar_acesso_obra
 from assinaturas.utils import usuario_eh_premium
@@ -30,11 +34,8 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return bool(
-            request.user
-            and request.user.is_authenticated
-            and (request.user.is_staff or request.user.is_superuser)
-        )
+        return eh_admin_parabook(request.user)
+
 
 
 class LivroViewSet(viewsets.ModelViewSet):
@@ -44,7 +45,7 @@ class LivroViewSet(viewsets.ModelViewSet):
     search_fields = ['titulo', 'autor', 'territorio_cultural']
 
     def get_queryset(self):
-        qs = Livro.objects.exclude(status='removido').select_related('categoria')
+        qs = Livro.objects.all().select_related('categoria')
         user = self.request.user
 
         origem = self.request.query_params.get('origem')
@@ -60,17 +61,34 @@ class LivroViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return qs.filter(status='publicado')
             
-        # RBAC adaptado para os campos nativos do User e Perfil do Parabook
-        if user.is_staff or user.is_superuser:
+        if eh_admin_parabook(user):
             return qs
+        if self.action == 'list':
+            return qs.filter(status='publicado')
+        return qs.filter(Q(status='publicado') | Q(solicitacao_publicacao__usuario=user))
 
-        # Verifica se o usuário é autor via username/nome do perfil
-        autor_nome = user.username
-        if hasattr(user, 'perfil_da_biblioteca'):
-            # Permite visualizar livros publicados ou criados pelo próprio autor
-            return qs.filter(Q(status='publicado') | Q(autor__icontains=autor_nome))
-            
-        return qs.filter(status='publicado')
+    @transaction.atomic
+    def perform_create(self, serializer):
+        origem = serializer.validated_data.get('origem', 'dominio_publico')
+        if origem not in {'dominio_publico', 'licenciado'}:
+            raise ApiValidationError({'origem': 'O Dashboard cadastra somente domínio público ou acervo licenciado.'})
+        livro = serializer.save(status='publicado')
+        fluxo._registrar(self.request.user, livro, 'acervo_cadastrado', '')
+
+    @transaction.atomic
+    def perform_update(self, serializer):
+        livro = Livro.objects.select_for_update().get(pk=serializer.instance.pk)
+        if livro.origem == 'autor_independente':
+            raise PermissionDenied('Obras independentes são alteradas pelo autor e analisadas na fila de revisão.')
+        if serializer.validated_data.get('origem', livro.origem) not in {'dominio_publico', 'licenciado'}:
+            raise ApiValidationError({'origem': 'Origem não permitida para o acervo administrativo.'})
+        serializer.instance = livro
+        anterior = livro.status
+        livro = serializer.save()
+        fluxo._registrar(self.request.user, livro, 'acervo_editado', anterior)
+
+    def perform_destroy(self, instance):
+        raise PermissionDenied('Use a moderação com justificativa. A exclusão definitiva depende da política de retenção.')
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def resenhas(self, request, pk=None):
@@ -306,57 +324,11 @@ class SolicitacaoPublicacaoCreateAPIView(APIView):
     throttle_classes = [UploadRateThrottle]
 
     def post(self, request, *args, **kwargs):
-        perfil_customizado = getattr(request.user, 'perfil_customizado', None)
-        if not perfil_customizado or perfil_customizado.tipo not in ['autor', 'admin']:
-            return Response(
-                {"detail": "Apenas Autores Independentes ou Administradores podem enviar obras."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
+        fluxo.exigir_autor(request.user)
         serializer = SolicitacaoPublicacaoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        dados_livro = dict(serializer.validated_data)
-        cpf = dados_livro.pop('cpf_autor')
-        registro = dados_livro.pop('registro_autoral', '')
-        numero_registro = dados_livro.pop('numero_registro', '')
-        dados_livro.pop('declaracao_autoria')
-        dados_livro.pop('aceitou_termos')
-
-        with transaction.atomic():
-            livro = Livro.objects.create(
-                autor=request.user.get_full_name() or request.user.username,
-                origem='autor_independente',
-                status='pendente',
-                **dados_livro
-            )
-            solicitacao = SolicitacaoPublicacao.objects.create(
-                usuario=request.user,
-                livro=livro,
-                status='pendente'
-            )
-            DeclaracaoAutoria.objects.create(
-                solicitacao=solicitacao,
-                cpf_digest=salted_hmac('parabook.declaracao.cpf', cpf).hexdigest(),
-                cpf_final=cpf[-4:],
-                registro_autoral=registro,
-                numero_registro=numero_registro,
-                versao_termos=settings.TERMS_VERSION,
-                ip_origem=request.META.get('REMOTE_ADDR'),
-            )
-
-        registrar_acao(
-            ator=request.user,
-            acao='publicacao.enviada',
-            recurso='SolicitacaoPublicacao',
-            recurso_id=solicitacao.pk,
-            metadados={'livro_id': livro.pk},
-        )
-
-        return Response(
-            {"detail": "Sua obra foi enviada com sucesso para aprovação!", "livro_id": livro.id},
-            status=status.HTTP_201_CREATED
-        )
+        livro = fluxo.enviar_obra(request.user, serializer.validated_data, request.META.get('REMOTE_ADDR'))
+        return Response({'detail': 'Sua obra foi enviada para análise.', 'livro_id': livro.pk}, status=201)
 
 
 class RecomendacoesIAAPIView(APIView):

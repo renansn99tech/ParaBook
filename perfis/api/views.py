@@ -563,7 +563,6 @@ class PerfilPublicoAPIView(APIView):
             obras_autor = list(
                 Livro.objects.filter(
                     solicitacao_publicacao__usuario=user_auth_obj,
-                    solicitacao_publicacao__status='aprovado',
                     status='publicado',
                     data_remocao__isnull=True,
                 )

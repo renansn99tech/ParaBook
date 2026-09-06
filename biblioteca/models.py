@@ -38,6 +38,8 @@ class Livro(models.Model):
         ("publicado", "Publicado"),
         ("rejeitado", "Rejeitado"),
         ("removido", "Removido na Lixeira"), # NOVO
+        ("suspenso", "Suspenso cautelarmente"),
+        ("retirado", "Retirado pelo autor"),
     ]
 
     titulo = models.CharField(max_length=255, default="Sem Título", verbose_name="Título")
@@ -71,6 +73,7 @@ class Livro(models.Model):
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="publicado", verbose_name="Status de Publicação")
     data_remocao = models.DateTimeField(null=True, blank=True, verbose_name="Data de Remoção") # NOVO
+    retirado_em = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'livros'
@@ -237,6 +240,11 @@ class Perfil(models.Model):
     
 
 class Denuncia(models.Model):
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    evidencias = models.TextField(blank=True, max_length=4000)
+    referencia_externa = models.CharField(max_length=200, blank=True)
+    suspensao_cautelar = models.BooleanField(default=False)
+    decisao = models.TextField(blank=True, max_length=2000)
     livro = models.ForeignKey(Livro, on_delete=models.CASCADE, related_name='denuncias', verbose_name="Livro Denunciado")
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='denuncias_feitas', verbose_name="Denunciante")
     motivo = models.CharField(max_length=150, verbose_name="Motivo")
@@ -355,3 +363,52 @@ class DeclaracaoAutoria(models.Model):
 
     def __str__(self):
         return f'Declaração da solicitação {self.solicitacao_id}'
+
+
+class BloqueioPublicacao(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    novas_obras_apos = models.DateTimeField()
+
+
+class TentativaPublicacao(models.Model):
+    """Versão enviada: arquivos privados só substituem a obra após aprovação."""
+    solicitacao = models.ForeignKey(SolicitacaoPublicacao, on_delete=models.CASCADE, related_name='tentativas')
+    status = models.CharField(max_length=20, choices=SolicitacaoPublicacao.STATUS_CHOICES, default='pendente')
+    dados = models.JSONField(default=dict)
+    pdf = models.FileField(upload_to='livros/revisoes/', blank=True)
+    capa = models.ImageField(upload_to='capas/revisoes/', blank=True)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    analisada_em = models.DateTimeField(null=True, blank=True)
+    motivo = models.TextField(blank=True, max_length=2000)
+
+    class Meta:
+        ordering = ['-id']
+        constraints = [models.UniqueConstraint(
+            fields=['solicitacao'], condition=models.Q(status='pendente'), name='uma_tentativa_pendente',
+        )]
+
+
+class EventoPublicacao(models.Model):
+    """Trilha do domínio; criação obrigatória na transação, sem edição por API."""
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    livro = models.ForeignKey(Livro, on_delete=models.SET_NULL, null=True, related_name='historico_publicacao')
+    ator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    denuncia = models.ForeignKey(Denuncia, on_delete=models.SET_NULL, null=True, blank=True)
+    acao = models.CharField(max_length=60)
+    anterior = models.CharField(max_length=20)
+    posterior = models.CharField(max_length=20)
+    motivo = models.TextField(blank=True, max_length=2000)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-id']
+
+
+class RecursoPublicacao(models.Model):
+    evento = models.OneToOneField(EventoPublicacao, on_delete=models.PROTECT, related_name='recurso')
+    autor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    fundamento = models.TextField(max_length=2000)
+    status = models.CharField(max_length=20, choices=[('pendente', 'Pendente'), ('acolhido', 'Acolhido'), ('recusado', 'Recusado')], default='pendente')
+    decisao = models.TextField(blank=True, max_length=2000)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    decidido_em = models.DateTimeField(null=True, blank=True)

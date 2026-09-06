@@ -51,5 +51,8 @@ media/avatares/
 # adequadas para exposição no repositório remoto.
 /business_rules/
 
+# Documentação interna e registros de homologação mantidos apenas localmente.
+/docs/
+
 # Artefatos locais gerados (PDFs, relatórios e exportações).
 /output/

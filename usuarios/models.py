@@ -145,6 +145,18 @@ class Notificacao(models.Model):
     def __str__(self):
         return f"[{self.tipo}] {self.titulo} - {self.usuario.username}"
 
+    def save(self, *args, **kwargs):
+        raise RuntimeError(
+            'usuarios.Notificacao está em observação somente leitura; '
+            'use notificacoes.Notificacao.'
+        )
+
+    def delete(self, *args, **kwargs):
+        raise RuntimeError(
+            'usuarios.Notificacao está em observação somente leitura; '
+            'use notificacoes.Notificacao.'
+        )
+
 
 class AuditoriaAcao(models.Model):
     ator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)

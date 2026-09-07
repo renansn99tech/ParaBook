@@ -237,6 +237,16 @@ class Perfil(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def save(self, *args, **kwargs):
+        raise RuntimeError(
+            'biblioteca.Perfil está em observação somente leitura; use perfis.Perfil.'
+        )
+
+    def delete(self, *args, **kwargs):
+        raise RuntimeError(
+            'biblioteca.Perfil está em observação somente leitura; use perfis.Perfil.'
+        )
     
 
 class Denuncia(models.Model):

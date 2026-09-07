@@ -8,7 +8,8 @@ from django.contrib import messages
 from django.utils import timezone
 from django.conf import settings
 from django.http import JsonResponse
-from .models import Usuario, Notificacao
+from .models import Usuario
+from notificacoes.models import Notificacao
 from comunidades.models import Comunidade
 from biblioteca.models import Livro
 from perfis.models import FRASE_STATUS_PADRAO_LEITOR, Perfil

@@ -3,10 +3,14 @@ services:
     name: parabook-api
     runtime: docker
     plan: free
+    repo: https://github.com/renansn99tech/ParaBook
+    branch: main
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health/
-    autoDeployTrigger: commit
+    # Recuperacao: deploy manual. Para religar rapidamente, trocar por
+    # checksPass; a CI tambem roda na main e passa a ser o gate do deploy.
+    autoDeployTrigger: "off"
     envVars:
       - key: DEBUG
         value: "False"

@@ -7,8 +7,19 @@ import { obterCtaAutoria } from '../services/ctaAutoria'
 import logoNova from '../assets/img/logo-nova-160.webp'
 import logoNova2x from '../assets/img/logo-nova-320.webp'
 
+function LinkRestrito({ suspenso, motivo, children, className = '', ...props }) {
+  if (suspenso) {
+    return <span className={`${className} acao-suspensa`} role="link" aria-disabled="true" title={motivo}>{children}</span>
+  }
+  return <Link className={className} {...props}>{children}</Link>
+}
+
 function Navbar() {
   const { user, logout } = useContext(AuthContext)
+  const suspenso = Boolean(user?.suspensao?.ativa)
+  const motivoSuspensao = suspenso
+    ? `Ação bloqueada até ${new Date(user.suspensao.termina_em).toLocaleString('pt-BR')}.`
+    : ''
   const avatarUsuario = obterAvatarPerfil(user)
   const ctaPublicacao = user
     ? obterCtaAutoria(user)
@@ -91,7 +102,7 @@ function Navbar() {
   const abrirPerfilDireto = () => {
     window.clearTimeout(cliqueContaRef.current)
     setContaAberta(false)
-    navigate('/perfil')
+    navigate(suspenso ? '/perfil/configuracoes' : '/perfil')
   }
 
   const sairPelaConta = () => {
@@ -114,14 +125,14 @@ function Navbar() {
             <li><Link to="/biblioteca">Explorar</Link></li>
             <li><Link to="/comunidades">Comunidades</Link></li>
             <li><Link to="/autores">Autores</Link></li>
-            {user?.tipo === 'autor' && <li><Link to="/publicar" className="navbar-publicar-livro"><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i> Publicar Livro</Link></li>}
+            {user?.tipo === 'autor' && <li><LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/publicar" className="navbar-publicar-livro"><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i> Publicar Livro</LinkRestrito></li>}
           </ul>
 
           <div className="nav-actions">
-            {user && <Link to="/notificacoes" className="btn-nav btn-outline btn-nav-icone nav-notificacoes position-relative" title="Notificações" aria-label="Notificações"><i className="fa-solid fa-bell" aria-hidden="true"></i>{user.notificacoes_nao_lidas_count > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-contador">{user.notificacoes_nao_lidas_count}</span>}</Link>}
+            {user && <LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/notificacoes" className="btn-nav btn-outline btn-nav-icone nav-notificacoes position-relative" title="Notificações" aria-label="Notificações"><i className="fa-solid fa-bell" aria-hidden="true"></i>{user.notificacoes_nao_lidas_count > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-contador">{user.notificacoes_nao_lidas_count}</span>}</LinkRestrito>}
             <button className="btn-nav btn-outline btn-nav-icone" onClick={alternar} title={rotulo} aria-label={rotulo}><i className={`fa-solid ${icone}`} aria-hidden="true"></i></button>
             {user ? (
-              <button ref={botaoContaRef} type="button" className="nav-perfil-circular" onClick={abrirConta} onDoubleClick={abrirPerfilDireto} aria-expanded={contaAberta} aria-controls="drawerContaReact" aria-label="Abrir menu da conta; clique duas vezes para ir ao perfil" title="Conta — duplo clique abre o perfil"><img src={avatarUsuario} alt="" aria-hidden="true" width="48" height="48" /><span className="nav-perfil-status" aria-hidden="true"></span></button>
+              <button ref={botaoContaRef} type="button" className="nav-perfil-circular" onClick={abrirConta} onDoubleClick={abrirPerfilDireto} aria-expanded={contaAberta} aria-controls="drawerContaReact" aria-label="Abrir menu da conta; clique duas vezes para abrir sua conta" title={suspenso ? 'Conta suspensa — abrir configurações' : 'Conta — duplo clique abre o perfil'}><img src={avatarUsuario} alt="" aria-hidden="true" width="48" height="48" /><span className="nav-perfil-status" aria-hidden="true"></span></button>
             ) : <Link to="/login" className="btn-nav btn-outline nav-entrar">Entrar</Link>}
             <button ref={botaoMenuRef} type="button" className="navbar-menu-trigger" onClick={alternarMenu} aria-expanded={menuAberto} aria-controls="menuCardReact" aria-label={`${menuAberto ? 'Fechar' : 'Abrir'} menu principal`} title="Menu principal"><i className="fa-solid fa-bars" aria-hidden="true"></i></button>
           </div>
@@ -137,9 +148,10 @@ function Navbar() {
             <button ref={fecharContaRef} type="button" onClick={() => { setContaAberta(false); botaoContaRef.current?.focus() }} aria-label="Fechar menu da conta"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button>
           </header>
           <nav className="nav-account-links" aria-label="Opções da conta">
-            <Link to="/perfil" onClick={() => setContaAberta(false)}><i className="fa-solid fa-circle-user" aria-hidden="true"></i><span><strong>Perfil</strong><small>Veja sua jornada literária</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></Link>
-            <Link to="/minha-assinatura" onClick={() => setContaAberta(false)}><i className="fa-solid fa-crown" aria-hidden="true"></i><span><strong>Minha Assinatura</strong><small>Plano e benefícios</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></Link>
-            <Link to="/ranking" onClick={() => setContaAberta(false)}><i className="fa-solid fa-ranking-star" aria-hidden="true"></i><span><strong>Ranking</strong><small>Confira sua posição</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></Link>
+            <LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/perfil" onClick={() => setContaAberta(false)}><i className="fa-solid fa-circle-user" aria-hidden="true"></i><span><strong>Perfil</strong><small>Veja sua jornada literária</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></LinkRestrito>
+            <LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/minha-assinatura" onClick={() => setContaAberta(false)}><i className="fa-solid fa-crown" aria-hidden="true"></i><span><strong>Minha Assinatura</strong><small>Plano e benefícios</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></LinkRestrito>
+            <LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/ranking" onClick={() => setContaAberta(false)}><i className="fa-solid fa-ranking-star" aria-hidden="true"></i><span><strong>Ranking</strong><small>Confira sua posição</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></LinkRestrito>
+            <Link to="/perfil/configuracoes" onClick={() => setContaAberta(false)}><i className="fa-solid fa-gear" aria-hidden="true"></i><span><strong>Configurações</strong><small>Segurança, preferências e suporte</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></Link>
             <button type="button" className="nav-account-sair" onClick={sairPelaConta}><i className="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i><span><strong>Sair</strong><small>Encerrar esta sessão</small></span></button>
           </nav>
         </aside>

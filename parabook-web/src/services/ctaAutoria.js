@@ -2,7 +2,7 @@ export function obterCtaAutoria(user) {
   if (!user) {
     return { to: '/register', label: 'Criar conta gratuita', icon: 'fa-user-plus' };
   }
-  if (user.tipo === 'admin') return { to: '/dashboard?aba=livros', label: 'Gerenciar acervo', icon: 'fa-books' };
+  if (['moderador', 'admin'].includes(user.tipo)) return { to: '/dashboard?aba=livros', label: 'Gerenciar acervo', icon: 'fa-books' };
   if (user.tipo === 'autor') {
     return { to: '/publicar', label: 'Enviar uma obra', icon: 'fa-file-arrow-up' };
   }
@@ -16,7 +16,7 @@ export function obterCtaSecundariaLanding(user) {
   if (!user) {
     return { to: '/register', label: 'Criar conta gratuita', icon: 'fa-user-plus' };
   }
-  if (user.tipo === 'admin') return { to: '/dashboard?aba=livros', label: 'Gerenciar acervo', icon: 'fa-books' };
+  if (['moderador', 'admin'].includes(user.tipo)) return { to: '/dashboard?aba=livros', label: 'Gerenciar acervo', icon: 'fa-books' };
   if (user.tipo === 'autor') {
     return { to: '/publicar', label: 'Enviar uma obra', icon: 'fa-file-arrow-up' };
   }

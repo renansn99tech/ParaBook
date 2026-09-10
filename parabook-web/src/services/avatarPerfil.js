@@ -3,7 +3,7 @@ import avatarAdmin from '../assets/img/avatar-padrao-admin-parabook.webp';
 import avatarAutor from '../assets/img/avatar-padrao-autor-parabook.webp';
 
 export function obterAvatarPadrao(usuario) {
-  if (usuario?.tipo === 'admin' || usuario?.is_superuser) return avatarAdmin;
+  if (['moderador', 'admin'].includes(usuario?.tipo) || usuario?.is_superuser) return avatarAdmin;
   if (usuario?.tipo === 'autor') return avatarAutor;
   return avatarLeitor;
 }

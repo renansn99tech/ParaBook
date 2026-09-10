@@ -9,11 +9,15 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme/colors';
 import { MainTabParamList } from './types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../context/AuthContext';
+import { SuspendedAccountScreen } from '../screens/SuspendedAccountScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const TabNavigator = () => {
     const insets = useSafeAreaInsets();
+    const { user } = useAuth();
+    const suspenso = Boolean(user?.suspensao?.ativa);
 
     return (
         <Tab.Navigator
@@ -57,11 +61,11 @@ export const TabNavigator = () => {
             },
         })}
         >
-        <Tab.Screen name="Home" component={HomeScreen} />
+        {!suspenso && <Tab.Screen name="Home" component={HomeScreen} />}
         <Tab.Screen name="Catalogo" component={ExploreScreen} options={{ tabBarLabel: 'Catálogo' }} />
-        <Tab.Screen name="Biblioteca" component={LibraryTabScreen} />
+        {!suspenso && <Tab.Screen name="Biblioteca" component={LibraryTabScreen} />}
         <Tab.Screen name="Comunidades" component={CommunitiesScreen} />
-        <Tab.Screen name="Perfil" component={ProfileScreen} />
+        <Tab.Screen name="Perfil" component={suspenso ? SuspendedAccountScreen : ProfileScreen} options={{ tabBarLabel: suspenso ? 'Conta' : 'Perfil' }} />
         </Tab.Navigator>
     );
 };

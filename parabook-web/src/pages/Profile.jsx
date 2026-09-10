@@ -177,7 +177,7 @@ function Profile() {
   const drawerGatilhoRef = useRef(null);
   const drawerAtividadeRef = useRef(null);
   const reduzirMovimento = useMovimentoReduzido();
-  const adminAutorizado = user?.tipo === 'admin' && Boolean(user?.is_staff || user?.is_superuser);
+  const adminAutorizado = ['moderador', 'admin'].includes(user?.tipo) && Boolean(user?.is_staff || user?.is_superuser);
   const tabs = [
     ...TABS_BASE,
     ...(adminAutorizado ? [{ id: 'moderacao', label: 'Moderação', icon: 'fa-shield-halved' }] : []),
@@ -763,7 +763,7 @@ function Profile() {
               <h2>Configurações da conta</h2>
               <form className="config-form" onSubmit={handleSalvarPerfil}>
                 <div className="form-grid">
-                  {user?.tipo !== 'admin' && <div className="perfil-form-group full-width perfil-privacidade"><div><h4><i className="fa-solid fa-user-shield" aria-hidden="true"></i> Visibilidade do perfil</h4><p>Ao ativar, seu perfil fica oculto para leitores e autores comuns.</p></div><input type="checkbox" name="perfil_privado" checked={perfilPrivado} readOnly hidden /><button type="button" className="switch-ui" role="switch" aria-checked={perfilPrivado} onClick={() => setPerfilPrivado((valor) => !valor)}><span className="slider-ui"></span><span className="sr-only">Alternar privacidade do perfil</span></button></div>}
+                  {!['moderador', 'admin'].includes(user?.tipo) && <div className="perfil-form-group full-width perfil-privacidade"><div><h4><i className="fa-solid fa-user-shield" aria-hidden="true"></i> Visibilidade do perfil</h4><p>Ao ativar, seu perfil fica oculto para leitores e autores comuns.</p></div><input type="checkbox" name="perfil_privado" checked={perfilPrivado} readOnly hidden /><button type="button" className="switch-ui" role="switch" aria-checked={perfilPrivado} onClick={() => setPerfilPrivado((valor) => !valor)}><span className="slider-ui"></span><span className="sr-only">Alternar privacidade do perfil</span></button></div>}
                   <div className="perfil-form-group"><label htmlFor="input-nome">Nome de exibição</label><input type="text" id="input-nome" name="nome" className="form-input" defaultValue={user?.nome} /></div>
                   <div className="perfil-form-group"><label htmlFor="input-username">Nome de usuário</label><input type="text" id="input-username" name="username" className="form-input" defaultValue={user?.username} /></div>
                   <div className="perfil-form-group"><label htmlFor="input-descricao">Frase de status</label><input type="text" id="input-descricao" name="descricao_perfil" className="form-input" defaultValue={fullProfile?.perfil?.descricao_perfil || user?.descricao_perfil || ''} /></div>

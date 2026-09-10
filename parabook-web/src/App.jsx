@@ -5,6 +5,7 @@ import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import RouteAccessibility from './components/RouteAccessibility'
+import SuspensionNotice from './components/SuspensionNotice'
 import RotaAdmin from './components/admin/RotaAdmin'
 import RotaPublicacao from './components/RotaPublicacao'
 import RotaAutenticada from './components/RotaAutenticada'
@@ -54,6 +55,22 @@ const AdminFeatureFlags = lazy(() => import('./pages/admin/AdminFeatureFlags'))
 
 // Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
 const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', '/diretrizes', '/login', '/register', '/esqueci-senha'];
+const ROTAS_PUBLICAS_SUSPENSAO = ['/', '/biblioteca', '/comunidades', '/autores', '/sobre', '/backlog', '/diretrizes', '/para-leitores', '/para-autores', '/planos'];
+
+const rotaPermitidaDuranteSuspensao = (pathname) => {
+  const configuracaoAdministrativa = [
+    '/perfil/configuracoes/django-admin',
+    '/perfil/configuracoes/auditoria',
+    '/perfil/configuracoes/feature-flags',
+  ].includes(pathname);
+  if (configuracaoAdministrativa) return false;
+  return ROTAS_PUBLICAS_SUSPENSAO.includes(pathname)
+    || pathname.startsWith('/livro/')
+    || pathname.startsWith('/comunidade/')
+    || pathname.startsWith('/perfil/configuracoes')
+    || pathname === '/perfil/alterar-senha'
+    || (pathname.startsWith('/perfil/') && pathname.split('/').length === 3);
+};
 
 function App() {
   const location = useLocation();
@@ -74,6 +91,7 @@ function App() {
     || location.pathname.startsWith('/redefinir-senha/');
   const hideNavAndFooter = isDashboard || isAdminAvancado || isAuthPage;
   const exibirBannerAnuncios = flagsPublicas.banner_anuncios && !hideNavAndFooter;
+  const suspensao = user?.suspensao?.ativa ? user.suspensao : null;
 
   useEffect(() => {
     let ativo = true;
@@ -100,6 +118,10 @@ function App() {
     return <Navigate to="/aceitar-termos" replace />;
   }
 
+  if (!loading && suspensao && !rotaPermitidaDuranteSuspensao(location.pathname)) {
+    return <Navigate to="/perfil/configuracoes" replace state={{ contaSuspensa: true }} />;
+  }
+
   return (
     // .app-shell é quem pinta o fundo do app (ver base.css): o <body>
     // não reage à troca de tema em tempo de execução, um descendente sim.
@@ -107,6 +129,7 @@ function App() {
       <a className="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
       <RouteAccessibility />
       {!hideNavAndFooter && <Navbar />}
+      {suspensao && <SuspensionNotice suspensao={suspensao} />}
 
       {exibirBannerAnuncios && (
         <div className="container my-3 ad-container">

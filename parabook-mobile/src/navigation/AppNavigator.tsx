@@ -25,7 +25,8 @@ import { colors } from '../theme/colors';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator = () => {
-  const { status, isAuthenticated, logout, retrySession, sessionError } = useAuth();
+  const { status, isAuthenticated, user, logout, retrySession, sessionError } = useAuth();
+  const suspenso = Boolean(user?.suspensao?.ativa);
 
   if (status === 'loading') {
     return (
@@ -63,15 +64,15 @@ export const AppNavigator = () => {
         <>
           <Stack.Screen name="MainTabs" component={TabNavigator} />
           <Stack.Screen name="BookDetail" component={BookDetailScreen} />
-          <Stack.Screen name="Reader" component={ReaderScreen} />
-          <Stack.Screen name="MyLibrary" component={MyLibraryScreen} />
+          {!suspenso && <Stack.Screen name="Reader" component={ReaderScreen} />}
+          {!suspenso && <Stack.Screen name="MyLibrary" component={MyLibraryScreen} />}
           <Stack.Screen name="CommunityDetail" component={CommunityDetailScreen} />
           <Stack.Screen name="PostDetail" component={PostDetailScreen} />
           <Stack.Screen name="Authors" component={AuthorsScreen} />
           <Stack.Screen name="PublicProfile" component={PublicProfileScreen} />
-          <Stack.Screen name="Notifications" component={NotificationsScreen} />
-          <Stack.Screen name="Achievements" component={AchievementsScreen} />
-          <Stack.Screen name="CreateCommunity" component={CreateCommunityScreen} />
+          {!suspenso && <Stack.Screen name="Notifications" component={NotificationsScreen} />}
+          {!suspenso && <Stack.Screen name="Achievements" component={AchievementsScreen} />}
+          {!suspenso && <Stack.Screen name="CreateCommunity" component={CreateCommunityScreen} />}
         </>
       ) : (
         <>

@@ -23,6 +23,7 @@ export const colors = {
   // Status / Bordas
   border: '#1E293B',
   starYellow: '#FBBF24',
+  warning: '#F59E0B',
   error: '#F87171',
 };
 

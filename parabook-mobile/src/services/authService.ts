@@ -40,6 +40,14 @@ export interface CurrentUserProfile {
   nome: string;
   tipo: string;
   is_superuser: boolean;
+  is_staff?: boolean;
+  suspensao?: {
+    ativa: boolean;
+    protocolo: string;
+    termina_em: string;
+    segundos_restantes: number;
+    duracao_dias: number;
+  } | null;
   termos_aceitos: boolean;
   versao_termos_aceita?: string | null;
   historico?: string | null;

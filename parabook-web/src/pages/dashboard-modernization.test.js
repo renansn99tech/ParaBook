@@ -43,11 +43,13 @@ test('filas usam SweetAlert, atualização otimista e restauração em erro', ()
   assert.doesNotMatch(lixeira, /excluir_livro_permanente/);
 });
 
-test('usuários mantêm busca e filtro próprios, motivo de vazio e exportação segura', () => {
+test('usuários mantêm busca, filtro, exportação segura e governança auditável', () => {
   assert.match(usuarios, /const \[filtroUsuarios, setFiltroUsuarios\]/);
   assert.match(usuarios, /Nome, @usuário ou e-mail/);
-  assert.match(usuarios, /Nenhum resultado para/);
-  assert.match(usuarios, /Limpar busca e filtro/);
+  assert.match(usuarios, /duracao_dias/);
+  assert.match(usuarios, /senha_atual/);
+  assert.match(usuarios, /\/suspensao\//);
+  assert.match(usuarios, /\/papel\//);
   assert.match(usuarios, /\^\[=\+\\-@\]/);
   assert.match(usuarios, /Exportar lista/);
   assert.doesNotMatch(usuarios, /<img/);

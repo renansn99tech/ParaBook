@@ -29,9 +29,9 @@ test('botão circular oferece drawer de conta e atalho de duplo clique', () => {
   assert.match(navbar, /className="nav-perfil-circular"/);
   assert.match(navbar, /onClick={abrirConta}/);
   assert.match(navbar, /onDoubleClick={abrirPerfilDireto}/);
-  assert.match(navbar, /navigate\('\/perfil'\)/);
+  assert.match(navbar, /navigate\(suspenso \? '\/perfil\/configuracoes' : '\/perfil'\)/);
   assert.match(navbar, /role="dialog" aria-modal="true"/);
-  for (const opcao of ['Perfil', 'Sair', 'Minha Assinatura', 'Ranking']) {
+  for (const opcao of ['Perfil', 'Configurações', 'Sair', 'Minha Assinatura', 'Ranking']) {
     assert.ok(navbar.includes(`<strong>${opcao}</strong>`), `${opcao} precisa estar no drawer da conta`);
   }
   assert.match(css, /\.nav-account-drawer\.is-open,[\s\S]*?\.nav-menu-card\.is-open\s*{/);

@@ -88,19 +88,22 @@ function EstadoAcesso({ livro }) {
   return null;
 }
 
-function AcaoLivro({ livro, admin }) {
+function AcaoLivro({ livro, admin, suspensao }) {
   if (admin) return <Link className="bib-acao bib-acao--curadoria" to="/dashboard?aba=livros"><i className="fa-solid fa-shield-halved" aria-hidden="true"></i>Curadoria</Link>;
   if (livro.status && livro.status !== 'publicado') return <span className="bib-acao bib-acao--inerte" title="Esta obra ainda não está publicada.">Situação: {livro.status}</span>;
   const acao = resolverAcaoLivro(livro);
+  if (suspensao && acao.rotulo !== 'Ler amostra') {
+    return <span className="bib-acao bib-acao--inerte acao-suspensa" title={`Ação bloqueada até ${new Date(suspensao.termina_em).toLocaleString('pt-BR')}.`}>Conta suspensa</span>;
+  }
   const secundariaAmostra = acao.rotulo === 'Ler obra' && livro.acesso?.pode_ler_amostra;
   return <div className="bib-acoes-leitura">{acao.tipo === 'link' ? <Link className={`bib-acao bib-acao--${acao.tom}`} to={acao.destino}>{acao.rotulo}</Link> : <span className="bib-acao bib-acao--inerte" title={acao.titulo}>{acao.rotulo}</span>}{secundariaAmostra && <Link className="bib-acao-secundaria" to={`/leitura/${livro.id}?amostra=1`}>Ler amostra</Link>}</div>;
 }
 
-function CardLivro({ livro, admin, onDetalhes }) {
+function CardLivro({ livro, admin, suspensao, onDetalhes }) {
   const vigencia = formatarVigencia(livro.disponivel_ate);
   const inerte = resolverAcaoLivro(livro).tipo === 'inerte' || (livro.status && livro.status !== 'publicado');
   const avaliacao = Number(livro.avaliacao);
-  return <article className={`bib-card ${inerte ? 'is-inerte' : ''}`} data-revelar><div className="bib-card-capa"><CapaLivro livro={livro} /><div className="bib-card-selos" aria-label="Origem e modelo de acesso da obra"><SeloOrigem livro={livro} /><EstadoAcesso livro={livro} /></div></div><div className="bib-card-corpo"><div className="bib-card-titulo"><span>{livro.categoria_nome || 'Geral'}</span><h3 title={livro.titulo}>{livro.titulo}</h3><p>Por {livro.autor || 'Autoria não informada'}</p></div><div className="bib-card-metadados">{Number.isFinite(avaliacao) && avaliacao > 0 && <span><i className="fa-solid fa-star" aria-hidden="true"></i>{avaliacao.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>}{livro.territorio_cultural && <span><i className="fa-solid fa-location-dot" aria-hidden="true"></i>{livro.territorio_cultural}</span>}{vigencia && <span className={`bib-vigencia bib-vigencia--${vigencia.tom}`}><i className={`fa-solid ${vigencia.icone}`} aria-hidden="true"></i>{vigencia.rotulo}</span>}</div>{livro.modelo_acesso === 'amostra' && <p className="bib-nota-amostra">A amostra não conta leitura, XP nem entra na estante.</p>}<div className="bib-card-rodape"><AcaoLivro livro={livro} admin={admin} /><button type="button" className="bib-detalhes" onClick={(evento) => onDetalhes(livro, evento.currentTarget)} aria-label={`Ver detalhes de ${livro.titulo}`}><i className="fa-solid fa-info" aria-hidden="true"></i></button></div></div></article>;
+  return <article className={`bib-card ${inerte ? 'is-inerte' : ''}`} data-revelar><div className="bib-card-capa"><CapaLivro livro={livro} /><div className="bib-card-selos" aria-label="Origem e modelo de acesso da obra"><SeloOrigem livro={livro} /><EstadoAcesso livro={livro} /></div></div><div className="bib-card-corpo"><div className="bib-card-titulo"><span>{livro.categoria_nome || 'Geral'}</span><h3 title={livro.titulo}>{livro.titulo}</h3><p>Por {livro.autor || 'Autoria não informada'}</p></div><div className="bib-card-metadados">{Number.isFinite(avaliacao) && avaliacao > 0 && <span><i className="fa-solid fa-star" aria-hidden="true"></i>{avaliacao.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>}{livro.territorio_cultural && <span><i className="fa-solid fa-location-dot" aria-hidden="true"></i>{livro.territorio_cultural}</span>}{vigencia && <span className={`bib-vigencia bib-vigencia--${vigencia.tom}`}><i className={`fa-solid ${vigencia.icone}`} aria-hidden="true"></i>{vigencia.rotulo}</span>}</div>{livro.modelo_acesso === 'amostra' && <p className="bib-nota-amostra">A amostra não conta leitura, XP nem entra na estante.</p>}<div className="bib-card-rodape"><AcaoLivro livro={livro} admin={admin} suspensao={suspensao} /><button type="button" className="bib-detalhes" onClick={(evento) => onDetalhes(livro, evento.currentTarget)} aria-label={`Ver detalhes de ${livro.titulo}`}><i className="fa-solid fa-info" aria-hidden="true"></i></button></div></div></article>;
 }
 
 function Dialogo({ aberto, onClose, acionadorRef, tituloId, classe = '', children }) {
@@ -168,8 +171,8 @@ function BibliotecaHero({ user, admin, busca, onBusca, betaAtivo }) {
   return <header className="bib-hero" data-revelar><div className="bib-hero-conteudo"><div className="bib-eyebrow"><span>{admin ? 'Curadoria do acervo' : 'Explorar livros'}</span>{betaAtivo && <span className="bib-beta-pill"><i className="fa-solid fa-flask" aria-hidden="true"></i>Acervo Avançado · Beta</span>}</div><h1>Encontre sua próxima história</h1><p>Descubra autores independentes, vozes locais e regionais, obras licenciadas e clássicos em domínio público.</p><BuscaCatalogo busca={busca} onChange={onBusca} /></div><div className="bib-hero-acao"><span><i className="fa-solid fa-book-open-reader" aria-hidden="true"></i></span>{admin ? <Link to="/dashboard?aba=livros">Abrir curadoria</Link> : user ? <Link to="/minha-biblioteca">Minha Estante</Link> : <Link to="/register">Entrar para começar</Link>}</div></header>;
 }
 
-function SecaoCatalogo({ titulo, subtitulo, livros, admin, onDetalhes }) {
-  return <section className="bib-secao" data-revelar><header><div><span>{subtitulo}</span><h2>{titulo}</h2></div><small>{livros.length} {livros.length === 1 ? 'obra' : 'obras'}</small></header><div className="bib-grade" data-revelar-cascata>{livros.map((livro) => <CardLivro key={livro.id} livro={livro} admin={admin} onDetalhes={onDetalhes} />)}</div></section>;
+function SecaoCatalogo({ titulo, subtitulo, livros, admin, suspensao, onDetalhes }) {
+  return <section className="bib-secao" data-revelar><header><div><span>{subtitulo}</span><h2>{titulo}</h2></div><small>{livros.length} {livros.length === 1 ? 'obra' : 'obras'}</small></header><div className="bib-grade" data-revelar-cascata>{livros.map((livro) => <CardLivro key={livro.id} livro={livro} admin={admin} suspensao={suspensao} onDetalhes={onDetalhes} />)}</div></section>;
 }
 
 function CarregamentoPagina() {
@@ -219,7 +222,7 @@ function AcervoAvancadoBeta({ livros, onSelecionarColecao, onAbrirDetalhes, onDa
 }
 
 function BibliotecaBase({ children, user, admin, busca, setBusca, filtros, setFiltros, filtrosAbertos, setFiltrosAbertos, categorias, contagem, temRecorte, total, livrosFiltrados, secoes, onLimpar, onDetalhes, betaAtivo }) {
-  return <><BibliotecaHero user={user} admin={admin} busca={busca} onBusca={setBusca} betaAtivo={betaAtivo} />{admin && <aside className="bib-faixa-curadoria" role="note"><i className="fa-solid fa-shield-halved" aria-hidden="true"></i><div><strong>Visão de curadoria</strong><span>Você também vê fichas não publicadas e licenças encerradas. Nenhuma obra entra na estante por esta tela.</span></div><Link to="/dashboard?aba=livros">Gerenciar acervo</Link></aside>}<FiltrosCatalogo aberto={filtrosAbertos} onAlternar={() => setFiltrosAbertos((valor) => !valor)} filtros={filtros} categorias={categorias} contagem={contagem} onChange={(eixo, valor) => setFiltros((atuais) => ({ ...atuais, [eixo]: valor }))} onLimpar={onLimpar} temRecorte={temRecorte} /><div className="bib-resumo" aria-live="polite"><span><strong>{total}</strong> {total === 1 ? 'obra encontrada' : 'obras encontradas'}</span>{temRecorte && <small>Resultado do recorte atual</small>}</div>{children}{livrosFiltrados.length === 0 ? <EstadoCatalogo tipo="sem-resultado" onLimpar={onLimpar} /> : secoes.map((secao) => <SecaoCatalogo key={secao.id} titulo={secao.titulo} subtitulo={secao.subtitulo} livros={secao.livros} admin={admin} onDetalhes={onDetalhes} />)}</>;
+  return <><BibliotecaHero user={user} admin={admin} busca={busca} onBusca={setBusca} betaAtivo={betaAtivo} />{admin && <aside className="bib-faixa-curadoria" role="note"><i className="fa-solid fa-shield-halved" aria-hidden="true"></i><div><strong>Visão de curadoria</strong><span>Você também vê fichas não publicadas e licenças encerradas. Nenhuma obra entra na estante por esta tela.</span></div><Link to="/dashboard?aba=livros">Gerenciar acervo</Link></aside>}<FiltrosCatalogo aberto={filtrosAbertos} onAlternar={() => setFiltrosAbertos((valor) => !valor)} filtros={filtros} categorias={categorias} contagem={contagem} onChange={(eixo, valor) => setFiltros((atuais) => ({ ...atuais, [eixo]: valor }))} onLimpar={onLimpar} temRecorte={temRecorte} /><div className="bib-resumo" aria-live="polite"><span><strong>{total}</strong> {total === 1 ? 'obra encontrada' : 'obras encontradas'}</span>{temRecorte && <small>Resultado do recorte atual</small>}</div>{children}{livrosFiltrados.length === 0 ? <EstadoCatalogo tipo="sem-resultado" onLimpar={onLimpar} /> : secoes.map((secao) => <SecaoCatalogo key={secao.id} titulo={secao.titulo} subtitulo={secao.subtitulo} livros={secao.livros} admin={admin} suspensao={user?.suspensao} onDetalhes={onDetalhes} />)}</>;
 }
 
 function Biblioteca() {
@@ -237,7 +240,7 @@ function Biblioteca() {
   const [filtrosAbertos, setFiltrosAbertos] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches);
   const [livroDetalhe, setLivroDetalhe] = useState(null);
   const acionadorDetalheRef = useRef(null);
-  const admin = user?.tipo === 'admin' && Boolean(user?.is_staff || user?.is_superuser);
+  const admin = ['moderador', 'admin'].includes(user?.tipo) && Boolean(user?.is_staff || user?.is_superuser);
   const paginaRef = useRevelacao([livros, categorias, loading, acervoAvancadoBeta, busca, filtros]);
   const interpretarFlag = useCallback((payload) => payload?.acervo_avancado_beta === true, []);
   useEffect(() => {

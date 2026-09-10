@@ -63,7 +63,7 @@ function GrupoConfiguracao({ titulo, descricao, admin = false, children }) {
 }
 
 function ConfiguracoesAvancadas({ user, mostrarAtalhoPagina = false }) {
-  const adminAutorizado = user?.tipo === 'admin' && Boolean(user?.is_staff || user?.is_superuser);
+  const adminAutorizado = ['moderador', 'admin'].includes(user?.tipo) && Boolean(user?.is_staff || user?.is_superuser);
 
   return (
     <div className="config-avancado-conteudo">
@@ -81,6 +81,7 @@ function ConfiguracoesAvancadas({ user, mostrarAtalhoPagina = false }) {
         <ItemConfiguracao icone="fa-key" titulo="Alterar senha" to="/perfil/alterar-senha" />
         <ItemConfiguracao icone="fa-laptop" titulo="Sessões e dispositivos" indisponivel />
         <ItemConfiguracao icone="fa-shield-halved" titulo="Verificação em duas etapas" indisponivel />
+        <ItemConfiguracao icone="fa-headset" titulo="Falar com o suporte" to="/perfil/configuracoes/suporte" />
       </GrupoConfiguracao>
 
       <GrupoConfiguracao titulo="Privacidade, dados e leitura">

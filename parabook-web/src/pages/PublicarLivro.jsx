@@ -65,7 +65,7 @@ function PublicarLivro() {
   }
 
   // Verifica se está logado e se tem permissão (autor ou admin)
-  const isAuthorized = user && (user.tipo === 'autor' || user.tipo === 'admin');
+  const isAuthorized = user && (user.tipo === 'autor' || ['moderador', 'admin'].includes(user.tipo));
 
   if (!isAuthorized) {
     return (

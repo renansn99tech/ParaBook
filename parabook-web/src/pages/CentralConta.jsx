@@ -17,7 +17,7 @@ function Aparencia() {
     setSalvando(chave);
     setMensagem('');
     try {
-      const resposta = await api.patch('/perfis/meu-perfil/', { tipografia: chave });
+      const resposta = await api.patch('/auth/aparencia/', { tipografia: chave });
       const efetiva = resposta.data.tipografia_efetiva;
       setSelecionada(efetiva);
       aplicarTipografia(efetiva);
@@ -73,9 +73,36 @@ function Auditoria() {
   return <ul className="central-conta-lista">{registros.map((item) => <li key={item.id}><span><strong>{item.acao}</strong><small>{item.ator} · {item.recurso} #{item.recurso_id || '—'} · {new Date(item.criado_em).toLocaleString('pt-BR')}</small></span><span>{item.sucesso ? 'Sucesso' : 'Falha'}</span></li>)}</ul>;
 }
 
+function Suporte() {
+  const [itens, setItens] = useState([]);
+  const [assunto, setAssunto] = useState('');
+  const [mensagem, setMensagem] = useState('');
+  const [estado, setEstado] = useState('');
+
+  const carregar = () => api.get('/auth/suporte/').then((res) => setItens(res.data));
+  useEffect(() => { carregar(); }, []);
+
+  const enviar = async (evento) => {
+    evento.preventDefault();
+    setEstado('Enviando...');
+    try {
+      await api.post('/auth/suporte/', { categoria: 'conta', assunto, mensagem });
+      setAssunto('');
+      setMensagem('');
+      setEstado('Solicitação registrada. Guarde o protocolo exibido abaixo.');
+      await carregar();
+    } catch (error) {
+      setEstado(error.response?.data?.detail || Object.values(error.response?.data || {}).flat()[0] || 'Não foi possível enviar a solicitação.');
+    }
+  };
+
+  return <div className="central-conta-suporte"><form onSubmit={enviar}><label htmlFor="suporte-assunto">Assunto</label><input id="suporte-assunto" value={assunto} minLength="5" maxLength="120" required onChange={(e) => setAssunto(e.target.value)} /><label htmlFor="suporte-mensagem">Como podemos ajudar?</label><textarea id="suporte-mensagem" value={mensagem} minLength="20" maxLength="4000" required onChange={(e) => setMensagem(e.target.value)} /><button type="submit" className="btn-primary-action">Enviar ao suporte</button>{estado && <p role="status">{estado}</p>}</form><h2>Meus protocolos</h2>{itens.length ? <ul className="central-conta-lista">{itens.map((item) => <li key={item.id}><span><strong>{item.assunto}</strong><small>{item.protocolo} · {item.status}</small>{item.resposta && <p>{item.resposta}</p>}</span></li>)}</ul> : <p>Nenhuma solicitação registrada.</p>}</div>;
+}
+
 const PAGINAS = {
   aparencia: ['Tipografia e aparência', Aparencia, false],
   notificacoes: ['Notificações e e-mails', Preferencias, false],
+  suporte: ['Falar com o suporte', Suporte, false],
   auditoria: ['Trilha de auditoria', Auditoria, true],
 };
 
@@ -87,7 +114,7 @@ function CentralConta() {
   if (!user) return <Navigate to="/login" replace />;
   if (!pagina) return <Navigate to="/perfil/configuracoes" replace />;
   const [titulo, Conteudo, exigeAdmin] = pagina;
-  const admin = user.tipo === 'admin' && Boolean(user.is_staff || user.is_superuser);
+  const admin = ['moderador', 'admin'].includes(user.tipo) && Boolean(user.is_staff || user.is_superuser);
   if (exigeAdmin && !admin) return <Navigate to="/perfil/configuracoes" replace />;
   return <main className="central-conta-page"><header><Link to="/perfil/configuracoes"><i className="fa-solid fa-arrow-left" aria-hidden="true"></i> Configurações</Link><h1>{titulo}</h1><p>Configurações protegidas da sua conta ParaBook.</p></header><section className="content-glass-card"><Conteudo /></section></main>;
 }

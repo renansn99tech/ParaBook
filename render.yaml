@@ -18,6 +18,13 @@ services:
         generateValue: true
       - key: FRONTEND_URL
         sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: PUBLIC_SITE_DOMAIN
+        sync: false
+      # Ativar somente no corte DNS, junto de cookies Lax e allowlists próprias.
+      - key: SHARED_SITE_ENFORCED
+        value: "False"
       - key: DATABASE_URL
         sync: false
       # Credencial proprietária usada somente no passo de migration. O processo

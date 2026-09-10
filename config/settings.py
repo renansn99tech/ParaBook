@@ -30,6 +30,9 @@ SECRET_KEY = config('SECRET_KEY', default=_development_secret)
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173').rstrip('/')
+BACKEND_URL = config('BACKEND_URL', default='').rstrip('/')
+PUBLIC_SITE_DOMAIN = config('PUBLIC_SITE_DOMAIN', default='').strip()
+SHARED_SITE_ENFORCED = config('SHARED_SITE_ENFORCED', default=False, cast=bool)
 
 if not DEBUG and SECRET_KEY == _development_secret:
     raise ImproperlyConfigured('SECRET_KEY é obrigatória quando DEBUG=False.')
@@ -65,7 +68,10 @@ if not DEBUG:
 # de dev com 403 CSRF.
 CSRF_TRUSTED_ORIGINS = env_list(
     'CSRF_TRUSTED_ORIGINS',
-    default="http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1",
+    default=(
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1"
+        if DEBUG else ''
+    ),
 )
 
 if not DEBUG:
@@ -155,6 +161,7 @@ CORS_ALLOWED_ORIGINS = env_list(
     default=(
         "http://localhost:5173,http://127.0.0.1:5173,"
         "http://localhost:8081,http://127.0.0.1:8081"
+        if DEBUG else ''
     ),
 )
 
@@ -458,6 +465,26 @@ if (
     raise ImproperlyConfigured(
         'Cookies com SameSite=None devem usar Secure=True.'
     )
+
+if not DEBUG and SHARED_SITE_ENFORCED:
+    from config.deployment_boundary import validar_fronteira_compartilhada
+
+    try:
+        validar_fronteira_compartilhada(
+            site_domain=PUBLIC_SITE_DOMAIN,
+            frontend_url=FRONTEND_URL,
+            backend_url=BACKEND_URL,
+            allowed_hosts=ALLOWED_HOSTS,
+            cors_origins=CORS_ALLOWED_ORIGINS,
+            csrf_origins=CSRF_TRUSTED_ORIGINS,
+            cookie_samesites=[
+                JWT_COOKIE_SAMESITE,
+                CSRF_COOKIE_SAMESITE,
+                SESSION_COOKIE_SAMESITE,
+            ],
+        )
+    except ValueError as exc:
+        raise ImproperlyConfigured(str(exc)) from exc
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'ParaBook API',

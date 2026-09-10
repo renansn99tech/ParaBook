@@ -10,6 +10,8 @@ from django.utils import timezone
 from rest_framework import permissions, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 
 from biblioteca.models import Biblioteca, EventoLeitura, Livro
 from biblioteca.services import verificar_acesso_obra
@@ -42,6 +44,82 @@ class EventoLeituraEntradaSerializer(serializers.Serializer):
     pagina = serializers.IntegerField(min_value=0)
     sessao_id = serializers.UUIDField()
     duracao_segundos = serializers.IntegerField(min_value=0, max_value=1800, default=0)
+
+
+class EventoLeituraResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    percentual = serializers.IntegerField(min_value=0, max_value=100)
+
+
+class ValorNumericoDeltaSerializer(serializers.Serializer):
+    valor = serializers.IntegerField()
+    delta = serializers.CharField()
+
+
+class NotaDeltaSerializer(serializers.Serializer):
+    valor = serializers.DecimalField(max_digits=2, decimal_places=1, allow_null=True)
+    delta = serializers.CharField()
+
+
+class TendenciaSerializer(serializers.Serializer):
+    valor = serializers.IntegerField()
+    rotulo = serializers.CharField()
+    direcao = serializers.CharField()
+
+
+class KpisAutorSerializer(serializers.Serializer):
+    leituras = ValorNumericoDeltaSerializer()
+    leitores_unicos = ValorNumericoDeltaSerializer()
+    novos_favoritos = ValorNumericoDeltaSerializer()
+    nota_media = NotaDeltaSerializer()
+
+
+class PontoSerieSerializer(serializers.Serializer):
+    rotulo = serializers.CharField()
+    valor = serializers.IntegerField()
+
+
+class ObraAnalyticsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    titulo = serializers.CharField()
+    status = serializers.CharField()
+    detalhe = serializers.CharField()
+    leituras = serializers.IntegerField()
+    favoritos = serializers.IntegerField()
+    nota = serializers.CharField(allow_null=True)
+
+
+class ComentarioAnalyticsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    autor = serializers.CharField()
+    obra_id = serializers.IntegerField()
+    obra = serializers.CharField()
+    texto = serializers.CharField()
+    quando = serializers.DateTimeField()
+
+
+class AnalyticsAutorResponseSerializer(serializers.Serializer):
+    periodo = serializers.ChoiceField(choices=[7, 30, 90])
+    titulo_periodo = serializers.CharField()
+    total_publicadas = serializers.IntegerField()
+    total_obras = serializers.IntegerField()
+    historico_parcial = serializers.BooleanField()
+    tendencia = TendenciaSerializer()
+    kpis = KpisAutorSerializer()
+    serie = PontoSerieSerializer(many=True)
+    obras = ObraAnalyticsSerializer(many=True)
+    comentarios = ComentarioAnalyticsSerializer(many=True)
+    analytics_avancado = serializers.BooleanField()
+    analytics_avancado_em_breve = serializers.BooleanField()
+
+
+PERIODO_PARAMETER = OpenApiParameter(
+    name='periodo',
+    type=OpenApiTypes.INT,
+    location=OpenApiParameter.QUERY,
+    enum=[7, 30, 90],
+    default=30,
+)
 
 
 def _periodo(request):
@@ -151,6 +229,7 @@ def _status_obra(livro):
 class EventoLeituraCreateAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(request=EventoLeituraEntradaSerializer, responses={201: EventoLeituraResponseSerializer})
     def post(self, request, *args, **kwargs):
         entrada = EventoLeituraEntradaSerializer(data=request.data)
         entrada.is_valid(raise_exception=True)
@@ -192,6 +271,7 @@ class EventoLeituraCreateAPIView(APIView):
 class AnalyticsAutorResumoAPIView(APIView):
     permission_classes = [EhAutorOuAdmin]
 
+    @extend_schema(parameters=[PERIODO_PARAMETER], responses=AnalyticsAutorResponseSerializer)
     def get(self, request, *args, **kwargs):
         periodo = _periodo(request)
         inicio, hoje = _inicio_periodo(periodo)
@@ -322,6 +402,13 @@ def _valor_csv_seguro(valor):
 class AnalyticsAutorExportarAPIView(APIView):
     permission_classes = [EhAutorOuAdmin]
 
+    @extend_schema(
+        parameters=[
+            PERIODO_PARAMETER,
+            OpenApiParameter('obra', OpenApiTypes.STR, OpenApiParameter.QUERY),
+        ],
+        responses={200: OpenApiResponse(response=OpenApiTypes.BINARY, description='CSV UTF-8 com métricas do autor.')},
+    )
     def get(self, request, *args, **kwargs):
         periodo = _periodo(request)
         inicio, _hoje = _inicio_periodo(periodo)

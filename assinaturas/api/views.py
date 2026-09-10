@@ -8,6 +8,26 @@ from assinaturas.models import Plano, Assinatura
 from .serializers import PlanoSerializer, AssinaturaSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
+from rest_framework import serializers
+
+
+class AssinaturaAusenteSerializer(serializers.Serializer):
+    detail = serializers.CharField()
+    assinatura = serializers.JSONField(allow_null=True)
+
+
+class CheckoutRequestSerializer(serializers.Serializer):
+    plano_id = serializers.IntegerField(min_value=1)
+
+
+class CheckoutResponseSerializer(serializers.Serializer):
+    url = serializers.URLField()
+    gratuito = serializers.BooleanField(required=False)
+
+
+class PortalResponseSerializer(serializers.Serializer):
+    url = serializers.URLField()
 
 
 class PlanoViewSet(viewsets.ReadOnlyModelViewSet):
@@ -19,6 +39,7 @@ class PlanoViewSet(viewsets.ReadOnlyModelViewSet):
 class MinhaAssinaturaAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses={200: AssinaturaSerializer, 404: AssinaturaAusenteSerializer})
     def get(self, request):
         try:
             assinatura = Assinatura.objects.get(usuario=request.user)
@@ -36,6 +57,7 @@ class CheckoutSessionAPIView(APIView):
     """Inicia assinatura sem aceitar URLs de retorno controladas pelo cliente."""
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(request=CheckoutRequestSerializer, responses=CheckoutResponseSerializer)
     def post(self, request):
         plano = get_object_or_404(Plano, pk=request.data.get('plano_id'))
 
@@ -106,6 +128,7 @@ class PortalSessionAPIView(APIView):
     só que devolvendo a URL em JSON em vez de redirecionar - quem redireciona é o React)."""
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses=PortalResponseSerializer)
     def get(self, request):
         if not settings.PAYMENTS_ENABLED:
             return Response(

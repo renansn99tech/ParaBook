@@ -31,7 +31,32 @@ from .serializers import (
     PasswordResetConfirmSerializer,
     ReauthenticateSerializer,
 )
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+from .schema import (
+    AceitarTermosResponseSerializer,
+    ChangePasswordRequestSerializer,
+    ChangePasswordResponseSerializer,
+    CookieLoginResponseSerializer,
+    CsrfTokenResponseSerializer,
+    DetailResponseSerializer,
+    DoisFatoresConfiguracaoSerializer,
+    DoisFatoresRequestSerializer,
+    DoisFatoresStatusSerializer,
+    EncerrarSessaoRequestSerializer,
+    GovernancaLegalResponseSerializer,
+    LoginRequestSerializer,
+    MobileLoginResponseSerializer,
+    MobileLogoutRequestSerializer,
+    MobileRefreshRequestSerializer,
+    MobileRefreshResponseSerializer,
+    PreferenciaAparenciaRequestSerializer,
+    PreferenciaAparenciaResponseSerializer,
+    PreferenciasNotificacaoSerializer,
+    SessaoDispositivoSerializer,
+    SolicitacaoSuporteRequestSerializer,
+    SolicitacaoSuporteSerializer,
+)
 from .throttles import AuthRateThrottle, PasswordResetRateThrottle
 from usuarios.audit import registrar_acao
 from usuarios.security import (
@@ -82,6 +107,7 @@ class CsrfTokenAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
 
+    @extend_schema(responses=CsrfTokenResponseSerializer)
     def get(self, request):
         return Response({'csrfToken': get_token(request)})
 
@@ -92,6 +118,7 @@ class GovernancaLegalAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
 
+    @extend_schema(responses=GovernancaLegalResponseSerializer)
     def get(self, request):
         controller_ready = all([
             settings.LEGAL_CONTROLLER_NAME,
@@ -117,6 +144,10 @@ class CookieTokenObtainPairAPIView(APIView):
     authentication_classes = []
     throttle_classes = [AuthRateThrottle]
 
+    @extend_schema(
+        request=LoginRequestSerializer,
+        responses={200: CookieLoginResponseSerializer, 202: CookieLoginResponseSerializer},
+    )
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -162,6 +193,10 @@ class MobileTokenObtainPairAPIView(APIView):
     def get_authenticate_header(self, request):
         return 'Bearer realm="api"'
 
+    @extend_schema(
+        request=LoginRequestSerializer,
+        responses={200: MobileLoginResponseSerializer, 202: MobileLoginResponseSerializer},
+    )
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -204,6 +239,7 @@ class MobileTokenRefreshAPIView(APIView):
     authentication_classes = []
     throttle_classes = [AuthRateThrottle]
 
+    @extend_schema(request=MobileRefreshRequestSerializer, responses=MobileRefreshResponseSerializer)
     def post(self, request):
         raw_refresh = request.data.get('refresh')
         if not raw_refresh:
@@ -237,6 +273,7 @@ class MobileLogoutAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
 
+    @extend_schema(request=MobileLogoutRequestSerializer, responses=DetailResponseSerializer)
     def post(self, request):
         raw_refresh = request.data.get('refresh')
         if raw_refresh:
@@ -260,6 +297,7 @@ class CookieTokenRefreshAPIView(APIView):
     authentication_classes = []
     throttle_classes = [AuthRateThrottle]
 
+    @extend_schema(request=None, responses=DetailResponseSerializer)
     def post(self, request):
         raw_refresh = request.COOKIES.get(settings.JWT_REFRESH_COOKIE_NAME)
         if not raw_refresh:
@@ -291,6 +329,7 @@ class LogoutAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
 
+    @extend_schema(request=None, responses=DetailResponseSerializer)
     def post(self, request):
         raw_refresh = request.COOKIES.get(settings.JWT_REFRESH_COOKIE_NAME)
         if raw_refresh:
@@ -312,7 +351,7 @@ class RegisterAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [AuthRateThrottle]
 
-    @extend_schema(request=RegisterSerializer, responses={201: None})
+    @extend_schema(request=RegisterSerializer, responses={201: DetailResponseSerializer})
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -337,7 +376,7 @@ class MobileRegisterAPIView(APIView):
     authentication_classes = []
     throttle_classes = [AuthRateThrottle]
 
-    @extend_schema(request=RegisterSerializer, responses={201: None})
+    @extend_schema(request=RegisterSerializer, responses={201: MobileLoginResponseSerializer})
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -368,6 +407,7 @@ class UserProfileAPIView(generics.RetrieveAPIView):
 class SessoesDispositivoAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses=SessaoDispositivoSerializer(many=True))
     def get(self, request):
         sid_atual = str(request.auth.get('sid', '')) if request.auth else ''
         sessoes = SessaoDispositivo.objects.filter(
@@ -387,6 +427,7 @@ class SessoesDispositivoAPIView(APIView):
             for sessao in sessoes
         ])
 
+    @extend_schema(request=EncerrarSessaoRequestSerializer, responses=DetailResponseSerializer)
     def delete(self, request):
         sessao_id = request.data.get('sessao_id')
         encerrar_todas = request.data.get('todas') is True
@@ -416,10 +457,12 @@ class SessoesDispositivoAPIView(APIView):
 class AutenticacaoDoisFatoresAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses=DoisFatoresStatusSerializer)
     def get(self, request):
         configuracao = AutenticacaoDoisFatores.objects.filter(usuario=request.user).first()
         return Response({'habilitada': bool(configuracao and configuracao.habilitada), 'metodo': 'totp'})
 
+    @extend_schema(request=DoisFatoresRequestSerializer, responses=DoisFatoresConfiguracaoSerializer)
     def post(self, request):
         acao = request.data.get('acao')
         if not request.user.check_password(request.data.get('senha_atual', '')):
@@ -450,6 +493,7 @@ class AutenticacaoDoisFatoresAPIView(APIView):
 
         return Response({'acao': ['Ação inválida.']}, status=400)
 
+    @extend_schema(request=DoisFatoresRequestSerializer, responses=DetailResponseSerializer)
     def delete(self, request):
         if not request.user.check_password(request.data.get('senha_atual', '')):
             return Response({'senha_atual': ['Senha atual incorreta.']}, status=400)
@@ -467,9 +511,11 @@ class AutenticacaoDoisFatoresAPIView(APIView):
 class PreferenciasNotificacaoAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses=PreferenciasNotificacaoSerializer)
     def get(self, request):
         return Response(self._dados(obter_ou_criar_usuario_customizado(request.user)))
 
+    @extend_schema(request=PreferenciasNotificacaoSerializer, responses=PreferenciasNotificacaoSerializer)
     def patch(self, request):
         usuario = obter_ou_criar_usuario_customizado(request.user)
         campos = ('notificacoes_email', 'notificacoes_comunidades', 'notificacoes_assinaturas')
@@ -497,12 +543,17 @@ class PreferenciasNotificacaoAPIView(APIView):
 class PreferenciaAparenciaAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses=PreferenciaAparenciaRequestSerializer)
     def get(self, request):
         perfil = getattr(request.user, 'perfil', None)
         if not perfil:
             return Response({'detail': 'Perfil não encontrado.'}, status=404)
         return Response({'tipografia': perfil.tipografia})
 
+    @extend_schema(
+        request=PreferenciaAparenciaRequestSerializer,
+        responses=PreferenciaAparenciaResponseSerializer,
+    )
     def patch(self, request):
         from perfis.api.serializers import PerfilSerializer
 
@@ -525,10 +576,15 @@ class SolicitacoesSuporteAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses=SolicitacaoSuporteSerializer(many=True))
     def get(self, request):
         itens = SolicitacaoSuporte.objects.filter(usuario=request.user)[:50]
         return Response([self._serializar(item) for item in itens])
 
+    @extend_schema(
+        request=SolicitacaoSuporteRequestSerializer,
+        responses={201: SolicitacaoSuporteSerializer},
+    )
     def post(self, request):
         assunto = str(request.data.get('assunto', '')).strip()[:120]
         mensagem = str(request.data.get('mensagem', '')).strip()[:4000]
@@ -570,6 +626,14 @@ class SolicitacoesSuporteAPIView(APIView):
 class ExportarDadosAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.BINARY,
+                description='Exportação JSON dos dados do titular.',
+            )
+        }
+    )
     def get(self, request):
         usuario = obter_ou_criar_usuario_customizado(request.user)
         perfil = getattr(request.user, 'perfil', None)
@@ -688,6 +752,7 @@ class ExcluirContaAPIView(APIView):
 class ChangePasswordAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(request=ChangePasswordRequestSerializer, responses=ChangePasswordResponseSerializer)
     def post(self, request):
         user = request.user
         senha_antiga = request.data.get('senha_antiga')
@@ -724,7 +789,7 @@ class PasswordResetRequestAPIView(APIView):
         "redefinição de senha em instantes."
     )
 
-    @extend_schema(request=PasswordResetRequestSerializer, responses={200: None})
+    @extend_schema(request=PasswordResetRequestSerializer, responses={200: DetailResponseSerializer})
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -758,7 +823,7 @@ class PasswordResetConfirmAPIView(APIView):
     """Valida o par uid/token do email e efetiva a nova senha."""
     permission_classes = [permissions.AllowAny]
 
-    @extend_schema(request=PasswordResetConfirmSerializer, responses={200: None})
+    @extend_schema(request=PasswordResetConfirmSerializer, responses={200: DetailResponseSerializer})
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -786,7 +851,7 @@ class AceitarTermosAPIView(APIView):
     """Registra o aceite dos termos de uso (mesma regra da view legada usuarios.views.aceitar_termos)."""
     permission_classes = [permissions.IsAuthenticated]
 
-    @extend_schema(request=None, responses={200: None})
+    @extend_schema(request=None, responses={200: AceitarTermosResponseSerializer})
     def post(self, request):
         usuario_custom = obter_ou_criar_usuario_customizado(request.user)
 

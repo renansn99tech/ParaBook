@@ -25,6 +25,10 @@ jobs:
       SECRET_KEY: ci-only-secret-not-for-production
     steps:
       - uses: actions/checkout@v4
+        with:
+          # A verificação de compatibilidade usa a base real do push/PR, que
+          # pode estar vários commits atrás do HEAD atual.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
@@ -32,6 +36,27 @@ jobs:
       - run: pip install -r requirements.txt pip-audit
       - run: python manage.py check
       - run: python manage.py makemigrations --check --dry-run
+      - name: Generate strict OpenAPI schema
+        run: python manage.py spectacular --validate --fail-on-warn --format openapi-json --file "${RUNNER_TEMP}/parabook-openapi.json"
+      - name: Check canonical schema and web/Expo consumers
+        run: python scripts/check_openapi_contracts.py --schema "${RUNNER_TEMP}/parabook-openapi.json" --canonical contracts/openapi.json
+      - name: Reject breaking OpenAPI changes
+        shell: bash
+        env:
+          OPENAPI_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          ZERO_SHA='0000000000000000000000000000000000000000'
+          if [ -z "${OPENAPI_BASE_SHA}" ] || [ "${OPENAPI_BASE_SHA}" = "${ZERO_SHA}" ]; then
+            echo 'Primeiro baseline OpenAPI: comparação histórica ainda não aplicável.'
+          elif ! git cat-file -e "${OPENAPI_BASE_SHA}^{commit}" 2>/dev/null; then
+            echo "A base real ${OPENAPI_BASE_SHA} não está disponível para comparação." >&2
+            exit 1
+          elif git cat-file -e "${OPENAPI_BASE_SHA}:contracts/openapi.json" 2>/dev/null; then
+            git show "${OPENAPI_BASE_SHA}:contracts/openapi.json" > "${RUNNER_TEMP}/parabook-openapi-base.json"
+            python scripts/check_openapi_compatibility.py --baseline "${RUNNER_TEMP}/parabook-openapi-base.json" --candidate contracts/openapi.json
+          else
+            echo 'Primeiro baseline OpenAPI: o commit-base ainda não possui contrato canônico.'
+          fi
       - name: Validate production static assets
         env:
           STATICFILES_USE_MANIFEST: 'True'

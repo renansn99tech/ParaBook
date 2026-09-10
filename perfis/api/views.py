@@ -31,6 +31,16 @@ from biblioteca.models import Biblioteca, Denuncia, Livro, SolicitacaoPublicacao
 from comunidades.models import Comunidade, DenunciaComunidade, PostagemComunidade
 from gamificacao.models import ConquistaUsuario
 from notificacoes.models import Notificacao
+from drf_spectacular.utils import extend_schema
+from .schema import (
+    AutorResumoSerializer,
+    HistoricoPerfilResponseSerializer,
+    InicioPersonalizadoResponseSerializer,
+    OnboardingAdiadoSerializer,
+    PerfilPublicoResponseSerializer,
+    ResumoLeituraResponseSerializer,
+    SolicitarAutorResponseSerializer,
+)
 
 class AdiarOnboardingAPIView(APIView):
     """Registra que o modal "Termine seu cadastro" foi exibido/dispensado.
@@ -40,6 +50,7 @@ class AdiarOnboardingAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses=OnboardingAdiadoSerializer)
     def post(self, request, *args, **kwargs):
         usuario = obter_ou_criar_usuario_customizado(request.user)
         if (usuario.onboarding_lembretes or 0) < 2:
@@ -53,6 +64,7 @@ class HistoricoPerfilAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=HistoricoPerfilResponseSerializer)
     def get(self, request, *args, **kwargs):
         eventos = []
         eventos_livros = []
@@ -155,6 +167,7 @@ class ResumoLeituraAPIView(APIView):
     permission_classes = [IsAuthenticated]
     LIMITE_SESSAO_SEGUNDOS = 8 * 60 * 60
 
+    @extend_schema(responses=ResumoLeituraResponseSerializer)
     def get(self, request, *args, **kwargs):
         itens = Biblioteca.objects.filter(user=request.user).select_related(
             'livro', 'livro__categoria',
@@ -266,6 +279,7 @@ class InicioPersonalizadoAPIView(APIView):
     permission_classes = [IsAuthenticated]
     TOTAL_DESCOBERTAS = 3
 
+    @extend_schema(responses=InicioPersonalizadoResponseSerializer)
     def get(self, request, *args, **kwargs):
         usuario = obter_ou_criar_usuario_customizado(request.user)
         itens = Biblioteca.objects.filter(user=request.user)
@@ -431,6 +445,7 @@ class InicioPersonalizadoAPIView(APIView):
 class PerfilPublicoAPIView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(responses=PerfilPublicoResponseSerializer)
     def get(self, request, username, *args, **kwargs):
         try:
             dados_usuario = Usuario.objects.get(user_auth__username=username)
@@ -738,6 +753,7 @@ class SolicitarAutorAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses=SolicitarAutorResponseSerializer)
     def post(self, request, *args, **kwargs):
         usuario_custom = obter_ou_criar_usuario_customizado(request.user)
 
@@ -757,6 +773,7 @@ class SolicitarAutorAPIView(APIView):
 
 
 class AutoresListAPIView(APIView):
+    @extend_schema(responses=AutorResumoSerializer(many=True))
     def get(self, request, *args, **kwargs):
         autores = Usuario.objects.filter(tipo='autor').select_related('user_auth', 'perfil')
         data = []

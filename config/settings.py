@@ -466,6 +466,10 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # 'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
     'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+    'ENUM_NAME_OVERRIDES': {
+        'LivroStatusEnum': 'biblioteca.models.Livro.STATUS_CHOICES',
+        'EstanteStatusEnum': 'biblioteca.models.Biblioteca.STATUS_CHOICES',
+    },
 }
 
 # Configuração da Stripe com tratativa para variáveis ausentes

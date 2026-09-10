@@ -36,18 +36,18 @@ class LivroSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['avaliacao', 'status']
 
-    def get_capa_url(self, obj):
+    def get_capa_url(self, obj) -> str | None:
         if obj.capa:
             return obj.capa.url
         return None
 
-    def get_pdf_disponivel(self, obj):
+    def get_pdf_disponivel(self, obj) -> bool:
         return bool(obj.pdf)
 
-    def get_selo_independente(self, obj):
+    def get_selo_independente(self, obj) -> bool:
         return obj.origem == 'autor_independente'
 
-    def get_acesso(self, obj):
+    def get_acesso(self, obj) -> dict:
         request = self.context.get('request')
         user = request.user if request else None
         return verificar_acesso_obra(user, obj).para_api()
@@ -86,7 +86,7 @@ class EstanteSerializer(serializers.ModelSerializer):
         fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'livro_paginas', 'livro_status', 'status', 'favorito', 'nota', 'resenha', 'pagina_atual', 'ultima_leitura_em', 'data_conclusao', 'avaliada_em', 'data_adicao']
         read_only_fields = ['user', 'avaliada_em']
 
-    def get_livro_capa(self, obj):
+    def get_livro_capa(self, obj) -> str | None:
         if obj.livro and obj.livro.capa:
             return obj.livro.capa.url
         return None

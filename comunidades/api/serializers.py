@@ -36,17 +36,17 @@ class MembroComunidadeSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'nome_exibicao', 'e_criador', 'perfil_clicavel']
 
-    def get_username(self, obj):
+    def get_username(self, obj) -> str:
         return _identidade(self, obj)['username']
 
-    def get_nome_exibicao(self, obj):
+    def get_nome_exibicao(self, obj) -> str:
         return _identidade(self, obj)['nome_exibicao']
 
-    def get_e_criador(self, obj):
+    def get_e_criador(self, obj) -> bool:
         comunidade = self.context.get('comunidade')
         return bool(comunidade and comunidade.criador_id == obj.id)
 
-    def get_perfil_clicavel(self, obj):
+    def get_perfil_clicavel(self, obj) -> bool:
         return _identidade(self, obj)['perfil_clicavel']
 
 class RespostaPostagemSerializer(serializers.ModelSerializer):
@@ -62,10 +62,10 @@ class RespostaPostagemSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'autor', 'criado_em', 'atualizado_em']
 
-    def get_autor_nome(self, obj):
+    def get_autor_nome(self, obj) -> str:
         return _identidade(self, obj.autor)['username']
 
-    def get_autor_perfil_clicavel(self, obj):
+    def get_autor_perfil_clicavel(self, obj) -> bool:
         return _identidade(self, obj.autor)['perfil_clicavel']
 
 
@@ -79,14 +79,14 @@ class PostagemComunidadeSerializer(serializers.ModelSerializer):
         fields = ['id', 'comunidade', 'autor', 'autor_nome', 'autor_perfil_clicavel', 'titulo', 'conteudo', 'imagem', 'total_respostas', 'criado_em', 'atualizado_em']
         read_only_fields = ['id', 'autor', 'criado_em', 'atualizado_em']
 
-    def get_total_respostas(self, obj):
+    def get_total_respostas(self, obj) -> int:
         anotado = getattr(obj, 'total_respostas_anotado', None)
         return anotado if anotado is not None else obj.respostas.count()
 
-    def get_autor_nome(self, obj):
+    def get_autor_nome(self, obj) -> str:
         return _identidade(self, obj.autor)['username']
 
-    def get_autor_perfil_clicavel(self, obj):
+    def get_autor_perfil_clicavel(self, obj) -> bool:
         return _identidade(self, obj.autor)['perfil_clicavel']
 
 class ComunidadeSerializer(serializers.ModelSerializer):
@@ -110,22 +110,22 @@ class ComunidadeSerializer(serializers.ModelSerializer):
             'total_denuncias', 'em_manutencao', 'max_participantes',
         ]
 
-    def get_total_membros(self, obj):
+    def get_total_membros(self, obj) -> int:
         return obj.membros.count()
 
-    def get_criador_nome(self, obj):
+    def get_criador_nome(self, obj) -> str | None:
         return _identidade(self, obj.criador)['username'] if obj.criador else None
 
-    def get_criador_perfil_clicavel(self, obj):
+    def get_criador_perfil_clicavel(self, obj) -> bool:
         return _identidade(self, obj.criador)['perfil_clicavel'] if obj.criador else False
 
-    def get_usuario_participa(self, obj):
+    def get_usuario_participa(self, obj) -> bool:
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             return obj.membros.filter(id=request.user.id).exists()
         return False
 
-    def get_usuario_e_dono(self, obj):
+    def get_usuario_e_dono(self, obj) -> bool:
         """Permite ao front exibir os botões de editar/excluir só para o criador."""
         request = self.context.get('request')
         if request and request.user.is_authenticated:

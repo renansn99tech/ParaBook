@@ -18,7 +18,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     user_auth = UserAuthSerializer(read_only=True)
     suspensao = serializers.SerializerMethodField()
 
-    def get_suspensao(self, obj):
+    def get_suspensao(self, obj) -> dict | None:
         from usuarios.governanca import dados_suspensao_ativa
         return dados_suspensao_ativa(obj.user_auth)
 

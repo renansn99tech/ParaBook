@@ -245,6 +245,7 @@ export const authService = {
     const endpoint = '/auth/mobile-register/';
 
     try {
+      // openapi-contract: POST /auth/mobile-register/
       const response = await api.post(endpoint, {
         username: payload.username,
         email: payload.email,

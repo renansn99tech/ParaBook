@@ -70,7 +70,7 @@ class PerfilSerializer(serializers.ModelSerializer):
             chaves.add(Perfil.Tipografia.EDICAO_PREMIUM)
         return chaves
 
-    def get_termos_aceitos(self, obj):
+    def get_termos_aceitos(self, obj) -> bool:
         usuario = getattr(obj.usuario, 'perfil_customizado', None)
         return bool(
             usuario
@@ -78,15 +78,15 @@ class PerfilSerializer(serializers.ModelSerializer):
             and usuario.versao_termos_aceita == settings.TERMS_VERSION
         )
 
-    def get_onboarding_pendente(self, obj):
+    def get_onboarding_pendente(self, obj) -> bool:
         usuario = getattr(obj.usuario, 'perfil_customizado', None)
         return bool(usuario and usuario.onboarding_perfil_pendente())
 
-    def get_is_premium(self, obj):
+    def get_is_premium(self, obj) -> bool:
         usuario = self._usuario_customizado(obj)
         return bool(usuario and usuario.is_premium)
 
-    def get_suspensao(self, obj):
+    def get_suspensao(self, obj) -> dict | None:
         from usuarios.governanca import dados_suspensao_ativa
         return dados_suspensao_ativa(obj.usuario)
 
@@ -97,7 +97,7 @@ class PerfilSerializer(serializers.ModelSerializer):
         nascimento = interpretar_data_nascimento(usuario.data_nascimento)
         return nascimento.isoformat() if nascimento else None
 
-    def get_idade(self, obj):
+    def get_idade(self, obj) -> int | None:
         usuario = self._usuario_customizado(obj)
         return calcular_idade(usuario.data_nascimento if usuario else None)
 
@@ -116,15 +116,15 @@ class PerfilSerializer(serializers.ModelSerializer):
         dados['data_nascimento'] = self.get_data_nascimento(instance)
         return dados
 
-    def get_tipografia_efetiva(self, obj):
+    def get_tipografia_efetiva(self, obj) -> str:
         disponiveis = self._chaves_tipograficas_disponiveis(obj)
         return obj.tipografia if obj.tipografia in disponiveis else Perfil.Tipografia.PADRAO
 
-    def get_tipografia_nome(self, obj):
+    def get_tipografia_nome(self, obj) -> str:
         chave = self.get_tipografia_efetiva(obj)
         return Perfil.Tipografia(chave).label
 
-    def get_tipografias_disponiveis(self, obj):
+    def get_tipografias_disponiveis(self, obj) -> list[dict]:
         disponiveis = self._chaves_tipograficas_disponiveis(obj)
         requisitos = {
             Perfil.Tipografia.PADRAO: 'Padrão público',

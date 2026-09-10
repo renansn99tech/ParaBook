@@ -70,6 +70,11 @@ export default function MinhasPublicacoes() {
     setProcessando(true);
     setErro('');
     try {
+      // openapi-contract: POST /biblioteca/minhas-publicacoes/{id}/retirar/
+      // openapi-contract: POST /biblioteca/minhas-publicacoes/{id}/revisar/
+      // openapi-contract: POST /biblioteca/minhas-publicacoes/{id}/reenviar/
+      // openapi-contract: POST /biblioteca/minhas-publicacoes/{id}/recurso/
+      // openapi-contract-ignore: URL escolhida apenas pelos manipuladores tipados acima.
       await api.post(url, dados, multipart ? { headers: { 'Content-Type': undefined } } : undefined);
       setVersao((valor) => valor + 1);
       await swal.fire({ icon: 'success', title: 'Operação registrada', text: 'Você pode acompanhar o resultado e as decisões no histórico.' });

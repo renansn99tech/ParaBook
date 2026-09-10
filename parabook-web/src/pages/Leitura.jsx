@@ -147,6 +147,9 @@ function Leitura() {
         }
 
         const endpointLeitura = modoAmostra ? 'ler_amostra' : 'ler_pdf';
+        // openapi-contract: GET /biblioteca/livros/{id}/ler_pdf/
+        // openapi-contract: GET /biblioteca/livros/{id}/ler_amostra/
+        // openapi-contract-ignore: endpointLeitura é restrito às duas operações declaradas acima.
         const response = await api.get(`/biblioteca/livros/${id}/${endpointLeitura}/`, {
           responseType: 'arraybuffer'
         });

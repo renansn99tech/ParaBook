@@ -16,6 +16,13 @@ from dashboard.api.permissions import IsParaBookAdmin
 from usuarios.api.throttles import UploadRateThrottle
 from usuarios.permissions import eh_admin_parabook
 from .serializers import LivroSerializer
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 
 
 class AutorAprovado(permissions.BasePermission):
@@ -48,18 +55,56 @@ class EventoSerializer(serializers.ModelSerializer):
         model = EventoPublicacao
         fields = ['id', 'protocolo', 'acao', 'anterior', 'posterior', 'motivo', 'criado_em', 'pode_recorrer', 'recurso_status']
 
-    def get_pode_recorrer(self, obj):
+    def get_pode_recorrer(self, obj) -> bool:
         return obj.acao in {'rejeitada', 'suspensa', 'denuncia_acolhida'} and not hasattr(obj, 'recurso')
 
-    def get_recurso_status(self, obj):
+    def get_recurso_status(self, obj) -> str | None:
         return obj.recurso.status if hasattr(obj, 'recurso') else None
+
+
+class IdStatusSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    status = serializers.CharField()
+
+
+class DenunciaCriadaSerializer(serializers.Serializer):
+    protocolo = serializers.UUIDField()
+    status = serializers.CharField()
+
+
+class DenunciaResumoSerializer(serializers.Serializer):
+    protocolo = serializers.UUIDField()
+    livro_id = serializers.IntegerField()
+    status = serializers.CharField()
+    data_denuncia = serializers.DateTimeField()
+
+
+class TentativaRevisaoSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    dados = serializers.JSONField()
+    status = serializers.CharField()
+    criada_em = serializers.DateTimeField()
+    pdf_disponivel = serializers.BooleanField()
+
+
+class RecursoAdminSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    livro_id = serializers.IntegerField()
+    titulo = serializers.CharField()
+    fundamento = serializers.CharField()
+    evento = EventoSerializer()
+    mesmo_revisor = serializers.BooleanField()
 
 
 class PublicacaoPagination(PageNumberPagination):
     page_size = 20
 
 
+@extend_schema_view(
+    retrieve=extend_schema(parameters=[OpenApiParameter('id', OpenApiTypes.INT, OpenApiParameter.PATH)]),
+)
 class MinhasPublicacoesViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Livro.objects.none()
     pagination_class = PublicacaoPagination
     permission_classes = [AutorAprovado]
     serializer_class = LivroSerializer
@@ -133,10 +178,17 @@ class DenunciaEntradaSerializer(serializers.Serializer):
     referencia_externa = serializers.CharField(max_length=200, required=False, default='')
 
 
+class DecisaoRecursoSerializer(serializers.Serializer):
+    id = serializers.IntegerField(min_value=1)
+    acao = serializers.ChoiceField(choices=['acolher', 'recusar'])
+    motivo = serializers.CharField(max_length=2000)
+
+
 class DenunciaObraAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [UploadRateThrottle]
 
+    @extend_schema(request=DenunciaEntradaSerializer, responses={201: DenunciaCriadaSerializer})
     def post(self, request):
         entrada = DenunciaEntradaSerializer(data=request.data)
         entrada.is_valid(raise_exception=True)
@@ -144,6 +196,7 @@ class DenunciaObraAPIView(APIView):
         denuncia = fluxo.denunciar(request.user, dados.pop('livro'), **dados)
         return Response({'protocolo': denuncia.protocolo, 'status': denuncia.status}, status=201)
 
+    @extend_schema(responses=DenunciaResumoSerializer(many=True))
     def get(self, request):
         # Sem identidade/evidências de terceiros no acompanhamento do denunciante.
         return Response(list(Denuncia.objects.filter(usuario=request.user).values(
@@ -154,6 +207,13 @@ class DenunciaObraAPIView(APIView):
 class RevisaoAdminAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(
+        parameters=[OpenApiParameter('arquivo', OpenApiTypes.STR, OpenApiParameter.QUERY, enum=['pdf'])],
+        responses={
+            200: TentativaRevisaoSerializer,
+            (200, 'application/pdf'): OpenApiTypes.BINARY,
+        },
+    )
     def get(self, request, solicitacao_id):
         tentativa = get_object_or_404(TentativaPublicacao.objects.order_by('-id'), solicitacao_id=solicitacao_id, status='pendente')
         if request.query_params.get('arquivo') == 'pdf':
@@ -169,6 +229,7 @@ class RevisaoAdminAPIView(APIView):
 class RecursosAdminAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=RecursoAdminSerializer(many=True), operation_id='v1_dashboard_recursos_publicacao_list')
     def get(self, request):
         return Response([{
             'id': r.pk, 'livro_id': r.evento.livro_id, 'titulo': r.evento.livro.titulo,
@@ -176,15 +237,14 @@ class RecursosAdminAPIView(APIView):
             'mesmo_revisor': r.evento.ator_id == request.user.pk,
         } for r in RecursoPublicacao.objects.filter(status='pendente').select_related('evento__livro')[:100]])
 
+    @extend_schema(
+        request=DecisaoRecursoSerializer,
+        responses=IdStatusSerializer,
+        operation_id='v1_dashboard_recursos_publicacao_decidir',
+    )
     def post(self, request):
         entrada = DecisaoRecursoSerializer(data=request.data)
         entrada.is_valid(raise_exception=True)
         dados = entrada.validated_data
         recurso = fluxo.analisar_recurso(request.user, dados['id'], dados['acao'] == 'acolher', dados['motivo'])
         return Response({'id': recurso.pk, 'status': recurso.status})
-
-
-class DecisaoRecursoSerializer(serializers.Serializer):
-    id = serializers.IntegerField(min_value=1)
-    acao = serializers.ChoiceField(choices=['acolher', 'recusar'])
-    motivo = serializers.CharField(max_length=2000)

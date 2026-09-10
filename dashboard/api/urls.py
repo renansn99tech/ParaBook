@@ -13,7 +13,8 @@ from .views import (
     DashboardModelosAdminAPIView,
     DashboardDjangoAdminAcessoAPIView,
     DashboardPapelContaAPIView,
-    DashboardSuporteAPIView,
+    DashboardSuporteDetalheAPIView,
+    DashboardSuporteListaAPIView,
     DashboardSuspensaoContaAPIView,
 )
 
@@ -26,8 +27,8 @@ urlpatterns = [
     path('usuarios/', DashboardUsuariosAPIView.as_view(), name='api-dashboard-usuarios'),
     path('usuarios/<int:item_id>/suspensao/', DashboardSuspensaoContaAPIView.as_view(), name='api-dashboard-usuario-suspensao'),
     path('usuarios/<int:item_id>/papel/', DashboardPapelContaAPIView.as_view(), name='api-dashboard-usuario-papel'),
-    path('suporte/', DashboardSuporteAPIView.as_view(), name='api-dashboard-suporte'),
-    path('suporte/<int:item_id>/', DashboardSuporteAPIView.as_view(), name='api-dashboard-suporte-item'),
+    path('suporte/', DashboardSuporteListaAPIView.as_view(), name='api-dashboard-suporte'),
+    path('suporte/<int:item_id>/', DashboardSuporteDetalheAPIView.as_view(), name='api-dashboard-suporte-item'),
     path('aprovacoes/', DashboardAprovacoesAPIView.as_view(), name='api-dashboard-aprovacoes'),
     path('denuncias/', DashboardDenunciasAPIView.as_view(), name='api-dashboard-denuncias'),
     path('denuncias/comunidades/<int:comunidade_id>/', DashboardDenunciasComunidadeAPIView.as_view(), name='api-dashboard-denuncias-comunidade'),

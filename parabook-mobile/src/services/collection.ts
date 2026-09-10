@@ -13,6 +13,7 @@ export const getCollection = async (endpoint: string, params?: Record<string, un
       throw new Error('Paginação inválida. Atualize a lista.');
     }
     visited.add(url.href);
+    // openapi-contract-ignore: paginação reutiliza uma URL next da mesma operação já validada.
     const response: AxiosResponse = await api.get(next, { params: visited.size === 1 ? params : undefined });
     const data: { results?: unknown[]; next?: string } | unknown[] = response.data;
     if (Array.isArray(data)) return { data: [...items, ...data] };

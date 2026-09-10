@@ -32,6 +32,38 @@ from dashboard.models import FeatureFlag
 from assinaturas.models import Assinatura, Plano
 from dashboard.api.permissions import IsParaBookAdmin
 from perfis.services import aplicar_frase_status_padrao_autor
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+)
+from dashboard.api.schema import (
+    AlterarPapelRequestSerializer,
+    AlterarPapelResponseSerializer,
+    AplicarSuspensaoRequestSerializer,
+    AplicarSuspensaoResponseSerializer,
+    AprovacoesResponseSerializer,
+    ComunidadeDenunciasResponseSerializer,
+    DashboardEstatisticasResponseSerializer,
+    DenunciasResponseSerializer,
+    DetailSerializer,
+    FeatureFlagEstadoSerializer,
+    FeatureFlagRequestSerializer,
+    FeatureFlagSerializer,
+    FeatureFlagsPublicasSerializer,
+    LixeiraRequestSerializer,
+    LixeiraResponseSerializer,
+    ModelosAdminResponseSerializer,
+    ModeracaoRequestSerializer,
+    ModeracaoResponseSerializer,
+    ResponderSuporteRequestSerializer,
+    RevogarSuspensaoRequestSerializer,
+    ProtocoloResponseSerializer,
+    SuporteAdminSerializer,
+    UrlResponseSerializer,
+    UsuarioAdminSerializer,
+)
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -111,6 +143,7 @@ MODELOS_DJANGO_ADMIN = (
 class EstatisticasDashboardAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=DashboardEstatisticasResponseSerializer)
     def get(self, request, *args, **kwargs):
         total_usuarios = User.objects.count()
         total_comunidades = Comunidade.objects.count()
@@ -217,6 +250,7 @@ class EstatisticasDashboardAPIView(APIView):
 class DashboardUsuariosAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=UsuarioAdminSerializer(many=True))
     def get(self, request, *args, **kwargs):
         usuarios = []
         queryset = User.objects.select_related('perfil_customizado', 'perfil').order_by('-date_joined')
@@ -254,6 +288,7 @@ class DashboardSuspensaoContaAPIView(APIView):
             )
         return alvo, None
 
+    @extend_schema(request=AplicarSuspensaoRequestSerializer, responses={201: AplicarSuspensaoResponseSerializer})
     def post(self, request, item_id, *args, **kwargs):
         _alvo, erro = self._alvo_nao_administrativo(item_id)
         if erro:
@@ -271,6 +306,7 @@ class DashboardSuspensaoContaAPIView(APIView):
             'suspensao': dados_suspensao_ativa(suspensao.usuario),
         }, status=201)
 
+    @extend_schema(request=RevogarSuspensaoRequestSerializer, responses=ProtocoloResponseSerializer)
     def delete(self, request, item_id, *args, **kwargs):
         _alvo, erro = self._alvo_nao_administrativo(item_id)
         if erro:
@@ -290,6 +326,7 @@ class DashboardSuspensaoContaAPIView(APIView):
 class DashboardPapelContaAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(request=AlterarPapelRequestSerializer, responses=AlterarPapelResponseSerializer)
     def patch(self, request, item_id, *args, **kwargs):
         usuario, evento = alterar_papel(
             ator=request.user,
@@ -305,10 +342,10 @@ class DashboardPapelContaAPIView(APIView):
         })
 
 
-class DashboardSuporteAPIView(APIView):
+class _DashboardSuporteOperacoes:
     permission_classes = [IsParaBookAdmin]
 
-    def get(self, request):
+    def _listar(self, request):
         status_filtro = request.query_params.get('status')
         itens = SolicitacaoSuporte.objects.select_related('usuario', 'atendida_por')
         if status_filtro in SolicitacaoSuporte.Status.values:
@@ -316,7 +353,7 @@ class DashboardSuporteAPIView(APIView):
         return Response([self._serializar(item) for item in itens[:100]])
 
     @transaction.atomic
-    def patch(self, request, item_id=None):
+    def _atualizar(self, request, item_id):
         item = SolicitacaoSuporte.objects.select_for_update().filter(pk=item_id).first()
         if not item:
             return Response({'detail': 'Solicitação não encontrada.'}, status=404)
@@ -360,9 +397,38 @@ class DashboardSuporteAPIView(APIView):
             'atualizada_em': item.atualizada_em,
         }
 
+
+class DashboardSuporteListaAPIView(_DashboardSuporteOperacoes, APIView):
+    """Contrato da coleção: somente consulta da fila."""
+
+    http_method_names = ['get', 'head', 'options']
+
+    @extend_schema(
+        parameters=[OpenApiParameter('status', OpenApiTypes.STR, OpenApiParameter.QUERY)],
+        responses=SuporteAdminSerializer(many=True),
+        operation_id='v1_dashboard_suporte_list',
+    )
+    def get(self, request):
+        return self._listar(request)
+
+
+class DashboardSuporteDetalheAPIView(_DashboardSuporteOperacoes, APIView):
+    """Contrato do item: somente resposta/alteração de estado."""
+
+    http_method_names = ['patch', 'options']
+
+    @extend_schema(
+        request=ResponderSuporteRequestSerializer,
+        responses=SuporteAdminSerializer,
+        operation_id='v1_dashboard_suporte_update',
+    )
+    def patch(self, request, item_id):
+        return self._atualizar(request, item_id)
+
 class DashboardAprovacoesAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=AprovacoesResponseSerializer)
     def get(self, request, *args, **kwargs):
         perfis_pendentes = Usuario.objects.filter(
             tipo='aguardando_aprovacao',
@@ -410,6 +476,7 @@ class DashboardAprovacoesAPIView(APIView):
 class DashboardDenunciasAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=DenunciasResponseSerializer)
     def get(self, request, *args, **kwargs):
         denuncias_livros = Denuncia.objects.filter(arquivada=False).select_related('livro', 'usuario')
         denuncias_comuns = DenunciaComunidade.objects.filter(status='pendente').select_related('comunidade', 'usuario')
@@ -446,6 +513,7 @@ class DashboardDenunciasComunidadeAPIView(APIView):
 
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=ComunidadeDenunciasResponseSerializer)
     def get(self, request, comunidade_id, *args, **kwargs):
         comunidade = Comunidade.objects.filter(pk=comunidade_id).first()
         if not comunidade:
@@ -501,6 +569,7 @@ class DashboardModeracaoAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
     @transaction.atomic
+    @extend_schema(request=ModeracaoRequestSerializer, responses=ModeracaoResponseSerializer)
     def post(self, request, categoria, item_id, *args, **kwargs):
         acao = request.data.get('acao')
         if categoria == 'publicacao':
@@ -576,6 +645,18 @@ class DashboardModeracaoAPIView(APIView):
 class DashboardAuditoriaAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter('formato', OpenApiTypes.STR, OpenApiParameter.QUERY, enum=['avancado', 'csv']),
+            OpenApiParameter('tipo', OpenApiTypes.STR, OpenApiParameter.QUERY),
+            OpenApiParameter('limite', OpenApiTypes.INT, OpenApiParameter.QUERY),
+            OpenApiParameter('cursor', OpenApiTypes.STR, OpenApiParameter.QUERY),
+        ],
+        responses={
+            (200, 'application/json'): OpenApiTypes.OBJECT,
+            (200, 'text/csv'): OpenApiResponse(response=OpenApiTypes.BINARY, description='Exportação CSV da auditoria.'),
+        },
+    )
     def get(self, request, *args, **kwargs):
         formato = request.query_params.get('formato', '').lower()
         tipo = request.query_params.get('tipo', '').lower()
@@ -637,6 +718,7 @@ class DashboardAuditoriaAPIView(APIView):
 class DashboardModelosAdminAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=ModelosAdminResponseSerializer)
     def get(self, request, *args, **kwargs):
         cache_key = 'dashboard:modelos-admin:contagens:v1'
         contagens = cache.get(cache_key)
@@ -679,6 +761,7 @@ class DashboardModelosAdminAPIView(APIView):
 class DashboardDjangoAdminAcessoAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(request=None, responses=UrlResponseSerializer)
     def post(self, request, *args, **kwargs):
         registrar_acao(
             ator=request.user,
@@ -692,6 +775,7 @@ class DashboardDjangoAdminAcessoAPIView(APIView):
 class DashboardFeatureFlagsAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=FeatureFlagSerializer(many=True))
     def get(self, request, *args, **kwargs):
         return Response([
             {
@@ -706,6 +790,7 @@ class DashboardFeatureFlagsAPIView(APIView):
         ])
 
     @transaction.atomic
+    @extend_schema(request=FeatureFlagRequestSerializer, responses=FeatureFlagEstadoSerializer)
     def patch(self, request, *args, **kwargs):
         chave = request.data.get('chave')
         habilitada = request.data.get('habilitada')
@@ -736,6 +821,7 @@ class DashboardFeatureFlagsPublicasAPIView(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
 
+    @extend_schema(responses=FeatureFlagsPublicasSerializer)
     def get(self, request, *args, **kwargs):
         estados = {chave: False for chave in FEATURE_FLAGS_PUBLICAS}
         estados.update({
@@ -747,6 +833,7 @@ class DashboardFeatureFlagsPublicasAPIView(APIView):
 class DashboardLixeiraAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=LixeiraResponseSerializer)
     def get(self, request, *args, **kwargs):
         livros_removidos = Livro.objects.filter(status__in=['removido', 'suspenso']).order_by('-data_remocao')
         denuncias_arquivadas = Denuncia.objects.filter(arquivada=True).select_related('livro').order_by('-data_arquivamento')
@@ -771,6 +858,7 @@ class DashboardLixeiraAPIView(APIView):
             "denuncias": lista_denuncias
         })
 
+    @extend_schema(request=LixeiraRequestSerializer, responses=DetailSerializer)
     def post(self, request, *args, **kwargs):
         acao = request.data.get('acao')
         item_id = request.data.get('item_id')

@@ -22,6 +22,34 @@ from django.conf import settings
 from django.utils.crypto import salted_hmac
 from django.utils import timezone
 from usuarios.audit import registrar_acao
+from drf_spectacular.utils import extend_schema
+from rest_framework import serializers
+
+
+class SolicitacaoPublicacaoResponseSerializer(serializers.Serializer):
+    detail = serializers.CharField()
+    livro_id = serializers.IntegerField()
+
+
+class MetodologiaRecomendacaoSerializer(serializers.Serializer):
+    tipo = serializers.ChoiceField(choices=['heuristica'])
+    versao = serializers.CharField()
+    usa_ia_generativa = serializers.BooleanField()
+    sinais = serializers.ListField(child=serializers.CharField())
+
+
+class LivroRecomendadoSerializer(LivroSerializer):
+    afinidade = serializers.IntegerField(min_value=0, max_value=100)
+    motivo_card = serializers.CharField()
+
+    class Meta(LivroSerializer.Meta):
+        fields = [*LivroSerializer.Meta.fields, 'afinidade', 'motivo_card']
+
+
+class RecomendacoesResponseSerializer(serializers.Serializer):
+    motivo_geral = serializers.CharField()
+    metodologia = MetodologiaRecomendacaoSerializer()
+    recomendacoes = LivroRecomendadoSerializer(many=True)
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Categoria.objects.all()
@@ -147,6 +175,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class EstanteViewSet(viewsets.ModelViewSet):
+    queryset = Biblioteca.objects.none()
     serializer_class = EstanteSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -323,6 +352,10 @@ class SolicitacaoPublicacaoCreateAPIView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     throttle_classes = [UploadRateThrottle]
 
+    @extend_schema(
+        request=SolicitacaoPublicacaoSerializer,
+        responses={201: SolicitacaoPublicacaoResponseSerializer},
+    )
     def post(self, request, *args, **kwargs):
         fluxo.exigir_autor(request.user)
         serializer = SolicitacaoPublicacaoSerializer(data=request.data)
@@ -341,6 +374,7 @@ class RecomendacoesIAAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     TOTAL_RECOMENDACOES = 12
 
+    @extend_schema(responses=RecomendacoesResponseSerializer)
     def get(self, request, *args, **kwargs):
         if not usuario_eh_premium(request.user):
             return Response(

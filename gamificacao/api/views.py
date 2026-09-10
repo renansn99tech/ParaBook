@@ -2,6 +2,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import serializers
+from drf_spectacular.utils import extend_schema
 
 from gamificacao.models import Conquista, ConquistaUsuario, ProgressoLeitor
 
@@ -9,6 +11,38 @@ from .serializers import ConquistaSerializer, ProgressoLeitorSerializer
 
 # Quantidade de leitores exibidos no ranking, igual ao leaderboard_view legado.
 TOP_RANKING = 50
+
+
+class ProgressoRankingSerializer(ProgressoLeitorSerializer):
+    posicao = serializers.IntegerField()
+    sou_eu = serializers.BooleanField(required=False)
+
+    class Meta(ProgressoLeitorSerializer.Meta):
+        fields = [*ProgressoLeitorSerializer.Meta.fields, 'posicao', 'sou_eu']
+
+
+class RankingResponseSerializer(serializers.Serializer):
+    ranking = ProgressoRankingSerializer(many=True)
+    meu_progresso = ProgressoRankingSerializer()
+    total_leitores = serializers.IntegerField()
+
+
+class ConquistasResponseSerializer(serializers.Serializer):
+    conquistas = ConquistaSerializer(many=True)
+    total = serializers.IntegerField()
+    total_desbloqueadas = serializers.IntegerField()
+    xp_conquistado = serializers.IntegerField()
+    meu_progresso = ProgressoLeitorSerializer()
+
+
+class StatsResponseSerializer(serializers.Serializer):
+    xp = serializers.IntegerField()
+    nivel = serializers.IntegerField()
+    dias_seguidos = serializers.IntegerField()
+    xp_no_nivel = serializers.IntegerField()
+    xp_necessario_nivel = serializers.IntegerField()
+    progresso_nivel = serializers.FloatField()
+    total_conquistas = serializers.IntegerField()
 
 
 class RankingAPIView(APIView):
@@ -19,6 +53,7 @@ class RankingAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=RankingResponseSerializer)
     def get(self, request):
         top_leitores = (
             ProgressoLeitor.objects
@@ -58,6 +93,7 @@ class MinhasConquistasAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=ConquistasResponseSerializer)
     def get(self, request):
         desbloqueadas_map = {
             item.conquista_id: item.data_desbloqueio
@@ -92,6 +128,7 @@ class MeusStatsAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=StatsResponseSerializer)
     def get(self, request):
         progresso, _ = ProgressoLeitor.objects.get_or_create(user=request.user)
         xp_inicio_nivel = progresso.nivel * (progresso.nivel - 1) * 50

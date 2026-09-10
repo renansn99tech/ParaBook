@@ -20,6 +20,10 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
+      # Credencial proprietária usada somente no passo de migration. O processo
+      # web usa DATABASE_URL com a role parabook_runtime de menor privilégio.
+      - key: MIGRATION_DATABASE_URL
+        sync: false
       - key: DATABASE_CONN_MAX_AGE
         value: "600"
       - key: DATABASE_DISABLE_SERVER_SIDE_CURSORS

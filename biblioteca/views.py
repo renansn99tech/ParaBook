@@ -289,7 +289,7 @@ def lista_autores(request):
     if termo_busca:
         autores_query = autores_query.filter(autor__icontains=termo_busca)
 
-    usuarios_autores = Usuario.objects.filter(tipo__in=['autor', 'admin']).select_related('perfil')
+    usuarios_autores = Usuario.objects.filter(tipo__in=['autor', 'moderador', 'admin']).select_related('perfil')
     perfis_registrados = {u.nome.lower().strip(): u.perfil for u in usuarios_autores if u.perfil}
 
     autores_list = []

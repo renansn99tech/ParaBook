@@ -17,7 +17,12 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 import json
-from usuarios.models import Usuario, SessaoDispositivo, AutenticacaoDoisFatores
+from usuarios.models import (
+    AutenticacaoDoisFatores,
+    SessaoDispositivo,
+    SolicitacaoSuporte,
+    Usuario,
+)
 from usuarios.services import obter_ou_criar_usuario_customizado
 from .serializers import (
     UsuarioSerializer,
@@ -486,6 +491,79 @@ class PreferenciasNotificacaoAPIView(APIView):
             'notificacoes_email': usuario.notificacoes_email,
             'notificacoes_comunidades': usuario.notificacoes_comunidades,
             'notificacoes_assinaturas': usuario.notificacoes_assinaturas,
+        }
+
+
+class PreferenciaAparenciaAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        perfil = getattr(request.user, 'perfil', None)
+        if not perfil:
+            return Response({'detail': 'Perfil não encontrado.'}, status=404)
+        return Response({'tipografia': perfil.tipografia})
+
+    def patch(self, request):
+        from perfis.api.serializers import PerfilSerializer
+
+        perfil = getattr(request.user, 'perfil', None)
+        if not perfil:
+            return Response({'detail': 'Perfil não encontrado.'}, status=404)
+        serializer = PerfilSerializer(
+            perfil,
+            data={'tipografia': request.data.get('tipografia')},
+            partial=True,
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class SolicitacoesSuporteAPIView(APIView):
+    """Canal interno que continua disponível durante uma suspensão."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        itens = SolicitacaoSuporte.objects.filter(usuario=request.user)[:50]
+        return Response([self._serializar(item) for item in itens])
+
+    def post(self, request):
+        assunto = str(request.data.get('assunto', '')).strip()[:120]
+        mensagem = str(request.data.get('mensagem', '')).strip()[:4000]
+        categoria = str(request.data.get('categoria', 'conta')).strip()[:40] or 'conta'
+        if len(assunto) < 5:
+            return Response({'assunto': ['Informe um assunto com pelo menos 5 caracteres.']}, status=400)
+        if len(mensagem) < 20:
+            return Response({'mensagem': ['Descreva a solicitação com pelo menos 20 caracteres.']}, status=400)
+        item = SolicitacaoSuporte.objects.create(
+            usuario=request.user,
+            assunto=assunto,
+            mensagem=mensagem,
+            categoria=categoria,
+        )
+        registrar_acao(
+            ator=request.user,
+            acao='suporte.solicitacao_criada',
+            recurso='SolicitacaoSuporte',
+            recurso_id=item.pk,
+            metadados={'protocolo': str(item.protocolo), 'categoria': categoria},
+        )
+        return Response(self._serializar(item), status=201)
+
+    @staticmethod
+    def _serializar(item):
+        return {
+            'id': item.pk,
+            'protocolo': str(item.protocolo),
+            'categoria': item.categoria,
+            'assunto': item.assunto,
+            'mensagem': item.mensagem,
+            'status': item.status,
+            'resposta': item.resposta,
+            'criada_em': item.criada_em,
+            'atualizada_em': item.atualizada_em,
         }
 
 

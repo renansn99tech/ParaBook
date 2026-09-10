@@ -1,6 +1,9 @@
 # usuarios/models.py
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db.models import Q
+from django.utils import timezone
 from perfis.models import Perfil
 import uuid
 
@@ -9,6 +12,7 @@ class Usuario(models.Model):
         ('leitor', 'Leitor'),
         ('aguardando_aprovacao', 'Aguardando Aprovação de Autor'),
         ('autor', 'Autor Independente'),
+        ('moderador', 'Moderador'),
         ('admin', 'Administrador'),
     ]
     
@@ -170,6 +174,123 @@ class AuditoriaAcao(models.Model):
     class Meta:
         db_table = 'auditoria_acoes'
         ordering = ['-criado_em']
+
+
+class SuspensaoConta(models.Model):
+    class Status(models.TextChoices):
+        ATIVA = 'ativa', 'Ativa'
+        REVOGADA = 'revogada', 'Revogada'
+        EXPIRADA = 'expirada', 'Expirada'
+
+    DURACOES_PERMITIDAS = (3, 7, 15, 30)
+    DURACAO_CHOICES = tuple((dias, f'{dias} dias') for dias in DURACOES_PERMITIDAS)
+
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='suspensoes_conta')
+    aplicada_por = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='suspensoes_aplicadas',
+    )
+    revogada_por = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='suspensoes_revogadas',
+    )
+    duracao_dias = models.PositiveSmallIntegerField(choices=DURACAO_CHOICES)
+    categoria = models.CharField(max_length=40)
+    justificativa = models.TextField(max_length=2000)
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.ATIVA)
+    inicia_em = models.DateTimeField(default=timezone.now)
+    termina_em = models.DateTimeField(db_index=True)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    revogada_em = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'usuarios_suspensoes_conta'
+        ordering = ['-criada_em']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['usuario'],
+                condition=Q(status='ativa'),
+                name='usuarios_uma_suspensao_ativa',
+            ),
+        ]
+
+    def clean(self):
+        if self.duracao_dias not in self.DURACOES_PERMITIDAS:
+            raise ValidationError({'duracao_dias': 'Use 3, 7, 15 ou 30 dias.'})
+        if self.termina_em and self.inicia_em and self.termina_em <= self.inicia_em:
+            raise ValidationError({'termina_em': 'O término deve ser posterior ao início.'})
+
+    @property
+    def esta_ativa(self):
+        return self.status == self.Status.ATIVA and self.termina_em > timezone.now()
+
+
+class EventoGovernancaConta(models.Model):
+    class Tipo(models.TextChoices):
+        SUSPENSAO_APLICADA = 'suspensao_aplicada', 'Suspensão aplicada'
+        SUSPENSAO_REVOGADA = 'suspensao_revogada', 'Suspensão revogada'
+        SUSPENSAO_EXPIRADA = 'suspensao_expirada', 'Suspensão expirada'
+        PAPEL_ALTERADO = 'papel_alterado', 'Papel alterado'
+
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT, related_name='eventos_governanca')
+    ator = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='eventos_governanca_realizados',
+    )
+    tipo = models.CharField(max_length=24, choices=Tipo.choices)
+    motivo = models.TextField(max_length=2000)
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    metadados = models.JSONField(default=dict, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'usuarios_eventos_governanca_conta'
+        ordering = ['-criado_em']
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            raise RuntimeError('Eventos de governança são imutáveis.')
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise RuntimeError('Eventos de governança são imutáveis.')
+
+
+class SolicitacaoSuporte(models.Model):
+    class Status(models.TextChoices):
+        ABERTA = 'aberta', 'Aberta'
+        EM_ANALISE = 'em_analise', 'Em análise'
+        RESPONDIDA = 'respondida', 'Respondida'
+        ENCERRADA = 'encerrada', 'Encerrada'
+
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='solicitacoes_suporte')
+    categoria = models.CharField(max_length=40, default='conta')
+    assunto = models.CharField(max_length=120)
+    mensagem = models.TextField(max_length=4000)
+    status = models.CharField(max_length=16, choices=Status.choices, default=Status.ABERTA)
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    resposta = models.TextField(max_length=4000, blank=True)
+    atendida_por = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='solicitacoes_suporte_atendidas',
+    )
+    criada_em = models.DateTimeField(auto_now_add=True, db_index=True)
+    atualizada_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'usuarios_solicitacoes_suporte'
+        ordering = ['-criada_em']
 
 
 class SessaoDispositivo(models.Model):

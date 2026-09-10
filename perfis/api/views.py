@@ -323,7 +323,7 @@ class InicioPersonalizadoAPIView(APIView):
         })
 
     def _proxima_acao(self, user, tipo):
-        if tipo == 'admin':
+        if tipo in {'moderador', 'admin'}:
             publicacoes = SolicitacaoPublicacao.objects.filter(status='pendente').count()
             autores = Usuario.objects.filter(tipo='aguardando_aprovacao').count()
             denuncias = (
@@ -464,7 +464,7 @@ class PerfilPublicoAPIView(APIView):
         # Perfis administrativos são uma superfície operacional privativa:
         # somente o proprietário ou outro administrador ParaBook pode acessá-los.
         solicitante_admin = eh_admin_parabook(request.user)
-        alvo_admin = dados_usuario.tipo == 'admin' or user_auth_obj.is_superuser
+        alvo_admin = dados_usuario.tipo in {'moderador', 'admin'} or user_auth_obj.is_superuser
         if not is_owner and not solicitante_admin:
             if alvo_admin:
                 return Response({"erro": "Acesso negado a perfis administrativos.", "status_block": "admin"}, status=403)
@@ -741,7 +741,7 @@ class SolicitarAutorAPIView(APIView):
     def post(self, request, *args, **kwargs):
         usuario_custom = obter_ou_criar_usuario_customizado(request.user)
 
-        if usuario_custom.tipo in ['autor', 'admin', 'aguardando_aprovacao']:
+        if usuario_custom.tipo in ['autor', 'moderador', 'admin', 'aguardando_aprovacao']:
             return Response(
                 {"detail": "Você já possui uma solicitação em andamento ou privilégios de publicação."},
                 status=409

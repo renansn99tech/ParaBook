@@ -12,6 +12,9 @@ from .views import (
     DashboardFeatureFlagsPublicasAPIView,
     DashboardModelosAdminAPIView,
     DashboardDjangoAdminAcessoAPIView,
+    DashboardPapelContaAPIView,
+    DashboardSuporteAPIView,
+    DashboardSuspensaoContaAPIView,
 )
 
 from biblioteca.api.publicacao import RevisaoAdminAPIView, RecursosAdminAPIView
@@ -21,6 +24,10 @@ urlpatterns = [
     path('recursos-publicacao/', RecursosAdminAPIView.as_view(), name='recursos-publicacao'),
     path('estatisticas/', EstatisticasDashboardAPIView.as_view(), name='api-dashboard-estatisticas'),
     path('usuarios/', DashboardUsuariosAPIView.as_view(), name='api-dashboard-usuarios'),
+    path('usuarios/<int:item_id>/suspensao/', DashboardSuspensaoContaAPIView.as_view(), name='api-dashboard-usuario-suspensao'),
+    path('usuarios/<int:item_id>/papel/', DashboardPapelContaAPIView.as_view(), name='api-dashboard-usuario-papel'),
+    path('suporte/', DashboardSuporteAPIView.as_view(), name='api-dashboard-suporte'),
+    path('suporte/<int:item_id>/', DashboardSuporteAPIView.as_view(), name='api-dashboard-suporte-item'),
     path('aprovacoes/', DashboardAprovacoesAPIView.as_view(), name='api-dashboard-aprovacoes'),
     path('denuncias/', DashboardDenunciasAPIView.as_view(), name='api-dashboard-denuncias'),
     path('denuncias/comunidades/<int:comunidade_id>/', DashboardDenunciasComunidadeAPIView.as_view(), name='api-dashboard-denuncias-comunidade'),

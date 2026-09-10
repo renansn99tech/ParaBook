@@ -18,8 +18,14 @@ from django.utils import timezone
 from django.db import transaction
 from comunidades.models import Comunidade, DenunciaComunidade, PostagemComunidade
 from biblioteca.models import Livro, Denuncia, SolicitacaoPublicacao
-from usuarios.models import Usuario, AuditoriaAcao
+from usuarios.models import AuditoriaAcao, SolicitacaoSuporte, Usuario
 from usuarios.audit import registrar_acao
+from usuarios.governanca import (
+    alterar_papel,
+    aplicar_suspensao,
+    dados_suspensao_ativa,
+    revogar_suspensao,
+)
 from usuarios.identidade_publica import identidade_publica
 from notificacoes.models import Notificacao
 from dashboard.models import FeatureFlag
@@ -227,8 +233,132 @@ class DashboardUsuariosAPIView(APIView):
                 "is_active": user.is_active,
                 "last_login": user.last_login,
                 "date_joined": user.date_joined,
+                "suspensao": dados_suspensao_ativa(user),
             })
         return Response(usuarios)
+
+
+class DashboardSuspensaoContaAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @staticmethod
+    def _alvo_nao_administrativo(item_id):
+        alvo = User.objects.select_related('perfil_customizado').filter(pk=item_id).first()
+        if not alvo:
+            return None, Response({'detail': 'Conta não encontrada.'}, status=404)
+        papel = getattr(getattr(alvo, 'perfil_customizado', None), 'tipo', 'leitor')
+        if alvo.is_superuser or alvo.is_staff or papel in {'moderador', 'admin'}:
+            return None, Response(
+                {'detail': 'Contas administrativas são gerenciadas fora do Dashboard por superusuário.'},
+                status=403,
+            )
+        return alvo, None
+
+    def post(self, request, item_id, *args, **kwargs):
+        _alvo, erro = self._alvo_nao_administrativo(item_id)
+        if erro:
+            return erro
+        suspensao = aplicar_suspensao(
+            ator=request.user,
+            alvo_id=item_id,
+            duracao_dias=request.data.get('duracao_dias'),
+            categoria=request.data.get('categoria'),
+            justificativa=request.data.get('justificativa'),
+            senha_atual=request.data.get('senha_atual'),
+        )
+        return Response({
+            'detail': 'Conta suspensa temporariamente.',
+            'suspensao': dados_suspensao_ativa(suspensao.usuario),
+        }, status=201)
+
+    def delete(self, request, item_id, *args, **kwargs):
+        _alvo, erro = self._alvo_nao_administrativo(item_id)
+        if erro:
+            return erro
+        suspensao = revogar_suspensao(
+            ator=request.user,
+            alvo_id=item_id,
+            justificativa=request.data.get('justificativa'),
+            senha_atual=request.data.get('senha_atual'),
+        )
+        return Response({
+            'detail': 'Suspensão revogada.',
+            'protocolo': str(suspensao.protocolo),
+        })
+
+
+class DashboardPapelContaAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    def patch(self, request, item_id, *args, **kwargs):
+        usuario, evento = alterar_papel(
+            ator=request.user,
+            alvo_id=item_id,
+            novo_papel=request.data.get('novo_papel'),
+            justificativa=request.data.get('justificativa'),
+            senha_atual=request.data.get('senha_atual'),
+        )
+        return Response({
+            'detail': 'Papel atualizado.',
+            'tipo': usuario.tipo,
+            'protocolo': str(evento.protocolo),
+        })
+
+
+class DashboardSuporteAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    def get(self, request):
+        status_filtro = request.query_params.get('status')
+        itens = SolicitacaoSuporte.objects.select_related('usuario', 'atendida_por')
+        if status_filtro in SolicitacaoSuporte.Status.values:
+            itens = itens.filter(status=status_filtro)
+        return Response([self._serializar(item) for item in itens[:100]])
+
+    @transaction.atomic
+    def patch(self, request, item_id=None):
+        item = SolicitacaoSuporte.objects.select_for_update().filter(pk=item_id).first()
+        if not item:
+            return Response({'detail': 'Solicitação não encontrada.'}, status=404)
+        resposta = str(request.data.get('resposta', '')).strip()[:4000]
+        novo_status = request.data.get('status', SolicitacaoSuporte.Status.RESPONDIDA)
+        if len(resposta) < 10:
+            return Response({'resposta': ['Informe uma resposta com pelo menos 10 caracteres.']}, status=400)
+        if novo_status not in {
+            SolicitacaoSuporte.Status.EM_ANALISE,
+            SolicitacaoSuporte.Status.RESPONDIDA,
+            SolicitacaoSuporte.Status.ENCERRADA,
+        }:
+            return Response({'status': ['Status inválido.']}, status=400)
+        item.resposta = resposta
+        item.status = novo_status
+        item.atendida_por = request.user
+        item.save(update_fields=['resposta', 'status', 'atendida_por', 'atualizada_em'])
+        registrar_acao(
+            ator=request.user,
+            acao='suporte.solicitacao_atualizada',
+            recurso='SolicitacaoSuporte',
+            recurso_id=item.pk,
+            metadados={'protocolo': str(item.protocolo), 'status': novo_status},
+        )
+        return Response(self._serializar(item))
+
+    @staticmethod
+    def _serializar(item):
+        return {
+            'id': item.pk,
+            'protocolo': str(item.protocolo),
+            'usuario_id': item.usuario_id,
+            'username': item.usuario.username,
+            'categoria': item.categoria,
+            'assunto': item.assunto,
+            'mensagem': item.mensagem,
+            'status': item.status,
+            'resposta': item.resposta,
+            'atendida_por': item.atendida_por.username if item.atendida_por else None,
+            'criada_em': item.criada_em,
+            'atualizada_em': item.atualizada_em,
+        }
 
 class DashboardAprovacoesAPIView(APIView):
     permission_classes = [IsParaBookAdmin]

@@ -33,7 +33,7 @@ class EhAutorOuAdmin(permissions.BasePermission):
             request.user
             and request.user.is_authenticated
             and perfil
-            and perfil.tipo in {'autor', 'admin'}
+            and perfil.tipo in {'autor', 'moderador', 'admin'}
         )
 
 

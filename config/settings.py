@@ -175,6 +175,7 @@ if not DEBUG:
 # DATABASE CONFIGURATION (PostgreSQL — unificado para todos os ambientes)
 
 DATABASE_URL = config('DATABASE_URL', default=None)
+MIGRATION_DATABASE_URL = config('MIGRATION_DATABASE_URL', default='')
 
 if not DATABASE_URL:
     if not DEBUG:
@@ -201,6 +202,15 @@ DATABASES = {
         ssl_require=not DEBUG,
     )
 }
+
+if MIGRATION_DATABASE_URL:
+    DATABASES['migration'] = dj_database_url.config(
+        default=MIGRATION_DATABASE_URL,
+        conn_max_age=0,
+        conn_health_checks=False,
+        ssl_require=not DEBUG,
+    )
+    DATABASES['migration']['DISABLE_SERVER_SIDE_CURSORS'] = True
 
 # O pooler transacional do Supabase não preserva cursores entre transações.
 # Também evita que instâncias serverless mantenham conexões ociosas.

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import useRevelacao from '../hooks/useRevelacao';
 import api from '../services/api';
 import '../assets/css/diretrizes.css';
@@ -23,9 +24,16 @@ function Diretrizes() {
           Governança, privacidade e regras comunitárias da plataforma ParaBook. Conheça seus direitos e deveres antes de criar sua conta.
         </p>
         <small className="guidelines-updated">
-          Versão vigente: {governanca?.versao_termos || '2026-08-13'}
+          Versão vigente: {governanca?.versao_termos || '2026-09-09'}
         </small>
       </div>
+
+      <nav className="guidelines-nav" aria-label="Documentos legais" data-revelar>
+        <Link to="/termos">Termos</Link>
+        <Link to="/privacidade">Privacidade</Link>
+        <Link to="/publicacao-e-licenca">Publicação</Link>
+        <Link to="/direitos-autorais">Direitos autorais</Link>
+      </nav>
 
       {/* Container dos Cards */}
       <div className="guidelines-container" data-revelar-cascata>
@@ -44,7 +52,7 @@ function Diretrizes() {
             <p>O titular pode solicitar confirmação, acesso, correção, portabilidade quando aplicável, informação, oposição, revogação de consentimento e eliminação nos limites da LGPD. A exclusão da conta remove os dados ativos vinculados, ressalvadas retenções legalmente obrigatórias, prevenção a fraude, exercício regular de direitos e ciclos técnicos de backup.</p>
 
             <h4>Controlador e Canal de Privacidade</h4>
-            <p>A identificação civil completa do controlador, seu endereço e o canal responsável por solicitações LGPD deverão ser publicados antes da abertura do ParaBook em produção. Fornecedores de infraestrutura somente serão classificados como operadores ou agentes independentes após análise do contrato e das decisões efetivamente tomadas por cada parte.</p>
+            <p>A identificação civil completa do controlador, um endereço empresarial ou profissional juridicamente adequado e o canal responsável por solicitações LGPD deverão ser publicados antes da abertura do ParaBook em produção. O endereço pessoal do fundador não será usado enquanto não houver solução adequada. Fornecedores de infraestrutura somente serão classificados como operadores ou agentes independentes após análise do contrato e das decisões efetivamente tomadas por cada parte.</p>
             {governanca?.controlador?.identificacao_completa && (
               <p>
                 <strong>Controlador:</strong> {governanca.controlador.nome}.{' '}
@@ -64,12 +72,15 @@ function Diretrizes() {
             
             <h4>Regras de Utilização da Plataforma</h4>
             <p>Cada conta é pessoal, individual e intransferível. O usuário compromete-se a fornecer informações verídicas no ato do cadastro e assume total responsabilidade por todas as ações executadas sob suas credenciais de acesso.</p>
+
+            <h4>Participação de Adolescentes</h4>
+            <p>A possibilidade de aceitar usuários a partir de 14 anos ainda será avaliada. Essa abertura depende de política específica, controles proporcionais e validação jurídica; não está autorizada por esta versão.</p>
             
             <h4>Publicação de Livros, Comentários e Avaliações</h4>
             <p>A plataforma permite a catalogação de obras, inserção de resenhas literárias e notas textuais. Você retém a propriedade intelectual e direitos autorais dos textos originais das suas resenhas, mas concede ao ParaBook uma licença não exclusiva, mundial e gratuita para hospedar, exibir e processar esse conteúdo estritamente dentro da plataforma.</p>
             
             <h4>Direitos Autorais e Tratamento de Denúncias</h4>
-            <p>Ao enviar uma obra, o <strong>Autor Independente declara possuir os direitos ou autorizações necessários</strong>. Denúncias serão protocoladas, avaliadas e poderão gerar restrição cautelar proporcional ao risco. O autor terá oportunidade de apresentar esclarecimentos e recurso, salvo quando uma ordem válida ou risco urgente exigir providência imediata. Dados somente serão entregues a autoridades mediante base legal e solicitação válida.</p>
+            <p>Ao enviar uma obra, o <strong>Autor Independente declara possuir os direitos ou autorizações necessários</strong>. A obra permanece pendente até aprovação administrativa de moderador autorizado no Dashboard; essa aprovação não certifica autoria. Denúncias serão protocoladas, avaliadas e poderão gerar restrição cautelar proporcional ao risco. O autor terá oportunidade de apresentar esclarecimentos e recurso, salvo quando uma ordem válida ou risco urgente exigir providência imediata. Dados somente serão entregues a autoridades mediante base legal e solicitação válida.</p>
           </div>
         </div>
 

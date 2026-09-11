@@ -23,6 +23,10 @@ const TITULOS = new Map([
   ['/minhas-conquistas', 'Minhas conquistas'],
   ['/sobre', 'Sobre'],
   ['/diretrizes', 'Diretrizes'],
+  ['/termos', 'Termos de Uso'],
+  ['/privacidade', 'Política de Privacidade'],
+  ['/publicacao-e-licenca', 'Termos de Publicação e Licença'],
+  ['/direitos-autorais', 'Direitos Autorais e Denúncias'],
 ]);
 
 function tituloDaRota(pathname) {

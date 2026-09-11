@@ -189,10 +189,10 @@ function Register() {
                   aria-describedby={error ? 'register-error' : undefined}
                 />
                 <label htmlFor="reg-termos">
-                  Li, compreendo e concordo com a{' '}
-                  <Link to="/diretrizes" target="_blank" rel="noreferrer">
-                    Política de Privacidade e Termos de Uso vigente
-                  </Link>.
+                  Li, compreendo e concordo com os{' '}
+                  <Link to="/termos" target="_blank" rel="noreferrer">Termos de Uso</Link>
+                  {' '}e declaro ter lido a{' '}
+                  <Link to="/privacidade" target="_blank" rel="noreferrer">Política de Privacidade</Link> vigentes.
                 </label>
               </div>
 

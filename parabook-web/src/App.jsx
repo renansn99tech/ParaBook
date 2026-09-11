@@ -21,6 +21,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Sobre = lazy(() => import('./pages/Sobre'))
 const Backlog = lazy(() => import('./pages/Backlog'))
 const Diretrizes = lazy(() => import('./pages/Diretrizes'))
+const DocumentoLegal = lazy(() => import('./pages/DocumentoLegal'))
 const Autores = lazy(() => import('./pages/Autores'))
 const ParaLeitores = lazy(() => import('./pages/ParaLeitores'))
 const ParaAutores = lazy(() => import('./pages/ParaAutores'))
@@ -54,8 +55,9 @@ const AdminAuditoria = lazy(() => import('./pages/admin/AdminAuditoria'))
 const AdminFeatureFlags = lazy(() => import('./pages/admin/AdminFeatureFlags'))
 
 // Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
-const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', '/diretrizes', '/login', '/register', '/esqueci-senha'];
-const ROTAS_PUBLICAS_SUSPENSAO = ['/', '/biblioteca', '/comunidades', '/autores', '/sobre', '/backlog', '/diretrizes', '/para-leitores', '/para-autores', '/planos'];
+const ROTAS_LEGAIS = ['/diretrizes', '/termos', '/privacidade', '/publicacao-e-licenca', '/direitos-autorais'];
+const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', ...ROTAS_LEGAIS, '/login', '/register', '/esqueci-senha'];
+const ROTAS_PUBLICAS_SUSPENSAO = ['/', '/biblioteca', '/comunidades', '/autores', '/sobre', '/backlog', ...ROTAS_LEGAIS, '/para-leitores', '/para-autores', '/planos'];
 
 const rotaPermitidaDuranteSuspensao = (pathname) => {
   const configuracaoAdministrativa = [
@@ -170,6 +172,10 @@ function App() {
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/backlog" element={<Backlog />} />
           <Route path="/diretrizes" element={<Diretrizes />} />
+          <Route path="/termos" element={<DocumentoLegal documento="termos" />} />
+          <Route path="/privacidade" element={<DocumentoLegal documento="privacidade" />} />
+          <Route path="/publicacao-e-licenca" element={<DocumentoLegal documento="publicacao" />} />
+          <Route path="/direitos-autorais" element={<DocumentoLegal documento="direitos" />} />
           <Route path="/autores" element={<Autores />} />
           <Route path="/para-leitores" element={<ParaLeitores />} />
           <Route path="/para-autores" element={<ParaAutores />} />

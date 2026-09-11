@@ -10,6 +10,56 @@
     margin-bottom: 60px;
 }
 
+.guidelines-kicker {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: var(--purple-text);
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.guidelines-nav {
+    max-width: 900px;
+    margin: -30px auto 36px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.guidelines-nav a {
+    min-height: 44px;
+    padding: 10px 16px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-secondary);
+    background: rgba(var(--bg-card-rgb), .72);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.guidelines-nav a:hover,
+.guidelines-nav a:focus-visible {
+    color: var(--text);
+    border-color: rgba(var(--purple-rgb), .55);
+}
+
+.guidelines-status {
+    padding: 18px 22px;
+    display: grid;
+    gap: 4px;
+    color: var(--text-secondary);
+    background: rgba(245, 158, 11, .08);
+    border: 1px solid rgba(245, 158, 11, .35);
+    border-radius: var(--radius-lg);
+}
+
+.guidelines-status strong { color: var(--text); }
+
 .gradient-text {
     font-size: 3rem;
     font-weight: 800;
@@ -40,7 +90,10 @@
     color:var(--text-secondary);
 }
 
+.glass-rule-card h2,
 .glass-rule-card h3 { color:var(--text); }
+.glass-rule-card h2 { font-size: 1.2rem; margin: 0 0 8px; }
+.glass-rule-card section + section { margin-top: 26px; }
 .rule-number { color:var(--purple-text); font-weight:800; }
 
 :root[data-tema="claro"] .guidelines-main {

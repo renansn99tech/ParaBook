@@ -58,11 +58,15 @@ function Footer() {
           <Link to="/">Início</Link>
           <Link to="/biblioteca">Biblioteca</Link>
           <Link to="/comunidades">Comunidades</Link>
+          <Link to="/para-autores">Para autores</Link>
         </div>
 
         <div className="footer-column">
-          <h4>Autores</h4>
-          <Link to="/para-autores">Para Autores</Link>
+          <h4>Legal e segurança</h4>
+          <Link to="/termos">Termos de Uso</Link>
+          <Link to="/privacidade">Privacidade</Link>
+          <Link to="/publicacao-e-licenca">Publicação e licença</Link>
+          <Link to="/direitos-autorais">Direitos autorais</Link>
           <Link to="/diretrizes">Diretrizes</Link>
         </div>
 

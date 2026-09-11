@@ -285,7 +285,7 @@ function PublicarLivro() {
               required
             />
             <label htmlFor="aceitou_termos">
-              Li e aceito os termos de uso, autorizando a plataforma a disponibilizar minha obra para leitura digital gratuita dos usuários.
+              Li e aceito os <Link to="/publicacao-e-licenca" target="_blank" rel="noreferrer">Termos de Publicação e Licença</Link>, autorizando a plataforma a disponibilizar minha obra para leitura digital gratuita dos usuários.
             </label>
           </div>
 

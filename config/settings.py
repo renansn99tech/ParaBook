@@ -211,8 +211,11 @@ DATABASES = {
 }
 
 if MIGRATION_DATABASE_URL:
-    DATABASES['migration'] = dj_database_url.config(
-        default=MIGRATION_DATABASE_URL,
+    # `config()` sempre consulta DATABASE_URL por padrão. Para a conexão
+    # proprietária de migration, a URL precisa ser analisada explicitamente;
+    # caso contrário, o alias também acaba usando a credencial de runtime.
+    DATABASES['migration'] = dj_database_url.parse(
+        MIGRATION_DATABASE_URL,
         conn_max_age=0,
         conn_health_checks=False,
         ssl_require=not DEBUG,

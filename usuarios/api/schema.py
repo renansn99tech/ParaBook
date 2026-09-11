@@ -14,6 +14,7 @@ class CsrfTokenResponseSerializer(serializers.Serializer):
 
 
 class ControladorLegalSerializer(serializers.Serializer):
+    tipo = serializers.ChoiceField(choices=['pessoa_fisica', 'pessoa_juridica'])
     nome = serializers.CharField()
     endereco = serializers.CharField(allow_blank=True)
     contato_privacidade = serializers.CharField(allow_blank=True)
@@ -23,6 +24,8 @@ class ControladorLegalSerializer(serializers.Serializer):
 class GovernancaLegalResponseSerializer(serializers.Serializer):
     versao_termos = serializers.CharField()
     jurisdicao = serializers.CharField()
+    documentos_revisados = serializers.BooleanField()
+    pronto_para_publicacao = serializers.BooleanField()
     controlador = ControladorLegalSerializer()
 
 

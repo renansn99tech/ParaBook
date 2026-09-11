@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from usuarios.models import Usuario, SessaoDispositivo, AutenticacaoDoisFatores
 from usuarios.security import _codigo_totp, criptografar_segredo
@@ -392,6 +392,60 @@ class AceiteTermosVersionadoTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['versao_termos'], settings.TERMS_VERSION)
         self.assertEqual(response.data['jurisdicao'], 'Brasil')
+        self.assertEqual(response.data['controlador']['tipo'], 'pessoa_fisica')
+        self.assertFalse(response.data['documentos_revisados'])
+        self.assertFalse(response.data['pronto_para_publicacao'])
+        self.assertNotIn('documento', response.data['controlador'])
+
+    @override_settings(
+        LEGAL_CONTROLLER_NAME='Controlador Teste',
+        LEGAL_CONTROLLER_DOCUMENT='documento-secreto',
+        LEGAL_CONTROLLER_ADDRESS='Endereço público',
+        LEGAL_PRIVACY_CONTACT='privacidade@example.com',
+        LEGAL_DOCUMENTS_REVIEWED=True,
+    )
+    def test_governanca_sinaliza_prontidao_sem_expor_documento(self):
+        response = self.client.get('/api/v1/auth/governanca/')
+
+        self.assertTrue(response.data['pronto_para_publicacao'])
+        self.assertTrue(response.data['documentos_revisados'])
+        self.assertNotContains(response, 'documento-secreto')
+
+    @override_settings(
+        LEGAL_CONTROLLER_NAME='ParaBook — projeto em validação',
+        LEGAL_CONTROLLER_DOCUMENT='documento-secreto',
+        LEGAL_CONTROLLER_ADDRESS='Endereço público',
+        LEGAL_PRIVACY_CONTACT='privacidade@example.com',
+        LEGAL_DOCUMENTS_REVIEWED=True,
+    )
+    def test_nome_provisorio_nao_libera_publicacao(self):
+        response = self.client.get('/api/v1/auth/governanca/')
+
+        self.assertFalse(response.data['controlador']['identificacao_completa'])
+        self.assertFalse(response.data['pronto_para_publicacao'])
+        self.assertNotContains(response, 'documento-secreto')
+
+    @override_settings(
+        LEGAL_CONTROLLER_NAME='Controlador ainda não aprovado',
+        LEGAL_CONTROLLER_DOCUMENT='documento-secreto',
+        LEGAL_CONTROLLER_ADDRESS='Endereço ainda não aprovado',
+        LEGAL_PRIVACY_CONTACT='privacidade-nao-aprovada@example.com',
+        LEGAL_DOCUMENTS_REVIEWED=False,
+    )
+    def test_dados_parciais_nao_sao_publicados_antes_da_revisao(self):
+        response = self.client.get('/api/v1/auth/governanca/')
+
+        self.assertFalse(response.data['controlador']['identificacao_completa'])
+        self.assertEqual(
+            response.data['controlador']['nome'],
+            settings.LEGAL_CONTROLLER_PLACEHOLDER,
+        )
+        self.assertEqual(response.data['controlador']['endereco'], '')
+        self.assertEqual(response.data['controlador']['contato_privacidade'], '')
+        self.assertNotContains(response, 'Controlador ainda não aprovado')
+        self.assertNotContains(response, 'Endereço ainda não aprovado')
+        self.assertNotContains(response, 'privacidade-nao-aprovada@example.com')
+        self.assertNotContains(response, 'documento-secreto')
 
 
 class RecursosContaTests(TestCase):

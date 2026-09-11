@@ -5961,6 +5961,9 @@
             "ControladorLegal": {
                 "type": "object",
                 "properties": {
+                    "tipo": {
+                        "$ref": "#/components/schemas/ControladorLegalTipoEnum"
+                    },
                     "nome": {
                         "type": "string"
                     },
@@ -5978,8 +5981,17 @@
                     "contato_privacidade",
                     "endereco",
                     "identificacao_completa",
-                    "nome"
+                    "nome",
+                    "tipo"
                 ]
+            },
+            "ControladorLegalTipoEnum": {
+                "enum": [
+                    "pessoa_fisica",
+                    "pessoa_juridica"
+                ],
+                "type": "string",
+                "description": "* `pessoa_fisica` - pessoa_fisica\n* `pessoa_juridica` - pessoa_juridica"
             },
             "CookieLoginResponse": {
                 "type": "object",
@@ -6700,13 +6712,21 @@
                     "jurisdicao": {
                         "type": "string"
                     },
+                    "documentos_revisados": {
+                        "type": "boolean"
+                    },
+                    "pronto_para_publicacao": {
+                        "type": "boolean"
+                    },
                     "controlador": {
                         "$ref": "#/components/schemas/ControladorLegal"
                     }
                 },
                 "required": [
                     "controlador",
+                    "documentos_revisados",
                     "jurisdicao",
+                    "pronto_para_publicacao",
                     "versao_termos"
                 ]
             },

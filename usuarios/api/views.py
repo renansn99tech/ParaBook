@@ -125,15 +125,26 @@ class GovernancaLegalAPIView(APIView):
             settings.LEGAL_CONTROLLER_DOCUMENT,
             settings.LEGAL_CONTROLLER_ADDRESS,
             settings.LEGAL_PRIVACY_CONTACT,
-        ])
+        ]) and settings.LEGAL_CONTROLLER_NAME != settings.LEGAL_CONTROLLER_PLACEHOLDER
+        pronto_para_publicacao = controller_ready and settings.LEGAL_DOCUMENTS_REVIEWED
         return Response({
             'versao_termos': settings.TERMS_VERSION,
             'jurisdicao': settings.LEGAL_JURISDICTION,
+            'documentos_revisados': settings.LEGAL_DOCUMENTS_REVIEWED,
+            'pronto_para_publicacao': pronto_para_publicacao,
             'controlador': {
-                'nome': settings.LEGAL_CONTROLLER_NAME,
-                'endereco': settings.LEGAL_CONTROLLER_ADDRESS,
-                'contato_privacidade': settings.LEGAL_PRIVACY_CONTACT,
-                'identificacao_completa': controller_ready,
+                'tipo': settings.LEGAL_CONTROLLER_TYPE,
+                'nome': (
+                    settings.LEGAL_CONTROLLER_NAME
+                    if pronto_para_publicacao else settings.LEGAL_CONTROLLER_PLACEHOLDER
+                ),
+                'endereco': (
+                    settings.LEGAL_CONTROLLER_ADDRESS if pronto_para_publicacao else ''
+                ),
+                'contato_privacidade': (
+                    settings.LEGAL_PRIVACY_CONTACT if pronto_para_publicacao else ''
+                ),
+                'identificacao_completa': pronto_para_publicacao,
             },
         })
 

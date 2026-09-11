@@ -25,6 +25,20 @@ services:
       # Ativar somente no corte DNS, junto de cookies Lax e allowlists próprias.
       - key: SHARED_SITE_ENFORCED
         value: "False"
+      - key: TERMS_VERSION
+        sync: false
+      - key: LEGAL_DOCUMENTS_REVIEWED
+        value: "False"
+      - key: LEGAL_CONTROLLER_TYPE
+        value: pessoa_fisica
+      - key: LEGAL_CONTROLLER_NAME
+        sync: false
+      - key: LEGAL_CONTROLLER_DOCUMENT
+        sync: false
+      - key: LEGAL_CONTROLLER_ADDRESS
+        sync: false
+      - key: LEGAL_PRIVACY_CONTACT
+        sync: false
       - key: DATABASE_URL
         sync: false
       # Credencial proprietária usada somente no passo de migration. O processo

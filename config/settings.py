@@ -372,15 +372,22 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = config(
 # A versão é parte da evidência de aceite. Alterá-la força novo aceite nos
 # clientes web e legado; não reutilize uma versão para textos materialmente
 # diferentes.
-TERMS_VERSION = config('TERMS_VERSION', default='2026-08-13')
+TERMS_VERSION = config('TERMS_VERSION', default='2026-09-09')
+LEGAL_DOCUMENTS_REVIEWED = config('LEGAL_DOCUMENTS_REVIEWED', default=False, cast=bool)
 
 # Identificação pública do agente de tratamento. Os valores definitivos devem
 # ser preenchidos no Render após definição da entidade responsável; não
 # presumimos que SENAC, integrantes da equipe ou fornecedores sejam o
 # controlador sem instrumento formal.
+LEGAL_CONTROLLER_PLACEHOLDER = 'ParaBook — projeto em validação'
 LEGAL_CONTROLLER_NAME = config(
-    'LEGAL_CONTROLLER_NAME', default='ParaBook — projeto em validação'
+    'LEGAL_CONTROLLER_NAME', default=LEGAL_CONTROLLER_PLACEHOLDER
 )
+LEGAL_CONTROLLER_TYPE = config('LEGAL_CONTROLLER_TYPE', default='pessoa_fisica')
+if LEGAL_CONTROLLER_TYPE not in {'pessoa_fisica', 'pessoa_juridica'}:
+    raise ImproperlyConfigured(
+        'LEGAL_CONTROLLER_TYPE deve ser pessoa_fisica ou pessoa_juridica.'
+    )
 LEGAL_CONTROLLER_DOCUMENT = config('LEGAL_CONTROLLER_DOCUMENT', default='')
 LEGAL_CONTROLLER_ADDRESS = config('LEGAL_CONTROLLER_ADDRESS', default='')
 LEGAL_PRIVACY_CONTACT = config('LEGAL_PRIVACY_CONTACT', default='')

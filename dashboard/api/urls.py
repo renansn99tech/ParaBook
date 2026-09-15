@@ -12,11 +12,26 @@ from .views import (
     DashboardFeatureFlagsPublicasAPIView,
     DashboardModelosAdminAPIView,
     DashboardDjangoAdminAcessoAPIView,
+<<<<<<< HEAD
+=======
+    DashboardPapelContaAPIView,
+    DashboardSuporteDetalheAPIView,
+    DashboardSuporteListaAPIView,
+    DashboardSuspensaoContaAPIView,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 )
 
+from biblioteca.api.publicacao import RevisaoAdminAPIView, RecursosAdminAPIView
+
 urlpatterns = [
+    path('publicacoes/<int:solicitacao_id>/revisao/', RevisaoAdminAPIView.as_view(), name='revisao-publicacao'),
+    path('recursos-publicacao/', RecursosAdminAPIView.as_view(), name='recursos-publicacao'),
     path('estatisticas/', EstatisticasDashboardAPIView.as_view(), name='api-dashboard-estatisticas'),
     path('usuarios/', DashboardUsuariosAPIView.as_view(), name='api-dashboard-usuarios'),
+    path('usuarios/<int:item_id>/suspensao/', DashboardSuspensaoContaAPIView.as_view(), name='api-dashboard-usuario-suspensao'),
+    path('usuarios/<int:item_id>/papel/', DashboardPapelContaAPIView.as_view(), name='api-dashboard-usuario-papel'),
+    path('suporte/', DashboardSuporteListaAPIView.as_view(), name='api-dashboard-suporte'),
+    path('suporte/<int:item_id>/', DashboardSuporteDetalheAPIView.as_view(), name='api-dashboard-suporte-item'),
     path('aprovacoes/', DashboardAprovacoesAPIView.as_view(), name='api-dashboard-aprovacoes'),
     path('denuncias/', DashboardDenunciasAPIView.as_view(), name='api-dashboard-denuncias'),
     path('denuncias/comunidades/<int:comunidade_id>/', DashboardDenunciasComunidadeAPIView.as_view(), name='api-dashboard-denuncias-comunidade'),

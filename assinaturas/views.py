@@ -31,6 +31,12 @@ def criar_sessao_checkout(request, plano_id):
     plano = get_object_or_404(Plano, id=plano_id)
 
     # Trata Plano Gratuito ou sem ID da Stripe diretamente no banco
+    if plano.preco > 0 and not settings.PAYMENTS_ENABLED:
+        return HttpResponse(
+            'Assinaturas pagas estarão disponíveis em uma próxima etapa do ParaBook.',
+            status=503,
+        )
+
     if plano.preco == 0 or not plano.stripe_price_id:
         assinatura, _ = Assinatura.objects.get_or_create(usuario=request.user)
         assinatura.plano = plano
@@ -79,6 +85,11 @@ def criar_sessao_portal(request):
     """
     Gera a sessão do Stripe Customer Portal e redireciona o usuário.
     """
+    if not settings.PAYMENTS_ENABLED:
+        return HttpResponse(
+            'O gerenciamento de pagamentos ainda não está disponível.',
+            status=503,
+        )
     stripe_key = getattr(settings, 'STRIPE_SECRET_KEY', None) or os.getenv('STRIPE_SECRET_KEY')
 
     if not stripe_key:

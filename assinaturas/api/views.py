@@ -8,15 +8,41 @@ from assinaturas.models import Plano, Assinatura
 from .serializers import PlanoSerializer, AssinaturaSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
+<<<<<<< HEAD
+=======
+from drf_spectacular.utils import extend_schema
+from rest_framework import serializers
+
+
+class AssinaturaAusenteSerializer(serializers.Serializer):
+    detail = serializers.CharField()
+    assinatura = serializers.JSONField(allow_null=True)
+
+
+class CheckoutRequestSerializer(serializers.Serializer):
+    plano_id = serializers.IntegerField(min_value=1)
+
+
+class CheckoutResponseSerializer(serializers.Serializer):
+    url = serializers.URLField()
+    gratuito = serializers.BooleanField(required=False)
+
+
+class PortalResponseSerializer(serializers.Serializer):
+    url = serializers.URLField()
+
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 class PlanoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Plano.objects.all().order_by('preco')
     serializer_class = PlanoSerializer
     permission_classes = [permissions.AllowAny]
 
+
 class MinhaAssinaturaAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses={200: AssinaturaSerializer, 404: AssinaturaAusenteSerializer})
     def get(self, request):
         try:
             assinatura = Assinatura.objects.get(usuario=request.user)
@@ -34,8 +60,24 @@ class CheckoutSessionAPIView(APIView):
     """Inicia assinatura sem aceitar URLs de retorno controladas pelo cliente."""
     permission_classes = [permissions.IsAuthenticated]
 
+<<<<<<< HEAD
     def post(self, request):
         plano = get_object_or_404(Plano, pk=request.data.get('plano_id'))
+=======
+    @extend_schema(request=CheckoutRequestSerializer, responses=CheckoutResponseSerializer)
+    def post(self, request):
+        plano = get_object_or_404(Plano, pk=request.data.get('plano_id'))
+
+        if plano.preco > 0 and not settings.PAYMENTS_ENABLED:
+            return Response(
+                {
+                    'detail': 'Assinaturas pagas estarão disponíveis em uma próxima etapa do ParaBook.',
+                    'code': 'feature_indisponivel',
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         assinatura_atual = Assinatura.objects.filter(usuario=request.user, ativa=True).select_related('plano').first()
 
         if assinatura_atual and assinatura_atual.stripe_subscription_id:
@@ -94,7 +136,17 @@ class PortalSessionAPIView(APIView):
     só que devolvendo a URL em JSON em vez de redirecionar - quem redireciona é o React)."""
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses=PortalResponseSerializer)
     def get(self, request):
+        if not settings.PAYMENTS_ENABLED:
+            return Response(
+                {
+                    'detail': 'O gerenciamento de pagamentos ainda não está disponível.',
+                    'code': 'feature_indisponivel',
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
         stripe_key = getattr(settings, 'STRIPE_SECRET_KEY', None) or os.getenv('STRIPE_SECRET_KEY')
         if not stripe_key:
             return Response(

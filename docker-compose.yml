@@ -2,32 +2,59 @@ name: parabook
 
 services:
   db:
-    image: postgres:15-alpine
-    container_name: parabook-db
+    image: postgres:17-alpine
     environment:
-      POSTGRES_DB: parabook_db
-      POSTGRES_USER: parabook_user
-      POSTGRES_PASSWORD: parabook_password
+      POSTGRES_DB: ${DB_NAME:-parabook_db}
+      POSTGRES_USER: ${DB_USER:-parabook_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-parabook_password}
     volumes:
-      - parabook_postgres_data:/var/lib/postgresql/data
+      - parabook_postgres17_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${DB_PORT_FORWARD:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      target: runtime
+    command: python manage.py migrate --noinput
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DEBUG: "True"
+      DATABASE_URL: postgres://${DB_USER:-parabook_user}:${DB_PASSWORD:-parabook_password}@db:5432/${DB_NAME:-parabook_db}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
 
   web:
-    build: .
-    container_name: parabook-web
+    build:
+      context: .
+      target: runtime
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
-      - DEBUG=True
-      - DATABASE_URL=postgres://parabook_user:parabook_password@db:5432/parabook_db
+      DEBUG: "True"
+      DATABASE_URL: postgres://${DB_USER:-parabook_user}:${DB_PASSWORD:-parabook_password}@db:5432/${DB_NAME:-parabook_db}
     depends_on:
-      - db
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
 
 volumes:
-  parabook_postgres_data:
+  # Um volume novo evita que o PostgreSQL 17 tente abrir diretamente o cluster
+  # antigo do PostgreSQL 15. Migre dados antigos por dump/restore.
+  parabook_postgres17_data:

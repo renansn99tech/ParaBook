@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+from biblioteca import publicacao as fluxo
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import csv
 import json
 import logging
@@ -17,14 +21,60 @@ from django.utils import timezone
 from django.db import transaction
 from comunidades.models import Comunidade, DenunciaComunidade, PostagemComunidade
 from biblioteca.models import Livro, Denuncia, SolicitacaoPublicacao
+<<<<<<< HEAD
 from usuarios.models import Usuario, AuditoriaAcao
 from usuarios.audit import registrar_acao
+=======
+from usuarios.models import AuditoriaAcao, SolicitacaoSuporte, Usuario
+from usuarios.audit import registrar_acao
+from usuarios.governanca import (
+    alterar_papel,
+    aplicar_suspensao,
+    dados_suspensao_ativa,
+    revogar_suspensao,
+)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 from usuarios.identidade_publica import identidade_publica
 from notificacoes.models import Notificacao
 from dashboard.models import FeatureFlag
 from assinaturas.models import Assinatura, Plano
 from dashboard.api.permissions import IsParaBookAdmin
 from perfis.services import aplicar_frase_status_padrao_autor
+<<<<<<< HEAD
+=======
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+)
+from dashboard.api.schema import (
+    AlterarPapelRequestSerializer,
+    AlterarPapelResponseSerializer,
+    AplicarSuspensaoRequestSerializer,
+    AplicarSuspensaoResponseSerializer,
+    AprovacoesResponseSerializer,
+    ComunidadeDenunciasResponseSerializer,
+    DashboardEstatisticasResponseSerializer,
+    DenunciasResponseSerializer,
+    DetailSerializer,
+    FeatureFlagEstadoSerializer,
+    FeatureFlagRequestSerializer,
+    FeatureFlagSerializer,
+    FeatureFlagsPublicasSerializer,
+    LixeiraRequestSerializer,
+    LixeiraResponseSerializer,
+    ModelosAdminResponseSerializer,
+    ModeracaoRequestSerializer,
+    ModeracaoResponseSerializer,
+    ResponderSuporteRequestSerializer,
+    RevogarSuspensaoRequestSerializer,
+    ProtocoloResponseSerializer,
+    SuporteAdminSerializer,
+    UrlResponseSerializer,
+    UsuarioAdminSerializer,
+)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -104,6 +154,7 @@ MODELOS_DJANGO_ADMIN = (
 class EstatisticasDashboardAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=DashboardEstatisticasResponseSerializer)
     def get(self, request, *args, **kwargs):
         total_usuarios = User.objects.count()
         total_comunidades = Comunidade.objects.count()
@@ -210,6 +261,7 @@ class EstatisticasDashboardAPIView(APIView):
 class DashboardUsuariosAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=UsuarioAdminSerializer(many=True))
     def get(self, request, *args, **kwargs):
         usuarios = []
         queryset = User.objects.select_related('perfil_customizado', 'perfil').order_by('-date_joined')
@@ -226,12 +278,171 @@ class DashboardUsuariosAPIView(APIView):
                 "is_active": user.is_active,
                 "last_login": user.last_login,
                 "date_joined": user.date_joined,
+<<<<<<< HEAD
+=======
+                "suspensao": dados_suspensao_ativa(user),
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             })
         return Response(usuarios)
+
+
+class DashboardSuspensaoContaAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @staticmethod
+    def _alvo_nao_administrativo(item_id):
+        alvo = User.objects.select_related('perfil_customizado').filter(pk=item_id).first()
+        if not alvo:
+            return None, Response({'detail': 'Conta não encontrada.'}, status=404)
+        papel = getattr(getattr(alvo, 'perfil_customizado', None), 'tipo', 'leitor')
+        if alvo.is_superuser or alvo.is_staff or papel in {'moderador', 'admin'}:
+            return None, Response(
+                {'detail': 'Contas administrativas são gerenciadas fora do Dashboard por superusuário.'},
+                status=403,
+            )
+        return alvo, None
+
+    @extend_schema(request=AplicarSuspensaoRequestSerializer, responses={201: AplicarSuspensaoResponseSerializer})
+    def post(self, request, item_id, *args, **kwargs):
+        _alvo, erro = self._alvo_nao_administrativo(item_id)
+        if erro:
+            return erro
+        suspensao = aplicar_suspensao(
+            ator=request.user,
+            alvo_id=item_id,
+            duracao_dias=request.data.get('duracao_dias'),
+            categoria=request.data.get('categoria'),
+            justificativa=request.data.get('justificativa'),
+            senha_atual=request.data.get('senha_atual'),
+        )
+        return Response({
+            'detail': 'Conta suspensa temporariamente.',
+            'suspensao': dados_suspensao_ativa(suspensao.usuario),
+        }, status=201)
+
+    @extend_schema(request=RevogarSuspensaoRequestSerializer, responses=ProtocoloResponseSerializer)
+    def delete(self, request, item_id, *args, **kwargs):
+        _alvo, erro = self._alvo_nao_administrativo(item_id)
+        if erro:
+            return erro
+        suspensao = revogar_suspensao(
+            ator=request.user,
+            alvo_id=item_id,
+            justificativa=request.data.get('justificativa'),
+            senha_atual=request.data.get('senha_atual'),
+        )
+        return Response({
+            'detail': 'Suspensão revogada.',
+            'protocolo': str(suspensao.protocolo),
+        })
+
+
+class DashboardPapelContaAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @extend_schema(request=AlterarPapelRequestSerializer, responses=AlterarPapelResponseSerializer)
+    def patch(self, request, item_id, *args, **kwargs):
+        usuario, evento = alterar_papel(
+            ator=request.user,
+            alvo_id=item_id,
+            novo_papel=request.data.get('novo_papel'),
+            justificativa=request.data.get('justificativa'),
+            senha_atual=request.data.get('senha_atual'),
+        )
+        return Response({
+            'detail': 'Papel atualizado.',
+            'tipo': usuario.tipo,
+            'protocolo': str(evento.protocolo),
+        })
+
+
+class _DashboardSuporteOperacoes:
+    permission_classes = [IsParaBookAdmin]
+
+    def _listar(self, request):
+        status_filtro = request.query_params.get('status')
+        itens = SolicitacaoSuporte.objects.select_related('usuario', 'atendida_por')
+        if status_filtro in SolicitacaoSuporte.Status.values:
+            itens = itens.filter(status=status_filtro)
+        return Response([self._serializar(item) for item in itens[:100]])
+
+    @transaction.atomic
+    def _atualizar(self, request, item_id):
+        item = SolicitacaoSuporte.objects.select_for_update().filter(pk=item_id).first()
+        if not item:
+            return Response({'detail': 'Solicitação não encontrada.'}, status=404)
+        resposta = str(request.data.get('resposta', '')).strip()[:4000]
+        novo_status = request.data.get('status', SolicitacaoSuporte.Status.RESPONDIDA)
+        if len(resposta) < 10:
+            return Response({'resposta': ['Informe uma resposta com pelo menos 10 caracteres.']}, status=400)
+        if novo_status not in {
+            SolicitacaoSuporte.Status.EM_ANALISE,
+            SolicitacaoSuporte.Status.RESPONDIDA,
+            SolicitacaoSuporte.Status.ENCERRADA,
+        }:
+            return Response({'status': ['Status inválido.']}, status=400)
+        item.resposta = resposta
+        item.status = novo_status
+        item.atendida_por = request.user
+        item.save(update_fields=['resposta', 'status', 'atendida_por', 'atualizada_em'])
+        registrar_acao(
+            ator=request.user,
+            acao='suporte.solicitacao_atualizada',
+            recurso='SolicitacaoSuporte',
+            recurso_id=item.pk,
+            metadados={'protocolo': str(item.protocolo), 'status': novo_status},
+        )
+        return Response(self._serializar(item))
+
+    @staticmethod
+    def _serializar(item):
+        return {
+            'id': item.pk,
+            'protocolo': str(item.protocolo),
+            'usuario_id': item.usuario_id,
+            'username': item.usuario.username,
+            'categoria': item.categoria,
+            'assunto': item.assunto,
+            'mensagem': item.mensagem,
+            'status': item.status,
+            'resposta': item.resposta,
+            'atendida_por': item.atendida_por.username if item.atendida_por else None,
+            'criada_em': item.criada_em,
+            'atualizada_em': item.atualizada_em,
+        }
+
+
+class DashboardSuporteListaAPIView(_DashboardSuporteOperacoes, APIView):
+    """Contrato da coleção: somente consulta da fila."""
+
+    http_method_names = ['get', 'head', 'options']
+
+    @extend_schema(
+        parameters=[OpenApiParameter('status', OpenApiTypes.STR, OpenApiParameter.QUERY)],
+        responses=SuporteAdminSerializer(many=True),
+        operation_id='v1_dashboard_suporte_list',
+    )
+    def get(self, request):
+        return self._listar(request)
+
+
+class DashboardSuporteDetalheAPIView(_DashboardSuporteOperacoes, APIView):
+    """Contrato do item: somente resposta/alteração de estado."""
+
+    http_method_names = ['patch', 'options']
+
+    @extend_schema(
+        request=ResponderSuporteRequestSerializer,
+        responses=SuporteAdminSerializer,
+        operation_id='v1_dashboard_suporte_update',
+    )
+    def patch(self, request, item_id):
+        return self._atualizar(request, item_id)
 
 class DashboardAprovacoesAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=AprovacoesResponseSerializer)
     def get(self, request, *args, **kwargs):
         perfis_pendentes = Usuario.objects.filter(
             tipo='aguardando_aprovacao',
@@ -262,6 +473,10 @@ class DashboardAprovacoesAPIView(APIView):
         lista_publicacoes = [{
             "id": s.id,
             "livro_id": s.livro_id,
+<<<<<<< HEAD
+=======
+            "tentativa_id": s.tentativas.filter(status='pendente').values_list('id', flat=True).first(),
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             "titulo_livro": s.livro.titulo if s.livro else 'Sem Título',
             "autor": s.usuario.username,
             "data_envio": s.data_envio,
@@ -278,6 +493,7 @@ class DashboardAprovacoesAPIView(APIView):
 class DashboardDenunciasAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
 
+    @extend_schema(responses=DenunciasResponseSerializer)
     def get(self, request, *args, **kwargs):
         denuncias_livros = Denuncia.objects.filter(arquivada=False).select_related('livro', 'usuario')
         denuncias_comuns = DenunciaComunidade.objects.filter(status='pendente').select_related('comunidade', 'usuario')
@@ -287,6 +503,10 @@ class DashboardDenunciasAPIView(APIView):
             "livro": d.livro.titulo,
             "denunciante": d.usuario.username if d.usuario else 'Anônimo',
             "motivo": d.motivo,
+            "evidencias": d.evidencias,
+            "protocolo": d.protocolo,
+            "referencia_externa": d.referencia_externa,
+            "suspensao_cautelar": d.suspensao_cautelar,
             "status": d.status,
             "data": d.data_denuncia,
         } for d in denuncias_livros]
@@ -304,6 +524,7 @@ class DashboardDenunciasAPIView(APIView):
             "comunidades": lista_dc
         })
 
+<<<<<<< HEAD
 
 class DashboardDenunciasComunidadeAPIView(APIView):
     """Resumo operacional e fila de denúncias de uma comunidade específica."""
@@ -481,8 +702,325 @@ class DashboardModeracaoAPIView(APIView):
 
 class DashboardAuditoriaAPIView(APIView):
     permission_classes = [IsParaBookAdmin]
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
+class DashboardDenunciasComunidadeAPIView(APIView):
+    """Resumo operacional e fila de denúncias de uma comunidade específica."""
+
+    permission_classes = [IsParaBookAdmin]
+
+    @extend_schema(responses=ComunidadeDenunciasResponseSerializer)
+    def get(self, request, comunidade_id, *args, **kwargs):
+        comunidade = Comunidade.objects.filter(pk=comunidade_id).first()
+        if not comunidade:
+            return Response({'detail': 'Comunidade não encontrada.'}, status=404)
+
+        registros = DenunciaComunidade.objects.filter(
+            comunidade=comunidade,
+        ).select_related('usuario').order_by('-data_denuncia')
+
+        def serializar(denuncia):
+            identidade = (
+                identidade_publica(denuncia.usuario, request.user)
+                if denuncia.usuario
+                else {'username': 'anonimo', 'nome_exibicao': 'Anônimo'}
+            )
+            return {
+                'id': denuncia.pk,
+                'motivo': denuncia.motivo,
+                'status': denuncia.status,
+                'data': denuncia.data_denuncia,
+                'data_analise': denuncia.data_analise,
+                'denunciante': identidade['username'],
+                'denunciante_nome': identidade['nome_exibicao'],
+            }
+
+        pendentes = registros.filter(status='pendente')
+        historico = registros.exclude(status='pendente')[:12]
+        contagens = registros.values('status').annotate(total=Count('id'))
+        por_status = {item['status']: item['total'] for item in contagens}
+
+        return Response({
+            'comunidade': {
+                'id': comunidade.pk,
+                'nome': comunidade.nome,
+                'descricao': comunidade.descricao,
+                'criada_por_sistema': comunidade.criada_por_sistema,
+                'em_manutencao': comunidade.em_manutencao,
+                'total_membros': comunidade.membros.count(),
+                'total_postagens': comunidade.postagens.count(),
+            },
+            'resumo': {
+                'pendentes': por_status.get('pendente', 0),
+                'acolhidas': por_status.get('acolhida', 0),
+                'arquivadas': por_status.get('arquivada', 0),
+                'total': sum(por_status.values()),
+            },
+            'denuncias': [serializar(item) for item in pendentes],
+            'historico': [serializar(item) for item in historico],
+        })
+
+
+class DashboardModeracaoAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @transaction.atomic
+    @extend_schema(request=ModeracaoRequestSerializer, responses=ModeracaoResponseSerializer)
+    def post(self, request, categoria, item_id, *args, **kwargs):
+        acao = request.data.get('acao')
+        if categoria == 'publicacao':
+            livro = fluxo.analisar_publicacao(request.user, item_id, acao, request.data.get('observacao', ''), request.data.get('tentativa_id'))
+            return Response({'detail': 'Publicação analisada.', 'status': livro.status})
+        if categoria == 'livro':
+            denuncia = fluxo.moderar_denuncia(request.user, item_id, acao, request.data.get('observacao') or request.data.get('motivo'))
+            return Response({'detail': 'Denúncia analisada.', 'status': denuncia.status})
+        if acao not in {'aprovar', 'recusar'}:
+            return Response({'acao': ['Use aprovar ou recusar.']}, status=400)
+        observacao = str(request.data.get('observacao', '')).strip()[:1000]
+
+        if categoria == 'autor':
+            usuario = Usuario.objects.select_for_update(of=('self',)).select_related('user_auth').filter(
+                pk=item_id,
+                tipo='aguardando_aprovacao',
+            ).first()
+            if not usuario:
+                return Response({'detail': 'Solicitação já processada ou inexistente.'}, status=409)
+            usuario.tipo = 'autor' if acao == 'aprovar' else 'leitor'
+            usuario.notificacao_autor = acao == 'aprovar'
+            usuario.save(update_fields=['tipo', 'notificacao_autor'])
+            if acao == 'aprovar':
+                aplicar_frase_status_padrao_autor(usuario)
+            Notificacao.objects.create(
+                usuario=usuario.user_auth,
+                titulo='Solicitação de autor analisada',
+                mensagem=(
+                    'Seu perfil de Autor Independente foi aprovado.'
+                    if acao == 'aprovar'
+                    else f'Sua solicitação não foi aprovada.{" " + observacao if observacao else ""}'
+                ),
+                tipo='SISTEMA',
+                link='/perfil',
+            )
+            recurso = usuario
+
+        elif categoria == 'comunidade':
+            denuncia = DenunciaComunidade.objects.select_for_update(of=('self',)).select_related('comunidade').filter(
+                pk=item_id,
+                status='pendente',
+            ).first()
+            if not denuncia:
+                return Response({'detail': 'Denúncia já processada ou inexistente.'}, status=409)
+            denuncia.status = 'acolhida' if acao == 'aprovar' else 'arquivada'
+            denuncia.data_analise = timezone.now()
+            denuncia.save(update_fields=['status', 'data_analise'])
+            if acao == 'aprovar':
+                denuncia.comunidade.em_manutencao = True
+                denuncia.comunidade.save(update_fields=['em_manutencao'])
+                DenunciaComunidade.objects.filter(
+                    comunidade=denuncia.comunidade,
+                    status='pendente',
+                ).update(status='acolhida', data_analise=denuncia.data_analise)
+            elif denuncia.comunidade.total_denuncias > 0:
+                denuncia.comunidade.total_denuncias -= 1
+                denuncia.comunidade.save(update_fields=['total_denuncias'])
+            recurso = denuncia
+
+        else:
+            return Response({'detail': 'Categoria de moderação inválida.'}, status=404)
+
+        registrar_acao(
+            ator=request.user,
+            acao=f'moderacao.{categoria}.{acao}',
+            recurso=recurso.__class__.__name__,
+            recurso_id=recurso.pk,
+            metadados={'observacao_informada': bool(observacao)},
+        )
+        return Response({'detail': 'Decisão registrada com sucesso.', 'categoria': categoria, 'acao': acao})
+
+
+class DashboardAuditoriaAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter('formato', OpenApiTypes.STR, OpenApiParameter.QUERY, enum=['avancado', 'csv']),
+            OpenApiParameter('tipo', OpenApiTypes.STR, OpenApiParameter.QUERY),
+            OpenApiParameter('limite', OpenApiTypes.INT, OpenApiParameter.QUERY),
+            OpenApiParameter('cursor', OpenApiTypes.STR, OpenApiParameter.QUERY),
+        ],
+        responses={
+            (200, 'application/json'): OpenApiTypes.OBJECT,
+            (200, 'text/csv'): OpenApiResponse(response=OpenApiTypes.BINARY, description='Exportação CSV da auditoria.'),
+        },
+    )
     def get(self, request, *args, **kwargs):
+        formato = request.query_params.get('formato', '').lower()
+        tipo = request.query_params.get('tipo', '').lower()
+        filtro_tipo = AUDITORIA_FILTROS.get(tipo)
+        registros_base = AuditoriaAcao.objects.select_related('ator').all()
+        registros_filtrados = registros_base.filter(filtro_tipo) if filtro_tipo else registros_base
+
+        if formato == 'csv':
+            resposta = HttpResponse(content_type='text/csv; charset=utf-8')
+            resposta['Content-Disposition'] = 'attachment; filename="auditoria-parabook.csv"'
+            resposta.write('\ufeff')
+            escritor = csv.writer(resposta)
+            escritor.writerow(['ID', 'Data', 'Ator', 'Ação', 'Recurso', 'ID do recurso', 'Sucesso', 'Metadados'])
+            for registro in registros_filtrados[:10000]:
+                escritor.writerow([
+                    registro.pk,
+                    registro.criado_em.isoformat(),
+                    _celula_csv_segura(registro.ator.username if registro.ator else 'Sistema'),
+                    _celula_csv_segura(registro.acao),
+                    _celula_csv_segura(registro.recurso),
+                    _celula_csv_segura(registro.recurso_id),
+                    'sim' if registro.sucesso else 'não',
+                    _celula_csv_segura(json.dumps(registro.metadados, ensure_ascii=False, default=str)),
+                ])
+            return resposta
+
+        if formato == 'avancado':
+            paginador = AuditoriaCursorPagination()
+            pagina = paginador.paginate_queryset(registros_filtrados, request, view=self)
+            proximo_link = paginador.get_next_link()
+            proximo_cursor = None
+            if proximo_link:
+                proximo_cursor = parse_qs(urlparse(proximo_link).query).get('cursor', [None])[0]
+            return Response({
+                'resultados': [_serializar_auditoria(registro) for registro in pagina],
+                'proximo_cursor': proximo_cursor,
+                'contagens': {
+                    'tudo': registros_base.count(),
+                    **{
+                        chave: registros_base.filter(filtro).count()
+                        for chave, filtro in AUDITORIA_FILTROS.items()
+                    },
+                },
+                'eventos_hoje': registros_base.filter(criado_em__date=timezone.localdate()).count(),
+                'filtro': tipo if filtro_tipo else 'tudo',
+            })
+
+        try:
+            limite_solicitado = int(request.query_params.get('limite', 50))
+        except (TypeError, ValueError):
+            limite_solicitado = 50
+        limite = min(max(limite_solicitado, 1), 200)
+        return Response([
+            _serializar_auditoria(registro)
+            for registro in registros_base[:limite]
+        ])
+
+
+class DashboardModelosAdminAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @extend_schema(responses=ModelosAdminResponseSerializer)
+    def get(self, request, *args, **kwargs):
+        cache_key = 'dashboard:modelos-admin:contagens:v1'
+        contagens = cache.get(cache_key)
+        if contagens is None:
+            contagens = {}
+            for chave, _nome, model, _icone in MODELOS_DJANGO_ADMIN:
+                try:
+                    contagens[chave] = model.objects.count()
+                except Exception:
+                    logger.exception('Falha ao contar o modelo administrativo %s', chave)
+                    contagens[chave] = None
+            cache.set(cache_key, contagens, 300)
+
+        modelos = []
+        for chave, nome, model, icone in MODELOS_DJANGO_ADMIN:
+            meta = model._meta
+            try:
+                caminho_admin = reverse(f'admin:{meta.app_label}_{meta.model_name}_changelist')
+            except NoReverseMatch:
+                continue
+            modelos.append({
+                'chave': chave,
+                'nome': nome,
+                'modelo': f'{meta.app_label}.{model.__name__}',
+                'icone': icone,
+                'contagem': contagens.get(chave),
+                'url': request.build_absolute_uri(caminho_admin),
+            })
+
+        ultimo_acesso = AuditoriaAcao.objects.filter(
+            acao='django_admin.atalho_aberto',
+        ).values_list('criado_em', flat=True).first()
+        return Response({
+            'modelos': modelos,
+            'django_admin_url': request.build_absolute_uri(reverse('admin:index')),
+            'ultimo_acesso': ultimo_acesso,
+        })
+
+
+class DashboardDjangoAdminAcessoAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @extend_schema(request=None, responses=UrlResponseSerializer)
+    def post(self, request, *args, **kwargs):
+        registrar_acao(
+            ator=request.user,
+            acao='django_admin.atalho_aberto',
+            recurso='AdminSite',
+            metadados={'origem': 'perfil_avancado'},
+        )
+        return Response({'url': request.build_absolute_uri(reverse('admin:index'))})
+
+
+class DashboardFeatureFlagsAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @extend_schema(responses=FeatureFlagSerializer(many=True))
+    def get(self, request, *args, **kwargs):
+        return Response([
+            {
+                'chave': flag.chave,
+                'descricao': flag.descricao,
+                'habilitada': flag.habilitada,
+                'disponivel': flag.disponivel,
+                'atualizada_em': flag.atualizada_em,
+                'atualizada_por': flag.atualizada_por.username if flag.atualizada_por else None,
+            }
+            for flag in FeatureFlag.objects.select_related('atualizada_por')
+        ])
+
+    @transaction.atomic
+    @extend_schema(request=FeatureFlagRequestSerializer, responses=FeatureFlagEstadoSerializer)
+    def patch(self, request, *args, **kwargs):
+        chave = request.data.get('chave')
+        habilitada = request.data.get('habilitada')
+        if not isinstance(habilitada, bool):
+            return Response({'habilitada': ['Use verdadeiro ou falso.']}, status=400)
+        flag = FeatureFlag.objects.select_for_update().filter(chave=chave).first()
+        if not flag:
+            return Response({'detail': 'Feature flag inexistente; chaves não podem ser criadas pela API.'}, status=404)
+        if not flag.disponivel:
+            return Response(
+                {'detail': 'Esta funcionalidade ainda está indisponível e não pode ser alterada.'},
+                status=409,
+            )
+        flag.habilitada = habilitada
+        flag.atualizada_por = request.user
+        flag.save(update_fields=['habilitada', 'atualizada_por', 'atualizada_em'])
+        registrar_acao(
+            ator=request.user,
+            acao='feature_flag.alterada',
+            recurso='FeatureFlag',
+            recurso_id=flag.pk,
+            metadados={'chave': flag.chave, 'habilitada': flag.habilitada},
+        )
+        return Response({'chave': flag.chave, 'habilitada': flag.habilitada})
+
+
+class DashboardFeatureFlagsPublicasAPIView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses=FeatureFlagsPublicasSerializer)
+    def get(self, request, *args, **kwargs):
+<<<<<<< HEAD
         formato = request.query_params.get('formato', '').lower()
         tipo = request.query_params.get('tipo', '').lower()
         filtro_tipo = AUDITORIA_FILTROS.get(tipo)
@@ -655,13 +1193,32 @@ class DashboardLixeiraAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         livros_removidos = Livro.objects.filter(status='removido').order_by('-data_remocao')
+=======
+        estados = {chave: False for chave in FEATURE_FLAGS_PUBLICAS}
+        estados.update({
+            flag.chave: flag.habilitada and flag.disponivel
+            for flag in FeatureFlag.objects.filter(chave__in=FEATURE_FLAGS_PUBLICAS)
+        })
+        return Response(estados)
+
+class DashboardLixeiraAPIView(APIView):
+    permission_classes = [IsParaBookAdmin]
+
+    @extend_schema(responses=LixeiraResponseSerializer)
+    def get(self, request, *args, **kwargs):
+        livros_removidos = Livro.objects.filter(status__in=['removido', 'suspenso']).order_by('-data_remocao')
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         denuncias_arquivadas = Denuncia.objects.filter(arquivada=True).select_related('livro').order_by('-data_arquivamento')
 
         lista_livros = [{
             "id": l.id,
             "titulo": l.titulo,
             "data_remocao": l.data_remocao,
+<<<<<<< HEAD
             "dias_retencao": 7,
+=======
+            "dias_retencao": None,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         } for l in livros_removidos]
 
         lista_denuncias = [{
@@ -669,7 +1226,11 @@ class DashboardLixeiraAPIView(APIView):
             "livro": d.livro.titulo if d.livro else 'Removido',
             "motivo": d.motivo,
             "data_arquivamento": d.data_arquivamento,
+<<<<<<< HEAD
             "dias_retencao": 30,
+=======
+            "dias_retencao": None,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         } for d in denuncias_arquivadas]
 
         return Response({
@@ -677,14 +1238,15 @@ class DashboardLixeiraAPIView(APIView):
             "denuncias": lista_denuncias
         })
 
+    @extend_schema(request=LixeiraRequestSerializer, responses=DetailSerializer)
     def post(self, request, *args, **kwargs):
         acao = request.data.get('acao')
         item_id = request.data.get('item_id')
-
-        if not acao or not item_id:
-            return Response({"erro": "Ação ou ID inválidos"}, status=400)
-
+        if not str(item_id or '').isdigit():
+            return Response({'detail': 'Informe um ID válido.'}, status=400)
+        motivo = request.data.get('motivo')
         if acao == 'restaurar_livro':
+<<<<<<< HEAD
             try:
                 livro = Livro.objects.get(id=item_id)
                 livro.status = 'publicado'
@@ -731,3 +1293,11 @@ class DashboardLixeiraAPIView(APIView):
                 return Response({"erro": "Denúncia não encontrada."}, status=404)
 
         return Response({"erro": "Ação inválida"}, status=400)
+=======
+            fluxo.restaurar_obra(request.user, item_id, motivo)
+        elif acao == 'reabrir_denuncia':
+            fluxo.moderar_denuncia(request.user, item_id, 'reabrir', motivo)
+        else:
+            return Response({'detail': 'Exclusão definitiva indisponível até definição da política de retenção.'}, status=403)
+        return Response({'detail': 'Operação registrada.'})
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9

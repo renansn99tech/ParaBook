@@ -6,9 +6,26 @@ import { obterAvatarPerfil } from '../services/avatarPerfil'
 import { obterCtaAutoria } from '../services/ctaAutoria'
 import logoNova from '../assets/img/logo-nova-160.webp'
 import logoNova2x from '../assets/img/logo-nova-320.webp'
+<<<<<<< HEAD
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext)
+=======
+
+function LinkRestrito({ suspenso, motivo, children, className = '', ...props }) {
+  if (suspenso) {
+    return <span className={`${className} acao-suspensa`} role="link" aria-disabled="true" title={motivo}>{children}</span>
+  }
+  return <Link className={className} {...props}>{children}</Link>
+}
+
+function Navbar() {
+  const { user, logout } = useContext(AuthContext)
+  const suspenso = Boolean(user?.suspensao?.ativa)
+  const motivoSuspensao = suspenso
+    ? `Ação bloqueada até ${new Date(user.suspensao.termina_em).toLocaleString('pt-BR')}.`
+    : ''
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   const avatarUsuario = obterAvatarPerfil(user)
   const ctaPublicacao = user
     ? obterCtaAutoria(user)
@@ -91,7 +108,11 @@ function Navbar() {
   const abrirPerfilDireto = () => {
     window.clearTimeout(cliqueContaRef.current)
     setContaAberta(false)
+<<<<<<< HEAD
     navigate('/perfil')
+=======
+    navigate(suspenso ? '/perfil/configuracoes' : '/perfil')
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   }
 
   const sairPelaConta = () => {
@@ -114,6 +135,7 @@ function Navbar() {
             <li><Link to="/biblioteca">Explorar</Link></li>
             <li><Link to="/comunidades">Comunidades</Link></li>
             <li><Link to="/autores">Autores</Link></li>
+<<<<<<< HEAD
             {user?.tipo === 'autor' && <li><Link to="/publicar" className="navbar-publicar-livro"><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i> Publicar Livro</Link></li>}
           </ul>
 
@@ -124,8 +146,77 @@ function Navbar() {
               <button ref={botaoContaRef} type="button" className="nav-perfil-circular" onClick={abrirConta} onDoubleClick={abrirPerfilDireto} aria-expanded={contaAberta} aria-controls="drawerContaReact" aria-label="Abrir menu da conta; clique duas vezes para ir ao perfil" title="Conta — duplo clique abre o perfil"><img src={avatarUsuario} alt="" aria-hidden="true" width="48" height="48" /><span className="nav-perfil-status" aria-hidden="true"></span></button>
             ) : <Link to="/login" className="btn-nav btn-outline nav-entrar">Entrar</Link>}
             <button ref={botaoMenuRef} type="button" className="navbar-menu-trigger" onClick={alternarMenu} aria-expanded={menuAberto} aria-controls="menuCardReact" aria-label={`${menuAberto ? 'Fechar' : 'Abrir'} menu principal`} title="Menu principal"><i className="fa-solid fa-bars" aria-hidden="true"></i></button>
+=======
+            {user?.tipo === 'autor' && <li><LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/publicar" className="navbar-publicar-livro"><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i> Publicar Livro</LinkRestrito></li>}
+          </ul>
+
+          <div className="nav-actions">
+            {user && <LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/notificacoes" className="btn-nav btn-outline btn-nav-icone nav-notificacoes position-relative" title="Notificações" aria-label="Notificações"><i className="fa-solid fa-bell" aria-hidden="true"></i>{user.notificacoes_nao_lidas_count > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-contador">{user.notificacoes_nao_lidas_count}</span>}</LinkRestrito>}
+            <button className="btn-nav btn-outline btn-nav-icone" onClick={alternar} title={rotulo} aria-label={rotulo}><i className={`fa-solid ${icone}`} aria-hidden="true"></i></button>
+            {user ? (
+              <button ref={botaoContaRef} type="button" className="nav-perfil-circular" onClick={abrirConta} onDoubleClick={abrirPerfilDireto} aria-expanded={contaAberta} aria-controls="drawerContaReact" aria-label="Abrir menu da conta; clique duas vezes para abrir sua conta" title={suspenso ? 'Conta suspensa — abrir configurações' : 'Conta — duplo clique abre o perfil'}><img src={avatarUsuario} alt="" aria-hidden="true" width="48" height="48" /><span className="nav-perfil-status" aria-hidden="true"></span></button>
+            ) : <Link to="/login" className="btn-nav btn-outline nav-entrar">Entrar</Link>}
+            <button ref={botaoMenuRef} type="button" className="navbar-menu-trigger" onClick={alternarMenu} aria-expanded={menuAberto} aria-controls="menuCardReact" aria-label={`${menuAberto ? 'Fechar' : 'Abrir'} menu principal`} title="Menu principal"><i className="fa-solid fa-bars" aria-hidden="true"></i></button>
           </div>
         </div>
+      </nav>
+
+      {user && <>
+        <div className={`nav-account-backdrop ${contaAberta ? 'is-open' : ''}`} onClick={() => setContaAberta(false)} aria-hidden="true"></div>
+        <aside id="drawerContaReact" className={`nav-account-drawer ${contaAberta ? 'is-open' : ''}`} role="dialog" aria-modal="true" aria-hidden={!contaAberta} inert={!contaAberta} aria-labelledby="drawerContaTitulo">
+          <header className="nav-account-header">
+            <img src={avatarUsuario} alt="" aria-hidden="true" width="52" height="52" />
+            <span><small>Sua conta</small><strong id="drawerContaTitulo">{user.nome || user.username || 'Leitor ParaBook'}</strong></span>
+            <button ref={fecharContaRef} type="button" onClick={() => { setContaAberta(false); botaoContaRef.current?.focus() }} aria-label="Fechar menu da conta"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button>
+          </header>
+          <nav className="nav-account-links" aria-label="Opções da conta">
+            <LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/perfil" onClick={() => setContaAberta(false)}><i className="fa-solid fa-circle-user" aria-hidden="true"></i><span><strong>Perfil</strong><small>Veja sua jornada literária</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></LinkRestrito>
+            <LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/minha-assinatura" onClick={() => setContaAberta(false)}><i className="fa-solid fa-crown" aria-hidden="true"></i><span><strong>Minha Assinatura</strong><small>Plano e benefícios</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></LinkRestrito>
+            <LinkRestrito suspenso={suspenso} motivo={motivoSuspensao} to="/ranking" onClick={() => setContaAberta(false)}><i className="fa-solid fa-ranking-star" aria-hidden="true"></i><span><strong>Ranking</strong><small>Confira sua posição</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></LinkRestrito>
+            <Link to="/perfil/configuracoes" onClick={() => setContaAberta(false)}><i className="fa-solid fa-gear" aria-hidden="true"></i><span><strong>Configurações</strong><small>Segurança, preferências e suporte</small></span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></Link>
+            <button type="button" className="nav-account-sair" onClick={sairPelaConta}><i className="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i><span><strong>Sair</strong><small>Encerrar esta sessão</small></span></button>
+          </nav>
+        </aside>
+      </>}
+
+      <div className={`nav-menu-backdrop ${menuAberto ? 'is-open' : ''}`} onClick={() => fecharMenu(true)} aria-hidden="true"></div>
+      <aside ref={menuCardRef} id="menuCardReact" className={`nav-menu-card ${menuAberto ? 'is-open' : ''}`} role="dialog" aria-modal="true" aria-hidden={!menuAberto} inert={!menuAberto} aria-labelledby="menuCardTitulo">
+        <header className="nav-menu-card-header">
+          <span className="nav-menu-card-icon"><i className="fa-solid fa-bars" aria-hidden="true"></i></span>
+          <span><small>Navegação</small><strong id="menuCardTitulo">Menu principal</strong></span>
+          <button ref={fecharMenuRef} type="button" onClick={() => fecharMenu(true)} aria-label="Fechar menu principal"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </header>
+        <div className="nav-menu-card-body">
+          <div className="offcanvas-section offcanvas-section-primary offcanvas-mobile-only" aria-label="Destinos principais">
+            <Link to="/biblioteca" onClick={fecharMenu}><i className="fa-solid fa-book-open" aria-hidden="true"></i><span>Explorar livros</span></Link>
+            <Link to="/comunidades" onClick={fecharMenu}><i className="fa-solid fa-people-group" aria-hidden="true"></i><span>Comunidades</span></Link>
+            <Link to="/autores" onClick={fecharMenu}><i className="fa-solid fa-pen-nib" aria-hidden="true"></i><span>Autores</span></Link>
+            {user?.tipo === 'autor' && <Link to="/autor/painel" onClick={fecharMenu}><i className="fa-solid fa-chart-line" aria-hidden="true"></i><span>Painel do Autor</span></Link>}
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
+          </div>
+          <div className="offcanvas-divider offcanvas-divider--primary offcanvas-mobile-only" role="separator"></div>
+
+          <div className="offcanvas-section offcanvas-section-publicar" aria-label="Publicação"><p className="offcanvas-kicker">Criar</p><Link to={ctaPublicacao.to} className="link-publicar" onClick={fecharMenu}><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i><span>{ctaPublicacao.label}</span></Link></div>
+          <div className="offcanvas-divider" role="separator"></div>
+
+          <div className="offcanvas-section" aria-label="Mais opções">
+            <p className="offcanvas-kicker">Descobrir</p>
+            <Link to="/recomendacao-ia" className="link-ia" onClick={fecharMenu}><i className="fa-solid fa-compass" aria-hidden="true"></i><span>Recomendações para você</span></Link>
+            {user && <Link to="/minhas-comunidades" onClick={fecharMenu}><i className="fa-solid fa-users-rectangle" aria-hidden="true"></i><span>Minhas comunidades</span></Link>}
+            {user && <Link to="/minhas-conquistas" onClick={fecharMenu}><i className="fa-solid fa-award" aria-hidden="true"></i><span>Minhas conquistas</span></Link>}
+            {user?.is_superuser && <Link to="/dashboard" onClick={fecharMenu}><i className="fa-solid fa-gauge-high" aria-hidden="true"></i><span>Painel administrativo</span></Link>}
+          </div>
+
+          <div className="offcanvas-divider" role="separator"></div>
+          <div className="offcanvas-section offcanvas-section-conhecer" aria-label="Conhecer o ParaBook">
+            <p className="offcanvas-kicker">Conhecer</p>
+            <Link to="/sobre" onClick={fecharMenu}><i className="fa-solid fa-circle-info" aria-hidden="true"></i><span>Sobre o ParaBook</span></Link>
+            <Link to="/backlog" onClick={fecharMenu}><i className="fa-solid fa-code-branch" aria-hidden="true"></i><span>Backlog/Changelog</span></Link>
+          </div>
+
+          {!user && <><div className="offcanvas-divider" role="separator"></div><div className="offcanvas-section"><Link to="/planos" className="offcanvas-subscription" onClick={fecharMenu}><i className="fa-solid fa-crown" aria-hidden="true"></i><span>Conhecer assinatura</span></Link></div></>}
+        </div>
+<<<<<<< HEAD
       </nav>
 
       {user && <>
@@ -181,6 +272,8 @@ function Navbar() {
 
           {!user && <><div className="offcanvas-divider" role="separator"></div><div className="offcanvas-section"><Link to="/planos" className="offcanvas-subscription" onClick={fecharMenu}><i className="fa-solid fa-crown" aria-hidden="true"></i><span>Conhecer assinatura</span></Link></div></>}
         </div>
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       </aside>
     </>
   )

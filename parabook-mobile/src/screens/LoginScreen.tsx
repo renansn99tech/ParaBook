@@ -4,6 +4,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+<<<<<<< HEAD
   SafeAreaView,
   StyleSheet,
   Text,
@@ -16,6 +17,21 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { useAuth } from '../context/AuthContext';
+=======
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+import { colors, controlHeight, radii, spacing } from '../theme/colors';
+import { useAuth } from '../context/AuthContext';
+import { FormField } from '../components/FormField';
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -29,7 +45,11 @@ export const LoginScreen = ({ navigation }: Props) => {
 
   const handleLogin = async () => {
     if (!username.trim() || !password) {
+<<<<<<< HEAD
       Alert.alert('Campos obrigatorios', 'Informe usuario e senha para entrar.');
+=======
+      Alert.alert('Campos obrigatórios', 'Informe usuário e senha para entrar.');
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       return;
     }
 
@@ -40,7 +60,11 @@ export const LoginScreen = ({ navigation }: Props) => {
         if (result.requiresTwoFactor) {
           setRequiresTwoFactor(true);
         }
+<<<<<<< HEAD
         Alert.alert('Nao foi possivel entrar', result.error || 'Confira seus dados e tente novamente.');
+=======
+        Alert.alert('Não foi possível entrar', result.error || 'Confira seus dados e tente novamente.');
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       }
     } finally {
       setLoading(false);
@@ -53,6 +77,14 @@ export const LoginScreen = ({ navigation }: Props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardContainer}
       >
+<<<<<<< HEAD
+=======
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -71,6 +103,7 @@ export const LoginScreen = ({ navigation }: Props) => {
           <Text style={styles.subtitle}>Continue sua leitura, estante e comunidades.</Text>
 
           <View style={styles.form}>
+<<<<<<< HEAD
             <View style={styles.inputContainer}>
               <Ionicons name="person-outline" size={20} color={colors.textMuted} />
               <TextInput
@@ -110,6 +143,15 @@ export const LoginScreen = ({ navigation }: Props) => {
                 onChangeText={setPassword}
               />
             </View>
+=======
+            <FormField label="Usuário" icon="person-outline" placeholder="Seu usuário" autoCapitalize="none" autoComplete="username" value={username} onChangeText={setUsername} />
+
+            {requiresTwoFactor && (
+              <FormField label="Código de verificação" icon="keypad-outline" placeholder="Código do autenticador" keyboardType="number-pad" autoCapitalize="none" autoComplete="one-time-code" maxLength={6} value={twoFactorCode} onChangeText={setTwoFactorCode} />
+            )}
+
+            <FormField label="Senha" icon="lock-closed-outline" placeholder="Sua senha" isPassword autoComplete="current-password" value={password} onChangeText={setPassword} onSubmitEditing={() => void handleLogin()} returnKeyType="done" />
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
             <TouchableOpacity
               style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
@@ -132,11 +174,20 @@ export const LoginScreen = ({ navigation }: Props) => {
           </View>
         </View>
 
+<<<<<<< HEAD
         <TouchableOpacity onPress={() => navigation.navigate('Register')} activeOpacity={0.7}>
           <Text style={styles.footerText}>
             Ainda nao tem conta? <Text style={styles.footerLink}>Criar cadastro</Text>
           </Text>
         </TouchableOpacity>
+=======
+        <TouchableOpacity onPress={() => navigation.navigate('Register')} activeOpacity={0.7} style={styles.footerButton}>
+          <Text style={styles.footerText}>
+            Ainda não tem conta? <Text style={styles.footerLink}>Criar cadastro</Text>
+          </Text>
+        </TouchableOpacity>
+        </ScrollView>
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -149,14 +200,26 @@ const styles = StyleSheet.create({
   },
   keyboardContainer: {
     flex: 1,
+<<<<<<< HEAD
     paddingHorizontal: 24,
     paddingVertical: 20,
+=======
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.xxl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+<<<<<<< HEAD
     paddingTop: 16,
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   backButton: {
     padding: 4,
@@ -164,7 +227,11 @@ const styles = StyleSheet.create({
   logoBadge: {
     width: 42,
     height: 42,
+<<<<<<< HEAD
     borderRadius: 14,
+=======
+    borderRadius: radii.md,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -187,6 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     marginTop: 8,
+<<<<<<< HEAD
     marginBottom: 28,
     lineHeight: 20,
   },
@@ -212,12 +280,27 @@ const styles = StyleSheet.create({
   primaryButton: {
     height: 54,
     borderRadius: 27,
+=======
+    marginBottom: spacing.xxl,
+    lineHeight: 20,
+  },
+  form: {
+    gap: spacing.md,
+  },
+  primaryButton: {
+    height: controlHeight,
+    borderRadius: radii.pill,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     backgroundColor: colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+<<<<<<< HEAD
     marginTop: 8,
+=======
+    marginTop: spacing.xs,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   primaryButtonDisabled: {
     opacity: 0.7,
@@ -231,7 +314,14 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     fontSize: 14,
+<<<<<<< HEAD
     marginBottom: 12,
+=======
+  },
+  footerButton: {
+    minHeight: 44,
+    justifyContent: 'center',
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   footerLink: {
     color: colors.primary,

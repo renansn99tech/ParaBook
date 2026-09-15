@@ -76,6 +76,7 @@ def painel_admin(request):
             
         return redirect('dashboard:painel_admin')
 
+<<<<<<< HEAD
     # ==========================================================
     # 2. GERENCIAMENTO DE OBRAS PENDENTES
     # ==========================================================
@@ -211,6 +212,14 @@ def painel_admin(request):
             denuncia.data_arquivamento = timezone.now()
             denuncia.save()
             messages.info(request, "Denúncia arquivada como Falso Positivo (Retenção: 30 dias).")
+=======
+    elif request.method == 'POST' and any(chave in request.POST for chave in (
+        'btn_gerenciar_solicitacao', 'btn_add_livro', 'btn_editar_livro',
+        'btn_deletar_livro', 'btn_resolver_denuncia',
+    )):
+        from django.http import JsonResponse
+        return JsonResponse({'detail': 'Use o Dashboard React para a publicação e moderação com histórico.'}, status=409)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
     # --- NOVO: RESOLUÇÃO DE DENÚNCIAS DE COMUNIDADES ---
     elif request.method == 'POST' and 'btn_ignorar_denuncia_comunidade' in request.POST:
@@ -286,16 +295,10 @@ def painel_admin(request):
 @login_required
 @user_passes_test(apenas_superuser, login_url='home', redirect_field_name=None)
 def lixeira_admin(request):
-    agora = timezone.now()
-    limite_livros = agora - timedelta(days=7)
-    limite_denuncias = agora - timedelta(days=30)
-
-    # 1. GARBAGE COLLECTION SILENCIOSA (Apaga os vencidos para sempre)
-    Livro.objects.filter(status='removido', data_remocao__lt=limite_livros).delete()
-    Denuncia.objects.filter(arquivada=True, data_arquivamento__lt=limite_denuncias).delete()
-
-    # 2. AÇÕES DA LIXEIRA (Restaurar ou Excluir Manualmente)
+    from django.conf import settings
+    from django.http import JsonResponse
     if request.method == 'POST':
+<<<<<<< HEAD
         acao = request.POST.get('acao')
         
         if acao == 'restaurar_livro':
@@ -326,3 +329,7 @@ def lixeira_admin(request):
         'denuncias_arquivadas': denuncias_arquivadas,
         'agora': agora
     })
+=======
+        return JsonResponse({'detail': 'Use o Dashboard React; exclusão definitiva não está disponível.'}, status=409)
+    return redirect(f"{settings.FRONTEND_URL.rstrip('/')}/dashboard?aba=lixeira")
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9

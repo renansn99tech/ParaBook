@@ -3,20 +3,26 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
   Image,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { CompositeNavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MainTabParamList, RootStackParamList } from '../navigation/types';
+<<<<<<< HEAD
 import { colors } from '../theme/colors';
+=======
+import { colors, radii, spacing } from '../theme/colors';
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import { bookService, LibraryStatus, UserBookItem } from '../services/bookService';
+import { BookCover } from '../components/BookCover';
+import { EmptyState } from '../components/EmptyState';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MyLibrary'>;
 type LibraryParams = RootStackParamList['MyLibrary'];
@@ -51,7 +57,11 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
       }));
     } catch (error) {
       setBooks([]);
+<<<<<<< HEAD
       setErrorMessage('Nao foi possivel carregar sua biblioteca agora.');
+=======
+      setErrorMessage('Não foi possível carregar sua biblioteca agora.');
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -80,7 +90,11 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
             <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
         ) : <View style={styles.headerPlaceholder} />}
+<<<<<<< HEAD
         <Text style={styles.headerTitle}>{params?.favoritesOnly ? 'Favoritos' : params?.reviewedOnly ? 'Avaliacoes' : 'Minha Biblioteca'}</Text>
+=======
+        <Text style={styles.headerTitle} numberOfLines={1}>{params?.favoritesOnly ? 'Favoritos' : params?.reviewedOnly ? 'Avaliações' : 'Minha Biblioteca'}</Text>
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <View style={styles.headerPlaceholder} />
       </View>
 
@@ -123,12 +137,17 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : errorMessage ? (
+<<<<<<< HEAD
         <View style={styles.emptyState}>
           <Ionicons name="cloud-offline-outline" size={48} color={colors.textMuted} />
           <Text style={styles.emptyText}>{errorMessage}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={fetchLibrary}>
             <Text style={styles.retryButtonText}>Tentar novamente</Text>
           </TouchableOpacity>
+=======
+        <View style={styles.stateWrapper}>
+          <EmptyState icon="cloud-offline-outline" title="Biblioteca indisponível" description={errorMessage} action={<TouchableOpacity style={styles.retryButton} onPress={fetchLibrary} activeOpacity={0.78}><Text style={styles.retryButtonText}>Tentar novamente</Text></TouchableOpacity>} />
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         </View>
       ) : (
         <FlatList
@@ -140,15 +159,15 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
           }
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Ionicons name="bookmark-outline" size={48} color={colors.textMuted} />
-              <Text style={styles.emptyText}>Nenhum livro nesta estante ainda.</Text>
+            <View style={styles.stateWrapper}>
+              <EmptyState icon="bookmark-outline" title="Esta estante está vazia" description="Os livros que você adicionar aparecerão aqui." />
             </View>
           }
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.bookCard}
               activeOpacity={0.7}
+<<<<<<< HEAD
               onPress={() => onOpenBook(String(item.book.id), item.book.title)}
             >
               {item.book.cover_url ? (
@@ -158,15 +177,25 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
                   <Ionicons name="book" size={28} color={colors.primary} />
                 </View>
               )}
+=======
+              disabled={Boolean(item.book.publicationStatus && item.book.publicationStatus !== 'publicado')}
+              onPress={() => onOpenBook(String(item.book.id), item.book.title)}
+            >
+              <BookCover uri={item.book.cover_url} width={52} height={76} />
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
               <View style={styles.bookInfo}>
-                <Text style={styles.bookTitle} numberOfLines={1}>
+                <Text style={styles.bookTitle} numberOfLines={2}>
                   {item.book.title}
                 </Text>
                 <Text style={styles.bookAuthor} numberOfLines={1}>
                   {item.book.author}
                 </Text>
 
+<<<<<<< HEAD
+=======
+                {item.book.publicationStatus && item.book.publicationStatus !== 'publicado' && <Text style={styles.bookAuthor}>Obra indisponível</Text>}
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
                 {item.status === 'lendo' && (
                   <View style={styles.progressSection}>
                     <View style={styles.progressBarBg}>
@@ -214,14 +243,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
   backButton: {
     padding: 4,
   },
   headerTitle: {
-    fontSize: 18,
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 24,
     fontWeight: 'bold',
     color: colors.textPrimary,
   },
@@ -230,10 +262,10 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    marginVertical: 12,
+    marginHorizontal: spacing.xl,
+    marginVertical: spacing.md,
     backgroundColor: colors.cardBackground,
-    borderRadius: 10,
+    borderRadius: radii.md,
     padding: 4,
     borderWidth: 1,
     borderColor: colors.border,
@@ -242,7 +274,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 8,
     alignItems: 'center',
-    borderRadius: 8,
+    minHeight: 40,
+    justifyContent: 'center',
+    borderRadius: radii.sm,
   },
   activeTab: {
     backgroundColor: colors.primary,
@@ -261,26 +295,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xxl,
+    paddingTop: spacing.xs,
+    flexGrow: 1,
   },
   bookCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.cardBackground,
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  coverPlaceholder: {
-    width: 46,
-    height: 64,
-    backgroundColor: colors.background,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: spacing.md,
+    borderRadius: radii.md,
+    marginBottom: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -292,13 +318,14 @@ const styles = StyleSheet.create({
   },
   bookInfo: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: spacing.md,
     justifyContent: 'center',
   },
   bookTitle: {
     fontSize: 15,
     fontWeight: 'bold',
     color: colors.textPrimary,
+    lineHeight: 20,
   },
   bookAuthor: {
     fontSize: 12,
@@ -327,23 +354,29 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontWeight: '600',
   },
-  emptyState: {
-    alignItems: 'center',
+  stateWrapper: {
+    flex: 1,
     justifyContent: 'center',
-    paddingVertical: 40,
   },
+<<<<<<< HEAD
   emptyText: {
     color: colors.textMuted,
     marginTop: 8,
     fontSize: 14,
     textAlign: 'center',
   },
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   retryButton: {
     marginTop: 16,
     minHeight: 42,
     justifyContent: 'center',
     paddingHorizontal: 16,
+<<<<<<< HEAD
     borderRadius: 21,
+=======
+    borderRadius: radii.pill,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     backgroundColor: colors.primary,
   },
   retryButtonText: {

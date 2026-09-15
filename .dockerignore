@@ -10,3 +10,11 @@ staticfiles/
 media/
 .pytest_cache/
 .vscode/
+.agents/
+.claude/
+business_rules/changelog/
+output/
+tmp/
+parabook-web/node_modules/
+parabook-web/dist/
+parabook-mobile/node_modules/

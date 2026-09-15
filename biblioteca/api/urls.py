@@ -13,13 +13,20 @@ from .analytics_autor import (
     AnalyticsAutorResumoAPIView,
     EventoLeituraCreateAPIView,
 )
+<<<<<<< HEAD
+=======
+
+from .publicacao import MinhasPublicacoesViewSet, DenunciaObraAPIView
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 router = DefaultRouter()
+router.register(r'minhas-publicacoes', MinhasPublicacoesViewSet, basename='minhas-publicacoes')
 router.register(r'livros', LivroViewSet, basename='livro')
 router.register(r'categorias', CategoriaViewSet, basename='categoria')
 router.register(r'estante', EstanteViewSet, basename='estante')
 
 urlpatterns = [
+    path('denuncias/', DenunciaObraAPIView.as_view(), name='denuncia-obra'),
     path('', include(router.urls)),
     path('solicitacoes-publicacao/', SolicitacaoPublicacaoCreateAPIView.as_view(), name='solicitacao_publicacao_create'),
     path('recomendacoes-ia/', RecomendacoesIAAPIView.as_view(), name='recomendacoes_ia'),

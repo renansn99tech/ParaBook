@@ -39,7 +39,11 @@ test('abas são linkáveis por query string e acessíveis pelo teclado', () => {
 test('API entrega capas, histórico enriquecido e somente obras publicadas', () => {
   assert.match(api, /livro__status='publicado'/);
   assert.match(api, /livro__data_remocao__isnull=True/);
+<<<<<<< HEAD
   assert.match(api, /solicitacao_publicacao__status='aprovado'[\s\S]*?status='publicado'[\s\S]*?data_remocao__isnull=True/);
+=======
+  assert.match(api, /solicitacao_publicacao__usuario=user_auth_obj[\s\S]*?status='publicado'[\s\S]*?data_remocao__isnull=True/);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   assert.match(api, /"historico": \[[\s\S]*?"livro_id"[\s\S]*?"capa"[\s\S]*?"nota"[\s\S]*?"data"/);
   assert.match(api, /"recomendacao": recomendacao/);
   assert.match(api, /'capa': request\.build_absolute_uri\(livro_recomendado\.capa\.url\)/);

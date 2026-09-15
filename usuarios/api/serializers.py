@@ -3,9 +3,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.conf import settings
+<<<<<<< HEAD
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from usuarios.models import Usuario
 from usuarios.services import resolver_identificador_login
+=======
+from usuarios.models import Usuario
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 from perfis.models import Perfil, FRASE_STATUS_PADRAO_LEITOR
 from django.utils import timezone
 
@@ -34,12 +38,21 @@ class UserAuthSerializer(serializers.ModelSerializer):
 
 class UsuarioSerializer(serializers.ModelSerializer):
     user_auth = UserAuthSerializer(read_only=True)
+    suspensao = serializers.SerializerMethodField()
+
+    def get_suspensao(self, obj) -> dict | None:
+        from usuarios.governanca import dados_suspensao_ativa
+        return dados_suspensao_ativa(obj.user_auth)
 
     class Meta:
         model = Usuario
         fields = [
             'id', 'user_auth', 'nome', 'tipo', 'cpf', 'termos_aceitos',
+<<<<<<< HEAD
             'data_aceite_termos', 'versao_termos_aceita',
+=======
+            'data_aceite_termos', 'versao_termos_aceita', 'suspensao',
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         ]
 
 

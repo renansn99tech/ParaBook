@@ -10,7 +10,14 @@ def conta_administrativa(user):
     if not user:
         return False
     perfil_customizado = getattr(user, 'perfil_customizado', None)
+<<<<<<< HEAD
     return bool(user.is_superuser or (perfil_customizado and perfil_customizado.tipo == 'admin'))
+=======
+    return bool(
+        user.is_superuser
+        or (perfil_customizado and perfil_customizado.tipo in {'moderador', 'admin'})
+    )
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 
 def identidade_publica(user, viewer=None):

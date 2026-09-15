@@ -5,6 +5,10 @@ import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import RouteAccessibility from './components/RouteAccessibility'
+<<<<<<< HEAD
+=======
+import SuspensionNotice from './components/SuspensionNotice'
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import RotaAdmin from './components/admin/RotaAdmin'
 import RotaPublicacao from './components/RotaPublicacao'
 import RotaAutenticada from './components/RotaAutenticada'
@@ -20,9 +24,17 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Sobre = lazy(() => import('./pages/Sobre'))
 const Backlog = lazy(() => import('./pages/Backlog'))
 const Diretrizes = lazy(() => import('./pages/Diretrizes'))
+<<<<<<< HEAD
 const Autores = lazy(() => import('./pages/Autores'))
 const ParaLeitores = lazy(() => import('./pages/ParaLeitores'))
 const ParaAutores = lazy(() => import('./pages/ParaAutores'))
+=======
+const DocumentoLegal = lazy(() => import('./pages/DocumentoLegal'))
+const Autores = lazy(() => import('./pages/Autores'))
+const ParaLeitores = lazy(() => import('./pages/ParaLeitores'))
+const ParaAutores = lazy(() => import('./pages/ParaAutores'))
+const MinhasPublicacoes = lazy(() => import('./pages/MinhasPublicacoes'))
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 const PublicarLivro = lazy(() => import('./pages/PublicarLivro'))
 const PainelAutor = lazy(() => import('./pages/PainelAutor'))
 const MinhaBiblioteca = lazy(() => import('./pages/MinhaBiblioteca'))
@@ -52,7 +64,24 @@ const AdminAuditoria = lazy(() => import('./pages/admin/AdminAuditoria'))
 const AdminFeatureFlags = lazy(() => import('./pages/admin/AdminFeatureFlags'))
 
 // Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
-const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', '/diretrizes', '/login', '/register', '/esqueci-senha'];
+const ROTAS_LEGAIS = ['/diretrizes', '/termos', '/privacidade', '/publicacao-e-licenca', '/direitos-autorais'];
+const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', ...ROTAS_LEGAIS, '/login', '/register', '/esqueci-senha'];
+const ROTAS_PUBLICAS_SUSPENSAO = ['/', '/biblioteca', '/comunidades', '/autores', '/sobre', '/backlog', ...ROTAS_LEGAIS, '/para-leitores', '/para-autores', '/planos'];
+
+const rotaPermitidaDuranteSuspensao = (pathname) => {
+  const configuracaoAdministrativa = [
+    '/perfil/configuracoes/django-admin',
+    '/perfil/configuracoes/auditoria',
+    '/perfil/configuracoes/feature-flags',
+  ].includes(pathname);
+  if (configuracaoAdministrativa) return false;
+  return ROTAS_PUBLICAS_SUSPENSAO.includes(pathname)
+    || pathname.startsWith('/livro/')
+    || pathname.startsWith('/comunidade/')
+    || pathname.startsWith('/perfil/configuracoes')
+    || pathname === '/perfil/alterar-senha'
+    || (pathname.startsWith('/perfil/') && pathname.split('/').length === 3);
+};
 
 function App() {
   const location = useLocation();
@@ -73,6 +102,10 @@ function App() {
     || location.pathname.startsWith('/redefinir-senha/');
   const hideNavAndFooter = isDashboard || isAdminAvancado || isAuthPage;
   const exibirBannerAnuncios = flagsPublicas.banner_anuncios && !hideNavAndFooter;
+<<<<<<< HEAD
+=======
+  const suspensao = user?.suspensao?.ativa ? user.suspensao : null;
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
   useEffect(() => {
     let ativo = true;
@@ -99,6 +132,10 @@ function App() {
     return <Navigate to="/aceitar-termos" replace />;
   }
 
+  if (!loading && suspensao && !rotaPermitidaDuranteSuspensao(location.pathname)) {
+    return <Navigate to="/perfil/configuracoes" replace state={{ contaSuspensa: true }} />;
+  }
+
   return (
     // .app-shell é quem pinta o fundo do app (ver base.css): o <body>
     // não reage à troca de tema em tempo de execução, um descendente sim.
@@ -106,6 +143,10 @@ function App() {
       <a className="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
       <RouteAccessibility />
       {!hideNavAndFooter && <Navbar />}
+<<<<<<< HEAD
+=======
+      {suspensao && <SuspensionNotice suspensao={suspensao} />}
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
       {exibirBannerAnuncios && (
         <div className="container my-3 ad-container">
@@ -146,9 +187,17 @@ function App() {
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/backlog" element={<Backlog />} />
           <Route path="/diretrizes" element={<Diretrizes />} />
+          <Route path="/termos" element={<DocumentoLegal documento="termos" />} />
+          <Route path="/privacidade" element={<DocumentoLegal documento="privacidade" />} />
+          <Route path="/publicacao-e-licenca" element={<DocumentoLegal documento="publicacao" />} />
+          <Route path="/direitos-autorais" element={<DocumentoLegal documento="direitos" />} />
           <Route path="/autores" element={<Autores />} />
           <Route path="/para-leitores" element={<ParaLeitores />} />
           <Route path="/para-autores" element={<ParaAutores />} />
+<<<<<<< HEAD
+=======
+          <Route path="/minhas-publicacoes" element={<RotaPublicacao><MinhasPublicacoes /></RotaPublicacao>} />
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           <Route path="/publicar" element={<RotaPublicacao><PublicarLivro /></RotaPublicacao>} />
           <Route path="/autor/painel" element={<RotaPublicacao><PainelAutor /></RotaPublicacao>} />
           <Route path="/minha-biblioteca" element={<MinhaBiblioteca />} />

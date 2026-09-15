@@ -80,7 +80,12 @@ test('rota de publicação impede acesso de visitantes e papéis não aprovados'
   assert.match(app, /<RotaPublicacao><PublicarLivro \/><\/RotaPublicacao>/);
   assert.match(rotaPublicacao, /!user[\s\S]*Navigate to="\/para-autores"/);
   assert.match(rotaPublicacao, /aguardando_aprovacao[\s\S]*Navigate to="\/perfil"/);
+<<<<<<< HEAD
   assert.match(rotaPublicacao, /user\.tipo !== 'autor' && user\.tipo !== 'admin'/);
+=======
+  assert.match(rotaPublicacao, /user\.tipo !== 'autor'/);
+  assert.match(rotaPublicacao, /\['moderador', 'admin'\]\.includes\(user\.tipo\)[\s\S]*Navigate to="\/dashboard\?aba=livros"/);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 });
 
 test('dashboard breve explica e apresenta as quatro métricas solicitadas', () => {

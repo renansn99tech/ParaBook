@@ -8,14 +8,23 @@ import os
 import warnings
 from datetime import timedelta
 from pathlib import Path
+from urllib.parse import urlsplit
 import dj_database_url
 from decouple import config
 from django.core.exceptions import ImproperlyConfigured
+<<<<<<< HEAD
 from django import VERSION as DJANGO_VERSION
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def env_list(name, default=''):
+    """Lê listas separadas por vírgula sem preservar espaços ou itens vazios."""
+    return [item.strip() for item in config(name, default=default).split(',') if item.strip()]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
@@ -25,6 +34,13 @@ SECRET_KEY = config('SECRET_KEY', default=_development_secret)
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = config('DEBUG', default=True, cast=bool)
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173').rstrip('/')
+BACKEND_URL = config('BACKEND_URL', default='').rstrip('/')
+PUBLIC_SITE_DOMAIN = config('PUBLIC_SITE_DOMAIN', default='').strip()
+SHARED_SITE_ENFORCED = config('SHARED_SITE_ENFORCED', default=False, cast=bool)
+
+if not DEBUG and SECRET_KEY == _development_secret:
+    raise ImproperlyConfigured('SECRET_KEY é obrigatória quando DEBUG=False.')
 
 if not DEBUG and SECRET_KEY == _development_secret:
     raise ImproperlyConfigured('SECRET_KEY é obrigatória quando DEBUG=False.')
@@ -41,21 +57,36 @@ if DJANGO_VERSION < (5, 2):
 
 # Configuração de hosts permitidos
 
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS",
-    default="localhost,127.0.0.1,0.0.0.0,192.168.1.171,*",
-).split(",")
+ALLOWED_HOSTS = env_list(
+    'ALLOWED_HOSTS',
+    default='localhost,127.0.0.1,0.0.0.0,192.168.1.171' if DEBUG else '',
+)
 
 if not DEBUG:
+<<<<<<< HEAD
+=======
+    for platform_host in (
+        os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
+        os.environ.get('VERCEL_URL'),
+    ):
+        if platform_host and platform_host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(platform_host)
+
+    if not ALLOWED_HOSTS:
+        raise ImproperlyConfigured('ALLOWED_HOSTS é obrigatória quando DEBUG=False.')
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     if '*' in ALLOWED_HOSTS:
         raise ImproperlyConfigured(
             'ALLOWED_HOSTS deve ser definido explicitamente em produção.'
         )
+<<<<<<< HEAD
     ALLOWED_HOSTS += [
         ".onrender.com",
         "parabook-nl8o.onrender.com",
         ".railway.app",
     ]
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 # Configuração de origens confiáveis para CSRF
 
@@ -64,17 +95,35 @@ if not DEBUG:
 # cobre "http://localhost:5173". Espelha o CORS_ALLOWED_ORIGINS abaixo —
 # os dois estavam dessincronizados e era o que barrava POST do frontend
 # de dev com 403 CSRF.
+<<<<<<< HEAD
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
     default="http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1",
 ).split(",")
+=======
+CSRF_TRUSTED_ORIGINS = env_list(
+    'CSRF_TRUSTED_ORIGINS',
+    default=(
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1"
+        if DEBUG else ''
+    ),
+)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 if not DEBUG:
-    CSRF_TRUSTED_ORIGINS += [
-        "https://*.onrender.com",
-        "https://parabook-nl8o.onrender.com",
-        "https://*.railway.app",
-    ]
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+    SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=3600, cast=int)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = config(
+        'SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False, cast=bool
+    )
+    SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', default=False, cast=bool)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
@@ -157,6 +206,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Configuração CORS
 
+<<<<<<< HEAD
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
     default=(
@@ -168,16 +218,35 @@ CORS_ALLOWED_ORIGINS = config(
 # Libera automaticamente qualquer subdomínio das plataformas de deploy
 # (ex: o futuro Static Site do parabook-web no Render), sem precisar
 # hardcodar a URL exata a cada novo serviço criado.
+=======
+CORS_ALLOWED_ORIGINS = env_list(
+    'CORS_ALLOWED_ORIGINS',
+    default=(
+        "http://localhost:5173,http://127.0.0.1:5173,"
+        "http://localhost:8081,http://127.0.0.1:8081"
+        if DEBUG else ''
+    ),
+)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 if not DEBUG:
-    CORS_ALLOWED_ORIGIN_REGEXES = [
-        r"^https://.*\.onrender\.com$",
-        r"^https://.*\.railway\.app$",
-    ]
+    frontend_parts = urlsplit(FRONTEND_URL)
+    frontend_origin = (
+        f'{frontend_parts.scheme}://{frontend_parts.netloc}'
+        if frontend_parts.scheme in {'http', 'https'} and frontend_parts.netloc
+        else ''
+    )
+    if not frontend_origin:
+        raise ImproperlyConfigured('FRONTEND_URL deve ser uma URL absoluta em produção.')
+    if frontend_origin not in CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS.append(frontend_origin)
+    if frontend_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(frontend_origin)
 
 # DATABASE CONFIGURATION (PostgreSQL — unificado para todos os ambientes)
 
 DATABASE_URL = config('DATABASE_URL', default=None)
+MIGRATION_DATABASE_URL = config('MIGRATION_DATABASE_URL', default='')
 
 if not DATABASE_URL:
     if not DEBUG:
@@ -191,13 +260,37 @@ if not DATABASE_URL:
         f"postgres://{_db_user}:{_db_pass}@{_db_host}:{_db_port}/{_db_name}"
     )
 
+SERVERLESS = config('SERVERLESS', default=bool(os.environ.get('VERCEL')), cast=bool)
+DATABASE_CONN_MAX_AGE = config(
+    'DATABASE_CONN_MAX_AGE', default=0 if SERVERLESS else 600, cast=int
+)
+
 DATABASES = {
     'default': dj_database_url.config(
         default=DATABASE_URL,
-        conn_max_age=600,
-        conn_health_checks=True,
+        conn_max_age=DATABASE_CONN_MAX_AGE,
+        conn_health_checks=DATABASE_CONN_MAX_AGE > 0,
+        ssl_require=not DEBUG,
     )
 }
+
+if MIGRATION_DATABASE_URL:
+    # `config()` sempre consulta DATABASE_URL por padrão. Para a conexão
+    # proprietária de migration, a URL precisa ser analisada explicitamente;
+    # caso contrário, o alias também acaba usando a credencial de runtime.
+    DATABASES['migration'] = dj_database_url.parse(
+        MIGRATION_DATABASE_URL,
+        conn_max_age=0,
+        conn_health_checks=False,
+        ssl_require=not DEBUG,
+    )
+    DATABASES['migration']['DISABLE_SERVER_SIDE_CURSORS'] = True
+
+# O pooler transacional do Supabase não preserva cursores entre transações.
+# Também evita que instâncias serverless mantenham conexões ociosas.
+DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = config(
+    'DATABASE_DISABLE_SERVER_SIDE_CURSORS', default=SERVERLESS, cast=bool
+)
 
 # DATABASES = {
 
@@ -255,21 +348,31 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Credenciais do Supabase obtidas via decouple/env
+# Mídia fica no Supabase Storage via API compatível com S3. O bucket deve ser
+# privado: ele também contém PDFs cujo acesso é decidido pelo backend.
+MEDIA_URL = '/media/'
+SUPABASE_STORAGE_BUCKET_NAME = config(
+    'SUPABASE_STORAGE_BUCKET_NAME', default='parabook-media'
+)
+SUPABASE_STORAGE_ENDPOINT = config('SUPABASE_STORAGE_ENDPOINT', default='')
+SUPABASE_STORAGE_REGION = config('SUPABASE_STORAGE_REGION', default='')
+SUPABASE_STORAGE_ACCESS_KEY = config('SUPABASE_STORAGE_ACCESS_KEY', default='')
+SUPABASE_STORAGE_SECRET_KEY = config('SUPABASE_STORAGE_SECRET_KEY', default='')
+SUPABASE_STORAGE_ENABLED = config(
+    'SUPABASE_STORAGE_ENABLED', default=not DEBUG, cast=bool
+)
 
-SUPABASE_URL = config("SUPABASE_URL", default=None)
-SUPABASE_KEY = config("SUPABASE_KEY", default=None)
-SUPABASE_STORAGE_BUCKET_NAME = "parabook-media"
-
-# Define se o storage padrão de uploads será o Supabase ou o FileSystem local
-
-if not DEBUG and SUPABASE_URL and SUPABASE_KEY:
-    MEDIA_URL = (
-        f"{SUPABASE_URL}/storage/v1/object/public/"
-        f"{SUPABASE_STORAGE_BUCKET_NAME}/"
+if SUPABASE_STORAGE_ENABLED and not all([
+    SUPABASE_STORAGE_ENDPOINT,
+    SUPABASE_STORAGE_REGION,
+    SUPABASE_STORAGE_ACCESS_KEY,
+    SUPABASE_STORAGE_SECRET_KEY,
+]):
+    raise ImproperlyConfigured(
+        'SUPABASE_STORAGE_ENDPOINT, SUPABASE_STORAGE_REGION, '
+        'SUPABASE_STORAGE_ACCESS_KEY e SUPABASE_STORAGE_SECRET_KEY são '
+        'obrigatórias quando SUPABASE_STORAGE_ENABLED=True.'
     )
-else:
-    MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -286,6 +389,7 @@ STORAGES = {
         # Em desenvolvimento os arquivos vêm diretamente dos finders. Em
         # produção, ou quando o CI pede explicitamente, collectstatic gera o
         # manifest comprimido do WhiteNoise.
+<<<<<<< HEAD
         "BACKEND": (
             "whitenoise.storage.CompressedManifestStaticFilesStorage"
             if STATICFILES_USE_MANIFEST
@@ -293,13 +397,38 @@ STORAGES = {
         )
     },
     "default": {
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         "BACKEND": (
-            "storages.backends.supabase.SupabaseStorage"
-            if (not DEBUG and SUPABASE_URL and SUPABASE_KEY)
-            else "django.core.files.storage.FileSystemStorage"
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if STATICFILES_USE_MANIFEST
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
         )
     },
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage"
+    },
 }
+
+if SUPABASE_STORAGE_ENABLED:
+    STORAGES['default'] = {
+        'BACKEND': 'storages.backends.s3.S3Storage',
+        'OPTIONS': {
+            'bucket_name': SUPABASE_STORAGE_BUCKET_NAME,
+            'endpoint_url': SUPABASE_STORAGE_ENDPOINT,
+            'region_name': SUPABASE_STORAGE_REGION,
+            'access_key': SUPABASE_STORAGE_ACCESS_KEY,
+            'secret_key': SUPABASE_STORAGE_SECRET_KEY,
+            'addressing_style': 'path',
+            'signature_version': 's3v4',
+            'default_acl': None,
+            'querystring_auth': True,
+            'querystring_expire': config(
+                'SUPABASE_STORAGE_URL_EXPIRY', default=900, cast=int
+            ),
+            'file_overwrite': False,
+        },
+    }
 
 WHITENOISE_MANIFEST_STRICT = False
 
@@ -320,15 +449,32 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = config(
 # A versão é parte da evidência de aceite. Alterá-la força novo aceite nos
 # clientes web e legado; não reutilize uma versão para textos materialmente
 # diferentes.
+<<<<<<< HEAD
 TERMS_VERSION = config('TERMS_VERSION', default='2026-08-13')
+=======
+TERMS_VERSION = config('TERMS_VERSION', default='2026-09-09')
+LEGAL_DOCUMENTS_REVIEWED = config('LEGAL_DOCUMENTS_REVIEWED', default=False, cast=bool)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 # Identificação pública do agente de tratamento. Os valores definitivos devem
 # ser preenchidos no Render após definição da entidade responsável; não
 # presumimos que SENAC, integrantes da equipe ou fornecedores sejam o
 # controlador sem instrumento formal.
+<<<<<<< HEAD
 LEGAL_CONTROLLER_NAME = config(
     'LEGAL_CONTROLLER_NAME', default='ParaBook — projeto em validação'
 )
+=======
+LEGAL_CONTROLLER_PLACEHOLDER = 'ParaBook — projeto em validação'
+LEGAL_CONTROLLER_NAME = config(
+    'LEGAL_CONTROLLER_NAME', default=LEGAL_CONTROLLER_PLACEHOLDER
+)
+LEGAL_CONTROLLER_TYPE = config('LEGAL_CONTROLLER_TYPE', default='pessoa_fisica')
+if LEGAL_CONTROLLER_TYPE not in {'pessoa_fisica', 'pessoa_juridica'}:
+    raise ImproperlyConfigured(
+        'LEGAL_CONTROLLER_TYPE deve ser pessoa_fisica ou pessoa_juridica.'
+    )
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 LEGAL_CONTROLLER_DOCUMENT = config('LEGAL_CONTROLLER_DOCUMENT', default='')
 LEGAL_CONTROLLER_ADDRESS = config('LEGAL_CONTROLLER_ADDRESS', default='')
 LEGAL_PRIVACY_CONTACT = config('LEGAL_PRIVACY_CONTACT', default='')
@@ -338,8 +484,12 @@ LEGAL_JURISDICTION = 'Brasil'
 # Em desenvolvimento local, continua usando o console.
 # Em produção, usa SMTP com as variáveis de ambiente.
 
+EMAIL_ENABLED = config('EMAIL_ENABLED', default=DEBUG, cast=bool)
+
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+elif not EMAIL_ENABLED:
+    EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = config('EMAIL_HOST', default='')
@@ -358,14 +508,8 @@ DEFAULT_FROM_EMAIL = config(
 )
 CORS_ALLOW_CREDENTIALS = True
 
-# URL publica do front-end React. Usada para montar os links enviados por email
-# (ex: redefinicao de senha), que devem apontar para o parabook-web e nao para
-# as telas legadas do Django.
-
-FRONTEND_URL = config(
-    'FRONTEND_URL',
-    default='http://localhost:5173'
-).rstrip('/')
+# FRONTEND_URL é carregada no início porque também define as origens canônicas
+# de CORS e CSRF, além dos links e retornos controlados pelo servidor.
 
 # DRF Configuration
 
@@ -416,6 +560,29 @@ if (
         'Cookies com SameSite=None devem usar Secure=True.'
     )
 
+<<<<<<< HEAD
+=======
+if not DEBUG and SHARED_SITE_ENFORCED:
+    from config.deployment_boundary import validar_fronteira_compartilhada
+
+    try:
+        validar_fronteira_compartilhada(
+            site_domain=PUBLIC_SITE_DOMAIN,
+            frontend_url=FRONTEND_URL,
+            backend_url=BACKEND_URL,
+            allowed_hosts=ALLOWED_HOSTS,
+            cors_origins=CORS_ALLOWED_ORIGINS,
+            csrf_origins=CSRF_TRUSTED_ORIGINS,
+            cookie_samesites=[
+                JWT_COOKIE_SAMESITE,
+                CSRF_COOKIE_SAMESITE,
+                SESSION_COOKIE_SAMESITE,
+            ],
+        )
+    except ValueError as exc:
+        raise ImproperlyConfigured(str(exc)) from exc
+
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 SPECTACULAR_SETTINGS = {
     'TITLE': 'ParaBook API',
     'DESCRIPTION': 'Documentação oficial das APIs do ParaBook (Fase 2)',
@@ -423,13 +590,30 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # 'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
     'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+    'ENUM_NAME_OVERRIDES': {
+        'LivroStatusEnum': 'biblioteca.models.Livro.STATUS_CHOICES',
+        'EstanteStatusEnum': 'biblioteca.models.Biblioteca.STATUS_CHOICES',
+    },
 }
 
 # Configuração da Stripe com tratativa para variáveis ausentes
 
+<<<<<<< HEAD
 STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+=======
+PAYMENTS_ENABLED = config('PAYMENTS_ENABLED', default=False, cast=bool)
+STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='') if PAYMENTS_ENABLED else ''
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='') if PAYMENTS_ENABLED else ''
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='') if PAYMENTS_ENABLED else ''
+
+if PAYMENTS_ENABLED and not all([STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET]):
+    raise ImproperlyConfigured(
+        'STRIPE_SECRET_KEY e STRIPE_WEBHOOK_SECRET são obrigatórias quando '
+        'PAYMENTS_ENABLED=True.'
+    )
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 LOG_LEVEL = config('LOG_LEVEL', default='INFO')
 LOGGING = {

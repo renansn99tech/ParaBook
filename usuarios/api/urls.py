@@ -19,7 +19,13 @@ from .views import (
     SessoesDispositivoAPIView,
     AutenticacaoDoisFatoresAPIView,
     PreferenciasNotificacaoAPIView,
+<<<<<<< HEAD
     ExportarDadosAPIView,
+=======
+    PreferenciaAparenciaAPIView,
+    ExportarDadosAPIView,
+    SolicitacoesSuporteAPIView,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 )
 
 urlpatterns = [
@@ -42,5 +48,11 @@ urlpatterns = [
     path('sessoes/', SessoesDispositivoAPIView.as_view(), name='api_sessoes'),
     path('dois-fatores/', AutenticacaoDoisFatoresAPIView.as_view(), name='api_dois_fatores'),
     path('preferencias-notificacao/', PreferenciasNotificacaoAPIView.as_view(), name='api_preferencias_notificacao'),
+<<<<<<< HEAD
     path('exportar-dados/', ExportarDadosAPIView.as_view(), name='api_exportar_dados'),
+=======
+    path('aparencia/', PreferenciaAparenciaAPIView.as_view(), name='api_aparencia'),
+    path('exportar-dados/', ExportarDadosAPIView.as_view(), name='api_exportar_dados'),
+    path('suporte/', SolicitacoesSuporteAPIView.as_view(), name='api_suporte'),
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 ]

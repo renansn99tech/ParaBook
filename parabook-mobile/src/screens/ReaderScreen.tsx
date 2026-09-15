@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+<<<<<<< HEAD
+=======
+  AppState,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   Alert,
   SafeAreaView,
   StyleSheet,
@@ -14,7 +18,11 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { bookService } from '../services/bookService';
+<<<<<<< HEAD
 import { getAccessToken } from '../services/api';
+=======
+import { api, getAccessToken } from '../services/api';
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Reader'>;
 
@@ -26,7 +34,11 @@ type ReaderMessage = {
   message?: string;
 };
 
+<<<<<<< HEAD
 const buildReaderHtml = (pdfUrl: string, accessToken: string, title: string) => `
+=======
+const buildReaderHtml = (pdfData: number[], initialPage: number) => `
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 <!doctype html>
 <html>
 <head>
@@ -68,16 +80,26 @@ const buildReaderHtml = (pdfUrl: string, accessToken: string, title: string) => 
   </style>
 </head>
 <body>
+<<<<<<< HEAD
   <div id="status">Carregando ${title}...</div>
+=======
+  <div id="status">Carregando livro...</div>
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   <main id="reader" aria-label="Leitor digital">
     <canvas id="pageCanvas"></canvas>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
+<<<<<<< HEAD
     const pdfUrl = ${JSON.stringify(pdfUrl)};
     const accessToken = ${JSON.stringify(accessToken)};
     let pdfDoc = null;
     let pageNumber = 1;
+=======
+    const pdfBytes = ${JSON.stringify(pdfData)};
+    let pdfDoc = null;
+    let pageNumber = ${initialPage};
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     let totalPages = 0;
     let zoom = 1;
     let rendering = false;
@@ -145,6 +167,7 @@ const buildReaderHtml = (pdfUrl: string, accessToken: string, title: string) => 
     async function loadPdf() {
       try {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+<<<<<<< HEAD
         const response = await fetch(pdfUrl, {
           headers: { Authorization: 'Bearer ' + accessToken }
         });
@@ -155,6 +178,9 @@ const buildReaderHtml = (pdfUrl: string, accessToken: string, title: string) => 
 
         const data = await response.arrayBuffer();
         pdfDoc = await pdfjsLib.getDocument({ data }).promise;
+=======
+        pdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(pdfBytes), isEvalSupported: false }).promise;
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         totalPages = pdfDoc.numPages || 1;
         send({ type: 'loaded', page: pageNumber, total: totalPages, progress: 0 });
         renderPage(pageNumber);
@@ -195,22 +221,37 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
   const { bookId, title } = route.params;
   const webViewRef = useRef<WebView>(null);
   const shelfItemIdRef = useRef<string | number | null>(null);
+<<<<<<< HEAD
   const accessToken = getAccessToken();
+=======
+  const currentAccessToken = getAccessToken();
+  const [pdfData, setPdfData] = useState<number[] | null>(null);
+  const [initialPage, setInitialPage] = useState(1);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(true);
+<<<<<<< HEAD
+=======
+  const [preparingReader, setPreparingReader] = useState(true);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [readerVersion, setReaderVersion] = useState(0);
 
   useEffect(() => {
+<<<<<<< HEAD
     if (!accessToken) {
+=======
+    if (!currentAccessToken) {
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       Alert.alert('Login necessario', 'Entre para acessar o leitor digital.', [
         { text: 'Entrar', onPress: () => navigation.replace('Login') },
       ]);
       return;
     }
 
+<<<<<<< HEAD
     bookService.updateBookStatus(bookId, 'lendo')
       .then((item) => {
         shelfItemIdRef.current = item.id;
@@ -224,6 +265,48 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
     if (!accessToken) return '';
     return buildReaderHtml(bookService.getBookPdfUrl(bookId), accessToken, title || 'Livro');
   }, [accessToken, bookId, title, readerVersion]);
+=======
+    let active = true;
+    setPreparingReader(true);
+    setPdfData(null);
+    setErrorMessage(null);
+    (async () => {
+      // Toda abertura passa pela autorização real; o JWT fica no cliente nativo.
+      const response = await api.get(`/biblioteca/livros/${bookId}/ler_pdf/`, { responseType: 'arraybuffer' });
+      if (!active) return;
+      try {
+        let item = await bookService.getShelfItemByBook(bookId);
+        if (!item || item.status === 'quero_ler') item = await bookService.updateBookStatus(bookId, 'lendo');
+        if (active) {
+          shelfItemIdRef.current = item.id;
+          setInitialPage(Math.max(1, item.currentPage));
+        }
+      } catch {
+        if (active) Alert.alert('Estante não sincronizada', 'A leitura está autorizada. Confira sua estante antes de repetir a alteração.');
+      }
+      if (active) { setPdfData(Array.from(new Uint8Array(response.data))); setLoading(false); }
+    })().catch(() => {
+      if (active) { setLoading(false); setErrorMessage('Livro indisponível ou conexão interrompida. Tente novamente para conferir o acesso.'); }
+    }).finally(() => { if (active) setPreparingReader(false); });
+
+    return () => {
+      active = false;
+    };
+  }, [bookId, navigation, readerVersion]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      setPdfData(null);
+      if (state === 'active') setReaderVersion((version) => version + 1);
+    });
+    return () => subscription.remove();
+  }, []);
+
+  const readerHtml = useMemo(() => {
+    if (!pdfData) return '';
+    return buildReaderHtml(pdfData, initialPage);
+  }, [pdfData, initialPage]);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
   const retryReader = () => {
     setLoading(true);
@@ -274,7 +357,11 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
     }
   };
 
+<<<<<<< HEAD
   if (!accessToken) {
+=======
+  if (!currentAccessToken) {
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     return <SafeAreaView style={styles.container} />;
   }
 
@@ -306,19 +393,35 @@ export const ReaderScreen = ({ route, navigation }: Props) => {
       </View>
 
       <View style={styles.readerContainer}>
+<<<<<<< HEAD
         {loading && (
+=======
+        {(loading || preparingReader) && (
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         )}
+<<<<<<< HEAD
         {!errorMessage ? (
+=======
+        {!errorMessage && !preparingReader && pdfData ? (
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           <WebView
             key={readerVersion}
             ref={webViewRef}
             source={{ html: readerHtml }}
             originWhitelist={['*']}
             javaScriptEnabled
+<<<<<<< HEAD
             domStorageEnabled
+=======
+            cacheEnabled={false}
+            incognito
+            domStorageEnabled={false}
+            allowFileAccess={false}
+            onShouldStartLoadWithRequest={(request) => request.url === 'about:blank'}
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             onMessage={handleMessage}
             onError={() => {
               setLoading(false);

@@ -135,7 +135,7 @@ def perfil_publico(request, username_alvo):
     # ==========================================================
     if not eh_admin_parabook(request.user):
         # REGRA 3: Bloqueia acesso a perfis administrativos
-        if dados_usuario.tipo == 'admin' or user_auth_obj.is_superuser:
+        if dados_usuario.tipo in {'moderador', 'admin'} or user_auth_obj.is_superuser:
             url_origem = request.META.get('HTTP_REFERER', '/comunidades/')
             divisor = '&' if '?' in url_origem else '?'
             return redirect(f"{url_origem}{divisor}status_block=admin")
@@ -187,7 +187,7 @@ def onboarding_autor(request):
     usuario_custom = request.user.perfil_customizado
     
     # Prevenção: Se ele já for autor ou admin, não tem porquê fazer onboarding
-    if usuario_custom.tipo in ['autor', 'admin', 'aguardando_aprovacao']:
+    if usuario_custom.tipo in ['autor', 'moderador', 'admin', 'aguardando_aprovacao']:
         messages.info(request, "Você já possui uma solicitação em andamento ou privilégios de publicação.")
         return redirect('perfis:perfil_pessoal')
         

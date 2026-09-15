@@ -2,7 +2,12 @@ export function obterCtaAutoria(user) {
   if (!user) {
     return { to: '/register', label: 'Criar conta gratuita', icon: 'fa-user-plus' };
   }
+<<<<<<< HEAD
   if (user.tipo === 'admin' || user.tipo === 'autor') {
+=======
+  if (['moderador', 'admin'].includes(user.tipo)) return { to: '/dashboard?aba=livros', label: 'Gerenciar acervo', icon: 'fa-books' };
+  if (user.tipo === 'autor') {
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     return { to: '/publicar', label: 'Enviar uma obra', icon: 'fa-file-arrow-up' };
   }
   if (user.tipo === 'aguardando_aprovacao') {
@@ -15,7 +20,12 @@ export function obterCtaSecundariaLanding(user) {
   if (!user) {
     return { to: '/register', label: 'Criar conta gratuita', icon: 'fa-user-plus' };
   }
+<<<<<<< HEAD
   if (user.tipo === 'admin' || user.tipo === 'autor') {
+=======
+  if (['moderador', 'admin'].includes(user.tipo)) return { to: '/dashboard?aba=livros', label: 'Gerenciar acervo', icon: 'fa-books' };
+  if (user.tipo === 'autor') {
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     return { to: '/publicar', label: 'Enviar uma obra', icon: 'fa-file-arrow-up' };
   }
   if (user.tipo === 'aguardando_aprovacao') {

@@ -40,6 +40,17 @@ export interface CurrentUserProfile {
   nome: string;
   tipo: string;
   is_superuser: boolean;
+<<<<<<< HEAD
+=======
+  is_staff?: boolean;
+  suspensao?: {
+    ativa: boolean;
+    protocolo: string;
+    termina_em: string;
+    segundos_restantes: number;
+    duracao_dias: number;
+  } | null;
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   termos_aceitos: boolean;
   versao_termos_aceita?: string | null;
   historico?: string | null;
@@ -237,6 +248,10 @@ export const authService = {
     const endpoint = '/auth/mobile-register/';
 
     try {
+<<<<<<< HEAD
+=======
+      // openapi-contract: POST /auth/mobile-register/
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       const response = await api.post(endpoint, {
         username: payload.username,
         email: payload.email,

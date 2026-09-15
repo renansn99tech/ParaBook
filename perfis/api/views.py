@@ -31,6 +31,19 @@ from biblioteca.models import Biblioteca, Denuncia, Livro, SolicitacaoPublicacao
 from comunidades.models import Comunidade, DenunciaComunidade, PostagemComunidade
 from gamificacao.models import ConquistaUsuario
 from notificacoes.models import Notificacao
+<<<<<<< HEAD
+=======
+from drf_spectacular.utils import extend_schema
+from .schema import (
+    AutorResumoSerializer,
+    HistoricoPerfilResponseSerializer,
+    InicioPersonalizadoResponseSerializer,
+    OnboardingAdiadoSerializer,
+    PerfilPublicoResponseSerializer,
+    ResumoLeituraResponseSerializer,
+    SolicitarAutorResponseSerializer,
+)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 class AdiarOnboardingAPIView(APIView):
     """Registra que o modal "Termine seu cadastro" foi exibido/dispensado.
@@ -40,6 +53,10 @@ class AdiarOnboardingAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+<<<<<<< HEAD
+=======
+    @extend_schema(request=None, responses=OnboardingAdiadoSerializer)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def post(self, request, *args, **kwargs):
         usuario = obter_ou_criar_usuario_customizado(request.user)
         if (usuario.onboarding_lembretes or 0) < 2:
@@ -53,6 +70,10 @@ class HistoricoPerfilAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+<<<<<<< HEAD
+=======
+    @extend_schema(responses=HistoricoPerfilResponseSerializer)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def get(self, request, *args, **kwargs):
         eventos = []
         eventos_livros = []
@@ -155,6 +176,10 @@ class ResumoLeituraAPIView(APIView):
     permission_classes = [IsAuthenticated]
     LIMITE_SESSAO_SEGUNDOS = 8 * 60 * 60
 
+<<<<<<< HEAD
+=======
+    @extend_schema(responses=ResumoLeituraResponseSerializer)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def get(self, request, *args, **kwargs):
         itens = Biblioteca.objects.filter(user=request.user).select_related(
             'livro', 'livro__categoria',
@@ -266,6 +291,10 @@ class InicioPersonalizadoAPIView(APIView):
     permission_classes = [IsAuthenticated]
     TOTAL_DESCOBERTAS = 3
 
+<<<<<<< HEAD
+=======
+    @extend_schema(responses=InicioPersonalizadoResponseSerializer)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def get(self, request, *args, **kwargs):
         usuario = obter_ou_criar_usuario_customizado(request.user)
         itens = Biblioteca.objects.filter(user=request.user)
@@ -323,7 +352,11 @@ class InicioPersonalizadoAPIView(APIView):
         })
 
     def _proxima_acao(self, user, tipo):
+<<<<<<< HEAD
         if tipo == 'admin':
+=======
+        if tipo in {'moderador', 'admin'}:
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             publicacoes = SolicitacaoPublicacao.objects.filter(status='pendente').count()
             autores = Usuario.objects.filter(tipo='aguardando_aprovacao').count()
             denuncias = (
@@ -431,6 +464,10 @@ class InicioPersonalizadoAPIView(APIView):
 class PerfilPublicoAPIView(APIView):
     permission_classes = [AllowAny]
 
+<<<<<<< HEAD
+=======
+    @extend_schema(responses=PerfilPublicoResponseSerializer)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def get(self, request, username, *args, **kwargs):
         try:
             dados_usuario = Usuario.objects.get(user_auth__username=username)
@@ -464,7 +501,11 @@ class PerfilPublicoAPIView(APIView):
         # Perfis administrativos são uma superfície operacional privativa:
         # somente o proprietário ou outro administrador ParaBook pode acessá-los.
         solicitante_admin = eh_admin_parabook(request.user)
+<<<<<<< HEAD
         alvo_admin = dados_usuario.tipo == 'admin' or user_auth_obj.is_superuser
+=======
+        alvo_admin = dados_usuario.tipo in {'moderador', 'admin'} or user_auth_obj.is_superuser
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         if not is_owner and not solicitante_admin:
             if alvo_admin:
                 return Response({"erro": "Acesso negado a perfis administrativos.", "status_block": "admin"}, status=403)
@@ -563,7 +604,10 @@ class PerfilPublicoAPIView(APIView):
             obras_autor = list(
                 Livro.objects.filter(
                     solicitacao_publicacao__usuario=user_auth_obj,
+<<<<<<< HEAD
                     solicitacao_publicacao__status='aprovado',
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
                     status='publicado',
                     data_remocao__isnull=True,
                 )
@@ -739,10 +783,11 @@ class SolicitarAutorAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses=SolicitarAutorResponseSerializer)
     def post(self, request, *args, **kwargs):
         usuario_custom = obter_ou_criar_usuario_customizado(request.user)
 
-        if usuario_custom.tipo in ['autor', 'admin', 'aguardando_aprovacao']:
+        if usuario_custom.tipo in ['autor', 'moderador', 'admin', 'aguardando_aprovacao']:
             return Response(
                 {"detail": "Você já possui uma solicitação em andamento ou privilégios de publicação."},
                 status=409
@@ -758,6 +803,7 @@ class SolicitarAutorAPIView(APIView):
 
 
 class AutoresListAPIView(APIView):
+    @extend_schema(responses=AutorResumoSerializer(many=True))
     def get(self, request, *args, **kwargs):
         autores = Usuario.objects.filter(tipo='autor').select_related('user_auth', 'perfil')
         data = []

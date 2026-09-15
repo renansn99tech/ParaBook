@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+<<<<<<< HEAD
   Image,
+=======
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   StyleSheet,
   Text,
   View,
   ScrollView,
   TextInput,
-  SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../theme/colors';
+import { colors, controlHeight, radii, spacing } from '../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { Book, bookService, Category } from '../services/bookService';
 import { useAuth } from '../context/AuthContext';
+<<<<<<< HEAD
+=======
+import { BookCover } from '../components/BookCover';
+import { EmptyState } from '../components/EmptyState';
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -82,9 +90,15 @@ export const HomeScreen = () => {
         
         {/* Header - Saudação */}
         <View style={styles.header}>
+<<<<<<< HEAD
           <View>
             <Text style={styles.greetingTitle}>Ola, {greetingName}!{'\u00A0'}👋</Text>
             <Text style={styles.greetingSubtitle}>O que voce vai ler hoje?</Text>
+=======
+          <View style={styles.headerText}>
+            <Text style={styles.greetingTitle} numberOfLines={1}>Olá, {greetingName}!{'\u00A0'}👋</Text>
+            <Text style={styles.greetingSubtitle}>O que você vai ler hoje?</Text>
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           </View>
           <TouchableOpacity onPress={() => navigateToStack('MyLibrary')}>
             <View style={styles.avatar}>
@@ -98,7 +112,11 @@ export const HomeScreen = () => {
           <Ionicons name="search-outline" size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
+<<<<<<< HEAD
             placeholder="Buscar por titulo ou autor..."
+=======
+            placeholder="Buscar por título ou autor..."
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             placeholderTextColor={colors.textMuted}
             value={search}
             onChangeText={setSearch}
@@ -126,7 +144,11 @@ export const HomeScreen = () => {
         <View style={styles.banner}>
           <Text style={styles.bannerBadge}>ACERVO</Text>
           <Text style={styles.bannerTitle}>Descubra novos mundos</Text>
+<<<<<<< HEAD
           <Text style={styles.bannerSubtitle}>Explore os livros disponiveis no ParaBook e amplie seus horizontes.</Text>
+=======
+          <Text style={styles.bannerSubtitle}>Explore os livros disponíveis no ParaBook e amplie seus horizontes.</Text>
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           {firstBook && (
             <TouchableOpacity
               style={styles.bannerButton}
@@ -146,6 +168,7 @@ export const HomeScreen = () => {
         </View>
 
         {loadingCategories ? (
+<<<<<<< HEAD
           <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
         ) : categoriesError ? (
           <View style={styles.stateCard}>
@@ -157,6 +180,19 @@ export const HomeScreen = () => {
           </View>
         ) : categories.length === 0 ? (
           <Text style={styles.stateText}>Nenhuma categoria cadastrada no acervo.</Text>
+=======
+          <View style={styles.loadingSlot}><ActivityIndicator color={colors.primary} /></View>
+        ) : categoriesError ? (
+          <EmptyState
+            compact
+            icon="cloud-offline-outline"
+            title="Não foi possível carregar as categorias"
+            description={categoriesError}
+            action={<TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)} activeOpacity={0.78}><Text style={styles.retryButtonText}>Tentar novamente</Text></TouchableOpacity>}
+          />
+        ) : categories.length === 0 ? (
+          <EmptyState compact icon="grid-outline" title="Nenhuma categoria cadastrada" description="As categorias do acervo aparecerão aqui." />
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         ) : (
           <View style={styles.categoriesGrid}>
             {categories.map((category, index) => {
@@ -179,6 +215,7 @@ export const HomeScreen = () => {
         </View>
 
         {loadingBooks ? (
+<<<<<<< HEAD
           <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
         ) : booksError ? (
           <View style={styles.stateCard}>
@@ -193,6 +230,25 @@ export const HomeScreen = () => {
             <Text style={styles.stateText}>
               {search.trim() ? 'Nenhum livro encontrado para essa busca.' : 'Nenhum livro cadastrado no acervo.'}
             </Text>
+=======
+          <View style={styles.loadingSlot}><ActivityIndicator color={colors.primary} /></View>
+        ) : booksError ? (
+          <EmptyState
+            compact
+            icon="cloud-offline-outline"
+            title="Não foi possível carregar os livros"
+            description={booksError}
+            action={<TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)} activeOpacity={0.78}><Text style={styles.retryButtonText}>Tentar novamente</Text></TouchableOpacity>}
+          />
+        ) : (
+          books.length === 0 ? (
+            <EmptyState
+              compact
+              icon={search.trim() ? 'search-outline' : 'book-outline'}
+              title={search.trim() ? 'Nenhum livro encontrado' : 'Nenhum livro cadastrado'}
+              description={search.trim() ? 'Tente buscar por outro título ou autor.' : 'Os livros adicionados ao acervo aparecerão aqui.'}
+            />
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           ) : (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
               {books.map((book) => (
@@ -201,6 +257,7 @@ export const HomeScreen = () => {
                   style={styles.bookCard}
                   onPress={() => navigateToStack('BookDetail', { bookId: String(book.id), title: book.title })}
                 >
+<<<<<<< HEAD
                   {book.cover_url ? (
                     <Image source={{ uri: book.cover_url }} style={styles.bookCoverImage} resizeMode="cover" />
                   ) : (
@@ -209,6 +266,10 @@ export const HomeScreen = () => {
                     </View>
                   )}
                   <Text style={styles.bookTitle} numberOfLines={1}>
+=======
+                  <BookCover uri={book.cover_url} width={108} height={156} />
+                  <Text style={styles.bookTitle} numberOfLines={2}>
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
                     {book.title}
                   </Text>
                   <Text style={styles.bookAuthor} numberOfLines={1}>
@@ -231,14 +292,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 20,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xxl,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 10,
+    marginBottom: spacing.xl,
+  },
+  headerText: {
+    flex: 1,
+    marginRight: spacing.md,
   },
   greetingTitle: {
     fontSize: 22,
@@ -267,16 +333,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.cardBackground,
-    borderRadius: 16,
+    borderRadius: radii.lg,
     paddingHorizontal: 16,
-    height: 52,
-    marginBottom: 16,
+    height: controlHeight,
+    marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   searchInput: {
     flex: 1,
     color: colors.textPrimary,
     marginLeft: 10,
     marginRight: 10,
+    fontSize: 15,
   },
   libraryShortcut: {
     flexDirection: 'row',
@@ -285,8 +354,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardBackground,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 14,
-    marginBottom: 24,
+    borderRadius: radii.md,
+    minHeight: 48,
+    marginBottom: spacing.xxl,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -302,9 +372,9 @@ const styles = StyleSheet.create({
   },
   banner: {
     backgroundColor: colors.cardBackground,
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 28,
+    borderRadius: radii.lg,
+    padding: spacing.xl,
+    marginBottom: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -324,20 +394,24 @@ const styles = StyleSheet.create({
   bannerSubtitle: {
     fontSize: 13,
     color: colors.textSecondary,
-    marginBottom: 16,
+    marginBottom: spacing.lg,
+    lineHeight: 19,
   },
   bannerButton: {
     backgroundColor: colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 20,
+    minHeight: 42,
+    borderRadius: radii.pill,
     alignSelf: 'flex-start',
+    justifyContent: 'center',
   },
   bannerButtonText: {
     color: colors.textPrimary,
     fontWeight: '600',
     fontSize: 14,
   },
+<<<<<<< HEAD
   stateCard: {
     alignItems: 'center',
     paddingVertical: 24,
@@ -358,6 +432,12 @@ const styles = StyleSheet.create({
     marginTop: 16,
     minHeight: 40,
     borderRadius: 20,
+=======
+  retryButton: {
+    marginTop: 16,
+    minHeight: 40,
+    borderRadius: radii.pill,
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     backgroundColor: colors.primary,
     paddingHorizontal: 16,
     alignItems: 'center',
@@ -372,8 +452,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 8,
+    marginBottom: spacing.md,
+    marginTop: spacing.xxl,
   },
   sectionTitle: {
     fontSize: 18,
@@ -383,42 +463,41 @@ const styles = StyleSheet.create({
   seeAllText: {
     color: colors.primary,
     fontSize: 14,
+    fontWeight: '600',
   },
   categoriesGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    flexWrap: 'wrap',
+    gap: spacing.md,
   },
   categoryCard: {
     backgroundColor: colors.cardBackground,
-    width: '22%',
-    paddingVertical: 16,
-    borderRadius: 16,
+    width: '48%',
+    minHeight: 76,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: radii.md,
     alignItems: 'center',
     gap: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   categoryTitle: {
     color: colors.textSecondary,
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
   },
   recentBooksScroll: {
     flexDirection: 'row',
   },
   bookCard: {
-    width: 110,
-    marginRight: 14,
+    width: 108,
+    marginRight: spacing.md,
   },
-  bookCover: {
-    width: 110,
-    height: 150,
-    backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    justifyContent: 'center',
+  loadingSlot: {
+    minHeight: 96,
     alignItems: 'center',
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
+    justifyContent: 'center',
   },
   bookCoverImage: {
     width: 110,
@@ -434,6 +513,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     color: colors.textPrimary,
+    lineHeight: 18,
+    marginTop: spacing.sm,
   },
   bookAuthor: {
     fontSize: 11,

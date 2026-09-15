@@ -1,0 +1,87 @@
+services:
+  - type: web
+    name: parabook-api
+    runtime: docker
+    plan: free
+    repo: https://github.com/renansn99tech/ParaBook
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health/
+    # Recuperacao: deploy manual. Para religar rapidamente, trocar por
+    # checksPass; a CI tambem roda na main e passa a ser o gate do deploy.
+    autoDeployTrigger: "off"
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: PUBLIC_SITE_DOMAIN
+        sync: false
+      # Ativar somente no corte DNS, junto de cookies Lax e allowlists próprias.
+      - key: SHARED_SITE_ENFORCED
+        value: "False"
+      - key: TERMS_VERSION
+        sync: false
+      - key: LEGAL_DOCUMENTS_REVIEWED
+        value: "False"
+      - key: LEGAL_CONTROLLER_TYPE
+        value: pessoa_fisica
+      - key: LEGAL_CONTROLLER_NAME
+        sync: false
+      - key: LEGAL_CONTROLLER_DOCUMENT
+        sync: false
+      - key: LEGAL_CONTROLLER_ADDRESS
+        sync: false
+      - key: LEGAL_PRIVACY_CONTACT
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      # Credencial proprietária usada somente no passo de migration. O processo
+      # web usa DATABASE_URL com a role parabook_runtime de menor privilégio.
+      - key: MIGRATION_DATABASE_URL
+        sync: false
+      - key: DATABASE_CONN_MAX_AGE
+        value: "600"
+      - key: DATABASE_DISABLE_SERVER_SIDE_CURSORS
+        value: "False"
+      - key: SERVERLESS
+        value: "False"
+      - key: SUPABASE_STORAGE_ENABLED
+        value: "True"
+      - key: SUPABASE_STORAGE_BUCKET_NAME
+        value: parabook-media
+      - key: SUPABASE_STORAGE_ENDPOINT
+        sync: false
+      - key: SUPABASE_STORAGE_REGION
+        sync: false
+      - key: SUPABASE_STORAGE_ACCESS_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_SECRET_KEY
+        sync: false
+      - key: PAYMENTS_ENABLED
+        value: "False"
+      - key: EMAIL_ENABLED
+        value: "False"
+      - key: JWT_COOKIE_SECURE
+        value: "True"
+      - key: CSRF_COOKIE_SECURE
+        value: "True"
+      - key: JWT_COOKIE_SAMESITE
+        value: "None"
+      - key: CSRF_COOKIE_SAMESITE
+        value: "None"
+      - key: SESSION_COOKIE_SAMESITE
+        value: "None"
+      - key: RUN_MIGRATIONS
+        value: "true"
+      - key: GUNICORN_WORKERS
+        value: "1"
+      - key: GUNICORN_THREADS
+        value: "2"
+      - key: GUNICORN_TIMEOUT
+        value: "90"

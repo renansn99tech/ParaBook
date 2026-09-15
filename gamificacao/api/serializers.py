@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import serializers
 
 from gamificacao.models import Conquista, ProgressoLeitor
@@ -16,6 +18,7 @@ class ProgressoLeitorSerializer(serializers.ModelSerializer):
         model = ProgressoLeitor
         fields = ['user_id', 'username', 'nome_exibicao', 'perfil_clicavel', 'pontos_xp', 'nivel', 'dias_seguidos']
 
+<<<<<<< HEAD
     def get_username(self, obj):
         return self._identidade(obj)['username']
 
@@ -25,6 +28,17 @@ class ProgressoLeitorSerializer(serializers.ModelSerializer):
     def get_perfil_clicavel(self, obj):
         return self._identidade(obj)['perfil_clicavel']
 
+=======
+    def get_username(self, obj) -> str:
+        return self._identidade(obj)['username']
+
+    def get_nome_exibicao(self, obj) -> str:
+        return self._identidade(obj)['nome_exibicao']
+
+    def get_perfil_clicavel(self, obj) -> bool:
+        return self._identidade(obj)['perfil_clicavel']
+
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def _identidade(self, obj):
         request = self.context.get('request')
         viewer = request.user if request else None
@@ -49,8 +63,8 @@ class ConquistaSerializer(serializers.ModelSerializer):
             'desbloqueada', 'data_desbloqueio',
         ]
 
-    def get_desbloqueada(self, obj):
+    def get_desbloqueada(self, obj) -> bool:
         return obj.id in self.context.get('desbloqueadas_map', {})
 
-    def get_data_desbloqueio(self, obj):
+    def get_data_desbloqueio(self, obj) -> datetime | None:
         return self.context.get('desbloqueadas_map', {}).get(obj.id)

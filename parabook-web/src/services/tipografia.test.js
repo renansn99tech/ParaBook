@@ -36,5 +36,9 @@ test('design system usa tokens e presets em vez de fontes soltas', () => {
 test('preferência autenticada é aplicada globalmente e possui tela de escolha', () => {
   assert.match(authContext, /aplicarTipografia\(user\?\.tipografia_efetiva/);
   assert.match(centralConta, /aparencia: \['Tipografia e aparência', Aparencia, false\]/);
+<<<<<<< HEAD
   assert.match(centralConta, /api\.patch\('\/perfis\/meu-perfil\/', \{ tipografia: chave \}\)/);
+=======
+  assert.match(centralConta, /api\.patch\('\/auth\/aparencia\/', \{ tipografia: chave \}\)/);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 });

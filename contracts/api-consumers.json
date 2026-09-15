@@ -1,0 +1,513 @@
+{
+  "version": 1,
+  "clients": {
+    "web": [
+      {
+        "method": "POST",
+        "path": "/api/v1/assinaturas/checkout/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/assinaturas/minha-assinatura/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/assinaturas/planos/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/assinaturas/portal/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/aceitar-termos/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/alterar-senha/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/auth/aparencia/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/csrf/"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/auth/excluir-conta/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/governanca/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/login/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/logout/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/preferencias-notificacao/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/auth/preferencias-notificacao/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/recuperar-senha/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/redefinir-senha/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/refresh/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/register/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/suporte/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/suporte/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/autor/analytics/exportar/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/autor/analytics/resumo/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/categorias/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/categorias/{param}/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/denuncias/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/estante/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/estante/"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/biblioteca/estante/{param}/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/biblioteca/estante/{param}/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/leitura/eventos/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/livros/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/{id}/ler_amostra/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/{id}/ler_pdf/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/{param}/resenhas/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/minhas-publicacoes/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/minhas-publicacoes/disponibilidade/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/minhas-publicacoes/{id}/recurso/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/minhas-publicacoes/{id}/reenviar/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/minhas-publicacoes/{id}/retirar/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/minhas-publicacoes/{id}/revisar/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/minhas-publicacoes/{param}/historico/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/minhas-publicacoes/{param}/versoes/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/recomendacoes-ia/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/solicitacoes-publicacao/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/comunidades/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/comunidades/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/comunidades/criadas_por_mim/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/comunidades/minhas/"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/comunidades/comunidades/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/comunidades/{param}/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/comunidades/comunidades/{param}/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/comunidades/{param}/desativar/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/comunidades/{param}/entrar/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/comunidades/{param}/membros/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/postagens/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/postagens/"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/comunidades/postagens/{param}/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/comunidades/postagens/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/respostas/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/respostas/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/aprovacoes/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/auditoria/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/denuncias/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/denuncias/comunidades/{param}/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/django-admin/acesso/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/estatisticas/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/feature-flags/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/dashboard/feature-flags/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/feature-flags/publicas/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/lixeira/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/lixeira/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/modelos-admin/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/moderacao/comunidade/{param}/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/moderacao/{param}/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/publicacoes/{param}/revisao/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/recursos-publicacao/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/recursos-publicacao/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/suporte/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/dashboard/suporte/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/usuarios/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/dashboard/usuarios/{param}/papel/"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/dashboard/usuarios/{param}/suspensao/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/usuarios/{param}/suspensao/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/gamificacao/meus-stats/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/gamificacao/minhas-conquistas/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/gamificacao/ranking/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/notificacoes/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/notificacoes/marcar_todas_lidas/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/notificacoes/{param}/lida/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/autores/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/historico/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/inicio/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/meu-perfil/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/perfis/meu-perfil/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/perfis/onboarding/adiar/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/resumo-leitura/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/perfis/solicitar-autor/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/{param}/"
+      }
+    ],
+    "mobile": [
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/mobile-login/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/mobile-logout/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/mobile-refresh/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/mobile-register/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/profile/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/recuperar-senha/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/suporte/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/biblioteca/estante/"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/biblioteca/estante/{param}/"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/biblioteca/estante/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/{param}/ler_pdf/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/comunidades/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/comunidades/{param}/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/comunidades/{param}/entrar/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/postagens/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/comunidades/postagens/{param}/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/comunidades/respostas/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/gamificacao/minhas-conquistas/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/gamificacao/ranking/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/notificacoes/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/notificacoes/marcar_todas_lidas/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/notificacoes/{param}/lida/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/autores/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/meu-perfil/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/perfis/{param}/"
+      }
+    ]
+  }
+}

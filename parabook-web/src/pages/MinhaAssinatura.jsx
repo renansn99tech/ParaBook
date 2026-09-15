@@ -32,6 +32,16 @@ function MinhaAssinatura() {
   };
 
   const abrirPortal = async () => {
+    if (!assinatura?.pagamentos_disponiveis) {
+      await swal.fire({
+        icon: 'info',
+        title: 'Gerenciamento em breve',
+        text: 'Pagamentos, cancelamentos e alterações de plano ainda não estão disponíveis.',
+        confirmButtonText: 'Entendi',
+      });
+      return;
+    }
+
     setAbrindoPortal(true);
     try {
       const returnUrl = `${window.location.origin}/minha-assinatura`;
@@ -129,9 +139,13 @@ function MinhaAssinatura() {
 
                   <div className="pt-2 d-flex flex-wrap gap-2">
                     <button
-                      className="btn-ghost"
+                      className={`btn-ghost ${!assinatura.pagamentos_disponiveis ? 'feature-indisponivel' : ''}`}
                       onClick={abrirPortal}
                       disabled={abrindoPortal}
+                      aria-disabled={!assinatura.pagamentos_disponiveis}
+                      data-feature-tooltip={!assinatura.pagamentos_disponiveis
+                        ? 'Em breve: gerenciamento de pagamentos indisponível.'
+                        : undefined}
                     >
                       {abrindoPortal ? 'Abrindo portal...' : '⚙️ Gerenciar ou Cancelar Assinatura'}
                     </button>

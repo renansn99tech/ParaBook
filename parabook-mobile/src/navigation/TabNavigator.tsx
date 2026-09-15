@@ -8,10 +8,20 @@ import { CommunitiesScreen } from '../screens/CommunitiesScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme/colors';
 import { MainTabParamList } from './types';
+<<<<<<< HEAD
+=======
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../context/AuthContext';
+import { SuspendedAccountScreen } from '../screens/SuspendedAccountScreen';
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const TabNavigator = () => {
+    const insets = useSafeAreaInsets();
+    const { user } = useAuth();
+    const suspenso = Boolean(user?.suspensao?.ativa);
+
     return (
         <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -21,13 +31,21 @@ export const TabNavigator = () => {
             backgroundColor: colors.cardBackground,
             borderTopColor: colors.border,
             borderTopWidth: 1,
-            height: 60,
-            paddingBottom: 8,
+            height: 58 + insets.bottom,
+            paddingBottom: Math.max(insets.bottom, 8),
             paddingTop: 8,
+            },
+            tabBarLabelStyle: {
+              fontSize: 11,
+              fontWeight: '600',
+              marginTop: 2,
+            },
+            tabBarItemStyle: {
+              paddingHorizontal: 2,
             },
             tabBarActiveTintColor: colors.primary,
             tabBarInactiveTintColor: colors.textMuted,
-            tabBarIcon: ({ color, size, focused }) => {
+            tabBarIcon: ({ color, focused }) => {
             let iconName: keyof typeof Ionicons.glyphMap = 'help-outline';
 
             if (route.name === 'Home') {
@@ -42,15 +60,21 @@ export const TabNavigator = () => {
                 iconName = focused ? 'person' : 'person-outline';
             }
 
-            return <Ionicons name={iconName} size={size} color={color} />;
+            return <Ionicons name={iconName} size={focused ? 23 : 22} color={color} />;
             },
         })}
         >
+<<<<<<< HEAD
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Catalogo" component={ExploreScreen} options={{ tabBarLabel: 'Catálogo' }} />
         <Tab.Screen name="Biblioteca" component={LibraryTabScreen} />
+=======
+        {!suspenso && <Tab.Screen name="Home" component={HomeScreen} />}
+        <Tab.Screen name="Catalogo" component={ExploreScreen} options={{ tabBarLabel: 'Catálogo' }} />
+        {!suspenso && <Tab.Screen name="Biblioteca" component={LibraryTabScreen} />}
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <Tab.Screen name="Comunidades" component={CommunitiesScreen} />
-        <Tab.Screen name="Perfil" component={ProfileScreen} />
+        <Tab.Screen name="Perfil" component={suspenso ? SuspendedAccountScreen : ProfileScreen} options={{ tabBarLabel: suspenso ? 'Conta' : 'Perfil' }} />
         </Tab.Navigator>
     );
 };

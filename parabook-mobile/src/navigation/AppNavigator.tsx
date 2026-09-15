@@ -1,5 +1,10 @@
 import React from 'react';
+<<<<<<< HEAD
 import { ActivityIndicator, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+=======
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 
@@ -24,13 +29,22 @@ import { colors } from '../theme/colors';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator = () => {
+<<<<<<< HEAD
   const { status, isAuthenticated, logout, retrySession, sessionError } = useAuth();
+=======
+  const { status, isAuthenticated, user, logout, retrySession, sessionError } = useAuth();
+  const suspenso = Boolean(user?.suspensao?.ativa);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
   if (status === 'loading') {
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
+<<<<<<< HEAD
         <Text style={styles.loadingText}>Carregando sua sessao...</Text>
+=======
+        <Text style={styles.loadingText}>Carregando sua sessão...</Text>
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       </SafeAreaView>
     );
   }
@@ -38,7 +52,11 @@ export const AppNavigator = () => {
   if (status === 'error') {
     return (
       <SafeAreaView style={styles.loadingContainer}>
+<<<<<<< HEAD
         <Text style={styles.errorTitle}>Sessao indisponivel</Text>
+=======
+        <Text style={styles.errorTitle}>Sessão indisponível</Text>
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <Text style={styles.loadingText}>{sessionError}</Text>
         <TouchableOpacity style={styles.primaryButton} onPress={() => void retrySession()}>
           <Text style={styles.primaryButtonText}>Tentar novamente</Text>
@@ -62,15 +80,26 @@ export const AppNavigator = () => {
         <>
           <Stack.Screen name="MainTabs" component={TabNavigator} />
           <Stack.Screen name="BookDetail" component={BookDetailScreen} />
+<<<<<<< HEAD
           <Stack.Screen name="Reader" component={ReaderScreen} />
           <Stack.Screen name="MyLibrary" component={MyLibraryScreen} />
+=======
+          {!suspenso && <Stack.Screen name="Reader" component={ReaderScreen} />}
+          {!suspenso && <Stack.Screen name="MyLibrary" component={MyLibraryScreen} />}
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           <Stack.Screen name="CommunityDetail" component={CommunityDetailScreen} />
           <Stack.Screen name="PostDetail" component={PostDetailScreen} />
           <Stack.Screen name="Authors" component={AuthorsScreen} />
           <Stack.Screen name="PublicProfile" component={PublicProfileScreen} />
+<<<<<<< HEAD
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
           <Stack.Screen name="Achievements" component={AchievementsScreen} />
           <Stack.Screen name="CreateCommunity" component={CreateCommunityScreen} />
+=======
+          {!suspenso && <Stack.Screen name="Notifications" component={NotificationsScreen} />}
+          {!suspenso && <Stack.Screen name="Achievements" component={AchievementsScreen} />}
+          {!suspenso && <Stack.Screen name="CreateCommunity" component={CreateCommunityScreen} />}
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         </>
       ) : (
         <>

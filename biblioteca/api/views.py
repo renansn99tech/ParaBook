@@ -1,10 +1,17 @@
 # api/views.py
+from django.db import transaction
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
+<<<<<<< HEAD
+=======
+from usuarios.permissions import eh_admin_parabook
+from biblioteca import publicacao as fluxo
+from rest_framework.exceptions import PermissionDenied, ValidationError as ApiValidationError
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao, DeclaracaoAutoria
 from biblioteca.services import verificar_acesso_obra
 from assinaturas.utils import usuario_eh_premium
@@ -18,6 +25,37 @@ from django.conf import settings
 from django.utils.crypto import salted_hmac
 from django.utils import timezone
 from usuarios.audit import registrar_acao
+<<<<<<< HEAD
+=======
+from drf_spectacular.utils import extend_schema
+from rest_framework import serializers
+
+
+class SolicitacaoPublicacaoResponseSerializer(serializers.Serializer):
+    detail = serializers.CharField()
+    livro_id = serializers.IntegerField()
+
+
+class MetodologiaRecomendacaoSerializer(serializers.Serializer):
+    tipo = serializers.ChoiceField(choices=['heuristica'])
+    versao = serializers.CharField()
+    usa_ia_generativa = serializers.BooleanField()
+    sinais = serializers.ListField(child=serializers.CharField())
+
+
+class LivroRecomendadoSerializer(LivroSerializer):
+    afinidade = serializers.IntegerField(min_value=0, max_value=100)
+    motivo_card = serializers.CharField()
+
+    class Meta(LivroSerializer.Meta):
+        fields = [*LivroSerializer.Meta.fields, 'afinidade', 'motivo_card']
+
+
+class RecomendacoesResponseSerializer(serializers.Serializer):
+    motivo_geral = serializers.CharField()
+    metodologia = MetodologiaRecomendacaoSerializer()
+    recomendacoes = LivroRecomendadoSerializer(many=True)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Categoria.objects.all()
@@ -30,11 +68,16 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
+<<<<<<< HEAD
         return bool(
             request.user
             and request.user.is_authenticated
             and (request.user.is_staff or request.user.is_superuser)
         )
+=======
+        return eh_admin_parabook(request.user)
+
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 
 class LivroViewSet(viewsets.ModelViewSet):
@@ -44,7 +87,11 @@ class LivroViewSet(viewsets.ModelViewSet):
     search_fields = ['titulo', 'autor', 'territorio_cultural']
 
     def get_queryset(self):
+<<<<<<< HEAD
         qs = Livro.objects.exclude(status='removido').select_related('categoria')
+=======
+        qs = Livro.objects.all().select_related('categoria')
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         user = self.request.user
 
         origem = self.request.query_params.get('origem')
@@ -60,17 +107,34 @@ class LivroViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return qs.filter(status='publicado')
             
-        # RBAC adaptado para os campos nativos do User e Perfil do Parabook
-        if user.is_staff or user.is_superuser:
+        if eh_admin_parabook(user):
             return qs
+        if self.action == 'list':
+            return qs.filter(status='publicado')
+        return qs.filter(Q(status='publicado') | Q(solicitacao_publicacao__usuario=user))
 
-        # Verifica se o usuário é autor via username/nome do perfil
-        autor_nome = user.username
-        if hasattr(user, 'perfil_da_biblioteca'):
-            # Permite visualizar livros publicados ou criados pelo próprio autor
-            return qs.filter(Q(status='publicado') | Q(autor__icontains=autor_nome))
-            
-        return qs.filter(status='publicado')
+    @transaction.atomic
+    def perform_create(self, serializer):
+        origem = serializer.validated_data.get('origem', 'dominio_publico')
+        if origem not in {'dominio_publico', 'licenciado'}:
+            raise ApiValidationError({'origem': 'O Dashboard cadastra somente domínio público ou acervo licenciado.'})
+        livro = serializer.save(status='publicado')
+        fluxo._registrar(self.request.user, livro, 'acervo_cadastrado', '')
+
+    @transaction.atomic
+    def perform_update(self, serializer):
+        livro = Livro.objects.select_for_update().get(pk=serializer.instance.pk)
+        if livro.origem == 'autor_independente':
+            raise PermissionDenied('Obras independentes são alteradas pelo autor e analisadas na fila de revisão.')
+        if serializer.validated_data.get('origem', livro.origem) not in {'dominio_publico', 'licenciado'}:
+            raise ApiValidationError({'origem': 'Origem não permitida para o acervo administrativo.'})
+        serializer.instance = livro
+        anterior = livro.status
+        livro = serializer.save()
+        fluxo._registrar(self.request.user, livro, 'acervo_editado', anterior)
+
+    def perform_destroy(self, instance):
+        raise PermissionDenied('Use a moderação com justificativa. A exclusão definitiva depende da política de retenção.')
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def resenhas(self, request, pk=None):
@@ -129,6 +193,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class EstanteViewSet(viewsets.ModelViewSet):
+    queryset = Biblioteca.objects.none()
     serializer_class = EstanteSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -305,16 +370,15 @@ class SolicitacaoPublicacaoCreateAPIView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     throttle_classes = [UploadRateThrottle]
 
+    @extend_schema(
+        request=SolicitacaoPublicacaoSerializer,
+        responses={201: SolicitacaoPublicacaoResponseSerializer},
+    )
     def post(self, request, *args, **kwargs):
-        perfil_customizado = getattr(request.user, 'perfil_customizado', None)
-        if not perfil_customizado or perfil_customizado.tipo not in ['autor', 'admin']:
-            return Response(
-                {"detail": "Apenas Autores Independentes ou Administradores podem enviar obras."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
+        fluxo.exigir_autor(request.user)
         serializer = SolicitacaoPublicacaoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+<<<<<<< HEAD
 
         dados_livro = dict(serializer.validated_data)
         cpf = dados_livro.pop('cpf_autor')
@@ -357,6 +421,10 @@ class SolicitacaoPublicacaoCreateAPIView(APIView):
             {"detail": "Sua obra foi enviada com sucesso para aprovação!", "livro_id": livro.id},
             status=status.HTTP_201_CREATED
         )
+=======
+        livro = fluxo.enviar_obra(request.user, serializer.validated_data, request.META.get('REMOTE_ADDR'))
+        return Response({'detail': 'Sua obra foi enviada para análise.', 'livro_id': livro.pk}, status=201)
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 
 class RecomendacoesIAAPIView(APIView):
@@ -369,6 +437,7 @@ class RecomendacoesIAAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     TOTAL_RECOMENDACOES = 12
 
+    @extend_schema(responses=RecomendacoesResponseSerializer)
     def get(self, request, *args, **kwargs):
         if not usuario_eh_premium(request.user):
             return Response(

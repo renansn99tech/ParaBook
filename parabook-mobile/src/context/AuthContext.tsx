@@ -41,6 +41,10 @@ const isRecoverableConnectionError = (error: unknown) => (
   error instanceof SessionBootstrapTimeoutError
   || (axios.isAxiosError(error) && (
     !error.response
+<<<<<<< HEAD
+=======
+    || error.response.status >= 500
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     || error.code === 'ECONNABORTED'
     || error.code === 'ETIMEDOUT'
   ))
@@ -103,7 +107,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       setAuthTokens(storedTokens);
+<<<<<<< HEAD
       const sessionData = await withTimeout(fetchCurrentSession(), 35000);
+=======
+      const sessionData = await withTimeout(fetchCurrentSession(), 125000);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       if (operation !== sessionOperationRef.current) return;
       applyCurrentSession(sessionData);
     } catch (error) {
@@ -142,7 +150,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return { success: false, requiresTwoFactor: true, error: response.detail };
       }
       await withTimeout(authStorage.save(response.tokens), 5000);
+<<<<<<< HEAD
       const sessionData = await withTimeout(fetchCurrentSession(), 35000);
+=======
+      const sessionData = await withTimeout(fetchCurrentSession(), 125000);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       if (operation !== sessionOperationRef.current) {
         return { success: false, error: 'A tentativa de login foi cancelada.' };
       }
@@ -162,7 +174,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const tokens = await authService.register(payload);
       await withTimeout(authStorage.save(tokens), 5000);
+<<<<<<< HEAD
       const sessionData = await withTimeout(fetchCurrentSession(), 35000);
+=======
+      const sessionData = await withTimeout(fetchCurrentSession(), 125000);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       if (operation !== sessionOperationRef.current) {
         return { success: false, error: 'A tentativa de cadastro foi cancelada.' };
       }
@@ -179,7 +195,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshUser = useCallback(async () => {
     try {
+<<<<<<< HEAD
       const sessionData = await withTimeout(fetchCurrentSession(), 35000);
+=======
+      const sessionData = await withTimeout(fetchCurrentSession(), 125000);
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       return applyCurrentSession(sessionData);
     } catch {
       return null;

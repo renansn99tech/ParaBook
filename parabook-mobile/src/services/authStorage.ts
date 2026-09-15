@@ -12,7 +12,11 @@ const getWebStorage = () => {
   return globalThis.localStorage;
 };
 
+<<<<<<< HEAD
 export const authStorage = {
+=======
+const storage = {
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   save: async (tokens: AuthTokens) => {
     const serialized = JSON.stringify(tokens);
 
@@ -48,3 +52,19 @@ export const authStorage = {
     await SecureStore.deleteItemAsync(AUTH_STORAGE_KEY);
   },
 };
+<<<<<<< HEAD
+=======
+
+// Serializa gravação/limpeza: um refresh em andamento não repõe a sessão após logout.
+let pending: Promise<unknown> = Promise.resolve();
+const serial = <T,>(operation: () => Promise<T>): Promise<T> => {
+  const result = pending.then(operation, operation);
+  pending = result.catch(() => undefined);
+  return result;
+};
+export const authStorage = {
+  save: (tokens: AuthTokens) => serial(() => storage.save(tokens)),
+  read: () => serial(() => storage.read()),
+  clear: () => serial(() => storage.clear()),
+};
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9

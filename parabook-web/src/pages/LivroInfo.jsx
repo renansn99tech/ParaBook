@@ -27,7 +27,7 @@ function LivroInfo() {
         const resResenhas = await api.get(`/biblioteca/livros/${id}/resenhas/`);
         setAvaliacoes(resResenhas.data);
 
-        if (user) {
+        if (user && !user.suspensao?.ativa) {
           const resEstante = await api.get(`/biblioteca/estante/`);
           const estanteData = resEstante.data.results || resEstante.data;
           const userEntry = estanteData.find(item => item.livro === parseInt(id));
@@ -45,6 +45,7 @@ function LivroInfo() {
     fetchLivroInfo();
   }, [id, user]);
 
+<<<<<<< HEAD
   const abrirDenuncia = () => {
     swal.fire({
       title: "Relatar Problema",
@@ -84,6 +85,24 @@ function LivroInfo() {
         });
       }
     });
+=======
+  const abrirDenuncia = async () => {
+    if (!user) { await swal.fire({ icon: 'info', title: 'Entre para denunciar', text: 'Use sua conta para registrar e acompanhar a denúncia.' }); return; }
+    if (user.suspensao?.ativa) {
+      await swal.fire({ icon: 'info', title: 'Ação temporariamente bloqueada', text: `Sua conta está suspensa até ${new Date(user.suspensao.termina_em).toLocaleString('pt-BR')}. Configurações e suporte continuam disponíveis.` });
+      return;
+    }
+    const motivo = await swal.fire({ title: 'Relatar problema', input: 'text', inputLabel: 'Motivo', inputAttributes: { maxlength: 150 }, inputValidator: (v) => !v.trim() && 'Informe o motivo.', showCancelButton: true, cancelButtonText: 'Cancelar', confirmButtonText: 'Continuar' });
+    if (!motivo.isConfirmed) return;
+    const evidencias = await swal.fire({ title: 'Evidências e contexto', input: 'textarea', inputLabel: 'Descreva o problema e indique páginas ou referências. Evite dados pessoais.', inputAttributes: { maxlength: 4000 }, inputValidator: (v) => !v.trim() && 'Informe evidências para análise.', showCancelButton: true, cancelButtonText: 'Cancelar', confirmButtonText: 'Registrar denúncia' });
+    if (!evidencias.isConfirmed) return;
+    try {
+      const { data } = await api.post('/biblioteca/denuncias/', { livro: Number(id), motivo: motivo.value, evidencias: evidencias.value });
+      await swal.fire({ icon: 'success', title: 'Denúncia registrada', text: `Protocolo: ${data.protocolo}. A denúncia será analisada pela moderação.` });
+    } catch (erro) {
+      await swal.fire({ icon: 'error', title: 'Denúncia não registrada', text: Object.values(erro.response?.data || {}).flat().join(' ') || 'Tente novamente.' });
+    }
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   };
 
   const confirmarRemocaoAvaliacao = () => {
@@ -165,6 +184,13 @@ function LivroInfo() {
   }
 
   const acesso = livro.acesso || {};
+<<<<<<< HEAD
+=======
+  const suspensao = user?.suspensao?.ativa ? user.suspensao : null;
+  const tituloSuspensao = suspensao
+    ? `Ação bloqueada até ${new Date(suspensao.termina_em).toLocaleString('pt-BR')}.`
+    : '';
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   let acaoLeitura;
   if (acesso.pode_ler) {
     acaoLeitura = { to: `/leitura/${livro.id}`, icone: 'fa-book-open-reader', texto: 'Ler obra' };
@@ -196,7 +222,15 @@ function LivroInfo() {
             </div>
           )}
 
+<<<<<<< HEAD
           {acaoLeitura ? (
+=======
+          {suspensao && acaoLeitura && acaoLeitura.texto !== 'Ler amostra' ? (
+            <span className="btn-preview acao-suspensa" role="status" title={tituloSuspensao}>
+              <i className="fa-solid fa-hourglass-half"></i> Conta suspensa
+            </span>
+          ) : acaoLeitura ? (
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             <Link to={acaoLeitura.to} className="btn-preview">
               <i className={`fa-solid ${acaoLeitura.icone}`}></i> {acaoLeitura.texto}
             </Link>
@@ -219,7 +253,7 @@ function LivroInfo() {
                 {livro.territorio_cultural && <span className="livro-selo"><i className="fa-solid fa-location-dot"></i> {livro.territorio_cultural}</span>}
               </div>
             </div>
-            <button onClick={abrirDenuncia} className="btn-denuncia">
+            <button onClick={abrirDenuncia} className="btn-denuncia" title={tituloSuspensao || 'Relatar um problema à moderação'}>
               <i className="fa-solid fa-flag"></i> Relatar Problema
             </button>
           </div>
@@ -280,7 +314,11 @@ function LivroInfo() {
           <i className="fa-solid fa-comments"></i> Avaliações da Comunidade
         </h2>
 
+<<<<<<< HEAD
         {user && (
+=======
+        {user && !suspensao && (
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           <div className="minha-avaliacao-card glass-card" data-revelar>
             {minhaAvaliacao ? (
               <div className="minha-avaliacao-header">
@@ -341,6 +379,15 @@ function LivroInfo() {
           </div>
         )}
 
+<<<<<<< HEAD
+=======
+        {suspensao && (
+          <p className="livro-acesso-indisponivel acao-suspensa" role="status" title={tituloSuspensao}>
+            Avaliações e demais ações pessoais ficam bloqueadas durante a suspensão.
+          </p>
+        )}
+
+>>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <div className="avaliacoes-grid" data-revelar-cascata>
           {avaliacoes.length > 0 ? (
             avaliacoes.map((ava) => (

@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,11 +14,7 @@ import { CompositeNavigationProp, useFocusEffect, useNavigation } from '@react-n
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MainTabParamList, RootStackParamList } from '../navigation/types';
-<<<<<<< HEAD
-import { colors } from '../theme/colors';
-=======
 import { colors, radii, spacing } from '../theme/colors';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import { bookService, LibraryStatus, UserBookItem } from '../services/bookService';
 import { BookCover } from '../components/BookCover';
 import { EmptyState } from '../components/EmptyState';
@@ -57,11 +52,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
       }));
     } catch (error) {
       setBooks([]);
-<<<<<<< HEAD
-      setErrorMessage('Nao foi possivel carregar sua biblioteca agora.');
-=======
       setErrorMessage('Não foi possível carregar sua biblioteca agora.');
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -90,11 +81,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
             <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
         ) : <View style={styles.headerPlaceholder} />}
-<<<<<<< HEAD
-        <Text style={styles.headerTitle}>{params?.favoritesOnly ? 'Favoritos' : params?.reviewedOnly ? 'Avaliacoes' : 'Minha Biblioteca'}</Text>
-=======
         <Text style={styles.headerTitle} numberOfLines={1}>{params?.favoritesOnly ? 'Favoritos' : params?.reviewedOnly ? 'Avaliações' : 'Minha Biblioteca'}</Text>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <View style={styles.headerPlaceholder} />
       </View>
 
@@ -137,17 +124,8 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : errorMessage ? (
-<<<<<<< HEAD
-        <View style={styles.emptyState}>
-          <Ionicons name="cloud-offline-outline" size={48} color={colors.textMuted} />
-          <Text style={styles.emptyText}>{errorMessage}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={fetchLibrary}>
-            <Text style={styles.retryButtonText}>Tentar novamente</Text>
-          </TouchableOpacity>
-=======
         <View style={styles.stateWrapper}>
           <EmptyState icon="cloud-offline-outline" title="Biblioteca indisponível" description={errorMessage} action={<TouchableOpacity style={styles.retryButton} onPress={fetchLibrary} activeOpacity={0.78}><Text style={styles.retryButtonText}>Tentar novamente</Text></TouchableOpacity>} />
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         </View>
       ) : (
         <FlatList
@@ -167,22 +145,10 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
             <TouchableOpacity
               style={styles.bookCard}
               activeOpacity={0.7}
-<<<<<<< HEAD
-              onPress={() => onOpenBook(String(item.book.id), item.book.title)}
-            >
-              {item.book.cover_url ? (
-                <Image source={{ uri: item.book.cover_url }} style={styles.coverImage} resizeMode="cover" />
-              ) : (
-                <View style={styles.coverPlaceholder}>
-                  <Ionicons name="book" size={28} color={colors.primary} />
-                </View>
-              )}
-=======
               disabled={Boolean(item.book.publicationStatus && item.book.publicationStatus !== 'publicado')}
               onPress={() => onOpenBook(String(item.book.id), item.book.title)}
             >
               <BookCover uri={item.book.cover_url} width={52} height={76} />
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
               <View style={styles.bookInfo}>
                 <Text style={styles.bookTitle} numberOfLines={2}>
@@ -192,10 +158,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
                   {item.book.author}
                 </Text>
 
-<<<<<<< HEAD
-=======
                 {item.book.publicationStatus && item.book.publicationStatus !== 'publicado' && <Text style={styles.bookAuthor}>Obra indisponível</Text>}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
                 {item.status === 'lendo' && (
                   <View style={styles.progressSection}>
                     <View style={styles.progressBarBg}>
@@ -310,12 +273,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  coverImage: {
-    width: 46,
-    height: 64,
-    borderRadius: 8,
-    backgroundColor: colors.background,
-  },
   bookInfo: {
     flex: 1,
     marginLeft: spacing.md,
@@ -358,25 +315,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-<<<<<<< HEAD
-  emptyText: {
-    color: colors.textMuted,
-    marginTop: 8,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-=======
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   retryButton: {
     marginTop: 16,
     minHeight: 42,
     justifyContent: 'center',
     paddingHorizontal: 16,
-<<<<<<< HEAD
-    borderRadius: 21,
-=======
     borderRadius: radii.pill,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     backgroundColor: colors.primary,
   },
   retryButtonText: {

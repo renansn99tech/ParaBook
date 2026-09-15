@@ -1,11 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-<<<<<<< HEAD
-import { ActivityIndicator, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { CommunityPost, communityService } from '../services/communityService';
-=======
 import {
   ActivityIndicator,
   Alert,
@@ -23,23 +16,11 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { CommunityPost, CommunityReply, communityService } from '../services/communityService';
 import { extractApiErrorMessage } from '../services/authService';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import { colors } from '../theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PostDetail'>;
 
 const getErrorMessage = (error: unknown) => {
-<<<<<<< HEAD
-  const response = (error as { response?: { data?: { detail?: string } } })?.response;
-  return response?.data?.detail || 'Nao foi possivel carregar esta postagem.';
-};
-
-export const PostDetailScreen = ({ route, navigation }: Props) => {
-  const { postId, communityName } = route.params;
-  const [post, setPost] = useState<CommunityPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-=======
   const response = (error as { response?: { data?: { detail?: string; erro?: string } } })?.response;
   return response?.data?.detail || response?.data?.erro || 'Nao foi possivel carregar esta postagem.';
 };
@@ -55,42 +36,10 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [repliesErrorMessage, setRepliesErrorMessage] = useState<string | null>(null);
   const [publishingReply, setPublishingReply] = useState(false);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
   const loadPost = useCallback(async () => {
     setLoading(true);
     setErrorMessage(null);
-<<<<<<< HEAD
-    try { setPost(await communityService.getPostById(postId)); }
-    catch (error) { setErrorMessage(getErrorMessage(error)); }
-    finally { setLoading(false); }
-  }, [postId]);
-
-  useEffect(() => { loadPost(); }, [loadPost]);
-
-  return <SafeAreaView style={styles.container}>
-    <View style={styles.header}>
-      <TouchableOpacity style={styles.iconButton} onPress={() => navigation.goBack()}><Ionicons name="arrow-back" size={23} color={colors.textPrimary} /></TouchableOpacity>
-      <Text style={styles.headerTitle} numberOfLines={1}>{communityName || 'Postagem'}</Text>
-      <View style={styles.spacer} />
-    </View>
-    {loading ? <View style={styles.center}><ActivityIndicator size="large" color={colors.primary} /></View> : errorMessage || !post ? <View style={styles.center}>
-      <Ionicons name="alert-circle-outline" size={46} color={colors.textMuted} />
-      <Text style={styles.errorText}>{errorMessage || 'Postagem nao encontrada.'}</Text>
-      <TouchableOpacity style={styles.retryButton} onPress={loadPost}><Text style={styles.retryText}>Tentar novamente</Text></TouchableOpacity>
-    </View> : <ScrollView contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{post.title}</Text>
-      <Text style={styles.meta}>@{post.authorName}  |  {new Date(post.createdAt).toLocaleDateString('pt-BR')}</Text>
-      <Text style={styles.body}>{post.content}</Text>
-      {post.imageUrl && <Image source={{ uri: post.imageUrl }} style={styles.image} resizeMode="cover" />}
-      <View style={styles.commentsSection}>
-        <View style={styles.commentsHeader}><Text style={styles.commentsTitle}>Comentarios</Text><Text style={styles.pendingBadge}>AGUARDANDO BACKEND</Text></View>
-        <Text style={styles.commentsText}>A interface esta reservada para a conversa da postagem. A API atual oferece postagens, mas ainda nao possui model ou endpoint de comentarios.</Text>
-        <View style={styles.disabledComposer}><Text style={styles.disabledComposerText}>Comentar nesta postagem</Text><Ionicons name="send-outline" size={19} color={colors.textMuted} /></View>
-      </View>
-    </ScrollView>}
-  </SafeAreaView>;
-=======
     setRepliesErrorMessage(null);
 
     const [postResult, repliesResult] = await Promise.allSettled([
@@ -229,7 +178,6 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
       )}
     </SafeAreaView>
   );
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 };
 
 const styles = StyleSheet.create({
@@ -250,12 +198,6 @@ const styles = StyleSheet.create({
   commentsSection: { marginTop: 30, paddingTop: 22, borderTopWidth: 1, borderTopColor: colors.border },
   commentsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   commentsTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700' },
-<<<<<<< HEAD
-  pendingBadge: { color: colors.accentYellow, fontSize: 9, fontWeight: '800' },
-  commentsText: { color: colors.textMuted, fontSize: 13, lineHeight: 19, marginTop: 10 },
-  disabledComposer: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, marginTop: 14, borderRadius: 10, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.cardBackground, opacity: 0.65 },
-  disabledComposerText: { color: colors.textMuted, fontSize: 13 },
-=======
   commentsCount: { minWidth: 28, textAlign: 'center', color: colors.textPrimary, fontSize: 12, fontWeight: '800', paddingHorizontal: 8, paddingVertical: 5, borderRadius: 14, backgroundColor: colors.primary },
   composer: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, marginTop: 14 },
   commentInput: { flex: 1, minHeight: 48, maxHeight: 120, paddingHorizontal: 13, paddingTop: 12, paddingBottom: 10, borderWidth: 1, borderColor: colors.border, borderRadius: 10, backgroundColor: colors.cardBackground, color: colors.textPrimary, fontSize: 14 },
@@ -268,5 +210,4 @@ const styles = StyleSheet.create({
   replyAuthor: { color: colors.textPrimary, fontSize: 13, fontWeight: '700' },
   replyDate: { color: colors.textMuted, fontSize: 12 },
   replyBody: { color: colors.textSecondary, fontSize: 14, lineHeight: 20, marginTop: 8 },
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 });

@@ -12,14 +12,6 @@ const configuredApiUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
 export const API_BASE_URL = (configuredApiUrl || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
 export const DJANGO_BASE_URL = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
 
-<<<<<<< HEAD
-let accessToken: string | null = null;
-let refreshToken: string | null = null;
-let unauthorizedHandler: (() => void) | null = null;
-let tokenRefreshPromise: Promise<boolean> | null = null;
-
-type RetryableRequestConfig = InternalAxiosRequestConfig & { _parabookRetried?: boolean };
-=======
 let sessionGeneration = 0;
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
@@ -28,19 +20,13 @@ let tokenRefreshGeneration = -1;
 let tokenRefreshPromise: Promise<boolean> | null = null;
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & { _parabookRetried?: boolean; _readRetried?: boolean; _sessionGeneration?: number };
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 const isDevelopmentRuntime = () => typeof __DEV__ !== 'undefined' && __DEV__;
 
 const getRequestEndpoint = (baseURL?: string, url?: string) => {
   if (!url) return baseURL || '(endpoint desconhecido)';
-<<<<<<< HEAD
-  if (/^https?:\/\//i.test(url)) return url;
-  return `${(baseURL || '').replace(/\/+$/, '')}/${url.replace(/^\/+/, '')}`;
-=======
   if (/^https?:\/\//i.test(url)) return url.split('?')[0];
   return `${(baseURL || '').replace(/\/+$/, '')}/${url.replace(/^\/+/, '').split('?')[0]}`;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 };
 
 const describeResponseData = (data: unknown) => {
@@ -51,27 +37,6 @@ const describeResponseData = (data: unknown) => {
   return { type: typeof data };
 };
 
-<<<<<<< HEAD
-const sanitizeErrorData = (value: unknown): unknown => {
-  const sensitiveKeys = new Set([
-    'access', 'authorization', 'cookie', 'csrf', 'password', 'password_confirm',
-    'codigo_2fa', 'nova_senha', 'refresh', 'secret', 'senha', 'senha_atual',
-    'set-cookie', 'token',
-  ]);
-
-  if (Array.isArray(value)) return value.map(sanitizeErrorData);
-  if (!value || typeof value !== 'object') return value;
-
-  return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>).map(([key, item]) => [
-      key,
-      sensitiveKeys.has(key.toLowerCase()) ? '[redacted]' : sanitizeErrorData(item),
-    ])
-  );
-};
-
-=======
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 const parseTokenResponse = (data: unknown) => {
   if (!data || typeof data !== 'object' || !('access' in data) || typeof data.access !== 'string') {
     return null;
@@ -86,15 +51,10 @@ const parseTokenResponse = (data: unknown) => {
 const refreshMobileSession = async () => {
   if (!refreshToken) return false;
 
-<<<<<<< HEAD
-  if (!tokenRefreshPromise) {
-    const currentRefresh = refreshToken;
-=======
   if (!tokenRefreshPromise || tokenRefreshGeneration !== sessionGeneration) {
     tokenRefreshGeneration = sessionGeneration;
     const currentRefresh = refreshToken;
     const generation = sessionGeneration;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     tokenRefreshPromise = axios.post(
       `${API_BASE_URL}/auth/mobile-refresh/`,
       { refresh: currentRefresh },
@@ -105,13 +65,6 @@ const refreshMobileSession = async () => {
     ).then(async (response) => {
       const tokens = parseTokenResponse(response.data);
       if (!tokens) return false;
-<<<<<<< HEAD
-      setAuthTokens(tokens);
-      await authStorage.save(tokens);
-      return true;
-    }).catch(() => false).finally(() => {
-      tokenRefreshPromise = null;
-=======
       if (generation !== sessionGeneration) return false;
       await authStorage.save(tokens);
       if (generation !== sessionGeneration) return false;
@@ -123,7 +76,6 @@ const refreshMobileSession = async () => {
       throw error;
     }).finally(() => {
       if (tokenRefreshGeneration === generation) tokenRefreshPromise = null;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     });
   }
 
@@ -142,14 +94,11 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-<<<<<<< HEAD
-=======
   const scoped = config as RetryableRequestConfig;
   if (scoped._sessionGeneration !== undefined && scoped._sessionGeneration !== sessionGeneration) {
     throw new axios.CanceledError('Sessão alterada.');
   }
   scoped._sessionGeneration = sessionGeneration;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   config.headers = config.headers || {};
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
@@ -159,12 +108,9 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => {
-<<<<<<< HEAD
-=======
     if ((response.config as RetryableRequestConfig)._sessionGeneration !== sessionGeneration) {
       throw new axios.CanceledError('Sessão alterada.');
     }
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     if (isDevelopmentRuntime()) {
       console.debug('[api] response', {
         endpoint: getRequestEndpoint(response.config.baseURL, response.config.url),
@@ -189,12 +135,6 @@ api.interceptors.response.use(
         method: error.config?.method?.toUpperCase(),
         status: error.response?.status,
         code: error.code,
-<<<<<<< HEAD
-        response: sanitizeErrorData(error.response?.data),
-      });
-    }
-
-=======
         response: describeResponseData(error.response?.data),
       });
     }
@@ -207,7 +147,6 @@ api.interceptors.response.use(
       await new Promise((resolve) => setTimeout(resolve, 750));
       return api.request(config);
     }
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     if (error.response?.status === 401 && accessToken && !isAuthenticationRequest && error.config) {
       const originalRequest = error.config as RetryableRequestConfig;
       if (!originalRequest._parabookRetried && refreshToken) {
@@ -218,30 +157,20 @@ api.interceptors.response.use(
         }
       }
 
-<<<<<<< HEAD
-      unauthorizedHandler?.();
-=======
       if (originalRequest._sessionGeneration === sessionGeneration) unauthorizedHandler?.();
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     }
     return Promise.reject(error);
   }
 );
 
 export const setAuthTokens = (tokens: { access: string; refresh?: string }) => {
-<<<<<<< HEAD
-=======
   sessionGeneration += 1;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   accessToken = tokens.access;
   refreshToken = tokens.refresh || null;
 };
 
 export const clearAuthTokens = () => {
-<<<<<<< HEAD
-=======
   sessionGeneration += 1;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   accessToken = null;
   refreshToken = null;
 };

@@ -4,20 +4,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-<<<<<<< HEAD
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { colors } from '../theme/colors';
-import { useAuth } from '../context/AuthContext';
-=======
   ScrollView,
   StyleSheet,
   Text,
@@ -31,7 +17,6 @@ import { RootStackParamList } from '../navigation/types';
 import { colors, controlHeight, radii, spacing } from '../theme/colors';
 import { useAuth } from '../context/AuthContext';
 import { FormField } from '../components/FormField';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
@@ -41,11 +26,7 @@ const validatePassword = (value: string) => {
   }
 
   if (/^\d+$/.test(value)) {
-<<<<<<< HEAD
-    return 'A senha nao pode ser inteiramente numerica.';
-=======
     return 'A senha não pode ser inteiramente numérica.';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   }
 
   return null;
@@ -62,21 +43,13 @@ export const RegisterScreen = ({ navigation }: Props) => {
 
   const handleRegister = async () => {
     if (!username.trim() || !email.trim() || !password || !passwordConfirm) {
-<<<<<<< HEAD
-      Alert.alert('Campos obrigatorios', 'Preencha usuario, email, senha e confirmacao da senha.');
-=======
       Alert.alert('Campos obrigatórios', 'Preencha usuário, e-mail, senha e confirmação da senha.');
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       return;
     }
 
     const passwordError = validatePassword(password);
     if (passwordError) {
-<<<<<<< HEAD
-      Alert.alert('Senha invalida', passwordError);
-=======
       Alert.alert('Senha inválida', passwordError);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       return;
     }
 
@@ -101,11 +74,7 @@ export const RegisterScreen = ({ navigation }: Props) => {
       });
 
       if (!result.success) {
-<<<<<<< HEAD
-        Alert.alert('Cadastro nao concluido', result.error || 'Revise os dados informados e tente novamente.');
-=======
         Alert.alert('Cadastro não concluído', result.error || 'Revise os dados informados e tente novamente.');
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       }
     } finally {
       setLoading(false);
@@ -118,14 +87,11 @@ export const RegisterScreen = ({ navigation }: Props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardContainer}
       >
-<<<<<<< HEAD
-=======
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -143,56 +109,6 @@ export const RegisterScreen = ({ navigation }: Props) => {
           <Text style={styles.subtitle}>Monte sua estante e acompanhe suas leituras no app.</Text>
 
           <View style={styles.form}>
-<<<<<<< HEAD
-            <View style={styles.inputContainer}>
-              <Ionicons name="person-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Usuario"
-                placeholderTextColor={colors.textMuted}
-                autoCapitalize="none"
-                value={username}
-                onChangeText={setUsername}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor={colors.textMuted}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Senha"
-                placeholderTextColor={colors.textMuted}
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Ionicons name="shield-checkmark-outline" size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.input}
-                placeholder="Confirmar senha"
-                placeholderTextColor={colors.textMuted}
-                secureTextEntry
-                value={passwordConfirm}
-                onChangeText={setPasswordConfirm}
-              />
-            </View>
-=======
             <FormField label="Usuário" icon="person-outline" placeholder="Escolha um usuário" autoCapitalize="none" autoComplete="username-new" value={username} onChangeText={setUsername} />
 
             <FormField label="E-mail" icon="mail-outline" placeholder="voce@exemplo.com" autoCapitalize="none" autoComplete="email" keyboardType="email-address" value={email} onChangeText={setEmail} />
@@ -200,7 +116,6 @@ export const RegisterScreen = ({ navigation }: Props) => {
             <FormField label="Senha" icon="lock-closed-outline" placeholder="Crie uma senha" isPassword autoComplete="new-password" value={password} onChangeText={setPassword} />
 
             <FormField label="Confirmar senha" icon="shield-checkmark-outline" placeholder="Repita sua senha" isPassword autoComplete="new-password" value={passwordConfirm} onChangeText={setPasswordConfirm} onSubmitEditing={() => void handleRegister()} returnKeyType="done" />
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
             <TouchableOpacity
               style={styles.termsRow}
@@ -231,20 +146,12 @@ export const RegisterScreen = ({ navigation }: Props) => {
           </View>
         </View>
 
-<<<<<<< HEAD
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} activeOpacity={0.7}>
-          <Text style={styles.footerText}>
-            Ja tem cadastro? <Text style={styles.footerLink}>Entrar</Text>
-          </Text>
-        </TouchableOpacity>
-=======
         <TouchableOpacity onPress={() => navigation.navigate('Login')} activeOpacity={0.7} style={styles.footerButton}>
           <Text style={styles.footerText}>
             Já tem cadastro? <Text style={styles.footerLink}>Entrar</Text>
           </Text>
         </TouchableOpacity>
         </ScrollView>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -257,26 +164,17 @@ const styles = StyleSheet.create({
   },
   keyboardContainer: {
     flex: 1,
-<<<<<<< HEAD
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-=======
   },
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: spacing.xxl,
     paddingTop: spacing.xl,
     paddingBottom: spacing.lg,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-<<<<<<< HEAD
-    paddingTop: 16,
-=======
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   backButton: {
     padding: 4,
@@ -302,35 +200,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     marginTop: 8,
-<<<<<<< HEAD
-    marginBottom: 28,
-    lineHeight: 20,
-  },
-  form: {
-    gap: 12,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: 14,
-    height: 54,
-  },
-  input: {
-    flex: 1,
-    color: colors.textPrimary,
-    marginLeft: 10,
-    fontSize: 15,
-=======
     marginBottom: spacing.xxl,
     lineHeight: 20,
   },
   form: {
     gap: spacing.md,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   termsRow: {
     flexDirection: 'row',
@@ -341,11 +215,7 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 22,
     height: 22,
-<<<<<<< HEAD
-    borderRadius: 6,
-=======
     borderRadius: radii.sm,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
@@ -363,23 +233,14 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   primaryButton: {
-<<<<<<< HEAD
-    height: 54,
-    borderRadius: 27,
-=======
     height: controlHeight,
     borderRadius: radii.pill,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     backgroundColor: colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-<<<<<<< HEAD
-    marginTop: 8,
-=======
     marginTop: spacing.xs,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   primaryButtonDisabled: {
     opacity: 0.7,
@@ -393,14 +254,10 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     fontSize: 14,
-<<<<<<< HEAD
-    marginBottom: 12,
-=======
   },
   footerButton: {
     minHeight: 44,
     justifyContent: 'center',
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   },
   footerLink: {
     color: colors.primary,

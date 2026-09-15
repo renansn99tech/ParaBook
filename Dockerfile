@@ -45,14 +45,5 @@ USER parabook
 
 EXPOSE 8000
 
-<<<<<<< HEAD
 # Executa as migrações, garante o admin inicial e inicia o servidor (Gunicorn)
 CMD ["sh", "scripts/render-start.sh"]
-=======
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD curl --fail --silent "http://127.0.0.1:${PORT}/health/" || exit 1
-
-# O script permite migrations no plano gratuito do Render e as desativa quando
-# existir uma etapa de release dedicada.
-CMD ["sh", "/app/scripts/start.sh"]
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9

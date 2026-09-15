@@ -8,12 +8,9 @@ import { CommunitiesScreen } from '../screens/CommunitiesScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme/colors';
 import { MainTabParamList } from './types';
-<<<<<<< HEAD
-=======
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { SuspendedAccountScreen } from '../screens/SuspendedAccountScreen';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -64,15 +61,9 @@ export const TabNavigator = () => {
             },
         })}
         >
-<<<<<<< HEAD
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Catalogo" component={ExploreScreen} options={{ tabBarLabel: 'Catálogo' }} />
-        <Tab.Screen name="Biblioteca" component={LibraryTabScreen} />
-=======
         {!suspenso && <Tab.Screen name="Home" component={HomeScreen} />}
         <Tab.Screen name="Catalogo" component={ExploreScreen} options={{ tabBarLabel: 'Catálogo' }} />
         {!suspenso && <Tab.Screen name="Biblioteca" component={LibraryTabScreen} />}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <Tab.Screen name="Comunidades" component={CommunitiesScreen} />
         <Tab.Screen name="Perfil" component={suspenso ? SuspendedAccountScreen : ProfileScreen} options={{ tabBarLabel: suspenso ? 'Conta' : 'Perfil' }} />
         </Tab.Navigator>

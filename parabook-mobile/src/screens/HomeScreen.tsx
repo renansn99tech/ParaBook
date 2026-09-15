@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-<<<<<<< HEAD
-  Image,
-=======
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   StyleSheet,
   Text,
   View,
@@ -20,11 +16,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { Book, bookService, Category } from '../services/bookService';
 import { useAuth } from '../context/AuthContext';
-<<<<<<< HEAD
-=======
 import { BookCover } from '../components/BookCover';
 import { EmptyState } from '../components/EmptyState';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -90,15 +83,9 @@ export const HomeScreen = () => {
         
         {/* Header - Saudação */}
         <View style={styles.header}>
-<<<<<<< HEAD
-          <View>
-            <Text style={styles.greetingTitle}>Ola, {greetingName}!{'\u00A0'}👋</Text>
-            <Text style={styles.greetingSubtitle}>O que voce vai ler hoje?</Text>
-=======
           <View style={styles.headerText}>
             <Text style={styles.greetingTitle} numberOfLines={1}>Olá, {greetingName}!{'\u00A0'}👋</Text>
             <Text style={styles.greetingSubtitle}>O que você vai ler hoje?</Text>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           </View>
           <TouchableOpacity onPress={() => navigateToStack('MyLibrary')}>
             <View style={styles.avatar}>
@@ -112,11 +99,7 @@ export const HomeScreen = () => {
           <Ionicons name="search-outline" size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
-<<<<<<< HEAD
-            placeholder="Buscar por titulo ou autor..."
-=======
             placeholder="Buscar por título ou autor..."
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             placeholderTextColor={colors.textMuted}
             value={search}
             onChangeText={setSearch}
@@ -144,11 +127,7 @@ export const HomeScreen = () => {
         <View style={styles.banner}>
           <Text style={styles.bannerBadge}>ACERVO</Text>
           <Text style={styles.bannerTitle}>Descubra novos mundos</Text>
-<<<<<<< HEAD
-          <Text style={styles.bannerSubtitle}>Explore os livros disponiveis no ParaBook e amplie seus horizontes.</Text>
-=======
           <Text style={styles.bannerSubtitle}>Explore os livros disponíveis no ParaBook e amplie seus horizontes.</Text>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           {firstBook && (
             <TouchableOpacity
               style={styles.bannerButton}
@@ -168,19 +147,6 @@ export const HomeScreen = () => {
         </View>
 
         {loadingCategories ? (
-<<<<<<< HEAD
-          <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
-        ) : categoriesError ? (
-          <View style={styles.stateCard}>
-            <Ionicons name="cloud-offline-outline" size={36} color={colors.textMuted} />
-            <Text style={styles.stateText}>{categoriesError}</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)}>
-              <Text style={styles.retryButtonText}>Tentar novamente</Text>
-            </TouchableOpacity>
-          </View>
-        ) : categories.length === 0 ? (
-          <Text style={styles.stateText}>Nenhuma categoria cadastrada no acervo.</Text>
-=======
           <View style={styles.loadingSlot}><ActivityIndicator color={colors.primary} /></View>
         ) : categoriesError ? (
           <EmptyState
@@ -192,7 +158,6 @@ export const HomeScreen = () => {
           />
         ) : categories.length === 0 ? (
           <EmptyState compact icon="grid-outline" title="Nenhuma categoria cadastrada" description="As categorias do acervo aparecerão aqui." />
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         ) : (
           <View style={styles.categoriesGrid}>
             {categories.map((category, index) => {
@@ -215,22 +180,6 @@ export const HomeScreen = () => {
         </View>
 
         {loadingBooks ? (
-<<<<<<< HEAD
-          <ActivityIndicator color={colors.primary} style={styles.loadingIndicator} />
-        ) : booksError ? (
-          <View style={styles.stateCard}>
-            <Ionicons name="cloud-offline-outline" size={36} color={colors.textMuted} />
-            <Text style={styles.stateText}>{booksError}</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)}>
-              <Text style={styles.retryButtonText}>Tentar novamente</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          books.length === 0 ? (
-            <Text style={styles.stateText}>
-              {search.trim() ? 'Nenhum livro encontrado para essa busca.' : 'Nenhum livro cadastrado no acervo.'}
-            </Text>
-=======
           <View style={styles.loadingSlot}><ActivityIndicator color={colors.primary} /></View>
         ) : booksError ? (
           <EmptyState
@@ -248,7 +197,6 @@ export const HomeScreen = () => {
               title={search.trim() ? 'Nenhum livro encontrado' : 'Nenhum livro cadastrado'}
               description={search.trim() ? 'Tente buscar por outro título ou autor.' : 'Os livros adicionados ao acervo aparecerão aqui.'}
             />
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           ) : (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
               {books.map((book) => (
@@ -257,19 +205,8 @@ export const HomeScreen = () => {
                   style={styles.bookCard}
                   onPress={() => navigateToStack('BookDetail', { bookId: String(book.id), title: book.title })}
                 >
-<<<<<<< HEAD
-                  {book.cover_url ? (
-                    <Image source={{ uri: book.cover_url }} style={styles.bookCoverImage} resizeMode="cover" />
-                  ) : (
-                    <View style={styles.bookCover}>
-                      <Ionicons name="book" size={32} color={colors.primary} />
-                    </View>
-                  )}
-                  <Text style={styles.bookTitle} numberOfLines={1}>
-=======
                   <BookCover uri={book.cover_url} width={108} height={156} />
                   <Text style={styles.bookTitle} numberOfLines={2}>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
                     {book.title}
                   </Text>
                   <Text style={styles.bookAuthor} numberOfLines={1}>
@@ -411,33 +348,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
   },
-<<<<<<< HEAD
-  stateCard: {
-    alignItems: 'center',
-    paddingVertical: 24,
-    paddingHorizontal: 18,
-    borderRadius: 16,
-    backgroundColor: colors.cardBackground,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  stateText: {
-    color: colors.textSecondary,
-    fontSize: 13,
-    marginTop: 12,
-    textAlign: 'center',
-    lineHeight: 19,
-  },
-  retryButton: {
-    marginTop: 16,
-    minHeight: 40,
-    borderRadius: 20,
-=======
   retryButton: {
     marginTop: 16,
     minHeight: 40,
     borderRadius: radii.pill,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     backgroundColor: colors.primary,
     paddingHorizontal: 16,
     alignItems: 'center',
@@ -498,16 +412,6 @@ const styles = StyleSheet.create({
     minHeight: 96,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  bookCoverImage: {
-    width: 110,
-    height: 150,
-    borderRadius: 12,
-    backgroundColor: colors.cardBackground,
-    marginBottom: 8,
-  },
-  loadingIndicator: {
-    marginVertical: 24,
   },
   bookTitle: {
     fontSize: 13,

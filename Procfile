@@ -1,1 +1,1 @@
-web: gunicorn config.wsgi --bind 0.0.0.0:$PORT
+web: sh scripts/render-start.sh

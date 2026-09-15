@@ -13,6 +13,7 @@ from comunidades.models import Comunidade
 from biblioteca.models import Livro
 from perfis.models import FRASE_STATUS_PADRAO_LEITOR, Perfil
 from .forms import RegistroUsuarioForm  # <-- Importa o novo formulário customizado
+from .services import resolver_identificador_login
 
 
 def index(request):
@@ -50,7 +51,11 @@ def tela_login(request):
         usuario_digitado = request.POST.get('username')
         senha_digitada = request.POST.get('password')
 
-        user = authenticate(request, username=usuario_digitado, password=senha_digitada)
+        user = authenticate(
+            request,
+            username=resolver_identificador_login(usuario_digitado),
+            password=senha_digitada,
+        )
 
         if user is not None:
             login(request, user)

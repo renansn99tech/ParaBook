@@ -24,5 +24,5 @@ COPY . /app/
 # Expõe a porta
 EXPOSE 8000
 
-# Executa as migrações e inicia o servidor (Gunicorn)
-CMD sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}"
+# Executa as migrações, garante o admin inicial e inicia o servidor (Gunicorn)
+CMD ["sh", "scripts/render-start.sh"]

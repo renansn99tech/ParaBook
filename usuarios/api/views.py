@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -21,6 +20,7 @@ from usuarios.models import Usuario, SessaoDispositivo, AutenticacaoDoisFatores
 from usuarios.services import obter_ou_criar_usuario_customizado
 from .serializers import (
     UsuarioSerializer,
+    IdentifierTokenObtainPairSerializer,
     RegisterSerializer,
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
@@ -113,7 +113,7 @@ class CookieTokenObtainPairAPIView(APIView):
     throttle_classes = [AuthRateThrottle]
 
     def post(self, request):
-        serializer = TokenObtainPairSerializer(data=request.data)
+        serializer = IdentifierTokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         configuracao = AutenticacaoDoisFatores.objects.filter(
             usuario=serializer.user,
@@ -158,7 +158,7 @@ class MobileTokenObtainPairAPIView(APIView):
         return 'Bearer realm="api"'
 
     def post(self, request):
-        serializer = TokenObtainPairSerializer(data=request.data)
+        serializer = IdentifierTokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         configuracao = AutenticacaoDoisFatores.objects.filter(
             usuario=serializer.user,

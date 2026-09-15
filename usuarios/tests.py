@@ -1,8 +1,12 @@
 from datetime import timedelta
+from io import StringIO
+import os
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.cache import cache
+from django.core.management import call_command
 from django.test import TestCase
 
 from usuarios.models import Usuario, SessaoDispositivo, AutenticacaoDoisFatores
@@ -38,6 +42,92 @@ class ObterOuCriarUsuarioCustomizadoTests(TestCase):
         self.assertEqual(Usuario.objects.filter(user_auth=user).count(), 1)
 
 
+class SeedAdminCommandTests(TestCase):
+    SENHA = 'SenhaAdminForte123!'
+
+    def _seed(self, **env):
+        output = StringIO()
+        defaults = {
+            'SEED_ADMIN_USERNAME': 'admin-parabook',
+            'SEED_ADMIN_EMAIL': 'admin@example.com',
+            'SEED_ADMIN_PASSWORD': self.SENHA,
+        }
+        defaults.update(env)
+        with patch.dict(os.environ, defaults, clear=True):
+            call_command('seed_admin', stdout=output)
+        return output.getvalue()
+
+    def test_primeira_execucao_cria_superusuario_e_perfil_admin(self):
+        self._seed()
+
+        user = User.objects.get(username='admin-parabook')
+        self.assertEqual(user.email, 'admin@example.com')
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password(self.SENHA))
+        self.assertEqual(user.perfil_customizado.tipo, 'admin')
+        self.assertTrue(user.perfil_customizado.termos_aceitos)
+
+    def test_segunda_execucao_nao_duplica_usuario(self):
+        self._seed()
+        self._seed()
+
+        self.assertEqual(User.objects.filter(username='admin-parabook').count(), 1)
+        self.assertEqual(Usuario.objects.filter(user_auth__username='admin-parabook').count(), 1)
+
+    def test_usuario_existente_com_senha_incorreta_e_permissoes_faltando_e_atualizado(self):
+        user = User.objects.create_user(
+            username='admin-parabook',
+            email='antigo@example.com',
+            password='senha-antiga',
+            is_staff=False,
+            is_superuser=False,
+            is_active=False,
+        )
+        perfil = Perfil.objects.create(usuario=user)
+        Usuario.objects.create(user_auth=user, perfil=perfil, tipo='leitor')
+
+        self._seed()
+        user.refresh_from_db()
+
+        self.assertEqual(user.email, 'admin@example.com')
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password(self.SENHA))
+        self.assertEqual(user.perfil_customizado.tipo, 'admin')
+
+    def test_alteracao_de_senha_por_variavel_de_ambiente(self):
+        self._seed(SEED_ADMIN_PASSWORD='PrimeiraSenhaForte123!')
+        self._seed(SEED_ADMIN_PASSWORD='SegundaSenhaForte123!')
+
+        user = User.objects.get(username='admin-parabook')
+        self.assertFalse(user.check_password('PrimeiraSenhaForte123!'))
+        self.assertTrue(user.check_password('SegundaSenhaForte123!'))
+
+    def test_usuario_existente_encontrado_por_email_nao_e_duplicado(self):
+        User.objects.create_user(
+            username='admin-antigo',
+            email='admin@example.com',
+            password='senha-antiga',
+        )
+
+        self._seed(SEED_ADMIN_USERNAME='admin-parabook')
+
+        self.assertEqual(User.objects.filter(email='admin@example.com').count(), 1)
+        user = User.objects.get(email='admin@example.com')
+        self.assertEqual(user.username, 'admin-parabook')
+        self.assertTrue(user.check_password(self.SENHA))
+        self.assertTrue(user.is_superuser)
+
+    def test_sem_senha_configurada_nao_cria_admin_com_fallback_inseguro(self):
+        output = self._seed(SEED_ADMIN_PASSWORD='')
+
+        self.assertIn('SEED_ADMIN_PASSWORD não configurada', output)
+        self.assertFalse(User.objects.filter(username='admin-parabook').exists())
+
+
 class CookieAuthenticationTests(TestCase):
     """Cobertura do fluxo de sessão em cookie HttpOnly + CSRF.
 
@@ -57,6 +147,8 @@ class CookieAuthenticationTests(TestCase):
         # começaria a devolver 429 e deixaria a suíte intermitente.
         cache.clear()
         self.user = User.objects.create_user(username='cookie-user', password=self.SENHA)
+        self.user.email = 'cookie-user@example.com'
+        self.user.save(update_fields=['email'])
         self.client = APIClient(enforce_csrf_checks=True)
 
     # --- helpers -----------------------------------------------------------
@@ -112,6 +204,28 @@ class CookieAuthenticationTests(TestCase):
         self.assertNotIn(self.ACCESS, response.cookies)
         self.assertNotIn(self.REFRESH, response.cookies)
         self.assertEqual(SessaoDispositivo.objects.filter(usuario=self.user).count(), 1)
+
+    def test_login_aceita_email_unico_no_campo_username(self):
+        response = self.client.post(
+            '/api/v1/auth/login/',
+            {'username': self.user.email, 'password': self.SENHA},
+            format='json',
+            HTTP_X_CSRFTOKEN=self._csrf(),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.ACCESS, response.cookies)
+
+    def test_login_mobile_aceita_email_unico_no_campo_username(self):
+        mobile = APIClient(enforce_csrf_checks=True)
+        response = mobile.post(
+            '/api/v1/auth/mobile-login/',
+            {'username': self.user.email, 'password': self.SENHA},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('access', response.data)
 
     def test_login_mobile_invalido_nao_retorna_usuario_ou_tokens(self):
         mobile = APIClient(enforce_csrf_checks=True)

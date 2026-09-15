@@ -3,9 +3,27 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.conf import settings
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from usuarios.models import Usuario
+from usuarios.services import resolver_identificador_login
 from perfis.models import Perfil, FRASE_STATUS_PADRAO_LEITOR
 from django.utils import timezone
+
+
+class IdentifierTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Aceita o identificador digitado no campo de login atual.
+
+    O SimpleJWT continua autenticando pelo USERNAME_FIELD do Django. Quando o
+    projeto usa username, mas a pessoa digita um e-mail único, resolvemos esse
+    e-mail para o username real antes da validação padrão.
+    """
+
+    def validate(self, attrs):
+        attrs = attrs.copy()
+        identifier = attrs.get(self.username_field)
+        if isinstance(identifier, str):
+            attrs[self.username_field] = resolver_identificador_login(identifier)
+        return super().validate(attrs)
 
 
 class UserAuthSerializer(serializers.ModelSerializer):

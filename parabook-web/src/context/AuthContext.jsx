@@ -7,12 +7,36 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const carregarUsuario = async () => {
+    try {
+      const response = await api.get('/perfis/meu-perfil/');
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
+      // Quando a política está ativa, /meu-perfil/ é propositalmente bloqueado
+      // até que a pessoa conclua a declaração. Mantemos uma sessão mínima, sem
+      // tentar inferir idade, carregar CPF ou armazenar a data no navegador.
+      if (error.response?.data?.codigo === 'conta_restrita_etaria') {
+        const idadeResponse = await api.get('/auth/idade/');
+        const usuarioRestrito = {
+          restricao_etaria: idadeResponse.data,
+        };
+        setUser(usuarioRestrito);
+        return usuarioRestrito;
+      }
+      setUser(null);
+      throw error;
+    }
+  };
+
   // A sessão é validada no backend; JWTs não ficam acessíveis ao JavaScript.
   useEffect(() => {
-    api.get('/perfis/meu-perfil/')
-      .then((response) => setUser(response.data))
-      .catch(() => setUser(null))
+    carregarUsuario()
+      .catch(() => {})
       .finally(() => setLoading(false));
+    // A inicialização deve ocorrer apenas uma vez; carregarUsuario fecha sobre
+    // as funções estáveis deste provider.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -32,8 +56,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, requires2fa: true };
       }
 
-      const userResponse = await api.get('/perfis/meu-perfil/');
-      setUser(userResponse.data);
+      await carregarUsuario();
       
       return { success: true };
     } catch (error) {
@@ -49,8 +72,7 @@ export const AuthProvider = ({ children }) => {
       await api.post('/auth/register/', userData);
 
       // Busca os dados do perfil do usuário recém-criado
-      const userResponse = await api.get('/perfis/meu-perfil/');
-      setUser(userResponse.data);
+      await carregarUsuario();
 
       return { success: true };
     } catch (error) {
@@ -84,9 +106,7 @@ export const AuthProvider = ({ children }) => {
   // (ex: aceite de termos, solicitacao para virar autor).
   const recarregarUsuario = async () => {
     try {
-      const response = await api.get('/perfis/meu-perfil/');
-      setUser(response.data);
-      return response.data;
+      return await carregarUsuario();
     } catch (error) {
       console.error("Erro ao recarregar o usuário", error);
       return null;

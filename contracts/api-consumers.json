@@ -27,10 +27,6 @@
         "path": "/api/v1/auth/alterar-senha/"
       },
       {
-        "method": "PATCH",
-        "path": "/api/v1/auth/aparencia/"
-      },
-      {
         "method": "GET",
         "path": "/api/v1/auth/csrf/"
       },
@@ -41,6 +37,14 @@
       {
         "method": "GET",
         "path": "/api/v1/auth/governanca/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/idade/"
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/auth/idade/"
       },
       {
         "method": "POST",

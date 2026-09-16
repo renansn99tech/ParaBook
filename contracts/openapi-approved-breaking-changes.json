@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "approved_exceptions": [
+    {
+      "id": "g2-privacidade-etaria-2026-09-16",
+      "approved_rule": "G2 — data de nascimento e idade legadas não integram mais os contratos de perfil.",
+      "reason": "A elegibilidade etária passou a usar rota privada própria; manter esses campos permitiria continuar expondo ou aceitando dados pessoais fora do fluxo idempotente e auditável.",
+      "errors": [
+        "PATCH /api/v1/auth/aparencia/ response 200.data_nascimento: propriedade removida",
+        "PATCH /api/v1/auth/aparencia/ response 200.exibir_data_nascimento: propriedade removida",
+        "PATCH /api/v1/auth/aparencia/ response 200.exibir_idade: propriedade removida",
+        "PATCH /api/v1/auth/aparencia/ response 200.idade: propriedade removida",
+        "PATCH /api/v1/auth/aparencia/ response 200.idade: deixou de ser garantida na resposta",
+        "GET /api/v1/perfis/meu-perfil/ response 200.data_nascimento: propriedade removida",
+        "GET /api/v1/perfis/meu-perfil/ response 200.exibir_data_nascimento: propriedade removida",
+        "GET /api/v1/perfis/meu-perfil/ response 200.exibir_idade: propriedade removida",
+        "GET /api/v1/perfis/meu-perfil/ response 200.idade: propriedade removida",
+        "GET /api/v1/perfis/meu-perfil/ response 200.idade: deixou de ser garantida na resposta",
+        "PATCH /api/v1/perfis/meu-perfil/ request.data_nascimento: propriedade removida",
+        "PATCH /api/v1/perfis/meu-perfil/ request.exibir_data_nascimento: propriedade removida",
+        "PATCH /api/v1/perfis/meu-perfil/ request.exibir_idade: propriedade removida",
+        "PATCH /api/v1/perfis/meu-perfil/ request.idade: propriedade removida",
+        "PATCH /api/v1/perfis/meu-perfil/ response 200.data_nascimento: propriedade removida",
+        "PATCH /api/v1/perfis/meu-perfil/ response 200.exibir_data_nascimento: propriedade removida",
+        "PATCH /api/v1/perfis/meu-perfil/ response 200.exibir_idade: propriedade removida",
+        "PATCH /api/v1/perfis/meu-perfil/ response 200.idade: propriedade removida",
+        "PATCH /api/v1/perfis/meu-perfil/ response 200.idade: deixou de ser garantida na resposta",
+        "PUT /api/v1/perfis/meu-perfil/ request.data_nascimento: propriedade removida",
+        "PUT /api/v1/perfis/meu-perfil/ request.exibir_data_nascimento: propriedade removida",
+        "PUT /api/v1/perfis/meu-perfil/ request.exibir_idade: propriedade removida",
+        "PUT /api/v1/perfis/meu-perfil/ request.idade: propriedade removida",
+        "PUT /api/v1/perfis/meu-perfil/ response 200.data_nascimento: propriedade removida",
+        "PUT /api/v1/perfis/meu-perfil/ response 200.exibir_data_nascimento: propriedade removida",
+        "PUT /api/v1/perfis/meu-perfil/ response 200.exibir_idade: propriedade removida",
+        "PUT /api/v1/perfis/meu-perfil/ response 200.idade: propriedade removida",
+        "PUT /api/v1/perfis/meu-perfil/ response 200.idade: deixou de ser garantida na resposta"
+      ]
+    }
+  ]
+}

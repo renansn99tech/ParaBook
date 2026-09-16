@@ -535,6 +535,82 @@
                 }
             }
         },
+        "/api/v1/auth/idade/": {
+            "get": {
+                "operationId": "v1_auth_idade_retrieve",
+                "description": "Consulta e declaração etária privada, com idempotência por tentativa.",
+                "tags": [
+                    "v1"
+                ],
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EstadoEtarioResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "v1_auth_idade_update",
+                "description": "Consulta e declaração etária privada, com idempotência por tentativa.",
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeclaracaoEtariaRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeclaracaoEtariaRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeclaracaoEtariaRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EstadoEtarioResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/auth/login/": {
             "post": {
                 "operationId": "v1_auth_login_create",
@@ -5657,6 +5733,9 @@
                         "type": "string",
                         "title": "Nome da Categoria",
                         "maxLength": 50
+                    },
+                    "disponivel_publicamente": {
+                        "type": "boolean"
                     }
                 },
                 "required": [
@@ -6073,6 +6152,25 @@
                 "type": "string",
                 "description": "* `acolher` - acolher\n* `recusar` - recusar"
             },
+            "DeclaracaoEtariaRequest": {
+                "type": "object",
+                "properties": {
+                    "data_nascimento": {
+                        "type": "string",
+                        "format": "date",
+                        "writeOnly": true
+                    },
+                    "chave_idempotencia": {
+                        "type": "string",
+                        "format": "uuid",
+                        "writeOnly": true
+                    }
+                },
+                "required": [
+                    "chave_idempotencia",
+                    "data_nascimento"
+                ]
+            },
             "DenunciaComunidadeLista": {
                 "type": "object",
                 "properties": {
@@ -6339,6 +6437,52 @@
                 ],
                 "type": "integer",
                 "description": "* `3` - 3\n* `7` - 7\n* `15` - 15\n* `30` - 30"
+            },
+            "EstadoEnum": {
+                "enum": [
+                    "pendente",
+                    "restrito_menor",
+                    "liberado_adulto",
+                    "em_revisao"
+                ],
+                "type": "string",
+                "description": "* `pendente` - pendente\n* `restrito_menor` - restrito_menor\n* `liberado_adulto` - liberado_adulto\n* `em_revisao` - em_revisao"
+            },
+            "EstadoEtarioResponse": {
+                "type": "object",
+                "properties": {
+                    "estado": {
+                        "$ref": "#/components/schemas/EstadoEnum"
+                    },
+                    "declaracoes_sucesso": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "prazo_declaracao_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "proxima_correcao_permitida_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "restricao_ativa": {
+                        "type": "boolean"
+                    },
+                    "versao_politica": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "declaracoes_sucesso",
+                    "estado",
+                    "prazo_declaracao_em",
+                    "proxima_correcao_permitida_em",
+                    "restricao_ativa",
+                    "versao_politica"
+                ]
             },
             "Estante": {
                 "type": "object",
@@ -8125,21 +8269,7 @@
                         "type": "boolean",
                         "readOnly": true
                     },
-                    "data_nascimento": {
-                        "type": "string",
-                        "format": "date",
-                        "writeOnly": true,
-                        "nullable": true
-                    },
-                    "idade": {
-                        "type": "integer",
-                        "nullable": true,
-                        "readOnly": true
-                    },
-                    "exibir_idade": {
-                        "type": "boolean"
-                    },
-                    "exibir_data_nascimento": {
+                    "exibir_aniversario_sem_ano": {
                         "type": "boolean"
                     },
                     "exibir_email": {
@@ -8411,21 +8541,7 @@
                         "type": "boolean",
                         "readOnly": true
                     },
-                    "data_nascimento": {
-                        "type": "string",
-                        "format": "date",
-                        "writeOnly": true,
-                        "nullable": true
-                    },
-                    "idade": {
-                        "type": "integer",
-                        "nullable": true,
-                        "readOnly": true
-                    },
-                    "exibir_idade": {
-                        "type": "boolean"
-                    },
-                    "exibir_data_nascimento": {
+                    "exibir_aniversario_sem_ano": {
                         "type": "boolean"
                     },
                     "exibir_email": {
@@ -8515,7 +8631,6 @@
                     "date_joined",
                     "email",
                     "id",
-                    "idade",
                     "is_premium",
                     "is_staff",
                     "is_superuser",
@@ -8804,21 +8919,7 @@
                         "type": "boolean",
                         "readOnly": true
                     },
-                    "data_nascimento": {
-                        "type": "string",
-                        "format": "date",
-                        "writeOnly": true,
-                        "nullable": true
-                    },
-                    "idade": {
-                        "type": "integer",
-                        "nullable": true,
-                        "readOnly": true
-                    },
-                    "exibir_idade": {
-                        "type": "boolean"
-                    },
-                    "exibir_data_nascimento": {
+                    "exibir_aniversario_sem_ano": {
                         "type": "boolean"
                     },
                     "exibir_email": {
@@ -8908,7 +9009,6 @@
                     "date_joined",
                     "email",
                     "id",
-                    "idade",
                     "is_premium",
                     "is_staff",
                     "is_superuser",

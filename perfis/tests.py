@@ -1,6 +1,7 @@
 import tempfile
 from datetime import timedelta
 from io import BytesIO
+from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -284,7 +285,7 @@ class ContratoPerfilModernizadoTests(TestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.admin)
 
-    def test_perfil_autenticado_expoe_data_e_flags_de_autorizacao(self):
+    def test_perfil_autenticado_nao_expoe_data_legada_de_nascimento(self):
         self.admin.email = 'admin-perfil@parabook.test'
         self.admin.save(update_fields=['email'])
         usuario = self.admin.perfil_customizado
@@ -296,8 +297,9 @@ class ContratoPerfilModernizadoTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('date_joined', response.data)
         self.assertEqual(response.data['email'], 'admin-perfil@parabook.test')
-        self.assertEqual(response.data['data_nascimento'], '1995-06-15')
-        self.assertIsInstance(response.data['idade'], int)
+        self.assertNotIn('data_nascimento', response.data)
+        self.assertNotIn('idade', response.data)
+        self.assertIn('exibir_aniversario_sem_ano', response.data)
         self.assertTrue(response.data['is_staff'])
         self.assertFalse(response.data['is_superuser'])
 
@@ -311,28 +313,33 @@ class ContratoPerfilModernizadoTests(TestCase):
         self.assertEqual(excede.status_code, 400)
         self.assertIn('bio', excede.data)
 
-    def test_atualiza_nascimento_e_privacidade_dos_dados_pessoais(self):
+    def test_atualiza_elegibilidade_por_rota_propria_e_privacidade_do_aniversario(self):
         response = self.client.patch(
             reverse('api-meu-perfil'),
             {
-                'data_nascimento': '1998-04-21',
-                'exibir_idade': False,
-                'exibir_data_nascimento': False,
+                'exibir_aniversario_sem_ano': True,
                 'exibir_email': False,
             },
             format='json',
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['data_nascimento'], '1998-04-21')
-        self.assertFalse(response.data['exibir_idade'])
-        self.assertFalse(response.data['exibir_data_nascimento'])
+        self.assertTrue(response.data['exibir_aniversario_sem_ano'])
         self.assertFalse(response.data['exibir_email'])
+        declaracao = self.client.put(
+            reverse('api_idade'),
+            {'data_nascimento': '1998-04-21', 'chave_idempotencia': str(uuid4())},
+            format='json',
+        )
+        self.assertEqual(declaracao.status_code, 200)
+        usuario = self.admin.perfil_customizado
+        usuario.refresh_from_db()
+        self.assertEqual(str(usuario.data_nascimento_eligibilidade), '1998-04-21')
 
-    def test_rejeita_nascimento_no_futuro(self):
-        response = self.client.patch(
-            reverse('api-meu-perfil'),
-            {'data_nascimento': '2999-01-01'},
+    def test_rejeita_declaracao_de_nascimento_no_futuro(self):
+        response = self.client.put(
+            reverse('api_idade'),
+            {'data_nascimento': '2999-01-01', 'chave_idempotencia': str(uuid4())},
             format='json',
         )
 
@@ -415,11 +422,9 @@ class ContratoPerfilModernizadoTests(TestCase):
 
         self.assertEqual(resposta_terceiro.status_code, 200)
         self.assertEqual(resposta_terceiro.data['dados_pessoais'], {
-            'idade': None,
-            'data_nascimento': None,
+            'aniversario': None,
             'email': None,
-            'exibir_idade': False,
-            'exibir_data_nascimento': False,
+            'exibir_aniversario_sem_ano': False,
             'exibir_email': False,
         })
 
@@ -429,11 +434,7 @@ class ContratoPerfilModernizadoTests(TestCase):
         )
 
         self.assertEqual(resposta_titular.status_code, 200)
-        self.assertIsInstance(resposta_titular.data['dados_pessoais']['idade'], int)
-        self.assertEqual(
-            resposta_titular.data['dados_pessoais']['data_nascimento'],
-            '1995-06-15',
-        )
+        self.assertIsNone(resposta_titular.data['dados_pessoais']['aniversario'])
         self.assertEqual(
             resposta_titular.data['dados_pessoais']['email'],
             'segredo@parabook.test',

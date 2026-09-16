@@ -32,6 +32,21 @@ class DashboardLixeiraAPIViewTests(TestCase):
         response = self.client.get(reverse('api-dashboard-lixeira'))
         self.assertEqual(response.status_code, 200)
 
+    def test_api_nao_permite_exclusao_permanente_sem_politica_de_retencao(self):
+        categoria = Categoria.objects.create(nome='Retenção protegida')
+        livro = Livro.objects.create(
+            titulo='Obra preservada', autor='Autor', categoria=categoria, status='removido',
+        )
+
+        response = self.client.post(
+            reverse('api-dashboard-lixeira'),
+            {'acao': 'excluir_livro_permanente', 'item_id': livro.pk},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Livro.objects.filter(pk=livro.pk).exists())
+
 
 class DashboardEstatisticasAPIViewTests(TestCase):
     def setUp(self):

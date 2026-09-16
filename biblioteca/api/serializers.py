@@ -60,6 +60,15 @@ class LivroSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
+        categoria = attrs.get('categoria', getattr(self.instance, 'categoria', None))
+        if categoria and not categoria.disponivel_publicamente:
+            mesma_categoria_legada = bool(
+                self.instance and self.instance.categoria_id == categoria.id
+            )
+            if not mesma_categoria_legada:
+                raise serializers.ValidationError({
+                    'categoria': 'Esta categoria está indisponível para novas publicações.'
+                })
         inicio = attrs.get('disponivel_de', getattr(self.instance, 'disponivel_de', None))
         fim = attrs.get('disponivel_ate', getattr(self.instance, 'disponivel_ate', None))
         modelo = attrs.get('modelo_acesso', getattr(self.instance, 'modelo_acesso', 'gratuito'))
@@ -164,6 +173,11 @@ class SolicitacaoPublicacaoSerializer(serializers.ModelSerializer):
 
     def validate_pdf(self, value):
         return validar_pdf_livro(value)
+
+    def validate_categoria(self, value):
+        if not value.disponivel_publicamente:
+            raise serializers.ValidationError('Esta categoria está indisponível para novas publicações.')
+        return value
 
     def validate_cpf_autor(self, value):
         digitos = ''.join(filter(str.isdigit, value))

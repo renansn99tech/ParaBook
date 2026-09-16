@@ -17,7 +17,7 @@ function client(post) {
   const instance = { interceptors: { request: { use: f => prepare = f }, response: { use: (_, f) => rejected = f } }, request: async c => { calls.push(prepare(c)); return 'retried'; } };
   const axios = { create: () => instance, post, isAxiosError: e => e.isAxiosError, isCancel: e => e.code === 'ERR_CANCELED', CanceledError: Error };
   const saved = [];
-  const module = load('api', { axios, './authStorage': { authStorage: { save: async t => saved.push(t) } } });
+  const module = load('api', { axios, 'expo-constants': { expoConfig: null }, './authStorage': { authStorage: { save: async t => saved.push(t) } } });
   module.setAuthTokens({ access: 'old', refresh: 'refresh' });
   const error = (status, method = 'get') => ({ isAxiosError: true, response: status ? { status } : undefined, config: prepare({ method, url: '/perfis/meu-perfil/', headers: {} }) });
   return { module, error, reject: e => rejected(e), calls, saved };
@@ -70,4 +70,52 @@ test('SecureStore serializa save e clear durante logout', async () => {
   const { authStorage } = load('authStorage', { 'react-native': { Platform: { OS: 'ios' } }, 'expo-secure-store': secure });
   await Promise.all([authStorage.save({ access: 'test', refresh: 'test' }), authStorage.clear()]);
   assert.equal(await authStorage.read(), null);
+});
+
+test('catálogo normaliza contrato Django e preserva capa relativa', async () => {
+  let params;
+  const { bookService } = load('bookService', {
+    './collection': { getCollection: async (_, received) => {
+      params = received;
+      return { data: [{ id: 7, titulo: 'Dom Casmurro', autor: 'Machado de Assis', capa_url: '/media/capas/dom.jpg', categoria_nome: 'Literatura', avaliacao: '4.50', pdf_disponivel: true }] };
+    } },
+    './api': { api: {}, resolveDjangoUrl: value => `https://api.example${value}` },
+  });
+  const books = await bookService.getBooks('machado', 3);
+  assert.deepEqual(JSON.parse(JSON.stringify(params)), { search: 'machado', categoria: 3 });
+  assert.deepEqual(JSON.parse(JSON.stringify(books[0])), {
+    id: 7,
+    title: 'Dom Casmurro',
+    author: 'Machado de Assis',
+    cover_url: 'https://api.example/media/capas/dom.jpg',
+    category: 'Literatura',
+    rating: 4.5,
+    pdfAvailable: true,
+  });
+});
+
+test('falha do catálogo é propagada e nunca vira lista vazia', async () => {
+  const failure = new Error('backend indisponível');
+  const { bookService } = load('bookService', {
+    './collection': { getCollection: async () => { throw failure; } },
+    './api': { api: {}, resolveDjangoUrl: value => value },
+  });
+  await assert.rejects(bookService.getBooks(), /backend indisponível/);
+});
+
+test('livro sem autor recebe um rótulo legível', async () => {
+  const { bookService } = load('bookService', {
+    './collection': { getCollection: async () => ({ data: [{ id: 8, titulo: 'Obra anônima', autor: '  ', pdf_disponivel: false }] }) },
+    './api': { api: {}, resolveDjangoUrl: value => value },
+  });
+  assert.equal((await bookService.getBooks())[0].author, 'Autor não informado');
+});
+
+test('erros de API distinguem offline, autorização e serviço', () => {
+  const { describeApiError } = load('apiError', {
+    axios: { isAxiosError: error => Boolean(error?.isAxiosError) },
+  });
+  assert.equal(describeApiError({ isAxiosError: true }).kind, 'offline');
+  assert.equal(describeApiError({ isAxiosError: true, response: { status: 401 } }).kind, 'unauthorized');
+  assert.equal(describeApiError({ isAxiosError: true, response: { status: 500 } }).kind, 'error');
 });

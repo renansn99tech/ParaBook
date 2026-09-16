@@ -14,12 +14,8 @@ function RotaPublicacao({ children }) {
   if (user.tipo === 'aguardando_aprovacao') {
     return <Navigate to="/perfil" replace />;
   }
-<<<<<<< HEAD
-  if (user.tipo !== 'autor' && user.tipo !== 'admin') {
-=======
   if (['moderador', 'admin'].includes(user.tipo)) return <Navigate to="/dashboard?aba=livros" replace />;
   if (user.tipo !== 'autor') {
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     return <Navigate to="/para-autores" replace />;
   }
   return children;

@@ -4,8 +4,6 @@ from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from usuarios.models import SessaoDispositivo
-<<<<<<< HEAD
-=======
 from usuarios.governanca import dados_suspensao_ativa
 
 
@@ -31,7 +29,6 @@ ROTAS_PUBLICAS_SUSPENSA = (
     '/api/v1/perfis/',
     '/api/v1/dashboard/feature-flags/publicas/',
 )
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 
 class CookieJWTAuthentication(JWTAuthentication):
@@ -47,12 +44,8 @@ class CookieJWTAuthentication(JWTAuthentication):
             resultado = super().authenticate(request)
             if resultado:
                 self._validar_sessao(resultado[1])
-<<<<<<< HEAD
-            return resultado
-=======
                 return self._aplicar_restricao_suspensao(request, resultado)
             return None
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
         raw_token = request.COOKIES.get(settings.JWT_ACCESS_COOKIE_NAME)
         if not raw_token:
@@ -60,10 +53,6 @@ class CookieJWTAuthentication(JWTAuthentication):
 
         validated_token = self.get_validated_token(raw_token)
         self._validar_sessao(validated_token)
-<<<<<<< HEAD
-        self._enforce_csrf(request)
-        return self.get_user(validated_token), validated_token
-=======
         resultado = (self.get_user(validated_token), validated_token)
         resultado = self._aplicar_restricao_suspensao(request, resultado)
         if resultado:
@@ -93,7 +82,6 @@ class CookieJWTAuthentication(JWTAuthentication):
             'codigo': 'conta_suspensa',
             'suspensao': suspensao,
         })
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
     @staticmethod
     def _validar_sessao(validated_token):

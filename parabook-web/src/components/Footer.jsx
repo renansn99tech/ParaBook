@@ -62,16 +62,11 @@ function Footer() {
         </div>
 
         <div className="footer-column">
-<<<<<<< HEAD
-          <h4>Autores</h4>
-          <Link to="/para-autores">Para Autores</Link>
-=======
           <h4>Legal e segurança</h4>
           <Link to="/termos">Termos de Uso</Link>
           <Link to="/privacidade">Privacidade</Link>
           <Link to="/publicacao-e-licenca">Publicação e licença</Link>
           <Link to="/direitos-autorais">Direitos autorais</Link>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           <Link to="/diretrizes">Diretrizes</Link>
         </div>
 

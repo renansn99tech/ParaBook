@@ -373,8 +373,6 @@ class DeclaracaoAutoria(models.Model):
 
     def __str__(self):
         return f'Declaração da solicitação {self.solicitacao_id}'
-<<<<<<< HEAD
-=======
 
 
 class BloqueioPublicacao(models.Model):
@@ -424,4 +422,3 @@ class RecursoPublicacao(models.Model):
     decisao = models.TextField(blank=True, max_length=2000)
     criado_em = models.DateTimeField(auto_now_add=True)
     decidido_em = models.DateTimeField(null=True, blank=True)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9

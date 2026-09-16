@@ -187,11 +187,7 @@ test('composição desktop respeita a largura da capa com cards mais compactos',
 test('avatar padrão acompanha o tipo de perfil em todas as superfícies', () => {
   assert.match(avatarPerfil, /avatar-padrao-admin-parabook\.webp/);
   assert.match(avatarPerfil, /avatar-padrao-autor-parabook\.webp/);
-<<<<<<< HEAD
-  assert.match(avatarPerfil, /usuario\?\.tipo === 'admin' \|\| usuario\?\.is_superuser/);
-=======
   assert.match(avatarPerfil, /\['moderador', 'admin'\]\.includes\(usuario\?\.tipo\) \|\| usuario\?\.is_superuser/);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   assert.match(avatarPerfil, /usuario\?\.tipo === 'autor'/);
   assert.match(avatarPerfil, /return avatarLeitor/);
   assert.match(profile, /obterAvatarPerfil\(user, fullProfile\?\.perfil\?\.foto\)/);

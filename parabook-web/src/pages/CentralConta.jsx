@@ -17,11 +17,7 @@ function Aparencia() {
     setSalvando(chave);
     setMensagem('');
     try {
-<<<<<<< HEAD
-      const resposta = await api.patch('/perfis/meu-perfil/', { tipografia: chave });
-=======
       const resposta = await api.patch('/auth/aparencia/', { tipografia: chave });
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       const efetiva = resposta.data.tipografia_efetiva;
       setSelecionada(efetiva);
       aplicarTipografia(efetiva);
@@ -77,11 +73,6 @@ function Auditoria() {
   return <ul className="central-conta-lista">{registros.map((item) => <li key={item.id}><span><strong>{item.acao}</strong><small>{item.ator} · {item.recurso} #{item.recurso_id || '—'} · {new Date(item.criado_em).toLocaleString('pt-BR')}</small></span><span>{item.sucesso ? 'Sucesso' : 'Falha'}</span></li>)}</ul>;
 }
 
-<<<<<<< HEAD
-const PAGINAS = {
-  aparencia: ['Tipografia e aparência', Aparencia, false],
-  notificacoes: ['Notificações e e-mails', Preferencias, false],
-=======
 function Suporte() {
   const [itens, setItens] = useState([]);
   const [assunto, setAssunto] = useState('');
@@ -112,7 +103,6 @@ const PAGINAS = {
   aparencia: ['Tipografia e aparência', Aparencia, false],
   notificacoes: ['Notificações e e-mails', Preferencias, false],
   suporte: ['Falar com o suporte', Suporte, false],
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   auditoria: ['Trilha de auditoria', Auditoria, true],
 };
 
@@ -124,11 +114,7 @@ function CentralConta() {
   if (!user) return <Navigate to="/login" replace />;
   if (!pagina) return <Navigate to="/perfil/configuracoes" replace />;
   const [titulo, Conteudo, exigeAdmin] = pagina;
-<<<<<<< HEAD
-  const admin = user.tipo === 'admin' && Boolean(user.is_staff || user.is_superuser);
-=======
   const admin = ['moderador', 'admin'].includes(user.tipo) && Boolean(user.is_staff || user.is_superuser);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   if (exigeAdmin && !admin) return <Navigate to="/perfil/configuracoes" replace />;
   return <main className="central-conta-page"><header><Link to="/perfil/configuracoes"><i className="fa-solid fa-arrow-left" aria-hidden="true"></i> Configurações</Link><h1>{titulo}</h1><p>Configurações protegidas da sua conta ParaBook.</p></header><section className="content-glass-card"><Conteudo /></section></main>;
 }

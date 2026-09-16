@@ -6,12 +6,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
-<<<<<<< HEAD
-=======
 from usuarios.permissions import eh_admin_parabook
 from biblioteca import publicacao as fluxo
 from rest_framework.exceptions import PermissionDenied, ValidationError as ApiValidationError
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao, DeclaracaoAutoria
 from biblioteca.services import verificar_acesso_obra
 from assinaturas.utils import usuario_eh_premium
@@ -25,8 +22,6 @@ from django.conf import settings
 from django.utils.crypto import salted_hmac
 from django.utils import timezone
 from usuarios.audit import registrar_acao
-<<<<<<< HEAD
-=======
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 
@@ -55,7 +50,6 @@ class RecomendacoesResponseSerializer(serializers.Serializer):
     motivo_geral = serializers.CharField()
     metodologia = MetodologiaRecomendacaoSerializer()
     recomendacoes = LivroRecomendadoSerializer(many=True)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Categoria.objects.all()
@@ -68,30 +62,18 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
-<<<<<<< HEAD
-        return bool(
-            request.user
-            and request.user.is_authenticated
-            and (request.user.is_staff or request.user.is_superuser)
-        )
-=======
         return eh_admin_parabook(request.user)
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 
 class LivroViewSet(viewsets.ModelViewSet):
     serializer_class = LivroSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['titulo', 'autor', 'territorio_cultural']
+    search_fields = ['titulo', 'autor', 'categoria__nome', 'territorio_cultural']
 
     def get_queryset(self):
-<<<<<<< HEAD
-        qs = Livro.objects.exclude(status='removido').select_related('categoria')
-=======
         qs = Livro.objects.all().select_related('categoria')
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         user = self.request.user
 
         origem = self.request.query_params.get('origem')
@@ -378,53 +360,8 @@ class SolicitacaoPublicacaoCreateAPIView(APIView):
         fluxo.exigir_autor(request.user)
         serializer = SolicitacaoPublicacaoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-<<<<<<< HEAD
-
-        dados_livro = dict(serializer.validated_data)
-        cpf = dados_livro.pop('cpf_autor')
-        registro = dados_livro.pop('registro_autoral', '')
-        numero_registro = dados_livro.pop('numero_registro', '')
-        dados_livro.pop('declaracao_autoria')
-        dados_livro.pop('aceitou_termos')
-
-        with transaction.atomic():
-            livro = Livro.objects.create(
-                autor=request.user.get_full_name() or request.user.username,
-                origem='autor_independente',
-                status='pendente',
-                **dados_livro
-            )
-            solicitacao = SolicitacaoPublicacao.objects.create(
-                usuario=request.user,
-                livro=livro,
-                status='pendente'
-            )
-            DeclaracaoAutoria.objects.create(
-                solicitacao=solicitacao,
-                cpf_digest=salted_hmac('parabook.declaracao.cpf', cpf).hexdigest(),
-                cpf_final=cpf[-4:],
-                registro_autoral=registro,
-                numero_registro=numero_registro,
-                versao_termos=settings.TERMS_VERSION,
-                ip_origem=request.META.get('REMOTE_ADDR'),
-            )
-
-        registrar_acao(
-            ator=request.user,
-            acao='publicacao.enviada',
-            recurso='SolicitacaoPublicacao',
-            recurso_id=solicitacao.pk,
-            metadados={'livro_id': livro.pk},
-        )
-
-        return Response(
-            {"detail": "Sua obra foi enviada com sucesso para aprovação!", "livro_id": livro.id},
-            status=status.HTTP_201_CREATED
-        )
-=======
         livro = fluxo.enviar_obra(request.user, serializer.validated_data, request.META.get('REMOTE_ADDR'))
         return Response({'detail': 'Sua obra foi enviada para análise.', 'livro_id': livro.pk}, status=201)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 
 class RecomendacoesIAAPIView(APIView):

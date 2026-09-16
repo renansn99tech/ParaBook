@@ -44,11 +44,7 @@ const CONTEUDOS = {
     passos: [
       ['Crie sua conta de leitor', 'Toda jornada de autoria começa com uma conta regular e termos aceitos.'],
       ['Solicite o perfil de autor', 'A administração analisa o pedido antes de liberar a publicação.'],
-<<<<<<< HEAD
-      ['Envie a obra para moderação', 'Somente autores aprovados e administradores acessam o formulário de envio.'],
-=======
       ['Envie a obra para moderação', 'Autores aprovados enviam suas próprias obras. A administração gerencia o acervo da plataforma pelo Dashboard.'],
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     ],
   },
 };

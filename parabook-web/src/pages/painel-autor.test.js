@@ -58,11 +58,7 @@ test('gráfico oferece descrição textual e pontos focalizáveis', () => {
 
 test('autores publicam pela Navbar e acessam o painel pelo perfil', () => {
   assert.match(navbar, /user\?\.tipo === 'autor'[\s\S]*?to="\/publicar" className="navbar-publicar-livro"/);
-<<<<<<< HEAD
-  assert.match(navbar, /> Publicar Livro<\/Link>/);
-=======
   assert.match(navbar, /> Publicar Livro<\/LinkRestrito>/);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   assert.match(profile, /to="\/autor\/painel" className="btn-primary-action"/);
   assert.match(profile, /> Acessar Painel<\/Link>/);
   assert.doesNotMatch(profile, /autor-panel[\s\S]{0,600}> Publicar novo livro<\/Link>/);

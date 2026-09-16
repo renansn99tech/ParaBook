@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import { getCollection } from './collection';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import { api, resolveDjangoUrl } from './api';
 
 export interface Community {
@@ -21,8 +18,6 @@ export interface CommunityPost {
   content: string;
   authorName: string;
   imageUrl?: string;
-<<<<<<< HEAD
-=======
   replyCount: number;
   createdAt: string;
   updatedAt: string;
@@ -34,7 +29,6 @@ export interface CommunityReply {
   postTitle: string;
   authorName: string;
   content: string;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   createdAt: string;
   updatedAt: string;
 }
@@ -56,8 +50,6 @@ type DjangoCommunityPost = {
   conteudo: string;
   autor_nome: string;
   imagem?: string | null;
-<<<<<<< HEAD
-=======
   total_respostas?: number;
   criado_em: string;
   atualizado_em: string;
@@ -69,7 +61,6 @@ type DjangoCommunityReply = {
   postagem_titulo: string;
   autor_nome: string;
   conteudo: string;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   criado_em: string;
   atualizado_em: string;
 };
@@ -100,8 +91,6 @@ const normalizePost = (raw: DjangoCommunityPost): CommunityPost => ({
   content: raw.conteudo,
   authorName: raw.autor_nome,
   imageUrl: resolveDjangoUrl(raw.imagem),
-<<<<<<< HEAD
-=======
   replyCount: raw.total_respostas || 0,
   createdAt: raw.criado_em,
   updatedAt: raw.atualizado_em,
@@ -113,7 +102,6 @@ const normalizeReply = (raw: DjangoCommunityReply): CommunityReply => ({
   postTitle: raw.postagem_titulo,
   authorName: raw.autor_nome,
   content: raw.conteudo,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   createdAt: raw.criado_em,
   updatedAt: raw.atualizado_em,
 });
@@ -121,21 +109,13 @@ const normalizeReply = (raw: DjangoCommunityReply): CommunityReply => ({
 export const communityService = {
   getCommunities: async (): Promise<Community[]> => {
     const endpoint = '/comunidades/comunidades/';
-<<<<<<< HEAD
-    const response = await api.get(endpoint);
-=======
     const response = await getCollection(endpoint);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     return parseCollection<DjangoCommunity>(response.data, endpoint).map(normalizeCommunity);
   },
 
   getMyCommunities: async (): Promise<Community[]> => {
     const endpoint = '/comunidades/comunidades/minhas/';
-<<<<<<< HEAD
-    const response = await api.get(endpoint);
-=======
     const response = await getCollection(endpoint);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     return parseCollection<DjangoCommunity>(response.data, endpoint).map(normalizeCommunity);
   },
 
@@ -159,13 +139,7 @@ export const communityService = {
 
   getPosts: async (communityId: string | number): Promise<CommunityPost[]> => {
     const endpoint = '/comunidades/postagens/';
-<<<<<<< HEAD
-    const response = await api.get(endpoint, {
-      params: { comunidade: communityId },
-    });
-=======
     const response = await getCollection(endpoint, { comunidade: communityId });
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     return parseCollection<DjangoCommunityPost>(response.data, endpoint).map(normalizePost);
   },
 
@@ -185,8 +159,6 @@ export const communityService = {
     });
     return normalizePost(response.data);
   },
-<<<<<<< HEAD
-=======
 
   getReplies: async (postId: string | number): Promise<CommunityReply[]> => {
     const endpoint = '/comunidades/respostas/';
@@ -201,5 +173,4 @@ export const communityService = {
     });
     return normalizeReply(response.data);
   },
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 };

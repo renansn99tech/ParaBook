@@ -149,8 +149,6 @@ class Notificacao(models.Model):
     def __str__(self):
         return f"[{self.tipo}] {self.titulo} - {self.usuario.username}"
 
-<<<<<<< HEAD
-=======
     def save(self, *args, **kwargs):
         raise RuntimeError(
             'usuarios.Notificacao está em observação somente leitura; '
@@ -163,7 +161,6 @@ class Notificacao(models.Model):
             'use notificacoes.Notificacao.'
         )
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 class AuditoriaAcao(models.Model):
     ator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
@@ -179,8 +176,6 @@ class AuditoriaAcao(models.Model):
         ordering = ['-criado_em']
 
 
-<<<<<<< HEAD
-=======
 class SuspensaoConta(models.Model):
     class Status(models.TextChoices):
         ATIVA = 'ativa', 'Ativa'
@@ -298,7 +293,6 @@ class SolicitacaoSuporte(models.Model):
         ordering = ['-criada_em']
 
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 class SessaoDispositivo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sessoes_dispositivo')

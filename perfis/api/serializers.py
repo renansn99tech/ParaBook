@@ -50,10 +50,7 @@ class PerfilSerializer(serializers.ModelSerializer):
     tipografia_efetiva = serializers.SerializerMethodField()
     tipografia_nome = serializers.SerializerMethodField()
     tipografias_disponiveis = serializers.SerializerMethodField()
-<<<<<<< HEAD
-=======
     suspensao = serializers.SerializerMethodField()
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
     @staticmethod
     def _usuario_customizado(obj):
@@ -73,11 +70,7 @@ class PerfilSerializer(serializers.ModelSerializer):
             chaves.add(Perfil.Tipografia.EDICAO_PREMIUM)
         return chaves
 
-<<<<<<< HEAD
-    def get_termos_aceitos(self, obj):
-=======
     def get_termos_aceitos(self, obj) -> bool:
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         usuario = getattr(obj.usuario, 'perfil_customizado', None)
         return bool(
             usuario
@@ -85,16 +78,6 @@ class PerfilSerializer(serializers.ModelSerializer):
             and usuario.versao_termos_aceita == settings.TERMS_VERSION
         )
 
-<<<<<<< HEAD
-    def get_onboarding_pendente(self, obj):
-        usuario = getattr(obj.usuario, 'perfil_customizado', None)
-        return bool(usuario and usuario.onboarding_perfil_pendente())
-
-    def get_is_premium(self, obj):
-        usuario = self._usuario_customizado(obj)
-        return bool(usuario and usuario.is_premium)
-
-=======
     def get_onboarding_pendente(self, obj) -> bool:
         usuario = getattr(obj.usuario, 'perfil_customizado', None)
         return bool(usuario and usuario.onboarding_perfil_pendente())
@@ -107,7 +90,6 @@ class PerfilSerializer(serializers.ModelSerializer):
         from usuarios.governanca import dados_suspensao_ativa
         return dados_suspensao_ativa(obj.usuario)
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def get_data_nascimento(self, obj):
         usuario = self._usuario_customizado(obj)
         if usuario is None:
@@ -115,11 +97,7 @@ class PerfilSerializer(serializers.ModelSerializer):
         nascimento = interpretar_data_nascimento(usuario.data_nascimento)
         return nascimento.isoformat() if nascimento else None
 
-<<<<<<< HEAD
-    def get_idade(self, obj):
-=======
     def get_idade(self, obj) -> int | None:
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         usuario = self._usuario_customizado(obj)
         return calcular_idade(usuario.data_nascimento if usuario else None)
 
@@ -138,17 +116,6 @@ class PerfilSerializer(serializers.ModelSerializer):
         dados['data_nascimento'] = self.get_data_nascimento(instance)
         return dados
 
-<<<<<<< HEAD
-    def get_tipografia_efetiva(self, obj):
-        disponiveis = self._chaves_tipograficas_disponiveis(obj)
-        return obj.tipografia if obj.tipografia in disponiveis else Perfil.Tipografia.PADRAO
-
-    def get_tipografia_nome(self, obj):
-        chave = self.get_tipografia_efetiva(obj)
-        return Perfil.Tipografia(chave).label
-
-    def get_tipografias_disponiveis(self, obj):
-=======
     def get_tipografia_efetiva(self, obj) -> str:
         disponiveis = self._chaves_tipograficas_disponiveis(obj)
         return obj.tipografia if obj.tipografia in disponiveis else Perfil.Tipografia.PADRAO
@@ -158,7 +125,6 @@ class PerfilSerializer(serializers.ModelSerializer):
         return Perfil.Tipografia(chave).label
 
     def get_tipografias_disponiveis(self, obj) -> list[dict]:
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         disponiveis = self._chaves_tipograficas_disponiveis(obj)
         requisitos = {
             Perfil.Tipografia.PADRAO: 'Padrão público',
@@ -189,13 +155,8 @@ class PerfilSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Perfil
-<<<<<<< HEAD
-        fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'date_joined', 'is_staff', 'is_superuser', 'data_nascimento', 'idade', 'exibir_idade', 'exibir_data_nascimento', 'exibir_email', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'historico', 'descricao_perfil', 'foto', 'capa', 'bio', 'localizacao', 'perfil_privado', 'meta_leitura_anual', 'tipografia', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis']
-        read_only_fields = ['id', 'usuario', 'tipo', 'email', 'date_joined', 'is_staff', 'is_superuser', 'idade', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis']
-=======
         fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'date_joined', 'is_staff', 'is_superuser', 'data_nascimento', 'idade', 'exibir_idade', 'exibir_data_nascimento', 'exibir_email', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'historico', 'descricao_perfil', 'foto', 'capa', 'bio', 'localizacao', 'perfil_privado', 'meta_leitura_anual', 'tipografia', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis', 'suspensao']
         read_only_fields = ['id', 'usuario', 'tipo', 'email', 'date_joined', 'is_staff', 'is_superuser', 'idade', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis', 'suspensao']
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
     @staticmethod
     def _validar_imagem(arquivo):

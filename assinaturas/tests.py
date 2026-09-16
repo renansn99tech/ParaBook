@@ -8,16 +8,12 @@ from rest_framework.test import APIClient
 from assinaturas.models import Assinatura, EventoStripeProcessado, Plano
 from assinaturas.utils import usuario_eh_premium
 
-<<<<<<< HEAD
-@override_settings(STRIPE_SECRET_KEY='sk_test', STRIPE_WEBHOOK_SECRET='whsec_test')
-=======
 
 @override_settings(
     PAYMENTS_ENABLED=True,
     STRIPE_SECRET_KEY='sk_test',
     STRIPE_WEBHOOK_SECRET='whsec_test',
 )
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 class StripeWebhookTests(TestCase):
     @patch('assinaturas.webhooks.stripe.Webhook.construct_event')
     def test_evento_repetido_e_processado_uma_unica_vez(self, construct_event):
@@ -33,15 +29,11 @@ class StripeWebhookTests(TestCase):
         self.assertEqual(EventoStripeProcessado.objects.filter(evento_id='evt_unico').count(), 1)
 
 
-<<<<<<< HEAD
-@override_settings(STRIPE_SECRET_KEY='sk_test', FRONTEND_URL='https://app.parabook.test')
-=======
 @override_settings(
     PAYMENTS_ENABLED=True,
     STRIPE_SECRET_KEY='sk_test',
     FRONTEND_URL='https://app.parabook.test',
 )
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 class CheckoutAPITests(TestCase):
     def setUp(self):
         self.usuario = User.objects.create_user(username='checkout', password='x')
@@ -78,8 +70,6 @@ class CheckoutAPITests(TestCase):
         self.assertEqual(argumentos['success_url'], 'https://app.parabook.test/minha-assinatura?sucesso=true')
         self.assertEqual(argumentos['cancel_url'], 'https://app.parabook.test/planos?cancelado=true')
         self.assertEqual(argumentos['metadata']['plano_id'], str(plano.pk))
-<<<<<<< HEAD
-=======
 
 
 @override_settings(PAYMENTS_ENABLED=False)
@@ -135,4 +125,3 @@ class PagamentosDesabilitadosTests(TestCase):
         self.assertEqual(resposta.status_code, 503)
         self.assertEqual(resposta.data['code'], 'feature_indisponivel')
         criar_portal.assert_not_called()
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9

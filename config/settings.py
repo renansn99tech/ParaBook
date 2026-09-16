@@ -12,10 +12,7 @@ from urllib.parse import urlsplit
 import dj_database_url
 from decouple import config
 from django.core.exceptions import ImproperlyConfigured
-<<<<<<< HEAD
 from django import VERSION as DJANGO_VERSION
-=======
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -63,30 +60,15 @@ ALLOWED_HOSTS = env_list(
 )
 
 if not DEBUG:
-<<<<<<< HEAD
-=======
-    for platform_host in (
-        os.environ.get('RENDER_EXTERNAL_HOSTNAME'),
-        os.environ.get('VERCEL_URL'),
-    ):
-        if platform_host and platform_host not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(platform_host)
-
-    if not ALLOWED_HOSTS:
-        raise ImproperlyConfigured('ALLOWED_HOSTS é obrigatória quando DEBUG=False.')
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     if '*' in ALLOWED_HOSTS:
         raise ImproperlyConfigured(
             'ALLOWED_HOSTS deve ser definido explicitamente em produção.'
         )
-<<<<<<< HEAD
     ALLOWED_HOSTS += [
         ".onrender.com",
         "parabook-nl8o.onrender.com",
         ".railway.app",
     ]
-=======
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 # Configuração de origens confiáveis para CSRF
 
@@ -95,20 +77,10 @@ if not DEBUG:
 # cobre "http://localhost:5173". Espelha o CORS_ALLOWED_ORIGINS abaixo —
 # os dois estavam dessincronizados e era o que barrava POST do frontend
 # de dev com 403 CSRF.
-<<<<<<< HEAD
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
     default="http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1",
 ).split(",")
-=======
-CSRF_TRUSTED_ORIGINS = env_list(
-    'CSRF_TRUSTED_ORIGINS',
-    default=(
-        "http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1"
-        if DEBUG else ''
-    ),
-)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -206,7 +178,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Configuração CORS
 
-<<<<<<< HEAD
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
     default=(
@@ -218,16 +189,6 @@ CORS_ALLOWED_ORIGINS = config(
 # Libera automaticamente qualquer subdomínio das plataformas de deploy
 # (ex: o futuro Static Site do parabook-web no Render), sem precisar
 # hardcodar a URL exata a cada novo serviço criado.
-=======
-CORS_ALLOWED_ORIGINS = env_list(
-    'CORS_ALLOWED_ORIGINS',
-    default=(
-        "http://localhost:5173,http://127.0.0.1:5173,"
-        "http://localhost:8081,http://127.0.0.1:8081"
-        if DEBUG else ''
-    ),
-)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 if not DEBUG:
     frontend_parts = urlsplit(FRONTEND_URL)
@@ -291,32 +252,6 @@ if MIGRATION_DATABASE_URL:
 DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = config(
     'DATABASE_DISABLE_SERVER_SIDE_CURSORS', default=SERVERLESS, cast=bool
 )
-
-# DATABASES = {
-
-# "default":  {
-
-# "ENGINE": "django.db.backends.mysql",
-
-# "NAME": "mydb",
-
-# "USER": "root",
-
-# "PASSWORD": "admin",
-
-# "HOST": "127.0.0.1",
-
-# "PORT": "3306",
-
-# "OPTIONS": {
-
-# "charset": "utf8mb4",
-
-# } ,
-
-# }
-
-# }
 
 # Password validation
 
@@ -389,16 +324,6 @@ STORAGES = {
         # Em desenvolvimento os arquivos vêm diretamente dos finders. Em
         # produção, ou quando o CI pede explicitamente, collectstatic gera o
         # manifest comprimido do WhiteNoise.
-<<<<<<< HEAD
-        "BACKEND": (
-            "whitenoise.storage.CompressedManifestStaticFilesStorage"
-            if STATICFILES_USE_MANIFEST
-            else "django.contrib.staticfiles.storage.StaticFilesStorage"
-        )
-    },
-    "default": {
-=======
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         "BACKEND": (
             "whitenoise.storage.CompressedManifestStaticFilesStorage"
             if STATICFILES_USE_MANIFEST
@@ -449,22 +374,13 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = config(
 # A versão é parte da evidência de aceite. Alterá-la força novo aceite nos
 # clientes web e legado; não reutilize uma versão para textos materialmente
 # diferentes.
-<<<<<<< HEAD
-TERMS_VERSION = config('TERMS_VERSION', default='2026-08-13')
-=======
 TERMS_VERSION = config('TERMS_VERSION', default='2026-09-09')
 LEGAL_DOCUMENTS_REVIEWED = config('LEGAL_DOCUMENTS_REVIEWED', default=False, cast=bool)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 # Identificação pública do agente de tratamento. Os valores definitivos devem
 # ser preenchidos no Render após definição da entidade responsável; não
 # presumimos que SENAC, integrantes da equipe ou fornecedores sejam o
 # controlador sem instrumento formal.
-<<<<<<< HEAD
-LEGAL_CONTROLLER_NAME = config(
-    'LEGAL_CONTROLLER_NAME', default='ParaBook — projeto em validação'
-)
-=======
 LEGAL_CONTROLLER_PLACEHOLDER = 'ParaBook — projeto em validação'
 LEGAL_CONTROLLER_NAME = config(
     'LEGAL_CONTROLLER_NAME', default=LEGAL_CONTROLLER_PLACEHOLDER
@@ -474,7 +390,6 @@ if LEGAL_CONTROLLER_TYPE not in {'pessoa_fisica', 'pessoa_juridica'}:
     raise ImproperlyConfigured(
         'LEGAL_CONTROLLER_TYPE deve ser pessoa_fisica ou pessoa_juridica.'
     )
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 LEGAL_CONTROLLER_DOCUMENT = config('LEGAL_CONTROLLER_DOCUMENT', default='')
 LEGAL_CONTROLLER_ADDRESS = config('LEGAL_CONTROLLER_ADDRESS', default='')
 LEGAL_PRIVACY_CONTACT = config('LEGAL_PRIVACY_CONTACT', default='')
@@ -560,29 +475,6 @@ if (
         'Cookies com SameSite=None devem usar Secure=True.'
     )
 
-<<<<<<< HEAD
-=======
-if not DEBUG and SHARED_SITE_ENFORCED:
-    from config.deployment_boundary import validar_fronteira_compartilhada
-
-    try:
-        validar_fronteira_compartilhada(
-            site_domain=PUBLIC_SITE_DOMAIN,
-            frontend_url=FRONTEND_URL,
-            backend_url=BACKEND_URL,
-            allowed_hosts=ALLOWED_HOSTS,
-            cors_origins=CORS_ALLOWED_ORIGINS,
-            csrf_origins=CSRF_TRUSTED_ORIGINS,
-            cookie_samesites=[
-                JWT_COOKIE_SAMESITE,
-                CSRF_COOKIE_SAMESITE,
-                SESSION_COOKIE_SAMESITE,
-            ],
-        )
-    except ValueError as exc:
-        raise ImproperlyConfigured(str(exc)) from exc
-
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 SPECTACULAR_SETTINGS = {
     'TITLE': 'ParaBook API',
     'DESCRIPTION': 'Documentação oficial das APIs do ParaBook (Fase 2)',
@@ -598,22 +490,9 @@ SPECTACULAR_SETTINGS = {
 
 # Configuração da Stripe com tratativa para variáveis ausentes
 
-<<<<<<< HEAD
 STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
-=======
-PAYMENTS_ENABLED = config('PAYMENTS_ENABLED', default=False, cast=bool)
-STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='') if PAYMENTS_ENABLED else ''
-STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='') if PAYMENTS_ENABLED else ''
-STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='') if PAYMENTS_ENABLED else ''
-
-if PAYMENTS_ENABLED and not all([STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET]):
-    raise ImproperlyConfigured(
-        'STRIPE_SECRET_KEY e STRIPE_WEBHOOK_SECRET são obrigatórias quando '
-        'PAYMENTS_ENABLED=True.'
-    )
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 LOG_LEVEL = config('LOG_LEVEL', default='INFO')
 LOGGING = {

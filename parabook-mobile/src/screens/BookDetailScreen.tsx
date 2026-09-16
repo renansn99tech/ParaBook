@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Image,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,12 +9,15 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { Book, BookReview, bookService, getStatusLabel, LibraryStatus } from '../services/bookService';
 import { extractApiErrorMessage } from '../services/authService';
+import { ApiErrorPresentation, describeApiError } from '../services/apiError';
+import { BookCover } from '../components/BookCover';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookDetail'>;
 
@@ -34,8 +35,10 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
   const [selectedStatus, setSelectedStatus] = useState<LibraryStatus | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [favorite, setFavorite] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [error, setError] = useState<ApiErrorPresentation | null>(null);
   const [reviews, setReviews] = useState<BookReview[]>([]);
+  const [reviewsError, setReviewsError] = useState<ApiErrorPresentation | null>(null);
+  const [libraryError, setLibraryError] = useState<ApiErrorPresentation | null>(null);
   const [myRating, setMyRating] = useState(0);
   const [myReview, setMyReview] = useState('');
   const [savingReview, setSavingReview] = useState(false);
@@ -44,27 +47,46 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
   const fetchBookDetails = useCallback(async () => {
     if (!bookId) {
       setBook(null);
-      setErrorMessage('Livro nao identificado.');
+      setError({
+        kind: 'error',
+        title: 'Livro não identificado',
+        message: 'Volte ao catálogo e selecione o livro novamente.',
+        icon: 'alert-circle-outline',
+      });
       setLoading(false);
       return;
     }
 
     try {
-      setErrorMessage(null);
-      const [bookData, shelfItem, reviewData] = await Promise.all([
-        bookService.getBookById(bookId),
-        bookService.getShelfItemByBook(bookId).catch(() => null),
-        bookService.getBookReviews(bookId).catch(() => []),
-      ]);
+      setError(null);
+      setReviewsError(null);
+      setLibraryError(null);
+      const bookData = await bookService.getBookById(bookId);
       setBook(bookData);
-      setSelectedStatus(shelfItem?.status || null);
-      setFavorite(Boolean(shelfItem?.favorite));
-      setMyRating(shelfItem?.rating || 0);
-      setMyReview(shelfItem?.review || '');
-      setReviews(reviewData);
+
+      const [shelfResult, reviewResult] = await Promise.allSettled([
+        bookService.getShelfItemByBook(bookId),
+        bookService.getBookReviews(bookId),
+      ]);
+      if (shelfResult.status === 'fulfilled') {
+        const shelfItem = shelfResult.value;
+        setSelectedStatus(shelfItem?.status || null);
+        setFavorite(Boolean(shelfItem?.favorite));
+        setMyRating(shelfItem?.rating || 0);
+        setMyReview(shelfItem?.review || '');
+      } else {
+        setLibraryError(describeApiError(shelfResult.reason));
+      }
+
+      if (reviewResult.status === 'fulfilled') {
+        setReviews(reviewResult.value);
+      } else {
+        setReviews([]);
+        setReviewsError(describeApiError(reviewResult.reason));
+      }
     } catch (error) {
       setBook(null);
-      setErrorMessage('Nao foi possivel carregar os detalhes deste livro.');
+      setError(describeApiError(error));
     } finally {
       setLoading(false);
     }
@@ -183,8 +205,9 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
   if (!book) {
     return (
       <SafeAreaView style={[styles.container, styles.centerContent]}>
-        <Ionicons name="alert-circle-outline" size={46} color={colors.textMuted} />
-        <Text style={styles.errorText}>{errorMessage || 'Livro nao encontrado.'}</Text>
+        <Ionicons name={error?.icon || 'alert-circle-outline'} size={46} color={colors.textMuted} />
+        <Text style={styles.errorTitle}>{error?.title || 'Livro não encontrado'}</Text>
+        <Text style={styles.errorText}>{error?.message || 'Volte ao catálogo e tente novamente.'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={() => void fetchBookDetails()}>
           <Text style={styles.retryButtonText}>Tentar novamente</Text>
         </TouchableOpacity>
@@ -220,13 +243,7 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.coverContainer}>
-          {book.cover_url ? (
-            <Image source={{ uri: book.cover_url }} style={styles.coverImage} resizeMode="cover" />
-          ) : (
-            <View style={styles.coverPlaceholder}>
-              <Ionicons name="book" size={60} color={colors.primary} />
-            </View>
-          )}
+          <BookCover uri={book.cover_url} width={128} height={184} title={book.title} />
         </View>
 
         <View style={styles.infoContainer}>
@@ -257,6 +274,7 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Status de Leitura</Text>
+          {libraryError ? <Text style={styles.inlineError}>{libraryError.message}</Text> : null}
           <View style={styles.statusButtonsContainer}>
             {STATUS_OPTIONS.map((option) => {
               const active = selectedStatus === option.status;
@@ -304,7 +322,7 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Resenhas dos leitores</Text>
-          {reviews.length === 0 ? <Text style={styles.description}>Este livro ainda nao recebeu resenhas.</Text> : reviews.map((review) => <View key={review.id} style={styles.reviewCard}><View style={styles.reviewHeader}><Text style={styles.reviewAuthor}>@{review.username}</Text><Text style={styles.reviewRating}>{review.rating ? `${review.rating}/5` : 'Sem nota'}</Text></View><Text style={styles.reviewBody}>{review.review || 'Avaliacao sem texto.'}</Text></View>)}
+          {reviewsError ? <Text style={styles.inlineError}>{reviewsError.message}</Text> : reviews.length === 0 ? <Text style={styles.description}>Este livro ainda nao recebeu resenhas.</Text> : reviews.map((review) => <View key={review.id} style={styles.reviewCard}><View style={styles.reviewHeader}><Text style={styles.reviewAuthor}>@{review.username}</Text><Text style={styles.reviewRating}>{review.rating ? `${review.rating}/5` : 'Sem nota'}</Text></View><Text style={styles.reviewBody}>{review.review || 'Avaliacao sem texto.'}</Text></View>)}
         </View>
 
       </ScrollView>
@@ -352,22 +370,6 @@ const styles = StyleSheet.create({
   coverContainer: {
     alignItems: 'center',
     marginVertical: 20,
-  },
-  coverPlaceholder: {
-    width: 128,
-    height: 184,
-    backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  coverImage: {
-    width: 128,
-    height: 184,
-    borderRadius: 12,
-    backgroundColor: colors.cardBackground,
   },
   infoContainer: {
     alignItems: 'center',
@@ -492,6 +494,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     paddingHorizontal: 24,
+  },
+  errorTitle: {
+    color: colors.textPrimary,
+    fontSize: 18,
+    fontWeight: '700',
+    marginTop: 14,
+    textAlign: 'center',
+  },
+  inlineError: {
+    color: colors.error,
+    fontSize: 13,
+    lineHeight: 19,
+    marginBottom: 12,
   },
   retryButton: {
     marginTop: 18,

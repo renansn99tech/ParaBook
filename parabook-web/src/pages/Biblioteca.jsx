@@ -75,115 +75,6 @@ function CapaLivro({ livro, compacta = false }) {
   if (livro.capa_url) return <img src={livro.capa_url} alt={`Capa de ${livro.titulo}, de ${livro.autor || 'autoria não informada'}`} className={`bib-capa-imagem ${compacta ? 'is-compacta' : ''}`} loading="lazy" decoding="async" width="300" height="450" />;
   return <div className="capa-placeholder" role="img" aria-label={`Sem capa digitalizada: ${livro.titulo}, de ${livro.autor || 'autoria não informada'}`}><span>{livro.categoria_nome || 'Acervo ParaBook'}</span><strong>{livro.titulo}</strong></div>;
 }
-<<<<<<< HEAD
-
-function SeloOrigem({ livro }) {
-  if (livro.selo_independente || livro.origem === 'autor_independente') return <span className="bib-selo bib-selo--independente"><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i>Independente</span>;
-  if (livro.origem === 'licenciado') return <span className="bib-selo bib-selo--licenciado"><i className="fa-solid fa-certificate" aria-hidden="true"></i>Licenciado</span>;
-  return null;
-}
-
-function EstadoAcesso({ livro }) {
-  if (livro.modelo_acesso === 'assinante') return <span className="bib-selo bib-selo--plano">Incluído no plano</span>;
-  if (livro.modelo_acesso === 'amostra') return <span className="bib-selo bib-selo--amostra">Amostra</span>;
-  return null;
-}
-
-function AcaoLivro({ livro, admin }) {
-  if (admin) return <Link className="bib-acao bib-acao--curadoria" to="/dashboard?aba=livros"><i className="fa-solid fa-shield-halved" aria-hidden="true"></i>Curadoria</Link>;
-  if (livro.status && livro.status !== 'publicado') return <span className="bib-acao bib-acao--inerte" title="Esta obra ainda não está publicada.">Situação: {livro.status}</span>;
-  const acao = resolverAcaoLivro(livro);
-  const secundariaAmostra = acao.rotulo === 'Ler obra' && livro.acesso?.pode_ler_amostra;
-  return <div className="bib-acoes-leitura">{acao.tipo === 'link' ? <Link className={`bib-acao bib-acao--${acao.tom}`} to={acao.destino}>{acao.rotulo}</Link> : <span className="bib-acao bib-acao--inerte" title={acao.titulo}>{acao.rotulo}</span>}{secundariaAmostra && <Link className="bib-acao-secundaria" to={`/leitura/${livro.id}?amostra=1`}>Ler amostra</Link>}</div>;
-}
-
-function CardLivro({ livro, admin, onDetalhes }) {
-  const vigencia = formatarVigencia(livro.disponivel_ate);
-  const inerte = resolverAcaoLivro(livro).tipo === 'inerte' || (livro.status && livro.status !== 'publicado');
-  const avaliacao = Number(livro.avaliacao);
-  return <article className={`bib-card ${inerte ? 'is-inerte' : ''}`} data-revelar><div className="bib-card-capa"><CapaLivro livro={livro} /><div className="bib-card-selos" aria-label="Origem e modelo de acesso da obra"><SeloOrigem livro={livro} /><EstadoAcesso livro={livro} /></div></div><div className="bib-card-corpo"><div className="bib-card-titulo"><span>{livro.categoria_nome || 'Geral'}</span><h3 title={livro.titulo}>{livro.titulo}</h3><p>Por {livro.autor || 'Autoria não informada'}</p></div><div className="bib-card-metadados">{Number.isFinite(avaliacao) && avaliacao > 0 && <span><i className="fa-solid fa-star" aria-hidden="true"></i>{avaliacao.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>}{livro.territorio_cultural && <span><i className="fa-solid fa-location-dot" aria-hidden="true"></i>{livro.territorio_cultural}</span>}{vigencia && <span className={`bib-vigencia bib-vigencia--${vigencia.tom}`}><i className={`fa-solid ${vigencia.icone}`} aria-hidden="true"></i>{vigencia.rotulo}</span>}</div>{livro.modelo_acesso === 'amostra' && <p className="bib-nota-amostra">A amostra não conta leitura, XP nem entra na estante.</p>}<div className="bib-card-rodape"><AcaoLivro livro={livro} admin={admin} /><button type="button" className="bib-detalhes" onClick={(evento) => onDetalhes(livro, evento.currentTarget)} aria-label={`Ver detalhes de ${livro.titulo}`}><i className="fa-solid fa-info" aria-hidden="true"></i></button></div></div></article>;
-}
-
-function Dialogo({ aberto, onClose, acionadorRef, tituloId, classe = '', children }) {
-  const dialogoRef = useRef(null);
-  useEffect(() => {
-    if (!aberto) return undefined;
-    const acionador = acionadorRef?.current;
-    const estilosAnteriores = {
-      overflow: document.body.style.overflow,
-      position: document.body.style.position,
-      top: document.body.style.top,
-      width: document.body.style.width,
-    };
-    const scrollY = window.scrollY;
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    window.requestAnimationFrame(() => dialogoRef.current?.querySelector('button, a, [tabindex="0"]')?.focus());
-    return () => {
-      Object.assign(document.body.style, estilosAnteriores);
-      window.scrollTo(0, scrollY);
-      acionador?.focus();
-    };
-  }, [aberto, acionadorRef]);
-  if (!aberto) return null;
-  const controlarTeclado = (evento) => {
-    if (evento.key === 'Escape') { evento.preventDefault(); onClose(); return; }
-    if (evento.key !== 'Tab') return;
-    const focaveis = [...dialogoRef.current.querySelectorAll('button:not([disabled]), a[href], [tabindex="0"]')];
-    if (!focaveis.length) return;
-    const primeiro = focaveis[0];
-    const ultimo = focaveis.at(-1);
-    if (evento.shiftKey && document.activeElement === primeiro) { evento.preventDefault(); ultimo.focus(); }
-    if (!evento.shiftKey && document.activeElement === ultimo) { evento.preventDefault(); primeiro.focus(); }
-  };
-  return <div className="bib-dialogo-fundo" onPointerDown={(evento) => evento.target === evento.currentTarget && onClose()}><section ref={dialogoRef} className={`bib-dialogo ${classe}`} role="dialog" aria-modal="true" aria-labelledby={tituloId} onKeyDown={controlarTeclado}>{children}</section></div>;
-}
-
-function DrawerLivro({ livro, onClose, acionadorRef, beta }) {
-  const direito = livro ? beta?.direitos?.[livro.id] : null;
-  const metricas = livro ? beta?.metricas?.[livro.id] : null;
-  return <Dialogo aberto={Boolean(livro)} onClose={onClose} acionadorRef={acionadorRef} tituloId="bib-drawer-titulo" classe="bib-drawer">{livro && <><header className="bib-dialogo-header"><div><span>Ficha da obra</span><h2 id="bib-drawer-titulo">{livro.titulo}</h2></div><button type="button" onClick={onClose} aria-label="Fechar detalhes"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button></header><div className="bib-drawer-resumo"><div className="bib-drawer-capa"><CapaLivro livro={livro} compacta /></div><div><p>Por {livro.autor || 'Autoria não informada'}</p><p>{livro.categoria_nome || 'Geral'}</p>{livro.ano_publicacao && <p>{livro.ano_publicacao}{livro.paginas ? ` · ${livro.paginas} páginas` : ''}</p>}<Link to={`/livro/${livro.id}`}>Abrir ficha completa <i className="fa-solid fa-arrow-right" aria-hidden="true"></i></Link></div></div><dl className="bib-drawer-dados"><div><dt>Origem editorial</dt><dd>{livro.origem_label || classificarOrigem(livro).replaceAll('_', ' ')}</dd></div><div><dt>Modelo de acesso</dt><dd>{livro.modelo_acesso_label || livro.modelo_acesso}</dd></div>{livro.edicao && <div><dt>Edição</dt><dd>{livro.edicao}</dd></div>}{livro.isbn && <div><dt>ISBN</dt><dd>{livro.isbn}</dd></div>}</dl>{direito && ehDemonstrativo(direito) && <section className="bib-beta-detalhe"><span>Dados demonstrativos · Parceiro fictício</span><h3>Transparência de direitos</h3><dl><div><dt>Titular</dt><dd>{direito.titular}</dd></div><div><dt>Território</dt><dd>{direito.territorio}</dd></div><div><dt>Período</dt><dd>até {direito.disponivel_ate}</dd></div><div><dt>Exclusividade</dt><dd>{direito.exclusividade}</dd></div><div><dt>Formas de acesso</dt><dd>{direito.formas_acesso}</dd></div></dl></section>}{metricas && ehDemonstrativo(metricas) && <section className="bib-beta-detalhe"><span>Métricas demonstrativas</span><h3>Sinais de descoberta</h3><ul><li>{metricas.leitores_mes} leitores neste mês</li><li>{metricas.conclusao_amostra}% concluíram a amostra</li><li>{metricas.apoios} apoios demonstrativos</li></ul></section>}</>}</Dialogo>;
-}
-
-function BuscaCatalogo({ busca, onChange }) {
-  return <div className="bib-busca"><label htmlFor="bib-busca-catalogo">Buscar no acervo</label><div><i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="bib-busca-catalogo" type="search" value={busca} onChange={(evento) => onChange(evento.target.value)} placeholder="Busque por título, autor ou território cultural" />{busca && <button type="button" onClick={() => onChange('')} aria-label="Limpar busca"><i className="fa-solid fa-xmark" aria-hidden="true"></i></button>}</div></div>;
-}
-
-function GrupoFiltro({ titulo, eixo, opcoes, filtros, contagem, onChange }) {
-  return <div className="bib-filtro-grupo" role="group" aria-label={titulo}><strong>{titulo}</strong><div className="bib-chips">{opcoes.map(([valor, rotulo]) => <button key={valor} type="button" aria-pressed={filtros[eixo] === valor} onClick={() => onChange(eixo, valor)}>{rotulo}<small>{contagem(eixo, valor)}</small></button>)}</div></div>;
-}
-
-function FiltrosCatalogo({ aberto, onAlternar, filtros, categorias, contagem, onChange, onLimpar, temRecorte }) {
-  const categoriasOpcoes = [['todas', 'Todas'], ...categorias.map((categoria) => [String(categoria.id), categoria.nome])];
-  const ativos = [
-    filtros.origem !== 'todas' && { eixo: 'origem', rotulo: OPCOES_ORIGEM.find(([valor]) => valor === filtros.origem)?.[1], padrao: 'todas' },
-    filtros.acesso !== 'todos' && { eixo: 'acesso', rotulo: OPCOES_ACESSO.find(([valor]) => valor === filtros.acesso)?.[1], padrao: 'todos' },
-    filtros.categoria !== 'todas' && { eixo: 'categoria', rotulo: categoriasOpcoes.find(([valor]) => valor === filtros.categoria)?.[1], padrao: 'todas' },
-  ].filter(Boolean);
-  return <section className="bib-filtros" aria-label="Filtros do catálogo"><div className="bib-filtros-topo"><button type="button" className="bib-filtros-toggle" aria-expanded={aberto} aria-controls="bib-filtros" onClick={onAlternar}><i className="fa-solid fa-sliders" aria-hidden="true"></i>Filtrar acervo{ativos.length > 0 && <span className="bib-filtros-contador" aria-label={`${ativos.length} filtros ativos`}>{ativos.length}</span>}<i className={`fa-solid ${aberto ? 'fa-chevron-up' : 'fa-chevron-down'}`} aria-hidden="true"></i></button>{temRecorte && <button type="button" className="bib-limpar-filtros" onClick={onLimpar}>Limpar tudo</button>}</div>{ativos.length > 0 && <div className="bib-filtros-ativos" aria-label="Filtros ativos">{ativos.map((filtro) => <button key={filtro.eixo} type="button" onClick={() => onChange(filtro.eixo, filtro.padrao)} aria-label={`Remover filtro ${filtro.rotulo}`}>{filtro.rotulo}<i className="fa-solid fa-xmark" aria-hidden="true"></i></button>)}</div>}<div id="bib-filtros" className={aberto ? 'is-open' : ''} hidden={!aberto}><GrupoFiltro titulo="Origem editorial" eixo="origem" opcoes={OPCOES_ORIGEM} filtros={filtros} contagem={contagem} onChange={onChange} /><GrupoFiltro titulo="Modelo de acesso" eixo="acesso" opcoes={OPCOES_ACESSO} filtros={filtros} contagem={contagem} onChange={onChange} /><GrupoFiltro titulo="Categoria literária" eixo="categoria" opcoes={categoriasOpcoes} filtros={filtros} contagem={contagem} onChange={onChange} /></div></section>;
-}
-
-function BibliotecaHero({ user, admin, busca, onBusca, betaAtivo }) {
-  return <header className="bib-hero" data-revelar><div className="bib-hero-conteudo"><div className="bib-eyebrow"><span>{admin ? 'Curadoria do acervo' : 'Explorar livros'}</span>{betaAtivo && <span className="bib-beta-pill"><i className="fa-solid fa-flask" aria-hidden="true"></i>Acervo Avançado · Beta</span>}</div><h1>Encontre sua próxima história</h1><p>Descubra autores independentes, vozes locais e regionais, obras licenciadas e clássicos em domínio público.</p><BuscaCatalogo busca={busca} onChange={onBusca} /></div><div className="bib-hero-acao"><span><i className="fa-solid fa-book-open-reader" aria-hidden="true"></i></span>{admin ? <Link to="/dashboard?aba=livros">Abrir curadoria</Link> : user ? <Link to="/minha-biblioteca">Minha Estante</Link> : <Link to="/register">Entrar para começar</Link>}</div></header>;
-}
-
-function SecaoCatalogo({ titulo, subtitulo, livros, admin, onDetalhes }) {
-  return <section className="bib-secao" data-revelar><header><div><span>{subtitulo}</span><h2>{titulo}</h2></div><small>{livros.length} {livros.length === 1 ? 'obra' : 'obras'}</small></header><div className="bib-grade" data-revelar-cascata>{livros.map((livro) => <CardLivro key={livro.id} livro={livro} admin={admin} onDetalhes={onDetalhes} />)}</div></section>;
-}
-
-function CarregamentoPagina() {
-  return <main className="pagina-biblioteca" role="status" aria-live="polite"><span className="sr-only">Carregando o acervo da Biblioteca</span><div className="bib-skeleton-hero"><Skeleton variant="title" width="48%" /><Skeleton variant="text" width="70%" /><Skeleton variant="text" width="100%" height="52px" /></div><div className="bib-grade">{Array.from({ length: TOTAL_SKELETONS }).map((_, indice) => <article className="bib-card bib-card--skeleton" key={indice}><div className="bib-card-capa"><Skeleton variant="thumb" width="100%" height="100%" /></div><div className="bib-card-corpo"><Skeleton variant="title" /><Skeleton variant="text" width="60%" /><Skeleton variant="text" height="44px" /></div></article>)}</div></main>;
-}
-
-function EstadoCatalogo({ tipo, onTentar, onLimpar, user }) {
-  const erro = tipo === 'erro';
-  const semResultado = tipo === 'sem-resultado';
-  return <section className={`bib-estado bib-estado--${tipo}`} role={erro ? 'alert' : 'status'}><i className={`fa-solid ${erro ? 'fa-cloud-arrow-down' : semResultado ? 'fa-magnifying-glass' : 'fa-book-open'}`} aria-hidden="true"></i><h2>{erro ? 'Não foi possível carregar o acervo' : semResultado ? 'Nenhuma obra neste recorte' : 'O acervo está sendo preparado'}</h2><p>{erro ? 'A conexão com o catálogo falhou. Tente novamente em instantes.' : semResultado ? 'Ajuste a busca ou remova os filtros para encontrar outros títulos.' : 'Novos títulos aparecerão aqui assim que forem publicados.'}</p>{erro && <button type="button" onClick={onTentar}>Tentar novamente</button>}{semResultado && <button type="button" onClick={onLimpar}>Limpar filtros</button>}{tipo === 'vazio' && (user ? <Link to="/publicar">Publicar uma obra</Link> : <Link to="/comunidades">Explorar comunidades</Link>)}</section>;
-}
-
-=======
 
 function SeloOrigem({ livro }) {
   if (livro.selo_independente || livro.origem === 'autor_independente') return <span className="bib-selo bib-selo--independente"><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i>Independente</span>;
@@ -294,7 +185,6 @@ function EstadoCatalogo({ tipo, onTentar, onLimpar, user }) {
   return <section className={`bib-estado bib-estado--${tipo}`} role={erro ? 'alert' : 'status'}><i className={`fa-solid ${erro ? 'fa-cloud-arrow-down' : semResultado ? 'fa-magnifying-glass' : 'fa-book-open'}`} aria-hidden="true"></i><h2>{erro ? 'Não foi possível carregar o acervo' : semResultado ? 'Nenhuma obra neste recorte' : 'O acervo está sendo preparado'}</h2><p>{erro ? 'A conexão com o catálogo falhou. Tente novamente em instantes.' : semResultado ? 'Ajuste a busca ou remova os filtros para encontrar outros títulos.' : 'Novos títulos aparecerão aqui assim que forem publicados.'}</p>{erro && <button type="button" onClick={onTentar}>Tentar novamente</button>}{semResultado && <button type="button" onClick={onLimpar}>Limpar filtros</button>}{tipo === 'vazio' && (user ? <Link to="/publicar">Publicar uma obra</Link> : <Link to="/comunidades">Explorar comunidades</Link>)}</section>;
 }
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 function ModalBeta({ configuracao, onClose, onConfirmar, acionadorRef }) {
   if (!configuracao) return null;
   const compra = configuracao.tipo === 'compra';
@@ -332,11 +222,7 @@ function AcervoAvancadoBeta({ livros, onSelecionarColecao, onAbrirDetalhes, onDa
 }
 
 function BibliotecaBase({ children, user, admin, busca, setBusca, filtros, setFiltros, filtrosAbertos, setFiltrosAbertos, categorias, contagem, temRecorte, total, livrosFiltrados, secoes, onLimpar, onDetalhes, betaAtivo }) {
-<<<<<<< HEAD
-  return <><BibliotecaHero user={user} admin={admin} busca={busca} onBusca={setBusca} betaAtivo={betaAtivo} />{admin && <aside className="bib-faixa-curadoria" role="note"><i className="fa-solid fa-shield-halved" aria-hidden="true"></i><div><strong>Visão de curadoria</strong><span>Você também vê fichas não publicadas e licenças encerradas. Nenhuma obra entra na estante por esta tela.</span></div><Link to="/dashboard?aba=livros">Gerenciar acervo</Link></aside>}<FiltrosCatalogo aberto={filtrosAbertos} onAlternar={() => setFiltrosAbertos((valor) => !valor)} filtros={filtros} categorias={categorias} contagem={contagem} onChange={(eixo, valor) => setFiltros((atuais) => ({ ...atuais, [eixo]: valor }))} onLimpar={onLimpar} temRecorte={temRecorte} /><div className="bib-resumo" aria-live="polite"><span><strong>{total}</strong> {total === 1 ? 'obra encontrada' : 'obras encontradas'}</span>{temRecorte && <small>Resultado do recorte atual</small>}</div>{children}{livrosFiltrados.length === 0 ? <EstadoCatalogo tipo="sem-resultado" onLimpar={onLimpar} /> : secoes.map((secao) => <SecaoCatalogo key={secao.id} titulo={secao.titulo} subtitulo={secao.subtitulo} livros={secao.livros} admin={admin} onDetalhes={onDetalhes} />)}</>;
-=======
   return <><BibliotecaHero user={user} admin={admin} busca={busca} onBusca={setBusca} betaAtivo={betaAtivo} />{admin && <aside className="bib-faixa-curadoria" role="note"><i className="fa-solid fa-shield-halved" aria-hidden="true"></i><div><strong>Visão de curadoria</strong><span>Você também vê fichas não publicadas e licenças encerradas. Nenhuma obra entra na estante por esta tela.</span></div><Link to="/dashboard?aba=livros">Gerenciar acervo</Link></aside>}<FiltrosCatalogo aberto={filtrosAbertos} onAlternar={() => setFiltrosAbertos((valor) => !valor)} filtros={filtros} categorias={categorias} contagem={contagem} onChange={(eixo, valor) => setFiltros((atuais) => ({ ...atuais, [eixo]: valor }))} onLimpar={onLimpar} temRecorte={temRecorte} /><div className="bib-resumo" aria-live="polite"><span><strong>{total}</strong> {total === 1 ? 'obra encontrada' : 'obras encontradas'}</span>{temRecorte && <small>Resultado do recorte atual</small>}</div>{children}{livrosFiltrados.length === 0 ? <EstadoCatalogo tipo="sem-resultado" onLimpar={onLimpar} /> : secoes.map((secao) => <SecaoCatalogo key={secao.id} titulo={secao.titulo} subtitulo={secao.subtitulo} livros={secao.livros} admin={admin} suspensao={user?.suspensao} onDetalhes={onDetalhes} />)}</>;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 }
 
 function Biblioteca() {
@@ -354,11 +240,7 @@ function Biblioteca() {
   const [filtrosAbertos, setFiltrosAbertos] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches);
   const [livroDetalhe, setLivroDetalhe] = useState(null);
   const acionadorDetalheRef = useRef(null);
-<<<<<<< HEAD
-  const admin = user?.tipo === 'admin' && Boolean(user?.is_staff || user?.is_superuser);
-=======
   const admin = ['moderador', 'admin'].includes(user?.tipo) && Boolean(user?.is_staff || user?.is_superuser);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   const paginaRef = useRevelacao([livros, categorias, loading, acervoAvancadoBeta, busca, filtros]);
   const interpretarFlag = useCallback((payload) => payload?.acervo_avancado_beta === true, []);
   useEffect(() => {

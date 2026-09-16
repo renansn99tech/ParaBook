@@ -53,8 +53,6 @@ class Perfil(models.Model):
 
     def __str__(self):
         return self.descricao_perfil or f"Perfil de {self.usuario}"
-<<<<<<< HEAD
-=======
 
 
 class PerfilLegadoMigracao(models.Model):
@@ -87,4 +85,3 @@ class PerfilLegadoMigracao(models.Model):
 
     def __str__(self):
         return f"biblioteca.Perfil#{self.legado_id} → perfis.Perfil#{self.perfil_id}"
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9

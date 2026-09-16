@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-<<<<<<< HEAD
-=======
 import { Link } from 'react-router-dom';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import useRevelacao from '../hooks/useRevelacao';
 import api from '../services/api';
 import '../assets/css/diretrizes.css';
@@ -27,11 +24,7 @@ function Diretrizes() {
           Governança, privacidade e regras comunitárias da plataforma ParaBook. Conheça seus direitos e deveres antes de criar sua conta.
         </p>
         <small className="guidelines-updated">
-<<<<<<< HEAD
-          Versão vigente: {governanca?.versao_termos || '2026-08-13'}
-=======
           Versão vigente: {governanca?.versao_termos || '2026-09-09'}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         </small>
       </div>
 
@@ -59,11 +52,7 @@ function Diretrizes() {
             <p>O titular pode solicitar confirmação, acesso, correção, portabilidade quando aplicável, informação, oposição, revogação de consentimento e eliminação nos limites da LGPD. A exclusão da conta remove os dados ativos vinculados, ressalvadas retenções legalmente obrigatórias, prevenção a fraude, exercício regular de direitos e ciclos técnicos de backup.</p>
 
             <h4>Controlador e Canal de Privacidade</h4>
-<<<<<<< HEAD
-            <p>A identificação civil completa do controlador, seu endereço e o canal responsável por solicitações LGPD deverão ser publicados antes da abertura do ParaBook em produção. Fornecedores de infraestrutura somente serão classificados como operadores ou agentes independentes após análise do contrato e das decisões efetivamente tomadas por cada parte.</p>
-=======
             <p>A identificação civil completa do controlador, um endereço empresarial ou profissional juridicamente adequado e o canal responsável por solicitações LGPD deverão ser publicados antes da abertura do ParaBook em produção. O endereço pessoal do fundador não será usado enquanto não houver solução adequada. Fornecedores de infraestrutura somente serão classificados como operadores ou agentes independentes após análise do contrato e das decisões efetivamente tomadas por cada parte.</p>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             {governanca?.controlador?.identificacao_completa && (
               <p>
                 <strong>Controlador:</strong> {governanca.controlador.nome}.{' '}
@@ -91,11 +80,7 @@ function Diretrizes() {
             <p>A plataforma permite a catalogação de obras, inserção de resenhas literárias e notas textuais. Você retém a propriedade intelectual e direitos autorais dos textos originais das suas resenhas, mas concede ao ParaBook uma licença não exclusiva, mundial e gratuita para hospedar, exibir e processar esse conteúdo estritamente dentro da plataforma.</p>
             
             <h4>Direitos Autorais e Tratamento de Denúncias</h4>
-<<<<<<< HEAD
-            <p>Ao enviar uma obra, o <strong>Autor Independente declara possuir os direitos ou autorizações necessários</strong>. Denúncias serão protocoladas, avaliadas e poderão gerar restrição cautelar proporcional ao risco. O autor terá oportunidade de apresentar esclarecimentos e recurso, salvo quando uma ordem válida ou risco urgente exigir providência imediata. Dados somente serão entregues a autoridades mediante base legal e solicitação válida.</p>
-=======
             <p>Ao enviar uma obra, o <strong>Autor Independente declara possuir os direitos ou autorizações necessários</strong>. A obra permanece pendente até aprovação administrativa de moderador autorizado no Dashboard; essa aprovação não certifica autoria. Denúncias serão protocoladas, avaliadas e poderão gerar restrição cautelar proporcional ao risco. O autor terá oportunidade de apresentar esclarecimentos e recurso, salvo quando uma ordem válida ou risco urgente exigir providência imediata. Dados somente serão entregues a autoridades mediante base legal e solicitação válida.</p>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           </div>
         </div>
 

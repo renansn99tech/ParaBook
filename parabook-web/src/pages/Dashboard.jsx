@@ -33,11 +33,7 @@ const ACOES_AMIGAVEIS = {
   'moderacao.comunidade.recusar': 'arquivou uma denúncia de comunidade',
 };
 
-<<<<<<< HEAD
-const ABAS_DASHBOARD = ['dashboard', 'livros', 'comunidades', 'usuarios', 'aprovacoes', 'denuncias', 'lixeira'];
-=======
 const ABAS_DASHBOARD = ['dashboard', 'livros', 'comunidades', 'usuarios', 'suporte', 'aprovacoes', 'denuncias', 'lixeira'];
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 function useMovimentoReduzido() {
   const [reduzir, setReduzir] = useState(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -194,10 +190,7 @@ function Dashboard() {
     { id: 'livros', icon: 'fa-book', label: 'Livros' },
     { id: 'comunidades', icon: 'fa-users', label: 'Comunidades' },
     { id: 'usuarios', icon: 'fa-user-group', label: 'Usuários' },
-<<<<<<< HEAD
-=======
     { id: 'suporte', icon: 'fa-headset', label: 'Suporte' },
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     { id: 'aprovacoes', icon: 'fa-clipboard-check', label: 'Aprovações', contador: resumo.pendencias.aprovacoes },
     { id: 'denuncias', icon: 'fa-flag', label: 'Denúncias', warning: true, contador: resumo.pendencias.denuncias },
     { id: 'lixeira', icon: 'fa-trash-can', label: 'Lixeira', danger: true, contador: resumo.pendencias.lixeira },
@@ -294,10 +287,7 @@ function Dashboard() {
         {abaAtiva === 'livros' && <AdminLivros />}
         {abaAtiva === 'comunidades' && <AdminComunidades />}
         {abaAtiva === 'usuarios' && <AdminUsuarios {...propsFila} />}
-<<<<<<< HEAD
-=======
         {abaAtiva === 'suporte' && <AdminSuporte {...propsFila} />}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         {abaAtiva === 'aprovacoes' && <AdminAprovacoes {...propsFila} />}
         {abaAtiva === 'denuncias' && <AdminDenuncias {...propsFila} />}
         {abaAtiva === 'lixeira' && <AdminLixeira {...propsFila} />}

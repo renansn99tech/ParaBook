@@ -45,11 +45,7 @@ const METADADOS_BLOQUEIO = {
 };
 
 function BadgeTipo({ tipo }) {
-<<<<<<< HEAD
-  if (tipo === 'admin') {
-=======
   if (['moderador', 'admin'].includes(tipo)) {
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     return <span className="badge badge-admin"><i className="fa-solid fa-shield-halved" aria-hidden="true"></i> ADM</span>;
   }
   if (tipo === 'autor') {
@@ -236,11 +232,7 @@ function PerfilPublico() {
   const valorPublico = (exibir, valor, vazio = 'Não informado') => exibir === false ? 'Privado' : (valor || vazio);
   const aniversario = pessoais.exibir_data_nascimento === false ? 'Privado' : formatarDataNascimento(pessoais.data_nascimento);
 
-<<<<<<< HEAD
-  const statsCards = tipo === 'admin'
-=======
   const statsCards = ['moderador', 'admin'].includes(tipo)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     ? [
       { icone: 'fa-book-open', valor: estatisticas.total_lidos || 0, rotulo: 'Livros lidos' },
       { icone: 'fa-users', valor: estatisticas.total_comunidades || 0, rotulo: 'Comunidades' },
@@ -263,11 +255,7 @@ function PerfilPublico() {
     ? null
     : tipo === 'autor'
       ? `${obras.length} ${obras.length === 1 ? 'obra publicada' : 'obras publicadas'}`
-<<<<<<< HEAD
-      : tipo === 'admin'
-=======
       : ['moderador', 'admin'].includes(tipo)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         ? 'Conta de staff'
         : `${estatisticas.total_lidos || 0} livros concluídos`;
 
@@ -298,15 +286,9 @@ function PerfilPublico() {
               <div className="perfil-chips">
                 <span className={`perfil-chip ${perfil.localizacao ? '' : 'is-empty'}`}><i className="fa-solid fa-location-dot" aria-hidden="true"></i><small>Local</small><strong>{perfil.localizacao || '—'}</strong></span>
                 {!acessoBasico && tipo === 'autor' && <span className={`perfil-chip ${recomendacao ? '' : 'is-empty'}`}><i className="fa-solid fa-bookmark" aria-hidden="true"></i><small>Obra em destaque</small><strong>{recomendacao?.titulo || '—'}</strong></span>}
-<<<<<<< HEAD
-                {!acessoBasico && tipo === 'admin' && <span className="perfil-chip"><i className="fa-solid fa-key" aria-hidden="true"></i><small>Permissões</small><strong>{dados.usuario.permissoes?.is_superuser ? 'Staff + superuser' : 'Staff'}</strong></span>}
-                {!acessoBasico && tipo === 'leitor' && <span className={`perfil-chip ${dados.ultimo_lido?.titulo ? '' : 'is-empty'}`}><i className="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><small>Último lido</small><strong>{dados.ultimo_lido?.titulo || '—'}</strong></span>}
-                {!acessoBasico && tipo !== 'admin' && <span className={`perfil-chip ${favoritos.livros?.length ? '' : 'is-empty'}`}><i className="fa-solid fa-heart" aria-hidden="true"></i><small>Favoritos</small><strong>{favoritos.livros?.length || 0} livros</strong></span>}
-=======
                 {!acessoBasico && ['moderador', 'admin'].includes(tipo) && <span className="perfil-chip"><i className="fa-solid fa-key" aria-hidden="true"></i><small>Permissões</small><strong>{dados.usuario.permissoes?.is_superuser ? 'Staff + superuser' : 'Staff moderador'}</strong></span>}
                 {!acessoBasico && tipo === 'leitor' && <span className={`perfil-chip ${dados.ultimo_lido?.titulo ? '' : 'is-empty'}`}><i className="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><small>Último lido</small><strong>{dados.ultimo_lido?.titulo || '—'}</strong></span>}
                 {!acessoBasico && !['moderador', 'admin'].includes(tipo) && <span className={`perfil-chip ${favoritos.livros?.length ? '' : 'is-empty'}`}><i className="fa-solid fa-heart" aria-hidden="true"></i><small>Favoritos</small><strong>{favoritos.livros?.length || 0} livros</strong></span>}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
               </div>
             </div>
 
@@ -317,11 +299,7 @@ function PerfilPublico() {
 
           {!acessoBasico && (
             <aside className="perfil-painel perfil-publico-painel" aria-label={`Resumo público de ${primeiroNome}`}>
-<<<<<<< HEAD
-              {tipo === 'admin' ? <>
-=======
               {['moderador', 'admin'].includes(tipo) ? <>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
                 <span className="perfil-painel-kicker">Administração</span>
                 <h2>Conta de staff</h2>
                 <p className="perfil-publico-alerta-admin"><i className="fa-solid fa-shield-halved" aria-hidden="true"></i> Só outros admins abrem esta página.</p>
@@ -396,11 +374,7 @@ function PerfilPublico() {
           </div>
         </section>
 
-<<<<<<< HEAD
-        {tipo === 'admin' && <aside className="perfil-publico-rodape-admin" data-revelar><i className="fa-solid fa-shield-halved" aria-hidden="true"></i><p><strong>Perfil de administração:</strong> leitores e autores que abrirem esta URL recebem 403 — o backend nem monta os dados.</p></aside>}
-=======
         {['moderador', 'admin'].includes(tipo) && <aside className="perfil-publico-rodape-admin" data-revelar><i className="fa-solid fa-shield-halved" aria-hidden="true"></i><p><strong>Perfil da equipe de moderação:</strong> leitores e autores que abrirem esta URL recebem 403 — o backend nem monta os dados.</p></aside>}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
       </>}
     </main>
   );

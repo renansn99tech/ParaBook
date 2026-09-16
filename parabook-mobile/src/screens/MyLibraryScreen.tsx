@@ -148,7 +148,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
               disabled={Boolean(item.book.publicationStatus && item.book.publicationStatus !== 'publicado')}
               onPress={() => onOpenBook(String(item.book.id), item.book.title)}
             >
-              <BookCover uri={item.book.cover_url} width={52} height={76} />
+              <BookCover uri={item.book.cover_url} width={52} height={76} title={item.book.title} />
 
               <View style={styles.bookInfo}>
                 <Text style={styles.bookTitle} numberOfLines={2}>

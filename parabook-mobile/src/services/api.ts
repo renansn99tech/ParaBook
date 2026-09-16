@@ -1,15 +1,35 @@
 import axios from 'axios';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import Constants from 'expo-constants';
 import { authStorage } from './authStorage';
 
-const DEFAULT_API_BASE_URL = 'https://parabook-nl8o.onrender.com/api/v1';
+const PRODUCTION_API_BASE_URL = 'https://parabook-nl8o.onrender.com/api/v1';
+const isDevelopmentRuntime = () => typeof __DEV__ !== 'undefined' && __DEV__;
+
+const getDevelopmentApiUrl = () => {
+  if (!isDevelopmentRuntime()) return null;
+  const hostUri = Constants.expoConfig?.hostUri;
+  if (!hostUri) return null;
+
+  try {
+    const hostname = new URL(`http://${hostUri}`).hostname;
+    return hostname ? `http://${hostname}:8000/api/v1` : null;
+  } catch {
+    return null;
+  }
+};
 
 // Expo SDK 54 suporta EXPO_PUBLIC_* no bundle do app. Mantemos um fallback
-// para o backend real hospedado e deixamos o ambiente sobrescrever quando
-// precisarmos apontar para outro servidor (ex.: IP local na mesma rede).
+// remoto apenas em builds. Durante o desenvolvimento, o host anunciado pelo
+// Expo aponta para o mesmo computador do Django/Vite e também funciona em
+// dispositivo físico na rede local. Uma variável explícita sempre prevalece.
 const configuredApiUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
 
-export const API_BASE_URL = (configuredApiUrl || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
+export const API_BASE_URL = (
+  configuredApiUrl
+  || getDevelopmentApiUrl()
+  || PRODUCTION_API_BASE_URL
+).replace(/\/+$/, '');
 export const DJANGO_BASE_URL = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
 
 let sessionGeneration = 0;
@@ -20,8 +40,6 @@ let tokenRefreshGeneration = -1;
 let tokenRefreshPromise: Promise<boolean> | null = null;
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & { _parabookRetried?: boolean; _readRetried?: boolean; _sessionGeneration?: number };
-
-const isDevelopmentRuntime = () => typeof __DEV__ !== 'undefined' && __DEV__;
 
 const getRequestEndpoint = (baseURL?: string, url?: string) => {
   if (!url) return baseURL || '(endpoint desconhecido)';

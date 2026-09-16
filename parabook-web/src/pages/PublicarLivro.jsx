@@ -32,8 +32,6 @@ function PublicarLivro() {
 
   const [categorias, setCategorias] = useState([]);
   const [enviando, setEnviando] = useState(false);
-<<<<<<< HEAD
-=======
   const [bloqueioAte, setBloqueioAte] = useState(null);
   useEffect(() => {
     if (user?.tipo !== 'autor') return;
@@ -44,7 +42,6 @@ function PublicarLivro() {
     return () => controller.abort();
   }, [user]);
   const bloqueado = bloqueioAte && new Date(bloqueioAte).getTime() > Date.now();
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   const paginaRef = useRevelacao([loading, user]);
 
   useEffect(() => {
@@ -144,11 +141,7 @@ function PublicarLivro() {
   return (
     <div className="publicar-container" ref={paginaRef} style={{ paddingTop: '100px', paddingBottom: '40px' }}>
       <div className="form-box" data-revelar>
-<<<<<<< HEAD
-        <h1>Enviar Nova Obra</h1>
-=======
         <h1>Enviar Nova Obra</h1>{bloqueado && <p role="status">Envio de obras novas disponível a partir de {new Date(bloqueioAte).toLocaleString('pt-BR')}. Você pode editar e acompanhar suas obras existentes.</p>}<Link to="/minhas-publicacoes">Acompanhar minhas publicações</Link>
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <p>Preencha os dados abaixo para enviar seu manuscrito para análise de publicação.</p>
 
         <form onSubmit={handleSubmit} noValidate>

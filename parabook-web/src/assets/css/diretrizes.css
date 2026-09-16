@@ -90,14 +90,10 @@
     color:var(--text-secondary);
 }
 
-<<<<<<< HEAD
-.glass-rule-card h3 { color:var(--text); }
-=======
 .glass-rule-card h2,
 .glass-rule-card h3 { color:var(--text); }
 .glass-rule-card h2 { font-size: 1.2rem; margin: 0 0 8px; }
 .glass-rule-card section + section { margin-top: 26px; }
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 .rule-number { color:var(--purple-text); font-weight:800; }
 
 :root[data-tema="claro"] .guidelines-main {

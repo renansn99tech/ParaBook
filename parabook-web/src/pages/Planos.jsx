@@ -25,8 +25,6 @@ function Planos() {
   }, []);
 
   const contratarPlano = async (plano) => {
-<<<<<<< HEAD
-=======
     if (!plano.contratacao_disponivel) {
       await swal.fire({
         icon: 'info',
@@ -38,7 +36,6 @@ function Planos() {
       return;
     }
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     if (!user) {
       navigate('/login');
       return;
@@ -149,11 +146,6 @@ function Planos() {
                   <div className="mt-auto">
                     <button
                       type="button"
-<<<<<<< HEAD
-                      className={`${preco > 0 ? 'btn-primary shadow-lg' : 'btn-ghost'} w-100`}
-                      onClick={() => contratarPlano(plano)}
-                      disabled={contratando !== null}
-=======
                       className={`${preco > 0 ? 'btn-primary shadow-lg' : 'btn-ghost'} w-100 ${!plano.contratacao_disponivel ? 'feature-indisponivel' : ''}`}
                       onClick={() => contratarPlano(plano)}
                       disabled={contratando !== null}
@@ -161,7 +153,6 @@ function Planos() {
                       data-feature-tooltip={!plano.contratacao_disponivel
                         ? 'Em breve: pagamentos ainda não estão disponíveis.'
                         : undefined}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
                     >
                       {contratando === plano.id
                         ? 'Abrindo checkout...'

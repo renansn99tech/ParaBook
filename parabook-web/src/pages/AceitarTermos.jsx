@@ -10,11 +10,7 @@ function AceitarTermos() {
   const { user, loading, recarregarUsuario } = useContext(AuthContext);
   const navigate = useNavigate();
   const [enviando, setEnviando] = useState(false);
-<<<<<<< HEAD
-  const [versaoTermos, setVersaoTermos] = useState('2026-08-13');
-=======
   const [versaoTermos, setVersaoTermos] = useState('2026-09-09');
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   const paginaRef = useRevelacao([loading, user]);
 
   useEffect(() => {
@@ -66,18 +62,10 @@ function AceitarTermos() {
           <div className="surface-inset mb-4">
             <p className="mb-0">
               Em conformidade com a LGPD, atualizamos nossas políticas de retenção de dados e
-<<<<<<< HEAD
-              segurança de direitos autorais. Por favor, leia a{' '}
-              <Link to="/diretrizes" target="_blank" rel="noreferrer">
-                Política de Privacidade e Termos de Uso
-              </Link>{' '}
-              completa.
-=======
               segurança de direitos autorais. Por favor, leia os{' '}
               <Link to="/termos" target="_blank" rel="noreferrer">Termos de Uso</Link>
               {' '}e a{' '}
               <Link to="/privacidade" target="_blank" rel="noreferrer">Política de Privacidade</Link>.
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             </p>
             <p className="mb-0 mt-2"><strong>Versão:</strong> {versaoTermos}</p>
           </div>

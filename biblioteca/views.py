@@ -214,38 +214,6 @@ def solicitacoes_publicacao(request):
     categorias = Categoria.objects.all()
     form = ObraAutorForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':
-<<<<<<< HEAD
-        form = ObraAutorForm(request.POST, request.FILES)
-        if form.is_valid():
-            with transaction.atomic():
-                livro = form.save(commit=False)
-                livro.autor = request.user.get_full_name() or request.user.username
-                livro.origem = "autor_independente"
-                livro.status = "pendente"
-                livro.save()
-
-                solicitacao = SolicitacaoPublicacao.objects.create(
-                    usuario=request.user,
-                    livro=livro,
-                    status="pendente"
-                )
-                cpf = ''.join(filter(str.isdigit, form.cleaned_data['cpf_autor']))
-                DeclaracaoAutoria.objects.create(
-                    solicitacao=solicitacao,
-                    cpf_digest=salted_hmac('parabook.declaracao.cpf', cpf).hexdigest(),
-                    cpf_final=cpf[-4:],
-                    registro_autoral=form.cleaned_data.get('registro_autoral', ''),
-                    numero_registro=form.cleaned_data.get('numero_registro', ''),
-                    versao_termos=settings.TERMS_VERSION,
-                    ip_origem=request.META.get('REMOTE_ADDR'),
-                )
-
-                if perfil_customizado:
-                    perfil_customizado.notificacao_autor = True
-                    perfil_customizado.save()
-
-            messages.success(request, 'Sua obra foi enviada com sucesso para aprovação!')
-=======
         dados = request.POST.copy()
         dados.update(request.FILES)
         serializer = SolicitacaoPublicacaoSerializer(data=dados)
@@ -255,7 +223,6 @@ def solicitacoes_publicacao(request):
             except APIException as exc:
                 return JsonResponse({'detail': exc.detail}, status=exc.status_code)
             messages.success(request, 'Sua obra foi enviada para análise.')
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             return redirect('solicitacoes_publicacao')
         return JsonResponse(serializer.errors, status=400)
     return render(request, 'biblioteca/obras-autores.html', {'form': form, 'categorias': categorias})

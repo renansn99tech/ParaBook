@@ -12,10 +12,7 @@ const TITULOS = new Map([
   ['/autores', 'Autores'],
   ['/para-leitores', 'Para Leitores'],
   ['/para-autores', 'Para Autores'],
-<<<<<<< HEAD
-=======
   ['/minhas-publicacoes', 'Minhas publicações'],
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   ['/publicar', 'Publicar livro'],
   ['/autor/painel', 'Painel do Autor'],
   ['/minha-biblioteca', 'Minha biblioteca'],
@@ -26,13 +23,10 @@ const TITULOS = new Map([
   ['/minhas-conquistas', 'Minhas conquistas'],
   ['/sobre', 'Sobre'],
   ['/diretrizes', 'Diretrizes'],
-<<<<<<< HEAD
-=======
   ['/termos', 'Termos de Uso'],
   ['/privacidade', 'Política de Privacidade'],
   ['/publicacao-e-licenca', 'Termos de Publicação e Licença'],
   ['/direitos-autorais', 'Direitos Autorais e Denúncias'],
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 ]);
 
 function tituloDaRota(pathname) {

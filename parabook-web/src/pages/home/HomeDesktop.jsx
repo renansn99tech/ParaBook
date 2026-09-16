@@ -121,11 +121,7 @@ function HomeDesktop({ user, novidades, comunidadesOficiais, loading, resumoLeit
                 <h4 className="visitante-nome">{isAuthenticated ? user.username : 'Visitante'}</h4>
                 <span className="visitante-papel">
                   {isAuthenticated
-<<<<<<< HEAD
-                    ? (user.tipo === 'admin' ? 'Administrador'
-=======
                     ? (['moderador', 'admin'].includes(user.tipo) ? (user.tipo === 'moderador' ? 'Moderador' : 'Administrador')
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
                       : user.tipo === 'autor' ? 'Autor'
                       : user.tipo === 'aguardando_aprovacao' ? 'Em Análise'
                       : 'Leitor')

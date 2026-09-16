@@ -18,12 +18,7 @@ test('dashboard e páginas avançadas usam a mesma guarda administrativa', () =>
   assert.match(app, /path="\/perfil\/configuracoes\/django-admin" element=\{<RotaAdmin><AdminDjango \/><\/RotaAdmin>\}/);
   assert.match(app, /path="\/perfil\/configuracoes\/auditoria" element=\{<RotaAdmin><AdminAuditoria \/><\/RotaAdmin>\}/);
   assert.match(app, /path="\/perfil\/configuracoes\/feature-flags" element=\{<RotaAdmin><AdminFeatureFlags \/><\/RotaAdmin>\}/);
-<<<<<<< HEAD
-  assert.match(rotaAdmin, /user\.tipo === 'admin'/);
-  assert.match(rotaAdmin, /user\.is_staff \|\| user\.is_superuser/);
-=======
   assert.match(rotaAdmin, /ehModerador\(user\)/);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   assert.match(rotaAdmin, /<Navigate to="\/perfil" replace \/>/);
 });
 

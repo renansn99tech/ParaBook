@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -18,6 +18,7 @@ import { Book, bookService, Category } from '../services/bookService';
 import { useAuth } from '../context/AuthContext';
 import { BookCover } from '../components/BookCover';
 import { EmptyState } from '../components/EmptyState';
+import { ApiErrorPresentation, describeApiError } from '../services/apiError';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -28,11 +29,13 @@ export const HomeScreen = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingBooks, setLoadingBooks] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(true);
-  const [booksError, setBooksError] = useState<string | null>(null);
-  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [booksError, setBooksError] = useState<ApiErrorPresentation | null>(null);
+  const [categoriesError, setCategoriesError] = useState<ApiErrorPresentation | null>(null);
   const [search, setSearch] = useState('');
+  const latestRequest = useRef(0);
 
   const fetchHomeData = async (query?: string) => {
+    const requestId = ++latestRequest.current;
     setLoadingBooks(true);
     setLoadingCategories(true);
     setBooksError(null);
@@ -43,18 +46,20 @@ export const HomeScreen = () => {
       bookService.getCategories(),
     ]);
 
+    if (requestId !== latestRequest.current) return;
+
     if (bookResult.status === 'fulfilled') {
       setBooks(bookResult.value.slice(0, 6));
     } else {
       setBooks([]);
-      setBooksError('Falha ao carregar os livros. Tente novamente.');
+      setBooksError(describeApiError(bookResult.reason));
     }
 
     if (categoryResult.status === 'fulfilled') {
       setCategories(categoryResult.value.slice(0, 4));
     } else {
       setCategories([]);
-      setCategoriesError('Falha ao carregar as categorias. Tente novamente.');
+      setCategoriesError(describeApiError(categoryResult.reason));
     }
 
     setLoadingBooks(false);
@@ -63,6 +68,9 @@ export const HomeScreen = () => {
 
   useEffect(() => {
     void fetchHomeData();
+    return () => {
+      latestRequest.current += 1;
+    };
   }, []);
 
   const navigateToStack = (screenName: 'MyLibrary' | 'BookDetail', params?: { bookId: string; title?: string }) => {
@@ -87,7 +95,7 @@ export const HomeScreen = () => {
             <Text style={styles.greetingTitle} numberOfLines={1}>Olá, {greetingName}!{'\u00A0'}👋</Text>
             <Text style={styles.greetingSubtitle}>O que você vai ler hoje?</Text>
           </View>
-          <TouchableOpacity onPress={() => navigateToStack('MyLibrary')}>
+          <TouchableOpacity onPress={() => navigateToStack('MyLibrary')} accessibilityRole="button" accessibilityLabel="Acessar Minha Biblioteca">
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{avatarLetter}</Text>
             </View>
@@ -106,7 +114,12 @@ export const HomeScreen = () => {
             returnKeyType="search"
             onSubmitEditing={() => void fetchHomeData(search)}
           />
-          <TouchableOpacity onPress={() => void fetchHomeData(search)}>
+          <TouchableOpacity
+            onPress={() => void fetchHomeData(search)}
+            disabled={loadingBooks}
+            accessibilityRole="button"
+            accessibilityLabel="Buscar livros"
+          >
             <Ionicons name="arrow-forward-circle-outline" size={22} color={colors.primary} />
           </TouchableOpacity>
         </View>
@@ -115,6 +128,7 @@ export const HomeScreen = () => {
         <TouchableOpacity
           style={styles.libraryShortcut}
           onPress={() => navigateToStack('MyLibrary')}
+          accessibilityRole="button"
         >
           <View style={styles.libraryShortcutLeft}>
             <Ionicons name="bookmark-outline" size={22} color={colors.primary} />
@@ -151,9 +165,9 @@ export const HomeScreen = () => {
         ) : categoriesError ? (
           <EmptyState
             compact
-            icon="cloud-offline-outline"
-            title="Não foi possível carregar as categorias"
-            description={categoriesError}
+            icon={categoriesError.icon}
+            title={categoriesError.title}
+            description={categoriesError.message}
             action={<TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)} activeOpacity={0.78}><Text style={styles.retryButtonText}>Tentar novamente</Text></TouchableOpacity>}
           />
         ) : categories.length === 0 ? (
@@ -163,12 +177,22 @@ export const HomeScreen = () => {
             {categories.map((category, index) => {
               const iconColors = [colors.primary, colors.accentGreen, '#EC4899', colors.accentYellow];
               return (
-                <View key={category.id} style={styles.categoryCard}>
+                <TouchableOpacity
+                  key={category.id}
+                  style={styles.categoryCard}
+                  onPress={() => navigation.navigate('MainTabs', {
+                    screen: 'Catalogo',
+                    params: { categoryId: String(category.id), categoryName: category.name },
+                  })}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver livros da categoria ${category.name}`}
+                  activeOpacity={0.78}
+                >
                   <Ionicons name="book-outline" size={24} color={iconColors[index] || colors.primary} />
                   <Text style={styles.categoryTitle} numberOfLines={1}>
                     {category.name}
                   </Text>
-                </View>
+                </TouchableOpacity>
               );
             })}
           </View>
@@ -184,9 +208,9 @@ export const HomeScreen = () => {
         ) : booksError ? (
           <EmptyState
             compact
-            icon="cloud-offline-outline"
-            title="Não foi possível carregar os livros"
-            description={booksError}
+            icon={booksError.icon}
+            title={booksError.title}
+            description={booksError.message}
             action={<TouchableOpacity style={styles.retryButton} onPress={() => void fetchHomeData(search)} activeOpacity={0.78}><Text style={styles.retryButtonText}>Tentar novamente</Text></TouchableOpacity>}
           />
         ) : (
@@ -195,7 +219,7 @@ export const HomeScreen = () => {
               compact
               icon={search.trim() ? 'search-outline' : 'book-outline'}
               title={search.trim() ? 'Nenhum livro encontrado' : 'Nenhum livro cadastrado'}
-              description={search.trim() ? 'Tente buscar por outro título ou autor.' : 'Os livros adicionados ao acervo aparecerão aqui.'}
+              description={search.trim() ? 'Tente buscar por outro título, autor ou categoria.' : 'Os livros adicionados ao acervo aparecerão aqui.'}
             />
           ) : (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentBooksScroll}>
@@ -204,8 +228,10 @@ export const HomeScreen = () => {
                   key={book.id}
                   style={styles.bookCard}
                   onPress={() => navigateToStack('BookDetail', { bookId: String(book.id), title: book.title })}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Abrir ${book.title}, de ${book.author}`}
                 >
-                  <BookCover uri={book.cover_url} width={108} height={156} />
+                  <BookCover uri={book.cover_url} width={108} height={156} title={book.title} />
                   <Text style={styles.bookTitle} numberOfLines={2}>
                     {book.title}
                   </Text>

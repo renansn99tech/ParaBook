@@ -5,10 +5,7 @@ import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import RouteAccessibility from './components/RouteAccessibility'
-<<<<<<< HEAD
-=======
 import SuspensionNotice from './components/SuspensionNotice'
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 import RotaAdmin from './components/admin/RotaAdmin'
 import RotaPublicacao from './components/RotaPublicacao'
 import RotaAutenticada from './components/RotaAutenticada'
@@ -24,17 +21,11 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Sobre = lazy(() => import('./pages/Sobre'))
 const Backlog = lazy(() => import('./pages/Backlog'))
 const Diretrizes = lazy(() => import('./pages/Diretrizes'))
-<<<<<<< HEAD
-const Autores = lazy(() => import('./pages/Autores'))
-const ParaLeitores = lazy(() => import('./pages/ParaLeitores'))
-const ParaAutores = lazy(() => import('./pages/ParaAutores'))
-=======
 const DocumentoLegal = lazy(() => import('./pages/DocumentoLegal'))
 const Autores = lazy(() => import('./pages/Autores'))
 const ParaLeitores = lazy(() => import('./pages/ParaLeitores'))
 const ParaAutores = lazy(() => import('./pages/ParaAutores'))
 const MinhasPublicacoes = lazy(() => import('./pages/MinhasPublicacoes'))
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 const PublicarLivro = lazy(() => import('./pages/PublicarLivro'))
 const PainelAutor = lazy(() => import('./pages/PainelAutor'))
 const MinhaBiblioteca = lazy(() => import('./pages/MinhaBiblioteca'))
@@ -102,10 +93,7 @@ function App() {
     || location.pathname.startsWith('/redefinir-senha/');
   const hideNavAndFooter = isDashboard || isAdminAvancado || isAuthPage;
   const exibirBannerAnuncios = flagsPublicas.banner_anuncios && !hideNavAndFooter;
-<<<<<<< HEAD
-=======
   const suspensao = user?.suspensao?.ativa ? user.suspensao : null;
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
   useEffect(() => {
     let ativo = true;
@@ -143,10 +131,7 @@ function App() {
       <a className="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
       <RouteAccessibility />
       {!hideNavAndFooter && <Navbar />}
-<<<<<<< HEAD
-=======
       {suspensao && <SuspensionNotice suspensao={suspensao} />}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
       {exibirBannerAnuncios && (
         <div className="container my-3 ad-container">
@@ -194,10 +179,7 @@ function App() {
           <Route path="/autores" element={<Autores />} />
           <Route path="/para-leitores" element={<ParaLeitores />} />
           <Route path="/para-autores" element={<ParaAutores />} />
-<<<<<<< HEAD
-=======
           <Route path="/minhas-publicacoes" element={<RotaPublicacao><MinhasPublicacoes /></RotaPublicacao>} />
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           <Route path="/publicar" element={<RotaPublicacao><PublicarLivro /></RotaPublicacao>} />
           <Route path="/autor/painel" element={<RotaPublicacao><PainelAutor /></RotaPublicacao>} />
           <Route path="/minha-biblioteca" element={<MinhaBiblioteca />} />

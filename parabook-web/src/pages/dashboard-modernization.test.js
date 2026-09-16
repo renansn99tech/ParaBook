@@ -39,16 +39,6 @@ test('filas usam SweetAlert, atualização otimista e restauração em erro', ()
   assert.match(aprovacoes, /inputValidator: \(valor\) => valor\.trim\(\)/);
   assert.match(aprovacoes, /const \[filtroFila, setFiltroFila\]/);
   assert.match(denuncias, /dash-fila-card--denuncia/);
-<<<<<<< HEAD
-  assert.match(lixeira, /Excluir permanentemente\?/);
-});
-
-test('usuários mantêm busca e filtro próprios, motivo de vazio e exportação segura', () => {
-  assert.match(usuarios, /const \[filtroUsuarios, setFiltroUsuarios\]/);
-  assert.match(usuarios, /Nome, @usuário ou e-mail/);
-  assert.match(usuarios, /Nenhum resultado para/);
-  assert.match(usuarios, /Limpar busca e filtro/);
-=======
   assert.match(lixeira, /reabrir_denuncia/);
   assert.doesNotMatch(lixeira, /excluir_livro_permanente/);
 });
@@ -60,7 +50,6 @@ test('usuários mantêm busca, filtro, exportação segura e governança auditá
   assert.match(usuarios, /senha_atual/);
   assert.match(usuarios, /\/suspensao\//);
   assert.match(usuarios, /\/papel\//);
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   assert.match(usuarios, /\^\[=\+\\-@\]/);
   assert.match(usuarios, /Exportar lista/);
   assert.doesNotMatch(usuarios, /<img/);

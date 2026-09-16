@@ -45,47 +45,6 @@ function LivroInfo() {
     fetchLivroInfo();
   }, [id, user]);
 
-<<<<<<< HEAD
-  const abrirDenuncia = () => {
-    swal.fire({
-      title: "Relatar Problema",
-      text: `Selecione o motivo da denúncia para a obra "${livro?.titulo}":`,
-      input: "select",
-      inputOptions: {
-        Pirataria: "Violação de Direitos Autorais",
-        Plagio: "Plágio / Cópia Ilegal",
-        Ofensivo: "Conteúdo Ofensivo / Ilegal",
-        Erro: "Arquivo corrompido / Outro erro",
-      },
-      inputPlaceholder: "Selecione um motivo...",
-      showCancelButton: true,
-      confirmButtonText: "Enviar Denúncia",
-      cancelButtonText: "Cancelar",
-      confirmButtonColor: BOTAO.perigo,
-      cancelButtonColor: BOTAO.neutro,
-      background: "#0f172a",
-      color: "#f8fafc",
-      inputValidator: (value) => {
-        return new Promise((resolve) => {
-          if (value) {
-            resolve();
-          } else {
-            resolve("Você precisa selecionar um motivo.");
-          }
-        });
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        swal.fire({
-          title: "Denúncia Recebida!",
-          text: "Nossa equipe de moderação analisará o caso em até 48 horas.",
-          icon: "success",
-          background: "#0f172a",
-          color: "#f8fafc",
-        });
-      }
-    });
-=======
   const abrirDenuncia = async () => {
     if (!user) { await swal.fire({ icon: 'info', title: 'Entre para denunciar', text: 'Use sua conta para registrar e acompanhar a denúncia.' }); return; }
     if (user.suspensao?.ativa) {
@@ -102,7 +61,6 @@ function LivroInfo() {
     } catch (erro) {
       await swal.fire({ icon: 'error', title: 'Denúncia não registrada', text: Object.values(erro.response?.data || {}).flat().join(' ') || 'Tente novamente.' });
     }
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   };
 
   const confirmarRemocaoAvaliacao = () => {
@@ -184,13 +142,10 @@ function LivroInfo() {
   }
 
   const acesso = livro.acesso || {};
-<<<<<<< HEAD
-=======
   const suspensao = user?.suspensao?.ativa ? user.suspensao : null;
   const tituloSuspensao = suspensao
     ? `Ação bloqueada até ${new Date(suspensao.termina_em).toLocaleString('pt-BR')}.`
     : '';
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
   let acaoLeitura;
   if (acesso.pode_ler) {
     acaoLeitura = { to: `/leitura/${livro.id}`, icone: 'fa-book-open-reader', texto: 'Ler obra' };
@@ -222,15 +177,11 @@ function LivroInfo() {
             </div>
           )}
 
-<<<<<<< HEAD
-          {acaoLeitura ? (
-=======
           {suspensao && acaoLeitura && acaoLeitura.texto !== 'Ler amostra' ? (
             <span className="btn-preview acao-suspensa" role="status" title={tituloSuspensao}>
               <i className="fa-solid fa-hourglass-half"></i> Conta suspensa
             </span>
           ) : acaoLeitura ? (
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             <Link to={acaoLeitura.to} className="btn-preview">
               <i className={`fa-solid ${acaoLeitura.icone}`}></i> {acaoLeitura.texto}
             </Link>
@@ -314,11 +265,7 @@ function LivroInfo() {
           <i className="fa-solid fa-comments"></i> Avaliações da Comunidade
         </h2>
 
-<<<<<<< HEAD
-        {user && (
-=======
         {user && !suspensao && (
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
           <div className="minha-avaliacao-card glass-card" data-revelar>
             {minhaAvaliacao ? (
               <div className="minha-avaliacao-header">
@@ -379,15 +326,12 @@ function LivroInfo() {
           </div>
         )}
 
-<<<<<<< HEAD
-=======
         {suspensao && (
           <p className="livro-acesso-indisponivel acao-suspensa" role="status" title={tituloSuspensao}>
             Avaliações e demais ações pessoais ficam bloqueadas durante a suspensão.
           </p>
         )}
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         <div className="avaliacoes-grid" data-revelar-cascata>
           {avaliacoes.length > 0 ? (
             avaliacoes.map((ava) => (

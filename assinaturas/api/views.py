@@ -8,8 +8,6 @@ from assinaturas.models import Plano, Assinatura
 from .serializers import PlanoSerializer, AssinaturaSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
-<<<<<<< HEAD
-=======
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 
@@ -31,7 +29,6 @@ class CheckoutResponseSerializer(serializers.Serializer):
 class PortalResponseSerializer(serializers.Serializer):
     url = serializers.URLField()
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 class PlanoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Plano.objects.all().order_by('preco')
@@ -60,10 +57,6 @@ class CheckoutSessionAPIView(APIView):
     """Inicia assinatura sem aceitar URLs de retorno controladas pelo cliente."""
     permission_classes = [permissions.IsAuthenticated]
 
-<<<<<<< HEAD
-    def post(self, request):
-        plano = get_object_or_404(Plano, pk=request.data.get('plano_id'))
-=======
     @extend_schema(request=CheckoutRequestSerializer, responses=CheckoutResponseSerializer)
     def post(self, request):
         plano = get_object_or_404(Plano, pk=request.data.get('plano_id'))
@@ -77,7 +70,6 @@ class CheckoutSessionAPIView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         assinatura_atual = Assinatura.objects.filter(usuario=request.user, ativa=True).select_related('plano').first()
 
         if assinatura_atual and assinatura_atual.stripe_subscription_id:

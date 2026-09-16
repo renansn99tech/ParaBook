@@ -13,11 +13,8 @@ from .analytics_autor import (
     AnalyticsAutorResumoAPIView,
     EventoLeituraCreateAPIView,
 )
-<<<<<<< HEAD
-=======
 
 from .publicacao import MinhasPublicacoesViewSet, DenunciaObraAPIView
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 router = DefaultRouter()
 router.register(r'minhas-publicacoes', MinhasPublicacoesViewSet, basename='minhas-publicacoes')

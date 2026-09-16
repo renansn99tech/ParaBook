@@ -206,78 +206,52 @@ if not DEBUG:
 
 # DATABASE CONFIGURATION (PostgreSQL — unificado para todos os ambientes)
 
-# DATABASE_URL = config('DATABASE_URL', default=None)
-# MIGRATION_DATABASE_URL = config('MIGRATION_DATABASE_URL', default='')
+DATABASE_URL = config('DATABASE_URL', default=None)
+MIGRATION_DATABASE_URL = config('MIGRATION_DATABASE_URL', default='')
 
-# if not DATABASE_URL:
-#     if not DEBUG:
-#         raise ImproperlyConfigured('DATABASE_URL é obrigatória quando DEBUG=False.')
-#     _db_name = config('DB_NAME', default='parabook_db')
-#     _db_user = config('DB_USER', default='parabook_user')
-#     _db_pass = config('DB_PASSWORD', default='parabook_password')
-#     _db_host = config('DB_HOST', default='localhost')
-#     _db_port = config('DB_PORT', default='5432')
-#     DATABASE_URL = (
-#         f"postgres://{_db_user}:{_db_pass}@{_db_host}:{_db_port}/{_db_name}"
-#     )
+if not DATABASE_URL:
+    if not DEBUG:
+        raise ImproperlyConfigured('DATABASE_URL é obrigatória quando DEBUG=False.')
+    _db_name = config('DB_NAME', default='parabook_db')
+    _db_user = config('DB_USER', default='parabook_user')
+    _db_pass = config('DB_PASSWORD', default='parabook_password')
+    _db_host = config('DB_HOST', default='localhost')
+    _db_port = config('DB_PORT', default='5432')
+    DATABASE_URL = (
+        f"postgres://{_db_user}:{_db_pass}@{_db_host}:{_db_port}/{_db_name}"
+    )
 
-# SERVERLESS = config('SERVERLESS', default=bool(os.environ.get('VERCEL')), cast=bool)
-# DATABASE_CONN_MAX_AGE = config(
-#     'DATABASE_CONN_MAX_AGE', default=0 if SERVERLESS else 600, cast=int
-# )
-
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default=DATABASE_URL,
-#         conn_max_age=DATABASE_CONN_MAX_AGE,
-#         conn_health_checks=DATABASE_CONN_MAX_AGE > 0,
-#         ssl_require=not DEBUG,
-#     )
-# }
-
-# if MIGRATION_DATABASE_URL:
-#     # `config()` sempre consulta DATABASE_URL por padrão. Para a conexão
-#     # proprietária de migration, a URL precisa ser analisada explicitamente;
-#     # caso contrário, o alias também acaba usando a credencial de runtime.
-#     DATABASES['migration'] = dj_database_url.parse(
-#         MIGRATION_DATABASE_URL,
-#         conn_max_age=0,
-#         conn_health_checks=False,
-#         ssl_require=not DEBUG,
-#     )
-#     DATABASES['migration']['DISABLE_SERVER_SIDE_CURSORS'] = True
-
-# # O pooler transacional do Supabase não preserva cursores entre transações.
-# # Também evita que instâncias serverless mantenham conexões ociosas.
-# DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = config(
-#     'DATABASE_DISABLE_SERVER_SIDE_CURSORS', default=SERVERLESS, cast=bool
-# )
+SERVERLESS = config('SERVERLESS', default=bool(os.environ.get('VERCEL')), cast=bool)
+DATABASE_CONN_MAX_AGE = config(
+    'DATABASE_CONN_MAX_AGE', default=0 if SERVERLESS else 600, cast=int
+)
 
 DATABASES = {
-
-"default":  {
-
-"ENGINE": "django.db.backends.mysql",
-
-"NAME": "mydb",
-
-"USER": "root",
-
-"PASSWORD": "admin",
-
-"HOST": "127.0.0.1",
-
-"PORT": "3306",
-
-"OPTIONS": {
-
-"charset": "utf8mb4",
-
-} ,
-
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=DATABASE_CONN_MAX_AGE,
+        conn_health_checks=DATABASE_CONN_MAX_AGE > 0,
+        ssl_require=not DEBUG,
+    )
 }
 
-}
+if MIGRATION_DATABASE_URL:
+    # `config()` sempre consulta DATABASE_URL por padrão. Para a conexão
+    # proprietária de migration, a URL precisa ser analisada explicitamente;
+    # caso contrário, o alias também acaba usando a credencial de runtime.
+    DATABASES['migration'] = dj_database_url.parse(
+        MIGRATION_DATABASE_URL,
+        conn_max_age=0,
+        conn_health_checks=False,
+        ssl_require=not DEBUG,
+    )
+    DATABASES['migration']['DISABLE_SERVER_SIDE_CURSORS'] = True
+
+# O pooler transacional do Supabase não preserva cursores entre transações.
+# Também evita que instâncias serverless mantenham conexões ociosas.
+DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = config(
+    'DATABASE_DISABLE_SERVER_SIDE_CURSORS', default=SERVERLESS, cast=bool
+)
 
 # Password validation
 
@@ -357,13 +331,6 @@ STORAGES = {
         )
     },
     "default": {
-        "BACKEND": (
-            "whitenoise.storage.CompressedManifestStaticFilesStorage"
-            if STATICFILES_USE_MANIFEST
-            else "django.contrib.staticfiles.storage.StaticFilesStorage"
-        )
-    },
-    "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage"
     },
 }
@@ -407,15 +374,22 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = config(
 # A versão é parte da evidência de aceite. Alterá-la força novo aceite nos
 # clientes web e legado; não reutilize uma versão para textos materialmente
 # diferentes.
-TERMS_VERSION = config('TERMS_VERSION', default='2026-08-13')
+TERMS_VERSION = config('TERMS_VERSION', default='2026-09-09')
+LEGAL_DOCUMENTS_REVIEWED = config('LEGAL_DOCUMENTS_REVIEWED', default=False, cast=bool)
 
 # Identificação pública do agente de tratamento. Os valores definitivos devem
 # ser preenchidos no Render após definição da entidade responsável; não
 # presumimos que SENAC, integrantes da equipe ou fornecedores sejam o
 # controlador sem instrumento formal.
+LEGAL_CONTROLLER_PLACEHOLDER = 'ParaBook — projeto em validação'
 LEGAL_CONTROLLER_NAME = config(
-    'LEGAL_CONTROLLER_NAME', default='ParaBook — projeto em validação'
+    'LEGAL_CONTROLLER_NAME', default=LEGAL_CONTROLLER_PLACEHOLDER
 )
+LEGAL_CONTROLLER_TYPE = config('LEGAL_CONTROLLER_TYPE', default='pessoa_fisica')
+if LEGAL_CONTROLLER_TYPE not in {'pessoa_fisica', 'pessoa_juridica'}:
+    raise ImproperlyConfigured(
+        'LEGAL_CONTROLLER_TYPE deve ser pessoa_fisica ou pessoa_juridica.'
+    )
 LEGAL_CONTROLLER_DOCUMENT = config('LEGAL_CONTROLLER_DOCUMENT', default='')
 LEGAL_CONTROLLER_ADDRESS = config('LEGAL_CONTROLLER_ADDRESS', default='')
 LEGAL_PRIVACY_CONTACT = config('LEGAL_PRIVACY_CONTACT', default='')

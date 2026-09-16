@@ -34,26 +34,13 @@ class LivroSerializer(serializers.ModelSerializer):
             'ano_publicacao', 'paginas', 'edicao', 'avaliacao', 'isbn',
             'capa', 'capa_url', 'pdf', 'pdf_amostra', 'pdf_disponivel',
         ]
-<<<<<<< HEAD
-        read_only_fields = ['avaliacao']
-=======
         read_only_fields = ['avaliacao', 'status']
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
     def get_capa_url(self, obj) -> str | None:
         if obj.capa:
             return obj.capa.url
         return None
 
-<<<<<<< HEAD
-    def get_pdf_disponivel(self, obj):
-        return bool(obj.pdf)
-
-    def get_selo_independente(self, obj):
-        return obj.origem == 'autor_independente'
-
-    def get_acesso(self, obj):
-=======
     def get_pdf_disponivel(self, obj) -> bool:
         return bool(obj.pdf)
 
@@ -61,7 +48,6 @@ class LivroSerializer(serializers.ModelSerializer):
         return obj.origem == 'autor_independente'
 
     def get_acesso(self, obj) -> dict:
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         request = self.context.get('request')
         user = request.user if request else None
         return verificar_acesso_obra(user, obj).para_api()
@@ -92,19 +78,12 @@ class EstanteSerializer(serializers.ModelSerializer):
     livro_titulo = serializers.CharField(source='livro.titulo', read_only=True)
     livro_autor = serializers.CharField(source='livro.autor', read_only=True)
     livro_capa = serializers.SerializerMethodField()
-<<<<<<< HEAD
-=======
     livro_status = serializers.CharField(source='livro.status', read_only=True)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     livro_paginas = serializers.IntegerField(source='livro.paginas', read_only=True)
 
     class Meta:
         model = Biblioteca
-<<<<<<< HEAD
-        fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'livro_paginas', 'status', 'favorito', 'nota', 'resenha', 'pagina_atual', 'ultima_leitura_em', 'data_conclusao', 'avaliada_em', 'data_adicao']
-=======
         fields = ['id', 'livro', 'livro_titulo', 'livro_autor', 'livro_capa', 'livro_paginas', 'livro_status', 'status', 'favorito', 'nota', 'resenha', 'pagina_atual', 'ultima_leitura_em', 'data_conclusao', 'avaliada_em', 'data_adicao']
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         read_only_fields = ['user', 'avaliada_em']
 
     def get_livro_capa(self, obj) -> str | None:
@@ -149,13 +128,7 @@ class ResenhaSerializer(serializers.ModelSerializer):
         viewer = request.user if request else None
         if not identidade_publica(user, viewer)['perfil_clicavel']:
             return None
-<<<<<<< HEAD
-        if hasattr(user, 'perfil_da_biblioteca') and user.perfil_da_biblioteca.foto:
-            return user.perfil_da_biblioteca.foto.url
-        elif hasattr(user, 'perfil') and user.perfil.foto:
-=======
         if hasattr(user, 'perfil') and user.perfil.foto:
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
             return user.perfil.foto.url
         return None
 

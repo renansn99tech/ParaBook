@@ -87,7 +87,7 @@ const parseCollection = <T>(payload: unknown, endpoint: string): T[] => {
 const normalizeBook = (raw: DjangoBook): Book => ({
   id: raw.id,
   title: raw.titulo,
-  author: raw.autor,
+  author: raw.autor?.trim() || 'Autor não informado',
   cover_url: resolveDjangoUrl(raw.capa_url),
   pages: raw.paginas || undefined,
   category: raw.categoria_nome || undefined,
@@ -134,9 +134,12 @@ export const getStatusLabel = (status: LibraryStatus) => {
 };
 
 export const bookService = {
-  getBooks: async (search?: string): Promise<Book[]> => {
+  getBooks: async (search?: string, categoryId?: string | number): Promise<Book[]> => {
     const endpoint = '/biblioteca/livros/';
-    const response = await getCollection(endpoint, search ? { search } : {});
+    const response = await getCollection(endpoint, {
+      ...(search ? { search } : {}),
+      ...(categoryId !== undefined ? { categoria: categoryId } : {}),
+    });
     return parseCollection<DjangoBook>(response.data, endpoint).map(normalizeBook);
   },
 

@@ -12,13 +12,10 @@ from .views import (
     DashboardFeatureFlagsPublicasAPIView,
     DashboardModelosAdminAPIView,
     DashboardDjangoAdminAcessoAPIView,
-<<<<<<< HEAD
-=======
     DashboardPapelContaAPIView,
     DashboardSuporteDetalheAPIView,
     DashboardSuporteListaAPIView,
     DashboardSuspensaoContaAPIView,
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 )
 
 from biblioteca.api.publicacao import RevisaoAdminAPIView, RecursosAdminAPIView

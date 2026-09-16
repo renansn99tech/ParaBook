@@ -10,11 +10,8 @@ from django.utils import timezone
 from rest_framework import permissions, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-<<<<<<< HEAD
-=======
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 
 from biblioteca.models import Biblioteca, EventoLeitura, Livro
 from biblioteca.services import verificar_acesso_obra
@@ -38,11 +35,7 @@ class EhAutorOuAdmin(permissions.BasePermission):
             request.user
             and request.user.is_authenticated
             and perfil
-<<<<<<< HEAD
-            and perfil.tipo in {'autor', 'admin'}
-=======
             and perfil.tipo in {'autor', 'moderador', 'admin'}
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
         )
 
 
@@ -53,8 +46,6 @@ class EventoLeituraEntradaSerializer(serializers.Serializer):
     duracao_segundos = serializers.IntegerField(min_value=0, max_value=1800, default=0)
 
 
-<<<<<<< HEAD
-=======
 class EventoLeituraResponseSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     percentual = serializers.IntegerField(min_value=0, max_value=100)
@@ -131,7 +122,6 @@ PERIODO_PARAMETER = OpenApiParameter(
 )
 
 
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
 def _periodo(request):
     try:
         periodo = int(request.query_params.get('periodo', 30))
@@ -159,10 +149,6 @@ def _obras_do_autor(user):
 def _obras_publicadas(user):
     return _obras_do_autor(user).filter(
         status='publicado',
-<<<<<<< HEAD
-        solicitacao_publicacao__status='aprovado',
-=======
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     )
 
 
@@ -243,10 +229,7 @@ def _status_obra(livro):
 class EventoLeituraCreateAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-<<<<<<< HEAD
-=======
     @extend_schema(request=EventoLeituraEntradaSerializer, responses={201: EventoLeituraResponseSerializer})
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def post(self, request, *args, **kwargs):
         entrada = EventoLeituraEntradaSerializer(data=request.data)
         entrada.is_valid(raise_exception=True)
@@ -288,10 +271,7 @@ class EventoLeituraCreateAPIView(APIView):
 class AnalyticsAutorResumoAPIView(APIView):
     permission_classes = [EhAutorOuAdmin]
 
-<<<<<<< HEAD
-=======
     @extend_schema(parameters=[PERIODO_PARAMETER], responses=AnalyticsAutorResponseSerializer)
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def get(self, request, *args, **kwargs):
         periodo = _periodo(request)
         inicio, hoje = _inicio_periodo(periodo)
@@ -422,8 +402,6 @@ def _valor_csv_seguro(valor):
 class AnalyticsAutorExportarAPIView(APIView):
     permission_classes = [EhAutorOuAdmin]
 
-<<<<<<< HEAD
-=======
     @extend_schema(
         parameters=[
             PERIODO_PARAMETER,
@@ -431,7 +409,6 @@ class AnalyticsAutorExportarAPIView(APIView):
         ],
         responses={200: OpenApiResponse(response=OpenApiTypes.BINARY, description='CSV UTF-8 com métricas do autor.')},
     )
->>>>>>> b6f7563b7b17faff77d44e591a401723015a5fe9
     def get(self, request, *args, **kwargs):
         periodo = _periodo(request)
         inicio, _hoje = _inicio_periodo(periodo)

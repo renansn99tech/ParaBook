@@ -53,3 +53,35 @@ class Perfil(models.Model):
 
     def __str__(self):
         return self.descricao_perfil or f"Perfil de {self.usuario}"
+
+
+class PerfilLegadoMigracao(models.Model):
+    """Proveniência da consolidação de ``biblioteca.Perfil``.
+
+    O registro evita duplicações e guarda somente metadados, nomes de campos e
+    hashes. Conteúdo pessoal do perfil não é replicado nesta trilha.
+    """
+
+    perfil = models.OneToOneField(
+        Perfil,
+        on_delete=models.CASCADE,
+        related_name='migracao_legada_biblioteca',
+    )
+    legado_id = models.PositiveBigIntegerField(unique=True)
+    legado_usuario_id = models.PositiveBigIntegerField(db_index=True)
+    perfil_criado = models.BooleanField(default=False)
+    campos_preenchidos = models.JSONField(default=list, blank=True)
+    conflitos = models.JSONField(default=list, blank=True)
+    valores_anteriores = models.JSONField(default=dict, blank=True)
+    hashes_migrados = models.JSONField(default=dict, blank=True)
+    snapshot_pos_migracao_hash = models.CharField(max_length=64)
+    status_legado = models.CharField(max_length=20, blank=True)
+    migrado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'perfis_migracao_legado_biblioteca'
+        verbose_name = 'Proveniência de perfil legado'
+        verbose_name_plural = 'Proveniências de perfis legados'
+
+    def __str__(self):
+        return f"biblioteca.Perfil#{self.legado_id} → perfis.Perfil#{self.perfil_id}"

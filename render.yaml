@@ -4,7 +4,9 @@ services:
     runtime: docker
     plan: free
     repo: https://github.com/renansn99tech/ParaBook
-    branch: main
+    # O ambiente de validação acompanha exclusivamente a branch desenvolvida
+    # pela equipe. A promoção para main continua sendo uma decisão explícita.
+    branch: develop
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health/

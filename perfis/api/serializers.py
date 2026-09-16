@@ -36,8 +36,6 @@ class PerfilSerializer(serializers.ModelSerializer):
     date_joined = serializers.DateTimeField(source='usuario.date_joined', read_only=True)
     is_staff = serializers.BooleanField(source='usuario.is_staff', read_only=True)
     is_superuser = serializers.BooleanField(source='usuario.is_superuser', read_only=True)
-    data_nascimento = serializers.DateField(write_only=True, required=False, allow_null=True)
-    idade = serializers.SerializerMethodField()
     # Necessario para o React barrar a navegacao de quem ainda nao aceitou os termos,
     # equivalente ao ForcarAceiteTermosMiddleware do lado dos templates legados.
     termos_aceitos = serializers.SerializerMethodField()
@@ -90,32 +88,6 @@ class PerfilSerializer(serializers.ModelSerializer):
         from usuarios.governanca import dados_suspensao_ativa
         return dados_suspensao_ativa(obj.usuario)
 
-    def get_data_nascimento(self, obj):
-        usuario = self._usuario_customizado(obj)
-        if usuario is None:
-            return None
-        nascimento = interpretar_data_nascimento(usuario.data_nascimento)
-        return nascimento.isoformat() if nascimento else None
-
-    def get_idade(self, obj) -> int | None:
-        usuario = self._usuario_customizado(obj)
-        return calcular_idade(usuario.data_nascimento if usuario else None)
-
-    def validate_data_nascimento(self, value):
-        if value is None:
-            return None
-        hoje = timezone.localdate()
-        if value > hoje:
-            raise serializers.ValidationError('A data de nascimento não pode estar no futuro.')
-        if hoje.year - value.year > 130:
-            raise serializers.ValidationError('Confira o ano informado.')
-        return value
-
-    def to_representation(self, instance):
-        dados = super().to_representation(instance)
-        dados['data_nascimento'] = self.get_data_nascimento(instance)
-        return dados
-
     def get_tipografia_efetiva(self, obj) -> str:
         disponiveis = self._chaves_tipograficas_disponiveis(obj)
         return obj.tipografia if obj.tipografia in disponiveis else Perfil.Tipografia.PADRAO
@@ -155,8 +127,8 @@ class PerfilSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Perfil
-        fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'date_joined', 'is_staff', 'is_superuser', 'data_nascimento', 'idade', 'exibir_idade', 'exibir_data_nascimento', 'exibir_email', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'historico', 'descricao_perfil', 'foto', 'capa', 'bio', 'localizacao', 'perfil_privado', 'meta_leitura_anual', 'tipografia', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis', 'suspensao']
-        read_only_fields = ['id', 'usuario', 'tipo', 'email', 'date_joined', 'is_staff', 'is_superuser', 'idade', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis', 'suspensao']
+        fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'date_joined', 'is_staff', 'is_superuser', 'exibir_aniversario_sem_ano', 'exibir_email', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'historico', 'descricao_perfil', 'foto', 'capa', 'bio', 'localizacao', 'perfil_privado', 'meta_leitura_anual', 'tipografia', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis', 'suspensao']
+        read_only_fields = ['id', 'usuario', 'tipo', 'email', 'date_joined', 'is_staff', 'is_superuser', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis', 'suspensao']
 
     @staticmethod
     def _validar_imagem(arquivo):
@@ -178,7 +150,6 @@ class PerfilSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         usuario_data = validated_data.pop('usuario', {})
-        data_nascimento = validated_data.pop('data_nascimento', serializers.empty)
         
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -196,12 +167,4 @@ class PerfilSerializer(serializers.ModelSerializer):
                     perfil_customizado.nome = usuario_data['perfil_customizado']['nome']
                     perfil_customizado.save()
 
-        if data_nascimento is not serializers.empty:
-            perfil_customizado = self._usuario_customizado(instance)
-            if perfil_customizado:
-                perfil_customizado.data_nascimento = (
-                    data_nascimento.isoformat() if data_nascimento else None
-                )
-                perfil_customizado.save(update_fields=['data_nascimento'])
-                    
         return instance

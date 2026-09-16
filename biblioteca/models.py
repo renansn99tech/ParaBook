@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=50, unique=True, verbose_name="Nome da Categoria")
+    disponivel_publicamente = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'categorias'
@@ -373,8 +374,6 @@ class DeclaracaoAutoria(models.Model):
 
     def __str__(self):
         return f'Declaração da solicitação {self.solicitacao_id}'
-
-
 class BloqueioPublicacao(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     novas_obras_apos = models.DateTimeField()

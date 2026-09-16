@@ -5,8 +5,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from perfis.models import Perfil
 from .serializers import (
     PerfilSerializer,
-    calcular_idade,
-    interpretar_data_nascimento,
 )
 
 class PerfilRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
@@ -471,8 +469,6 @@ class PerfilPublicoAPIView(APIView):
             dados_usuario.perfil = perfil_do_usuario
             dados_usuario.save(update_fields=['perfil'])
 
-        nascimento = interpretar_data_nascimento(dados_usuario.data_nascimento)
-
         def dado_pessoal(valor, exibir_publicamente):
             return valor if is_owner or exibir_publicamente else None
 
@@ -502,6 +498,14 @@ class PerfilPublicoAPIView(APIView):
                 "is_superuser": user_auth_obj.is_superuser,
             }
 
+        estado_etario = getattr(user_auth_obj, 'estado_etario', None)
+        nascimento_elegibilidade = dados_usuario.data_nascimento_eligibilidade
+        pode_exibir_aniversario = bool(
+            perfil_do_usuario.exibir_aniversario_sem_ano
+            and estado_etario
+            and estado_etario.estado == 'liberado_adulto'
+            and nascimento_elegibilidade
+        )
         perfil_basico = {
             "foto": request.build_absolute_uri(perfil_do_usuario.foto.url) if perfil_do_usuario.foto else None,
             "capa": request.build_absolute_uri(perfil_do_usuario.capa.url) if perfil_do_usuario.capa else None,
@@ -578,6 +582,7 @@ class PerfilPublicoAPIView(APIView):
             obras_autor = list(
                 Livro.objects.filter(
                     solicitacao_publicacao__usuario=user_auth_obj,
+                    solicitacao_publicacao__status='aprovado',
                     status='publicado',
                     data_remocao__isnull=True,
                 )
@@ -645,20 +650,15 @@ class PerfilPublicoAPIView(APIView):
                 # O titular sempre recebe seus próprios dados. Para qualquer
                 # terceiro, inclusive administradores, o valor privado nunca
                 # integra a resposta da API.
-                "idade": dado_pessoal(
-                    calcular_idade(dados_usuario.data_nascimento),
-                    perfil_do_usuario.exibir_idade,
-                ),
-                "data_nascimento": dado_pessoal(
-                    nascimento.isoformat() if nascimento else None,
-                    perfil_do_usuario.exibir_data_nascimento,
+                "aniversario": dado_pessoal(
+                    nascimento_elegibilidade.strftime('%d/%m') if nascimento_elegibilidade else None,
+                    pode_exibir_aniversario,
                 ),
                 "email": dado_pessoal(
                     user_auth_obj.email or None,
                     perfil_do_usuario.exibir_email,
                 ),
-                "exibir_idade": perfil_do_usuario.exibir_idade,
-                "exibir_data_nascimento": perfil_do_usuario.exibir_data_nascimento,
+                "exibir_aniversario_sem_ano": perfil_do_usuario.exibir_aniversario_sem_ano,
                 "exibir_email": perfil_do_usuario.exibir_email,
             },
             "estatisticas": {

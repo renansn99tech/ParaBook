@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -41,11 +40,13 @@ from .schema import (
     CookieLoginResponseSerializer,
     CsrfTokenResponseSerializer,
     DetailResponseSerializer,
+    DeclaracaoEtariaRequestSerializer,
     DoisFatoresConfiguracaoSerializer,
     DoisFatoresRequestSerializer,
     DoisFatoresStatusSerializer,
     EncerrarSessaoRequestSerializer,
     GovernancaLegalResponseSerializer,
+    EstadoEtarioResponseSerializer,
     LoginRequestSerializer,
     MobileLoginResponseSerializer,
     MobileLogoutRequestSerializer,
@@ -69,6 +70,7 @@ from usuarios.security import (
     renovar_sessao,
     validar_codigo_totp,
 )
+from usuarios.idade import obter_estado, registrar_declaracao, resumo_estado
 
 
 def _set_auth_cookies(response, refresh):
@@ -161,7 +163,7 @@ class CookieTokenObtainPairAPIView(APIView):
         responses={200: CookieLoginResponseSerializer, 202: CookieLoginResponseSerializer},
     )
     def post(self, request):
-        serializer = TokenObtainPairSerializer(data=request.data)
+        serializer = IdentifierTokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         configuracao = AutenticacaoDoisFatores.objects.filter(
             usuario=serializer.user,
@@ -210,7 +212,7 @@ class MobileTokenObtainPairAPIView(APIView):
         responses={200: MobileLoginResponseSerializer, 202: MobileLoginResponseSerializer},
     )
     def post(self, request):
-        serializer = TokenObtainPairSerializer(data=request.data)
+        serializer = IdentifierTokenObtainPairSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         configuracao = AutenticacaoDoisFatores.objects.filter(
             usuario=serializer.user,
@@ -340,7 +342,6 @@ class CookieTokenRefreshAPIView(APIView):
 class LogoutAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
-
     @extend_schema(request=None, responses=DetailResponseSerializer)
     def post(self, request):
         raw_refresh = request.COOKIES.get(settings.JWT_REFRESH_COOKIE_NAME)
@@ -370,6 +371,7 @@ class RegisterAPIView(APIView):
 
         with transaction.atomic():
             auth_user = serializer.save()
+            obter_estado(auth_user)
 
         # Gera sessão em cookies HttpOnly para login automático após o cadastro.
         refresh = RefreshToken.for_user(auth_user)
@@ -395,6 +397,7 @@ class MobileRegisterAPIView(APIView):
 
         with transaction.atomic():
             auth_user = serializer.save()
+            obter_estado(auth_user)
 
         refresh = RefreshToken.for_user(auth_user)
         registrar_sessao(request, auth_user, refresh)
@@ -414,6 +417,32 @@ class UserProfileAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         return obter_ou_criar_usuario_customizado(self.request.user)
+
+
+class EstadoEtarioContaAPIView(APIView):
+    """Consulta e declaração etária privada, com idempotência por tentativa."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(responses=EstadoEtarioResponseSerializer)
+    def get(self, request):
+        return Response(resumo_estado(request.user))
+
+    @extend_schema(
+        request=DeclaracaoEtariaRequestSerializer,
+        responses=EstadoEtarioResponseSerializer,
+    )
+    def put(self, request):
+        serializer = DeclaracaoEtariaRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        origem = 'mobile' if request.headers.get('Authorization') else 'web'
+        registrar_declaracao(
+            usuario_auth=request.user,
+            data_nascimento=serializer.validated_data['data_nascimento'],
+            chave_idempotencia=serializer.validated_data['chave_idempotencia'],
+            origem=origem,
+        )
+        return Response(resumo_estado(request.user))
 
 
 class SessoesDispositivoAPIView(APIView):

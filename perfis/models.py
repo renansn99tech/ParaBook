@@ -41,6 +41,7 @@ class Perfil(models.Model):
     )
     exibir_idade = models.BooleanField(default=True)
     exibir_data_nascimento = models.BooleanField(default=True)
+    exibir_aniversario_sem_ano = models.BooleanField(default=False)
     exibir_email = models.BooleanField(default=True)
 
     # --- NOVO CAMPO: CONTROLE DE PRIVACIDADE ---
@@ -53,8 +54,6 @@ class Perfil(models.Model):
 
     def __str__(self):
         return self.descricao_perfil or f"Perfil de {self.usuario}"
-
-
 class PerfilLegadoMigracao(models.Model):
     """Proveniência da consolidação de ``biblioteca.Perfil``.
 

@@ -300,7 +300,8 @@ class CookieAuthenticationTests(TestCase):
 
         perfil = self.client.get('/api/v1/perfis/meu-perfil/')
         self.assertEqual(perfil.status_code, 200)
-        self.assertIn('exibir_idade', perfil.data)
+        self.assertIn('exibir_aniversario_sem_ano', perfil.data)
+        self.assertNotIn('exibir_idade', perfil.data)
 
     def test_sessao_revogada_invalida_access_imediatamente(self):
         self._login()

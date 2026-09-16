@@ -273,6 +273,32 @@ class DashboardDenunciasComunidadeAPIViewTests(TestCase):
 class DashboardAdministracaoAvancadaAPIViewTests(TestCase):
     def setUp(self):
         cache.clear()
+        # RunPython das migrations só é executado na criação do banco. Como o
+        # TestCase faz flush entre os testes, a configuração declarativa precisa
+        # ser recriada no fixture para exercitar as rotas administrativas.
+        for chave, defaults in {
+            'autenticacao_2fa': {
+                'descricao': 'Disponibilizará verificação em duas etapas por aplicativo autenticador.',
+                'habilitada': False,
+                'disponivel': False,
+            },
+            'analytics_autor': {
+                'descricao': 'Disponibilizará métricas de alcance, leitura e engajamento para autores.',
+                'habilitada': False,
+                'disponivel': False,
+            },
+            'banner_anuncios': {
+                'descricao': 'Exibe o banner global de anúncios e o atalho para o plano Premium.',
+                'habilitada': False,
+                'disponivel': True,
+            },
+            'acervo_avancado_beta': {
+                'descricao': 'Ativa coleções editoriais, ofertas experimentais e simulações de apoio e compra na Biblioteca.',
+                'habilitada': False,
+                'disponivel': True,
+            },
+        }.items():
+            FeatureFlag.objects.update_or_create(chave=chave, defaults=defaults)
         self.admin = criar_admin('admin-avancado')
         self.client = APIClient()
         self.client.force_authenticate(self.admin)

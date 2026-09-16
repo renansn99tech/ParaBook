@@ -5,6 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from usuarios.models import SessaoDispositivo
 from usuarios.governanca import dados_suspensao_ativa
+from usuarios.idade import restricao_etaria_ativa, resumo_estado
 
 
 ROTAS_CONTA_SUSPENSA = {
@@ -30,6 +31,29 @@ ROTAS_PUBLICAS_SUSPENSA = (
     '/api/v1/dashboard/feature-flags/publicas/',
 )
 
+# A conta restrita por idade mantém somente os meios necessários para consultar
+# seu estado, corrigir a declaração, exercer direitos e sair. Catálogo público
+# continua disponível como visitante; perfil, comunidades e leitura autenticada
+# não entram nesta allowlist.
+ROTAS_CONTA_RESTRITA_ETARIA = {
+    '/api/v1/auth/profile/',
+    '/api/v1/auth/idade/',
+    '/api/v1/auth/alterar-senha/',
+    '/api/v1/auth/aceitar-termos/',
+    '/api/v1/auth/excluir-conta/',
+    '/api/v1/auth/sessoes/',
+    '/api/v1/auth/dois-fatores/',
+    '/api/v1/auth/preferencias-notificacao/',
+    '/api/v1/auth/aparencia/',
+    '/api/v1/auth/exportar-dados/',
+    '/api/v1/auth/suporte/',
+    '/api/v1/auth/logout/',
+}
+ROTAS_PUBLICAS_RESTRITA_ETARIA = (
+    '/api/v1/biblioteca/livros/',
+    '/api/v1/biblioteca/categorias/',
+)
+
 
 class CookieJWTAuthentication(JWTAuthentication):
     """Autentica JWT por header (mobile) ou cookie HttpOnly (web).
@@ -44,7 +68,10 @@ class CookieJWTAuthentication(JWTAuthentication):
             resultado = super().authenticate(request)
             if resultado:
                 self._validar_sessao(resultado[1])
-                return self._aplicar_restricao_suspensao(request, resultado)
+                resultado = self._aplicar_restricao_suspensao(request, resultado)
+                if resultado is None:
+                    return None
+                return self._aplicar_restricao_etaria(request, resultado)
             return None
 
         raw_token = request.COOKIES.get(settings.JWT_ACCESS_COOKIE_NAME)
@@ -55,6 +82,9 @@ class CookieJWTAuthentication(JWTAuthentication):
         self._validar_sessao(validated_token)
         resultado = (self.get_user(validated_token), validated_token)
         resultado = self._aplicar_restricao_suspensao(request, resultado)
+        if resultado is None:
+            return None
+        resultado = self._aplicar_restricao_etaria(request, resultado)
         if resultado:
             self._enforce_csrf(request)
         return resultado
@@ -81,6 +111,27 @@ class CookieJWTAuthentication(JWTAuthentication):
             'detail': 'Conta temporariamente suspensa. Apenas configurações e suporte estão disponíveis.',
             'codigo': 'conta_suspensa',
             'suspensao': suspensao,
+        })
+
+    @staticmethod
+    def _aplicar_restricao_etaria(request, resultado):
+        user, _validated_token = resultado
+        restrita, _estado = restricao_etaria_ativa(user)
+        if not restrita:
+            return resultado
+
+        caminho = request.path
+        metodo_seguro = request.method in {'GET', 'HEAD', 'OPTIONS'}
+        if caminho in ROTAS_CONTA_RESTRITA_ETARIA:
+            return resultado
+        if metodo_seguro and any(
+            caminho.startswith(prefixo) for prefixo in ROTAS_PUBLICAS_RESTRITA_ETARIA
+        ):
+            return None
+        raise PermissionDenied({
+            'detail': 'Esta conta está em modo restrito de idade. Informe ou corrija sua declaração para acessar áreas autenticadas.',
+            'codigo': 'conta_restrita_etaria',
+            'idade': resumo_estado(user),
         })
 
     @staticmethod

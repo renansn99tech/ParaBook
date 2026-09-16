@@ -52,9 +52,12 @@ class RecomendacoesResponseSerializer(serializers.Serializer):
     recomendacoes = LivroRecomendadoSerializer(many=True)
 
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        qs = Categoria.objects.all()
+        return qs if eh_admin_parabook(self.request.user) else qs.filter(disponivel_publicamente=True)
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     """Catálogo público para leitura; escrita direta somente pela moderação."""
@@ -65,12 +68,11 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return eh_admin_parabook(request.user)
 
 
-
 class LivroViewSet(viewsets.ModelViewSet):
     serializer_class = LivroSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['titulo', 'autor', 'categoria__nome', 'territorio_cultural']
+    search_fields = ['titulo', 'autor', 'territorio_cultural']
 
     def get_queryset(self):
         qs = Livro.objects.all().select_related('categoria')
@@ -86,11 +88,11 @@ class LivroViewSet(viewsets.ModelViewSet):
         if categoria:
             qs = qs.filter(categoria_id=categoria)
         
-        if not user.is_authenticated:
-            return qs.filter(status='publicado')
-            
         if eh_admin_parabook(user):
             return qs
+        qs = qs.filter(categoria__disponivel_publicamente=True)
+        if not user.is_authenticated:
+            return qs.filter(status='publicado')
         if self.action == 'list':
             return qs.filter(status='publicado')
         return qs.filter(Q(status='publicado') | Q(solicitacao_publicacao__usuario=user))

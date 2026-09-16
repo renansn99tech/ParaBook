@@ -31,6 +31,10 @@ class Usuario(models.Model):
     notificacoes_comunidades = models.BooleanField(default=True)
     notificacoes_assinaturas = models.BooleanField(default=True)
     data_nascimento = models.CharField(max_length=45, blank=True, null=True)
+    # A data legada acima permanece intacta até que exista censo e saneamento
+    # aprovados. Este campo é a fonte privada usada exclusivamente pelo fluxo
+    # de elegibilidade etária; nunca integra serializadores públicos.
+    data_nascimento_eligibilidade = models.DateField(null=True, blank=True)
     telefone = models.CharField(max_length=45, blank=True, null=True)
     foto = models.CharField(max_length=45, blank=True, null=True)
     descricao = models.CharField(max_length=45, blank=True, null=True)
@@ -114,7 +118,81 @@ class Usuario(models.Model):
 
     def __str__(self):
         return self.nome or f"Usuario {self.id}"
-    
+
+
+class EstadoEtarioConta(models.Model):
+    """Estado canônico de elegibilidade, separado de papéis e suspensão."""
+
+    class Estado(models.TextChoices):
+        PENDENTE = 'pendente', 'Pendente de declaração'
+        RESTRITO_MENOR = 'restrito_menor', 'Restrito por menoridade'
+        LIBERADO_ADULTO = 'liberado_adulto', 'Liberado como adulto'
+        EM_REVISAO = 'em_revisao', 'Em revisão'
+
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='estado_etario',
+    )
+    estado = models.CharField(
+        max_length=20,
+        choices=Estado.choices,
+        default=Estado.PENDENTE,
+        db_index=True,
+    )
+    declaracoes_sucesso = models.PositiveSmallIntegerField(default=0)
+    proxima_correcao_permitida_em = models.DateTimeField(null=True, blank=True)
+    versao_politica = models.CharField(max_length=40, blank=True, default='')
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'usuarios_estados_etarios'
+
+
+class EventoEtarioConta(models.Model):
+    """Trilha probatória append-only sem data de nascimento, IP ou documento."""
+
+    class Tipo(models.TextChoices):
+        CONTA_INICIALIZADA = 'conta_inicializada', 'Conta inicializada'
+        DECLARACAO_REGISTRADA = 'declaracao_registrada', 'Declaração registrada'
+        CORRECAO_REGISTRADA = 'correcao_registrada', 'Correção registrada'
+        MUDANCA_DE_FAIXA = 'mudanca_de_faixa', 'Mudança de faixa'
+
+    class Faixa(models.TextChoices):
+        DESCONHECIDA = 'desconhecida', 'Desconhecida'
+        MENOR_18 = 'menor_18', 'Menor de 18'
+        ADULTO = '18_mais', '18 ou mais'
+
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='eventos_etarios',
+    )
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    chave_idempotencia = models.UUIDField(unique=True)
+    tipo = models.CharField(max_length=28, choices=Tipo.choices)
+    estado_anterior = models.CharField(max_length=20, choices=EstadoEtarioConta.Estado.choices)
+    estado_novo = models.CharField(max_length=20, choices=EstadoEtarioConta.Estado.choices)
+    faixa_resultante = models.CharField(max_length=16, choices=Faixa.choices)
+    ordinal_declaracao = models.PositiveSmallIntegerField(default=0)
+    proxima_correcao_permitida_em = models.DateTimeField(null=True, blank=True)
+    origem = models.CharField(max_length=16, default='web')
+    versao_politica = models.CharField(max_length=40)
+    versao_documentos = models.CharField(max_length=40, blank=True, default='')
+    criado_em = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'usuarios_eventos_etarios'
+        ordering = ['-criado_em']
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            raise RuntimeError('Eventos etários são imutáveis.')
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise RuntimeError('Eventos etários são imutáveis.')
+
 # usuarios/models.py
 
 class Notificacao(models.Model):
@@ -160,7 +238,6 @@ class Notificacao(models.Model):
             'usuarios.Notificacao está em observação somente leitura; '
             'use notificacoes.Notificacao.'
         )
-
 
 class AuditoriaAcao(models.Model):
     ator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)

@@ -45,5 +45,5 @@ USER parabook
 
 EXPOSE 8000
 
-# Executa as migrações, garante o admin inicial e inicia o servidor (Gunicorn)
+# Executa as migrações, garante o catálogo e o admin iniciais e inicia o servidor (Gunicorn)
 CMD ["sh", "scripts/render-start.sh"]

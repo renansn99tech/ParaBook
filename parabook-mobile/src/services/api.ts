@@ -3,7 +3,7 @@ import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import Constants from 'expo-constants';
 import { authStorage } from './authStorage';
 
-const PRODUCTION_API_BASE_URL = 'https://parabook-nl8o.onrender.com/api/v1';
+const PRODUCTION_API_BASE_URL = 'https://parabook-api.onrender.com/api/v1';
 const isDevelopmentRuntime = () => typeof __DEV__ !== 'undefined' && __DEV__;
 
 const getDevelopmentApiUrl = () => {

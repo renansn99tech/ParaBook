@@ -22,6 +22,10 @@ function client(post) {
   const error = (status, method = 'get') => ({ isAxiosError: true, response: status ? { status } : undefined, config: prepare({ method, url: '/perfis/meu-perfil/', headers: {} }) });
   return { module, error, reject: e => rejected(e), calls, saved };
 }
+test('fallback de produção usa a API canônica', () => {
+  const c = client();
+  assert.equal(c.module.API_BASE_URL, 'https://parabook-api.onrender.com/api/v1');
+});
 test('GET temporário recebe somente uma retentativa', async () => {
   const c = client(); const e = c.error(503);
   assert.equal(await c.reject(e), 'retried');

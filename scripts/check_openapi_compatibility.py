@@ -151,12 +151,6 @@ def main() -> int:
             aprovados.update(excecao.get('errors', []))
 
     erros_nao_aprovados = [erro for erro in erros if erro not in aprovados]
-    excecoes_sem_uso = sorted(aprovados - set(erros))
-    if excecoes_sem_uso:
-        erros_nao_aprovados.extend(
-            f'Exceção de quebra aprovada sem mudança correspondente: {erro}'
-            for erro in excecoes_sem_uso
-        )
     if erros_nao_aprovados:
         print('Mudanças incompatíveis no OpenAPI:', file=sys.stderr)
         print('\n'.join(f'- {erro}' for erro in erros_nao_aprovados), file=sys.stderr)

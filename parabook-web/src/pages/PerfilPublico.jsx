@@ -2,7 +2,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
-import { formatarDataNascimento } from '../services/dadosPessoais';
 import { obterAvatarPerfil } from '../services/avatarPerfil';
 import { formatarTempoRelativo } from '../services/tempoRelativo';
 import swal from '../services/swal';
@@ -230,7 +229,7 @@ function PerfilPublico() {
     : null;
   const formatarMedia = (valor) => valor == null ? '—' : valor.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const valorPublico = (exibir, valor, vazio = 'Não informado') => exibir === false ? 'Privado' : (valor || vazio);
-  const aniversario = pessoais.exibir_data_nascimento === false ? 'Privado' : formatarDataNascimento(pessoais.data_nascimento);
+  const aniversario = pessoais.exibir_aniversario_sem_ano ? (pessoais.aniversario || 'Não informado') : 'Privado';
 
   const statsCards = ['moderador', 'admin'].includes(tipo)
     ? [
@@ -351,8 +350,8 @@ function PerfilPublico() {
                 {favoritos.generos?.length > 0 && <div className="perfil-publico-generos" aria-label="Gêneros favoritos">{favoritos.generos.map((genero) => <span key={genero} className="genre-tag">{genero}</span>)}</div>}
                 <div className="perfil-sobre-divisor" aria-hidden="true"></div>
                 <div className="perfil-dados-pessoais perfil-dados-pessoais--publico"><dl>
-                  <div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Idade</dt><dd className={pessoais.exibir_idade === false ? 'is-private' : ''}>{valorPublico(pessoais.exibir_idade, Number.isInteger(pessoais.idade) ? `${pessoais.idade} anos` : null)}</dd></div>
-                  <div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><dd className={pessoais.exibir_data_nascimento === false ? 'is-private' : ''}>{aniversario}</dd></div>
+                  <div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Idade</dt><dd className="is-private">Privada</dd></div>
+                  <div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><dd className={pessoais.exibir_aniversario_sem_ano ? '' : 'is-private'}>{aniversario}</dd></div>
                   <div><dt><i className="fa-solid fa-envelope" aria-hidden="true"></i> E-mail</dt><dd className={pessoais.exibir_email === false ? 'is-private' : ''}>{valorPublico(pessoais.exibir_email, pessoais.email)}</dd></div>
                 </dl></div>
               </article>

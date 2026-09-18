@@ -1,12 +1,14 @@
 import axios from 'axios';
 
+export const PRODUCTION_API_BASE_URL = 'https://parabook-api.onrender.com/api/v1';
+
 // Em produção, VITE_API_URL aponta para o backend publicado. No desenvolvimento,
 // forçamos o caminho relativo do proxy do Vite: assim cookies e CSRF continuam
 // same-origin mesmo quando a página é aberta por localhost ou 127.0.0.1, e um
 // VITE_API_URL absoluto deixado no ambiente do shell não quebra o login.
-const API_BASE_URL = import.meta.env.DEV
+export const API_BASE_URL = import.meta.env.DEV
   ? '/api/v1'
-  : (import.meta.env.VITE_API_URL || '/api/v1');
+  : (import.meta.env.VITE_API_URL?.trim() || PRODUCTION_API_BASE_URL);
 let csrfToken = null;
 let refreshPromise = null;
 

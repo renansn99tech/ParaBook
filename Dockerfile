@@ -39,11 +39,14 @@ COPY --chown=parabook:parabook . .
 
 RUN mkdir -p /app/staticfiles /app/media \
     && chown -R parabook:parabook /app/staticfiles /app/media \
-    && chmod +x /app/scripts/start.sh
+    && chmod +x /app/scripts/start.sh /app/scripts/render-start.sh
 
 USER parabook
 
 EXPOSE 8000
 
-# Executa as migrações, garante o catálogo e o admin iniciais e inicia o servidor (Gunicorn)
-CMD ["sh", "scripts/render-start.sh"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl --fail --silent "http://127.0.0.1:${PORT}/health/" || exit 1
+
+# Entrada canônica do Render: migrations/seeds condicionais, estáticos e Gunicorn.
+CMD ["sh", "/app/scripts/start.sh"]

@@ -46,6 +46,7 @@ const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha'))
 const AceitarTermos = lazy(() => import('./pages/AceitarTermos'))
 const OnboardingAutor = lazy(() => import('./pages/OnboardingAutor'))
 const RecomendacaoIA = lazy(() => import('./pages/RecomendacaoIA'))
+const ElegibilidadeEtaria = lazy(() => import('./pages/ElegibilidadeEtaria'))
 const MinhasComunidades = lazy(() => import('./pages/MinhasComunidades'))
 const CriarComunidade = lazy(() => import('./pages/CriarComunidade'))
 const Ranking = lazy(() => import('./pages/Ranking'))
@@ -58,6 +59,16 @@ const AdminFeatureFlags = lazy(() => import('./pages/admin/AdminFeatureFlags'))
 const ROTAS_LEGAIS = ['/diretrizes', '/termos', '/privacidade', '/publicacao-e-licenca', '/direitos-autorais'];
 const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', ...ROTAS_LEGAIS, '/login', '/register', '/esqueci-senha'];
 const ROTAS_PUBLICAS_SUSPENSAO = ['/', '/biblioteca', '/comunidades', '/autores', '/sobre', '/backlog', ...ROTAS_LEGAIS, '/para-leitores', '/para-autores', '/planos'];
+const ROTAS_ISENTAS_IDADE = [
+  '/elegibilidade',
+  '/aceitar-termos',
+  '/perfil/alterar-senha',
+  '/perfil/configuracoes/suporte',
+  ...ROTAS_LEGAIS,
+  '/login',
+  '/register',
+  '/esqueci-senha',
+];
 
 const rotaPermitidaDuranteSuspensao = (pathname) => {
   const configuracaoAdministrativa = [
@@ -94,6 +105,9 @@ function App() {
   const hideNavAndFooter = isDashboard || isAdminAvancado || isAuthPage;
   const exibirBannerAnuncios = flagsPublicas.banner_anuncios && !hideNavAndFooter;
   const suspensao = user?.suspensao?.ativa ? user.suspensao : null;
+  const restricaoEtaria = user?.restricao_etaria?.restricao_ativa
+    ? user.restricao_etaria
+    : null;
 
   useEffect(() => {
     let ativo = true;
@@ -118,6 +132,10 @@ function App() {
 
   if (precisaAceitarTermos) {
     return <Navigate to="/aceitar-termos" replace />;
+  }
+
+  if (!loading && restricaoEtaria && !ROTAS_ISENTAS_IDADE.includes(location.pathname)) {
+    return <Navigate to="/elegibilidade" replace />;
   }
 
   if (!loading && suspensao && !rotaPermitidaDuranteSuspensao(location.pathname)) {
@@ -156,6 +174,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/elegibilidade" element={<RotaAutenticada><ElegibilidadeEtaria /></RotaAutenticada>} />
           <Route path="/perfil" element={<RotaAutenticada><Profile /></RotaAutenticada>} />
           <Route path="/perfil/alterar-senha" element={<AlterarSenha />} />
           <Route path="/perfil/configuracoes" element={<RotaAutenticada><ConfiguracoesAvancadas /></RotaAutenticada>} />

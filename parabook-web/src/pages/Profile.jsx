@@ -5,7 +5,6 @@ import useRevelacao from '../hooks/useRevelacao';
 import api from '../services/api';
 import { obterAvatarPerfil } from '../services/avatarPerfil';
 import { abrirOnboardingPerfil } from '../services/onboardingPerfil';
-import { formatarDataNascimento } from '../services/dadosPessoais';
 import { formatarTempoRelativo } from '../services/tempoRelativo';
 import swal, { BOTAO } from '../services/swal';
 import '../assets/css/perfil.css';
@@ -122,19 +121,6 @@ function formatarMembroDesde(data) {
   const valor = new Date(data);
   if (Number.isNaN(valor.getTime())) return null;
   return new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(valor);
-}
-
-function calcularIdade(data) {
-  const partes = /^(\d{4})-(\d{2})-(\d{2})$/.exec(data || '');
-  if (!partes) return null;
-  const nascimento = new Date(Number(partes[1]), Number(partes[2]) - 1, Number(partes[3]));
-  const hoje = new Date();
-  if (nascimento > hoje) return null;
-  return hoje.getFullYear() - nascimento.getFullYear() - (
-    (hoje.getMonth() + 1 < nascimento.getMonth() + 1)
-    || (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() < nascimento.getDate())
-      ? 1 : 0
-  );
 }
 
 async function buscarDadosAdministrativos() {
@@ -501,50 +487,40 @@ function Profile() {
     const hoje = new Date();
     const hojeIso = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
     const resultado = await swal.fire({
-      title: 'Editar dados pessoais',
-      html: `<div class="perfil-dados-modal"><label for="perfil-data-nascimento">Data de nascimento</label><input id="perfil-data-nascimento" class="swal2-input" type="date" max="${hojeIso}"><p id="perfil-idade-calculada" class="perfil-dados-modal-idade">A idade será calculada automaticamente.</p><fieldset><legend>Privacidade</legend><label><input id="perfil-ocultar-idade" type="checkbox"> Ocultar idade</label><label><input id="perfil-ocultar-aniversario" type="checkbox"> Ocultar aniversário</label><label><input id="perfil-ocultar-email" type="checkbox"> Ocultar e-mail</label><label class="perfil-dados-modal-todos"><input id="perfil-ocultar-todos" type="checkbox"> Ocultar todos os dados</label></fieldset></div>`,
+      title: 'Elegibilidade e privacidade',
+      html: `<div class="perfil-dados-modal"><label for="perfil-data-nascimento">Data de nascimento</label><input id="perfil-data-nascimento" class="swal2-input" type="date" max="${hojeIso}" required><p class="perfil-dados-modal-idade">A data é usada somente para aferir elegibilidade. Ela não aparece no seu perfil público.</p><fieldset><legend>Privacidade</legend><label><input id="perfil-exibir-aniversario" type="checkbox"> Exibir apenas dia e mês do aniversário, se minha conta for liberada como adulta</label><label><input id="perfil-ocultar-email" type="checkbox"> Ocultar e-mail</label></fieldset></div>`,
       showCancelButton: true,
       confirmButtonText: 'Salvar dados',
       cancelButtonText: 'Cancelar',
       focusConfirm: false,
       didOpen: () => {
         const dataInput = document.getElementById('perfil-data-nascimento');
-        const idadeTexto = document.getElementById('perfil-idade-calculada');
-        const ocultarIdade = document.getElementById('perfil-ocultar-idade');
-        const ocultarAniversario = document.getElementById('perfil-ocultar-aniversario');
+        const exibirAniversario = document.getElementById('perfil-exibir-aniversario');
         const ocultarEmail = document.getElementById('perfil-ocultar-email');
-        const ocultarTodos = document.getElementById('perfil-ocultar-todos');
-        dataInput.value = user?.data_nascimento || '';
-        ocultarIdade.checked = user?.exibir_idade === false;
-        ocultarAniversario.checked = user?.exibir_data_nascimento === false;
+        dataInput.value = '';
+        exibirAniversario.checked = user?.exibir_aniversario_sem_ano === true;
         ocultarEmail.checked = user?.exibir_email === false;
-        ocultarTodos.checked = ocultarIdade.checked && ocultarAniversario.checked && ocultarEmail.checked;
-        const atualizarIdade = () => {
-          const idade = calcularIdade(dataInput.value);
-          idadeTexto.textContent = Number.isInteger(idade) ? `Idade calculada: ${idade} anos` : 'Informe uma data válida para calcular a idade.';
-        };
-        const sincronizarTodos = () => {
-          ocultarTodos.checked = ocultarIdade.checked && ocultarAniversario.checked && ocultarEmail.checked;
-        };
-        dataInput.addEventListener('input', atualizarIdade);
-        [ocultarIdade, ocultarAniversario, ocultarEmail].forEach((campo) => campo.addEventListener('change', sincronizarTodos));
-        ocultarTodos.addEventListener('change', () => {
-          ocultarIdade.checked = ocultarTodos.checked;
-          ocultarAniversario.checked = ocultarTodos.checked;
-          ocultarEmail.checked = ocultarTodos.checked;
-        });
-        atualizarIdade();
       },
       preConfirm: () => ({
         data_nascimento: document.getElementById('perfil-data-nascimento').value || null,
-        exibir_idade: !document.getElementById('perfil-ocultar-idade').checked,
-        exibir_data_nascimento: !document.getElementById('perfil-ocultar-aniversario').checked,
+        exibir_aniversario_sem_ano: document.getElementById('perfil-exibir-aniversario').checked,
         exibir_email: !document.getElementById('perfil-ocultar-email').checked,
       }),
     });
     if (!resultado.isConfirmed) return;
     try {
-      await api.patch('/perfis/meu-perfil/', resultado.value);
+      if (!resultado.value.data_nascimento) {
+        await swal.fire({ icon: 'info', title: 'Informe a data', text: 'A data de nascimento é necessária para registrar a declaração etária.' });
+        return;
+      }
+      await api.put('/auth/idade/', {
+        data_nascimento: resultado.value.data_nascimento,
+        chave_idempotencia: crypto.randomUUID(),
+      });
+      await api.patch('/perfis/meu-perfil/', {
+        exibir_aniversario_sem_ano: resultado.value.exibir_aniversario_sem_ano,
+        exibir_email: resultado.value.exibir_email,
+      });
       await recarregarUsuario?.();
       mostrarToast('Dados pessoais atualizados.');
     } catch (error) {
@@ -738,13 +714,13 @@ function Profile() {
 
           {activeTab === 'info' && <div className="perfil-info-grid perfil-info-grid--moderno perfil-info-grid--sobre">
             <article className="content-glass-card full-width perfil-sobre-card">
-              <header className="perfil-sobre-cabecalho"><h3>Sobre {(user?.nome || user?.username || 'Usuário').split(' ')[0]}</h3><div ref={menuInformacoesRef} className="perfil-edicao-controle"><button type="button" className="btn-outline perfil-edicao-gatilho" onClick={() => setMenuInformacoesAberto((aberto) => !aberto)} aria-expanded={menuInformacoesAberto} aria-controls="menuEditarInformacoes"><i className="fa-solid fa-pen-to-square" aria-hidden="true"></i> Editar Informações <i className={`fa-solid fa-chevron-${menuInformacoesAberto ? 'up' : 'down'}`} aria-hidden="true"></i></button><div id="menuEditarInformacoes" className={`perfil-edicao-menu ${menuInformacoesAberto ? 'is-open' : ''}`} role="menu" aria-hidden={!menuInformacoesAberto} inert={!menuInformacoesAberto}><button type="button" role="menuitem" onClick={handleBiografia}><i className="fa-solid fa-align-left" aria-hidden="true"></i><span><strong>Editar Biografia</strong><small>Conte sua história em até 800 caracteres.</small></span></button><button type="button" role="menuitem" onClick={handleEditarDados}><i className="fa-solid fa-address-card" aria-hidden="true"></i><span><strong>Editar Dados</strong><small>Nascimento, idade e privacidade.</small></span></button></div></div></header>
+              <header className="perfil-sobre-cabecalho"><h3>Sobre {(user?.nome || user?.username || 'Usuário').split(' ')[0]}</h3><div ref={menuInformacoesRef} className="perfil-edicao-controle"><button type="button" className="btn-outline perfil-edicao-gatilho" onClick={() => setMenuInformacoesAberto((aberto) => !aberto)} aria-expanded={menuInformacoesAberto} aria-controls="menuEditarInformacoes"><i className="fa-solid fa-pen-to-square" aria-hidden="true"></i> Editar Informações <i className={`fa-solid fa-chevron-${menuInformacoesAberto ? 'up' : 'down'}`} aria-hidden="true"></i></button><div id="menuEditarInformacoes" className={`perfil-edicao-menu ${menuInformacoesAberto ? 'is-open' : ''}`} role="menu" aria-hidden={!menuInformacoesAberto} inert={!menuInformacoesAberto}><button type="button" role="menuitem" onClick={handleBiografia}><i className="fa-solid fa-align-left" aria-hidden="true"></i><span><strong>Editar Biografia</strong><small>Conte sua história em até 800 caracteres.</small></span></button><button type="button" role="menuitem" onClick={handleEditarDados}><i className="fa-solid fa-address-card" aria-hidden="true"></i><span><strong>Editar Dados</strong><small>Elegibilidade e preferências de privacidade.</small></span></button></div></div></header>
               <p className="sobre-texto">{fullProfile?.perfil?.bio || user?.bio || 'Nenhuma biografia informada.'}</p>
               <div className="perfil-sobre-divisor" aria-hidden="true"></div>
               <div className="perfil-dados-pessoais">
                 <dl>
-                  <div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Idade</dt><DadoPessoalProprio valor={Number.isInteger(user?.idade) ? `${user.idade} anos` : 'Não informada'} privado={user?.exibir_idade === false} /></div>
-                  <div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><DadoPessoalProprio valor={formatarDataNascimento(user?.data_nascimento)} privado={user?.exibir_data_nascimento === false} /></div>
+                  <div><dt><i className="fa-solid fa-cake-candles" aria-hidden="true"></i> Elegibilidade</dt><DadoPessoalProprio valor="Gerenciada de forma privada" privado /></div>
+                  <div><dt><i className="fa-solid fa-calendar-day" aria-hidden="true"></i> Aniversário</dt><DadoPessoalProprio valor="Somente dia e mês, se você optar" privado={user?.exibir_aniversario_sem_ano !== true} /></div>
                   <div><dt><i className="fa-solid fa-envelope" aria-hidden="true"></i> E-mail</dt><DadoPessoalProprio valor={user?.email || 'Não informado'} privado={user?.exibir_email === false} /></div>
                 </dl>
                 <nav className="perfil-info-atalhos" aria-label="Atalhos da atividade literária"><button type="button" onClick={(evento) => abrirDrawerAtividade(evento, 'livros')} aria-haspopup="dialog" aria-controls="drawerAtividadePerfil"><i className="fa-solid fa-book-open" aria-hidden="true"></i><span><strong>{stats.total_lidos}</strong> livros lidos</span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></button><button type="button" onClick={(evento) => abrirDrawerAtividade(evento, 'avaliacoes')} aria-haspopup="dialog" aria-controls="drawerAtividadePerfil"><i className="fa-solid fa-star" aria-hidden="true"></i><span><strong>{stats.total_avaliados}</strong> avaliações</span><i className="fa-solid fa-chevron-right" aria-hidden="true"></i></button></nav>

@@ -135,14 +135,35 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--baseline', type=Path, required=True)
     parser.add_argument('--candidate', type=Path, required=True)
+    parser.add_argument(
+        '--approved-breaking-changes',
+        type=Path,
+        help='JSON com exceções pontuais e aprovadas para uma quebra de contrato.',
+    )
     args = parser.parse_args()
     base = json.loads(args.baseline.read_text(encoding='utf-8'))
     candidato = json.loads(args.candidate.read_text(encoding='utf-8'))
     erros = comparar(base, candidato)
-    if erros:
+    aprovados: set[str] = set()
+    if args.approved_breaking_changes:
+        documento = json.loads(args.approved_breaking_changes.read_text(encoding='utf-8'))
+        for excecao in documento.get('approved_exceptions', []):
+            aprovados.update(excecao.get('errors', []))
+
+    erros_nao_aprovados = [erro for erro in erros if erro not in aprovados]
+    excecoes_sem_uso = sorted(aprovados - set(erros))
+    if excecoes_sem_uso:
+        erros_nao_aprovados.extend(
+            f'Exceção de quebra aprovada sem mudança correspondente: {erro}'
+            for erro in excecoes_sem_uso
+        )
+    if erros_nao_aprovados:
         print('Mudanças incompatíveis no OpenAPI:', file=sys.stderr)
-        print('\n'.join(f'- {erro}' for erro in erros), file=sys.stderr)
+        print('\n'.join(f'- {erro}' for erro in erros_nao_aprovados), file=sys.stderr)
         return 1
+    if erros:
+        print(f'Compatibilidade OpenAPI preservada com {len(erros)} exceção(ões) aprovada(s).')
+        return 0
     print('Compatibilidade OpenAPI preservada.')
     return 0
 

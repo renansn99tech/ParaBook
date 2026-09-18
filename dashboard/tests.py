@@ -32,6 +32,21 @@ class DashboardLixeiraAPIViewTests(TestCase):
         response = self.client.get(reverse('api-dashboard-lixeira'))
         self.assertEqual(response.status_code, 200)
 
+    def test_api_nao_permite_exclusao_permanente_sem_politica_de_retencao(self):
+        categoria = Categoria.objects.create(nome='Retenção protegida')
+        livro = Livro.objects.create(
+            titulo='Obra preservada', autor='Autor', categoria=categoria, status='removido',
+        )
+
+        response = self.client.post(
+            reverse('api-dashboard-lixeira'),
+            {'acao': 'excluir_livro_permanente', 'item_id': livro.pk},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Livro.objects.filter(pk=livro.pk).exists())
+
 
 class DashboardEstatisticasAPIViewTests(TestCase):
     def setUp(self):
@@ -258,6 +273,32 @@ class DashboardDenunciasComunidadeAPIViewTests(TestCase):
 class DashboardAdministracaoAvancadaAPIViewTests(TestCase):
     def setUp(self):
         cache.clear()
+        # RunPython das migrations só é executado na criação do banco. Como o
+        # TestCase faz flush entre os testes, a configuração declarativa precisa
+        # ser recriada no fixture para exercitar as rotas administrativas.
+        for chave, defaults in {
+            'autenticacao_2fa': {
+                'descricao': 'Disponibilizará verificação em duas etapas por aplicativo autenticador.',
+                'habilitada': False,
+                'disponivel': False,
+            },
+            'analytics_autor': {
+                'descricao': 'Disponibilizará métricas de alcance, leitura e engajamento para autores.',
+                'habilitada': False,
+                'disponivel': False,
+            },
+            'banner_anuncios': {
+                'descricao': 'Exibe o banner global de anúncios e o atalho para o plano Premium.',
+                'habilitada': False,
+                'disponivel': True,
+            },
+            'acervo_avancado_beta': {
+                'descricao': 'Ativa coleções editoriais, ofertas experimentais e simulações de apoio e compra na Biblioteca.',
+                'habilitada': False,
+                'disponivel': True,
+            },
+        }.items():
+            FeatureFlag.objects.update_or_create(chave=chave, defaults=defaults)
         self.admin = criar_admin('admin-avancado')
         self.client = APIClient()
         self.client.force_authenticate(self.admin)

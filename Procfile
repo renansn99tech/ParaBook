@@ -1,1 +1,1 @@
-web: sh scripts/render-start.sh
+web: sh scripts/start.sh

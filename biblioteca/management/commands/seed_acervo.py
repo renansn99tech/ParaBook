@@ -135,6 +135,12 @@ ACERVO = {
     ],
 }
 
+PARES_ACERVO = {
+    (titulo, autor)
+    for livros in ACERVO.values()
+    for titulo, autor, *_ in livros
+}
+
 # Ano de referência do cálculo de domínio público. Constante explícita
 # para o comando não mudar de comportamento sozinho na virada do ano.
 ANO_CORRENTE = 2026
@@ -150,10 +156,37 @@ class Command(BaseCommand):
             action='store_true',
             help='Mostra o que seria criado, sem gravar nada no banco.',
         )
+        parser.add_argument(
+            '--if-needed',
+            action='store_true',
+            help=(
+                'Retorna sem escrita quando todas as categorias e obras-base '
+                'já existem; completa normalmente um acervo parcial.'
+            ),
+        )
 
     @transaction.atomic
     def handle(self, *args, **options):
         simulacao = options['dry_run']
+
+        if options['if_needed']:
+            categorias_existentes = set(
+                Categoria.objects.filter(nome__in=CATEGORIAS).values_list('nome', flat=True)
+            )
+            livros_existentes = set(
+                Livro.objects.filter(
+                    titulo__in={titulo for titulo, _ in PARES_ACERVO}
+                ).values_list('titulo', 'autor')
+            )
+            if set(CATEGORIAS).issubset(categorias_existentes) and PARES_ACERVO.issubset(
+                livros_existentes
+            ):
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        'Acervo-base já está completo; nenhuma escrita foi necessária.'
+                    )
+                )
+                return
 
         cat_criadas = cat_existentes = 0
         livros_criados = livros_existentes = 0

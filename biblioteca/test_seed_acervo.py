@@ -50,6 +50,33 @@ class SeedAcervoTests(TestCase):
         self.assertEqual(Livro.objects.count(), 55)
         self.assertEqual(Livro.objects.filter(status='publicado').count(), 55)
 
+    def test_if_needed_nao_reprocessa_acervo_completo(self):
+        self.executar_seed()
+
+        saida = self.executar_seed(if_needed=True)
+
+        self.assertIn('nenhuma escrita foi necessária', saida)
+        self.assertEqual(Categoria.objects.count(), 11)
+        self.assertEqual(Livro.objects.count(), 55)
+
+    def test_if_needed_completa_acervo_parcial_sem_sobrescrever(self):
+        categoria = Categoria.objects.create(nome='Literatura')
+        livro = Livro.objects.create(
+            titulo='Dom Casmurro',
+            autor='Machado de Assis',
+            categoria=categoria,
+            status='pendente',
+            edicao='Edição preservada',
+        )
+
+        self.executar_seed(if_needed=True)
+
+        livro.refresh_from_db()
+        self.assertEqual(livro.status, 'pendente')
+        self.assertEqual(livro.edicao, 'Edição preservada')
+        self.assertEqual(Categoria.objects.count(), 11)
+        self.assertEqual(Livro.objects.count(), 55)
+
     def test_preserva_livro_existente_com_mesmo_titulo_e_autor(self):
         categoria_existente = Categoria.objects.create(nome='Categoria preservada')
         livro_existente = Livro.objects.create(

@@ -9,6 +9,22 @@ class DetailResponseSerializer(serializers.Serializer):
     detail = serializers.CharField()
 
 
+class EstadoEtarioResponseSerializer(serializers.Serializer):
+    estado = serializers.ChoiceField(
+        choices=['pendente', 'restrito_menor', 'liberado_adulto', 'em_revisao']
+    )
+    declaracoes_sucesso = serializers.IntegerField(min_value=0)
+    prazo_declaracao_em = serializers.DateTimeField(allow_null=True)
+    proxima_correcao_permitida_em = serializers.DateTimeField(allow_null=True)
+    restricao_ativa = serializers.BooleanField()
+    versao_politica = serializers.CharField()
+
+
+class DeclaracaoEtariaRequestSerializer(serializers.Serializer):
+    data_nascimento = serializers.DateField(write_only=True)
+    chave_idempotencia = serializers.UUIDField(write_only=True)
+
+
 class CsrfTokenResponseSerializer(serializers.Serializer):
     csrfToken = serializers.CharField()
 

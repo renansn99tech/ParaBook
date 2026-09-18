@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-python manage.py migrate --noinput
-python manage.py seed_acervo
-python manage.py seed_admin
-gunicorn config.wsgi --bind "0.0.0.0:${PORT:-8000}"
+# Compatibilidade com configurações antigas do Render/Procfile. Toda a
+# inicialização vive em um único script para não perder collectstatic,
+# credencial dedicada de migration nem os limites do Gunicorn.
+exec sh scripts/start.sh

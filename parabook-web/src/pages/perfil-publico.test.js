@@ -47,11 +47,12 @@ test('API entrega capas, histórico enriquecido e somente obras publicadas', () 
 });
 
 test('privacidade diferencia campo oculto de campo não informado', () => {
-  assert.match(api, /"exibir_idade": perfil_do_usuario\.exibir_idade/);
-  assert.match(api, /"exibir_data_nascimento": perfil_do_usuario\.exibir_data_nascimento/);
+  assert.match(api, /"aniversario": dado_pessoal/);
+  assert.match(api, /"exibir_aniversario_sem_ano": perfil_do_usuario\.exibir_aniversario_sem_ano/);
   assert.match(api, /"exibir_email": perfil_do_usuario\.exibir_email/);
   assert.match(pagina, /exibir === false \? 'Privado' : \(valor \|\| vazio\)/);
-  assert.match(pagina, /pessoais\.exibir_data_nascimento === false \? 'Privado'/);
+  assert.match(pagina, /pessoais\.exibir_aniversario_sem_ano/);
+  assert.doesNotMatch(api, /"data_nascimento":/);
 });
 
 test('comunidades usam a rota vigente e a interface mantém as decisões editoriais', () => {

@@ -448,4 +448,8 @@ class MigrationPublicacaoTests(TransactionTestCase):
             self.assertEqual(tentativa.motivo, 'Decisão antiga')
             self.assertEqual(tentativa.criada_em, solicitacao.data_envio)
         finally:
-            MigrationExecutor(connection).migrate(atual)
+            # Restaura todas as folhas atuais do grafo. Manter somente a folha
+            # de biblioteca aqui fazia testes posteriores usarem um schema de
+            # perfis anterior a migrations adicionadas por outras fatias.
+            restaurador = MigrationExecutor(connection)
+            restaurador.migrate(restaurador.loader.graph.leaf_nodes())

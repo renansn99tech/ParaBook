@@ -43,6 +43,14 @@
         "path": "/api/v1/auth/governanca/"
       },
       {
+        "method": "GET",
+        "path": "/api/v1/auth/idade/"
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/auth/idade/"
+      },
+      {
         "method": "POST",
         "path": "/api/v1/auth/login/"
       },

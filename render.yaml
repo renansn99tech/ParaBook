@@ -4,7 +4,9 @@ services:
     runtime: docker
     plan: free
     repo: https://github.com/renansn99tech/ParaBook
-    branch: main
+    # O ambiente de validação acompanha exclusivamente a branch desenvolvida
+    # pela equipe. A promoção para main continua sendo uma decisão explícita.
+    branch: develop
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health/
@@ -79,6 +81,14 @@ services:
         value: "None"
       - key: RUN_MIGRATIONS
         value: "true"
+      # O seed é consultado em cada inicialização, mas só grava quando o
+      # acervo-base está incompleto. Nunca remove nem atualiza livros existentes.
+      - key: RUN_SEED_ACERVO
+        value: "true"
+      # Ative temporariamente somente depois de cadastrar SEED_ADMIN_USERNAME,
+      # SEED_ADMIN_EMAIL e SEED_ADMIN_PASSWORD no painel do Render.
+      - key: RUN_SEED_ADMIN
+        value: "false"
       - key: GUNICORN_WORKERS
         value: "1"
       - key: GUNICORN_THREADS

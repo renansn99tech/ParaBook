@@ -1,7 +1,6 @@
-from rest_framework import serializers
 from django.conf import settings
+from rest_framework import serializers
 from assinaturas.models import Plano, Assinatura
-
 
 class PlanoSerializer(serializers.ModelSerializer):
     contratacao_disponivel = serializers.SerializerMethodField()
@@ -21,7 +20,6 @@ class PlanoSerializer(serializers.ModelSerializer):
             'id', 'nome', 'preco', 'limite_livros', 'anuncios',
             'contratacao_disponivel', 'motivo_indisponibilidade',
         ]
-
 
 class AssinaturaSerializer(serializers.ModelSerializer):
     plano = PlanoSerializer(read_only=True)

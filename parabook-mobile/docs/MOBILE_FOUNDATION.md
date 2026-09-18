@@ -4,7 +4,7 @@ Diagnostico e contrato da fundacao mobile, validado em 2026-08-26 contra o codig
 
 ## Contrato de autenticacao nativa
 
-Base remota padrao: `https://parabook-nl8o.onrender.com/api/v1`. O app pode sobrescrever esse valor com `EXPO_PUBLIC_API_URL`, sem depender de `localhost` no iPhone fisico.
+Base remota padrao: `https://parabook-api.onrender.com/api/v1`. O app pode sobrescrever esse valor com `EXPO_PUBLIC_API_URL`, sem depender de `localhost` no iPhone fisico.
 
 | Fluxo | Endpoint | Contrato mobile |
 | --- | --- | --- |

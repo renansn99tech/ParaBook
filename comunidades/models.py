@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 
 class Comunidade(models.Model):
     nome = models.CharField(max_length=100)
+    chave_demonstrativa = models.CharField(
+        max_length=80, unique=True, null=True, blank=True, editable=False,
+    )
     descricao = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
 
@@ -31,6 +34,10 @@ class Comunidade(models.Model):
 
     def __str__(self):
         return self.nome
+
+    @property
+    def demonstrativo(self):
+        return bool(self.chave_demonstrativa)
 
 
 class PostagemComunidade(models.Model):

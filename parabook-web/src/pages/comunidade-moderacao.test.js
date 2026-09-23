@@ -9,7 +9,7 @@ const app = readFileSync(new URL('../App.jsx', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../assets/css/painel-denuncias-comunidade.css', import.meta.url), 'utf8');
 
 test('admin pode publicar e responder sem participar como membro', () => {
-  assert.match(conteudo, /const podePublicar = membro \|\| admin/);
+  assert.match(conteudo, /const podePublicar = !comunidade\?\.demonstrativo && \(membro \|\| admin\)/);
   assert.match(conteudo, /podePublicar && \(!comunidade\.em_manutencao \|\| admin\)/);
   assert.match(conteudo, /Criar nova postagem/);
 });

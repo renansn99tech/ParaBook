@@ -8,9 +8,21 @@ from django.urls import reverse
 
 from biblioteca.management.commands.seed_acervo import ACERVO, CATEGORIAS
 from biblioteca.models import Categoria, Livro
+from dashboard.models import FeatureFlag
 
 
 class SeedAcervoTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        FeatureFlag.objects.update_or_create(
+            chave='conteudo_demonstrativo',
+            defaults={
+                'descricao': 'Conteúdo de exemplo',
+                'habilitada': True,
+                'disponivel': True,
+            },
+        )
+
     def executar_seed(self, **options):
         saida = StringIO()
         call_command('seed_acervo', stdout=saida, **options)

@@ -5,6 +5,11 @@ import SwitchAdmin from '../../components/admin/SwitchAdmin';
 import api from '../../services/api';
 
 const APRESENTACAO_FLAGS = {
+  conteudo_demonstrativo: {
+    nome: 'Conteúdo demonstrativo',
+    icone: 'fa-book-open',
+    categoria: 'Vitrine e apresentação',
+  },
   perfil_jornada_leitura: {
     nome: 'Jornada de leitura',
     icone: 'fa-route',

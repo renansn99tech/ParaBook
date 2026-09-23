@@ -6,11 +6,13 @@ from .models import Comunidade, PostagemComunidade, DenunciaComunidade
 from usuarios.models import Usuario
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from dashboard.demo import filtrar_conteudo_demonstrativo
 
 def comunidades(request):
     # Separa as comunidades oficiais (do sistema) das criadas pelos usuários
-    comunidades_sistema = Comunidade.objects.filter(criada_por_sistema=True).order_by('nome')
-    comunidades_usuarios = Comunidade.objects.filter(criada_por_sistema=False).order_by('-data_criacao')
+    visiveis = filtrar_conteudo_demonstrativo(Comunidade.objects.all(), request.user)
+    comunidades_sistema = visiveis.filter(criada_por_sistema=True).order_by('nome')
+    comunidades_usuarios = visiveis.filter(criada_por_sistema=False).order_by('-data_criacao')
 
     return render(request, 'comunidades/comunidade.html', {
         'comunidades_sistema': comunidades_sistema,
@@ -49,6 +51,9 @@ def criar_comunidade(request):
 @login_required
 def editar_comunidade(request, id):
     comunidade = get_object_or_404(Comunidade, id=id)
+    if comunidade.demonstrativo:
+        messages.error(request, 'Use a feature flag para controlar este exemplo.')
+        return redirect('comunidades')
     
     # REGRA 11: Apenas o criador edita
     if comunidade.criador != request.user and not request.user.is_superuser:
@@ -67,6 +72,9 @@ def editar_comunidade(request, id):
 @login_required
 def excluir_comunidade(request, id):
     comunidade = get_object_or_404(Comunidade, id=id)
+    if comunidade.demonstrativo:
+        messages.error(request, 'Use a feature flag para ocultar este exemplo sem apagá-lo.')
+        return redirect('comunidades')
     
     # REGRA 11: Apenas o criador pode apagar pelo Front
     if comunidade.criador != request.user and not request.user.is_superuser:
@@ -94,6 +102,9 @@ def acesso_comunidade(request):
 @login_required
 def participar_comunidade(request, id):
     comunidade = get_object_or_404(Comunidade, id=id)
+    if comunidade.demonstrativo:
+        messages.info(request, 'Comunidade demonstrativa disponível apenas para visualização.')
+        return redirect('comunidades')
     
     if request.user in comunidade.membros.all():
         comunidade.membros.remove(request.user)
@@ -111,7 +122,9 @@ def participar_comunidade(request, id):
 
 # Alteração: Buscando a comunidade correta pelo ID recebido via URL
 def conteudo_comunidade(request, id):
-    comunidade = get_object_or_404(Comunidade, id=id)
+    comunidade = get_object_or_404(
+        filtrar_conteudo_demonstrativo(Comunidade.objects.all(), request.user), id=id,
+    )
 
     # REGRA 3: Manutenção
     if comunidade.em_manutencao and not request.user.is_superuser:
@@ -128,6 +141,8 @@ def conteudo_comunidade(request, id):
 
     if request.user.is_authenticated:
         pode_postar = True # Por padrão, logados podem postar
+        if comunidade.demonstrativo:
+            pode_postar = False
         
         # Descobre o nível do usuário
         if request.user.is_superuser:
@@ -216,6 +231,10 @@ def registrar_denuncia_comunidade(request, id_comunidade):
         data = json.loads(request.body)
         motivo = data.get('motivo')
         comunidade = get_object_or_404(Comunidade, id=id_comunidade)
+        if comunidade.demonstrativo:
+            return JsonResponse(
+                {'success': False, 'error': 'Comunidade demonstrativa.'}, status=403,
+            )
 
         # Regra de Negócio: Evita que o mesmo usuário denuncie a mesma sala 50 vezes
         if not DenunciaComunidade.objects.filter(comunidade=comunidade, usuario=request.user).exists():

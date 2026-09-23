@@ -44,6 +44,9 @@ class Livro(models.Model):
     ]
 
     titulo = models.CharField(max_length=255, default="Sem Título", verbose_name="Título")
+    chave_demonstrativa = models.CharField(
+        max_length=80, unique=True, null=True, blank=True, editable=False,
+    )
     autor = models.CharField(max_length=150, verbose_name="Autor")
     ano_publicacao = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="Ano de Publicação")
     avaliacao = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, verbose_name="Avaliação Média")
@@ -88,6 +91,10 @@ class Livro(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    @property
+    def demonstrativo(self):
+        return bool(self.chave_demonstrativa)
 
     def clean(self):
         super().clean()

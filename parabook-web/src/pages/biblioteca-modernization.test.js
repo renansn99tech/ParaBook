@@ -27,6 +27,7 @@ test('resolverAcaoLivro mantém os seis ramos e a precedência do backend', () =
   const inicio = pagina.indexOf('export function resolverAcaoLivro');
   const fim = pagina.indexOf('export function formatarVigencia');
   const helper = pagina.slice(inicio, fim);
+  assert.match(helper, /if \(livro\?\.demonstrativo\) return \{ tipo: 'inerte'/);
   const ramos = ['acesso.pode_ler', "acesso.codigo === 'requer_autenticacao'", 'acesso.requer_assinatura', 'acesso.pode_ler_amostra', "'vigencia_encerrada'", "rotulo: 'Indisponível'"];
   ramos.reduce((anterior, ramo) => {
     const atual = helper.indexOf(ramo);

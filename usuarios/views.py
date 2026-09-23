@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from .models import Usuario
 from notificacoes.models import Notificacao
 from comunidades.models import Comunidade
+from dashboard.demo import filtrar_conteudo_demonstrativo
 from biblioteca.models import Livro
 from perfis.models import FRASE_STATUS_PADRAO_LEITOR, Perfil
 from .forms import RegistroUsuarioForm  # <-- Importa o novo formulário customizado
@@ -19,10 +20,14 @@ from .services import resolver_identificador_login
 
 def index(request):
     # Busca os 3 últimos livros adicionados
-    livros_recentes = Livro.objects.filter(status='publicado').order_by('-id')[:3]
+    livros_recentes = filtrar_conteudo_demonstrativo(
+        Livro.objects.filter(status='publicado'), request.user,
+    ).order_by('-id')[:3]
     
     # Busca até 3 Comunidades Oficiais do Sistema
-    comunidades_oficiais = Comunidade.objects.filter(criada_por_sistema=True)[:3]
+    comunidades_oficiais = filtrar_conteudo_demonstrativo(
+        Comunidade.objects.filter(criada_por_sistema=True), request.user,
+    )[:3]
     
     return render(request, 'index.html', {
         'livros_recentes': livros_recentes,

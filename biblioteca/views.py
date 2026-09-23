@@ -15,6 +15,7 @@ from django.utils.crypto import salted_hmac
 from django.utils import timezone
 
 from comunidades.models import Comunidade
+from dashboard.demo import filtrar_conteudo_demonstrativo
 from usuarios.models import Usuario
 from assinaturas.decorators import requer_premium
 from .models import Categoria, Livro, Biblioteca, Denuncia, SolicitacaoPublicacao, DeclaracaoAutoria
@@ -29,13 +30,15 @@ logger = logging.getLogger(__name__)
 
 
 def novidade(request):
-    livros_recentes = Livro.objects.filter(status='publicado').order_by('-id')[:6]
+    livros_recentes = filtrar_conteudo_demonstrativo(
+        Livro.objects.filter(status='publicado'), request.user,
+    ).order_by('-id')[:6]
     return render(request, 'biblioteca/novidade.html', {'livros_recentes': livros_recentes})
 
 
 def biblioteca(request):
     categorias = ['filosofia', 'literatura', 'religiosos', 'exatas', 'infantis']
-    livros = livros_por_categorias(categorias)
+    livros = filtrar_conteudo_demonstrativo(livros_por_categorias(categorias), request.user)
     livros_map = {cat: [] for cat in categorias}
 
     for livro in livros:
@@ -76,7 +79,7 @@ def adicionar_a_biblioteca(request, livro_id):
                 )
                 return redirect('assinaturas:listar_planos')
 
-            livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
+            livro = get_object_or_404(Livro, pk=livro_id, status='publicado', chave_demonstrativa__isnull=True)
             obj, criado = Biblioteca.objects.get_or_create(user=request.user, livro=livro)
 
             if not obj.xp_ganho_adicao:
@@ -128,7 +131,7 @@ def leitura(request):
         messages.error(request, "ID inválido.")
         return redirect('biblioteca')
 
-    livro = get_object_or_404(Livro, pk=livro_id, status='publicado')
+    livro = get_object_or_404(Livro, pk=livro_id, status='publicado', chave_demonstrativa__isnull=True)
     return render(request, 'biblioteca/leitura.html', {'livro': livro})
 
 
@@ -154,7 +157,10 @@ def iniciar_leitura(request, livro_id):
 def concluir_leitura(request, livro_id):
     if request.method == "POST" and request.user.is_authenticated:
         try:
-            registro = Biblioteca.objects.get(user=request.user, livro__id=livro_id)
+            registro = Biblioteca.objects.get(
+                user=request.user, livro__id=livro_id,
+                livro__chave_demonstrativa__isnull=True,
+            )
             status_anterior = registro.status
 
             registro.status = StatusBiblioteca.LIDO
@@ -245,14 +251,19 @@ def deletar_livro(request, id):
 
 @login_required
 def acesso_biblioteca(request):
-    livros = Biblioteca.objects.filter(user=request.user).select_related('livro')
+    livros = Biblioteca.objects.filter(
+        user=request.user, livro__chave_demonstrativa__isnull=True,
+    ).select_related('livro')
     return render(request, 'biblioteca/acesso-biblioteca.html', {'livros': livros})
 
 
 def home(request):
-    livros_em_alta = Livro.objects.filter(status='publicado').order_by('-avaliacao')[:6]
-    livros_recentes = Livro.objects.filter(status='publicado').order_by('-id')[:6]
-    comunidades = Comunidade.objects.all()[:6]
+    livros_visiveis = filtrar_conteudo_demonstrativo(
+        Livro.objects.filter(status='publicado'), request.user,
+    )
+    livros_em_alta = livros_visiveis.order_by('-avaliacao')[:6]
+    livros_recentes = livros_visiveis.order_by('-id')[:6]
+    comunidades = filtrar_conteudo_demonstrativo(Comunidade.objects.all(), request.user)[:6]
 
     livro_atual = None
     total_leituras = 0
@@ -328,7 +339,10 @@ def avaliar_livro(request, livro_id):
         try:
             data = json.loads(request.body)
             nova_nota = int(data.get('nota'))
-            registro = Biblioteca.objects.get(user=request.user, livro__id=livro_id)
+            registro = Biblioteca.objects.get(
+                user=request.user, livro__id=livro_id,
+                livro__chave_demonstrativa__isnull=True,
+            )
             
             nota_anterior = registro.nota
             registro.nota = nova_nota
@@ -354,7 +368,10 @@ def avaliar_livro(request, livro_id):
 def favoritar_livro(request, livro_id):
     if request.method == "POST" and request.user.is_authenticated:
         try:
-            registro = Biblioteca.objects.get(user=request.user, livro__id=livro_id)
+            registro = Biblioteca.objects.get(
+                user=request.user, livro__id=livro_id,
+                livro__chave_demonstrativa__isnull=True,
+            )
             estava_favoritado = registro.favorito
             registro.favorito = not registro.favorito
             campos_atualizados = ['favorito']
@@ -379,7 +396,12 @@ def favoritar_livro(request, livro_id):
 
 
 def livro_info(request, id):
-    livro = get_object_or_404(Livro, id=id, status='publicado')
+    livro = get_object_or_404(
+        filtrar_conteudo_demonstrativo(Livro.objects.filter(status='publicado'), request.user),
+        id=id,
+    )
+    if livro.demonstrativo and request.method == 'POST':
+        return redirect('livro_info', id=id)
 
     if request.method == 'POST' and request.user.is_authenticated:
         if 'btn_avaliar' in request.POST:
@@ -478,7 +500,9 @@ def recomendacao_ia_view(request):
     )
     livros_lidos = [item.livro.titulo for item in itens_estante]
 
-    queryset_base = Livro.objects.filter(status='publicado').exclude(id__in=livros_estante_ids)
+    queryset_base = Livro.objects.filter(
+        status='publicado', chave_demonstrativa__isnull=True,
+    ).exclude(id__in=livros_estante_ids)
 
     ids_recomendados = []
 

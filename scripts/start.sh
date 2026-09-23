@@ -13,10 +13,10 @@ fi
 # proprietária não é herdada pelo Gunicorn depois que a migration termina.
 unset MIGRATION_DATABASE_URL
 
-if [ "${RUN_SEED_ACERVO:-false}" = "true" ]; then
-    # O comando retorna sem escrita quando as 11 categorias e 55 obras-base
-    # já existem. Se o acervo estiver parcial, cria somente os itens ausentes.
-    python manage.py seed_acervo --if-needed
+if [ "${RUN_SEED_DEMONSTRATIVO:-false}" = "true" ]; then
+    # Dados de visualização são preservados no banco e controlados pela
+    # feature flag conteudo_demonstrativo. O seed só completa itens ausentes.
+    python manage.py seed_demonstrativo --if-needed
 fi
 
 if [ "${RUN_SEED_ADMIN:-false}" = "true" ]; then

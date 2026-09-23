@@ -5854,6 +5854,10 @@
                     "descricao": {
                         "type": "string"
                     },
+                    "demonstrativo": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
                     "data_criacao": {
                         "type": "string",
                         "format": "date-time",
@@ -5909,6 +5913,7 @@
                     "criador_nome",
                     "criador_perfil_clicavel",
                     "data_criacao",
+                    "demonstrativo",
                     "descricao",
                     "em_manutencao",
                     "id",
@@ -7016,6 +7021,10 @@
                         "type": "string",
                         "maxLength": 150
                     },
+                    "demonstrativo": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
                     "categoria": {
                         "type": "integer"
                     },
@@ -7151,6 +7160,7 @@
                     "capa_url",
                     "categoria",
                     "categoria_nome",
+                    "demonstrativo",
                     "id",
                     "modelo_acesso_label",
                     "origem_label",
@@ -7174,6 +7184,10 @@
                     "autor": {
                         "type": "string",
                         "maxLength": 150
+                    },
+                    "demonstrativo": {
+                        "type": "boolean",
+                        "readOnly": true
                     },
                     "categoria": {
                         "type": "integer"
@@ -7319,6 +7333,7 @@
                     "capa_url",
                     "categoria",
                     "categoria_nome",
+                    "demonstrativo",
                     "id",
                     "modelo_acesso_label",
                     "motivo_card",
@@ -7892,6 +7907,10 @@
                     "descricao": {
                         "type": "string"
                     },
+                    "demonstrativo": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
                     "data_criacao": {
                         "type": "string",
                         "format": "date-time",
@@ -8055,6 +8074,10 @@
                     "autor": {
                         "type": "string",
                         "maxLength": 150
+                    },
+                    "demonstrativo": {
+                        "type": "boolean",
+                        "readOnly": true
                     },
                     "categoria": {
                         "type": "integer"

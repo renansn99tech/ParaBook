@@ -81,10 +81,10 @@ services:
         value: "None"
       - key: RUN_MIGRATIONS
         value: "true"
-      # O seed é consultado em cada inicialização, mas só grava quando o
-      # acervo-base está incompleto. Nunca remove nem atualiza livros existentes.
-      - key: RUN_SEED_ACERVO
-        value: "true"
+      # Ative após publicar as migrations e o código que filtra os exemplos.
+      # O seed é aditivo; a visibilidade é controlada por feature flag.
+      - key: RUN_SEED_DEMONSTRATIVO
+        value: "false"
       # Ative temporariamente somente depois de cadastrar SEED_ADMIN_USERNAME,
       # SEED_ADMIN_EMAIL e SEED_ADMIN_PASSWORD no painel do Render.
       - key: RUN_SEED_ADMIN

@@ -290,7 +290,9 @@ class InicioPersonalizadoAPIView(APIView):
         )
         categorias_ids = [item['livro__categoria_id'] for item in categorias_preferidas]
 
-        disponiveis = Livro.objects.filter(status='publicado').exclude(id__in=livros_na_estante)
+        disponiveis = Livro.objects.filter(
+            status='publicado', chave_demonstrativa__isnull=True,
+        ).exclude(id__in=livros_na_estante)
         selecionados = []
         if categorias_ids:
             selecionados.extend(

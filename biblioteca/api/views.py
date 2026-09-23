@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Q
 from usuarios.permissions import eh_admin_parabook
+from dashboard.demo import filtrar_conteudo_demonstrativo
 from biblioteca import publicacao as fluxo
 from rest_framework.exceptions import PermissionDenied, ValidationError as ApiValidationError
 from biblioteca.models import Livro, Categoria, Biblioteca, SolicitacaoPublicacao, DeclaracaoAutoria
@@ -77,6 +78,7 @@ class LivroViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = Livro.objects.all().select_related('categoria')
         user = self.request.user
+        qs = filtrar_conteudo_demonstrativo(qs, user)
 
         origem = self.request.query_params.get('origem')
         modelo_acesso = self.request.query_params.get('modelo_acesso')
@@ -108,6 +110,8 @@ class LivroViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def perform_update(self, serializer):
         livro = Livro.objects.select_for_update().get(pk=serializer.instance.pk)
+        if livro.demonstrativo:
+            raise PermissionDenied('Ficha demonstrativa: controle a visibilidade pela feature flag.')
         if livro.origem == 'autor_independente':
             raise PermissionDenied('Obras independentes são alteradas pelo autor e analisadas na fila de revisão.')
         if serializer.validated_data.get('origem', livro.origem) not in {'dominio_publico', 'licenciado'}:
@@ -182,7 +186,10 @@ class EstanteViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Biblioteca.objects.filter(user=self.request.user).order_by('-data_adicao')
+        queryset = Biblioteca.objects.filter(
+            user=self.request.user,
+            livro__chave_demonstrativa__isnull=True,
+        ).order_by('-data_adicao')
         status_filtro = self.request.query_params.get('status')
         livro_id = self.request.query_params.get('livro')
 
@@ -391,7 +398,9 @@ class RecomendacoesIAAPIView(APIView):
             itens_estante.values_list('livro__categoria_id', flat=True).distinct()
         )
 
-        queryset_base = Livro.objects.filter(status='publicado').exclude(id__in=livros_estante_ids)
+        queryset_base = Livro.objects.filter(
+            status='publicado', chave_demonstrativa__isnull=True,
+        ).exclude(id__in=livros_estante_ids)
         ids_recomendados = []
 
         if categorias_preferidas_ids:

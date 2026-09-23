@@ -13,6 +13,7 @@ class CategoriaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LivroSerializer(serializers.ModelSerializer):
+    demonstrativo = serializers.BooleanField(read_only=True)
     categoria_nome = serializers.CharField(source='categoria.nome', read_only=True)
     capa_url = serializers.SerializerMethodField()
     pdf_disponivel = serializers.SerializerMethodField()
@@ -27,7 +28,7 @@ class LivroSerializer(serializers.ModelSerializer):
     class Meta:
         model = Livro
         fields = [
-            'id', 'titulo', 'autor', 'categoria', 'categoria_nome',
+            'id', 'titulo', 'autor', 'demonstrativo', 'categoria', 'categoria_nome',
             'origem', 'origem_label', 'selo_independente', 'status',
             'modelo_acesso', 'modelo_acesso_label', 'acesso',
             'disponivel_de', 'disponivel_ate', 'territorio_cultural',
@@ -103,6 +104,10 @@ class EstanteSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
         livro = attrs.get('livro') or getattr(self.instance, 'livro', None)
+        if livro and livro.demonstrativo:
+            raise serializers.ValidationError({
+                'livro': 'Ficha demonstrativa não pode ser adicionada à estante.'
+            })
         if self.instance is None and livro:
             request = self.context.get('request')
             if request and Biblioteca.objects.filter(user=request.user, livro=livro).exists():

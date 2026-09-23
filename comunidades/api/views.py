@@ -25,6 +25,7 @@ from .serializers import (
 from usuarios.audit import registrar_acao
 from notificacoes.models import Notificacao
 from usuarios.identidade_publica import identidade_publica
+from dashboard.demo import filtrar_conteudo_demonstrativo
 
 # REGRA 10: teto de comunidades criadas por um leitor/autor.
 LIMITE_COMUNIDADES_POR_USUARIO = 5
@@ -49,6 +50,7 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
         e o detalhe por id segue acessível para exibir o aviso de desativada.
         """
         queryset = super().get_queryset().select_related('criador', 'criador__perfil_customizado')
+        queryset = filtrar_conteudo_demonstrativo(queryset, self.request.user)
 
         if self.action != 'list':
             return queryset
@@ -72,6 +74,8 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
         em que esperar o contador não é aceitável.
         """
         comunidade = self.get_object()
+        if comunidade.demonstrativo:
+            raise PermissionDenied('Exemplo demonstrativo: use a feature flag para ocultá-lo.')
         e_dono = comunidade.criador_id == request.user.id
 
         if request.user.is_superuser and not e_dono and not comunidade.criada_por_sistema:
@@ -100,6 +104,11 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
             metadados={'forcada': forcar},
         )
         return response
+
+    def perform_update(self, serializer):
+        if serializer.instance.demonstrativo:
+            raise PermissionDenied('Comunidade demonstrativa: controle a visibilidade pela feature flag.')
+        serializer.save()
 
     def perform_create(self, serializer):
         usuario = self.request.user
@@ -177,6 +186,9 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
         """
         comunidade = self.get_object()
 
+        if comunidade.demonstrativo:
+            raise PermissionDenied('Exemplo demonstrativo: use a feature flag para controlar a visibilidade.')
+
         if not request.user.is_superuser:
             raise PermissionDenied("Apenas administradores podem desativar comunidades.")
 
@@ -208,6 +220,9 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
     def entrar(self, request, pk=None):
         comunidade = self.get_object()
 
+        if comunidade.demonstrativo:
+            raise PermissionDenied('Comunidade demonstrativa disponível apenas para visualização.')
+
         if comunidade.em_manutencao:
             return Response({"erro": "Comunidade em manutenção temporária."}, status=status.HTTP_403_FORBIDDEN)
 
@@ -229,6 +244,9 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset().select_related('autor', 'autor__perfil_customizado').annotate(
             total_respostas_anotado=Count('respostas', distinct=True),
         )
+        queryset = filtrar_conteudo_demonstrativo(
+            queryset, self.request.user, prefixo='comunidade__',
+        )
         comunidade_id = self.request.query_params.get('comunidade')
         if comunidade_id:
             queryset = queryset.filter(comunidade_id=comunidade_id)
@@ -237,6 +255,9 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         comunidade = serializer.validated_data['comunidade']
         usuario = self.request.user
+
+        if comunidade.demonstrativo:
+            raise PermissionDenied('Comunidade demonstrativa disponível apenas para visualização.')
 
         if comunidade.em_manutencao and not usuario.is_superuser:
             raise PermissionDenied('Esta comunidade está temporariamente desativada.')
@@ -255,6 +276,9 @@ class RespostaPostagemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = filtrar_conteudo_demonstrativo(
+            queryset, self.request.user, prefixo='postagem__comunidade__',
+        )
         postagem_id = self.request.query_params.get('postagem')
         if postagem_id:
             queryset = queryset.filter(postagem_id=postagem_id)
@@ -264,6 +288,8 @@ class RespostaPostagemViewSet(viewsets.ModelViewSet):
         postagem = serializer.validated_data['postagem']
         comunidade = postagem.comunidade
         usuario = self.request.user
+        if comunidade.demonstrativo:
+            raise PermissionDenied('Comunidade demonstrativa disponível apenas para visualização.')
         if comunidade.em_manutencao and not usuario.is_superuser:
             raise PermissionDenied('Esta comunidade está temporariamente desativada.')
         if not usuario.is_superuser and not comunidade.membros.filter(pk=usuario.pk).exists():

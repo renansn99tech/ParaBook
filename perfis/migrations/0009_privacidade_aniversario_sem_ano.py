@@ -3,8 +3,11 @@ from django.db import migrations, models
 
 def tornar_campos_legados_privados(apps, schema_editor):
     Perfil = apps.get_model('perfis', 'Perfil')
-    Perfil.objects.filter(exibir_idade=True).update(exibir_idade=False)
-    Perfil.objects.filter(exibir_data_nascimento=True).update(exibir_data_nascimento=False)
+    alias = schema_editor.connection.alias
+    Perfil.objects.using(alias).filter(exibir_idade=True).update(exibir_idade=False)
+    Perfil.objects.using(alias).filter(exibir_data_nascimento=True).update(
+        exibir_data_nascimento=False
+    )
 
 
 class Migration(migrations.Migration):

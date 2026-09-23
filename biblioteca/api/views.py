@@ -77,6 +77,8 @@ class LivroViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = Livro.objects.all().select_related('categoria')
+        if getattr(self, 'swagger_fake_view', False):
+            return qs.none()
         user = self.request.user
         qs = filtrar_conteudo_demonstrativo(qs, user)
 

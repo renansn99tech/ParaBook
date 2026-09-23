@@ -50,6 +50,8 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
         e o detalhe por id segue acessível para exibir o aviso de desativada.
         """
         queryset = super().get_queryset().select_related('criador', 'criador__perfil_customizado')
+        if getattr(self, 'swagger_fake_view', False):
+            return queryset.none()
         queryset = filtrar_conteudo_demonstrativo(queryset, self.request.user)
 
         if self.action != 'list':
@@ -244,6 +246,8 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset().select_related('autor', 'autor__perfil_customizado').annotate(
             total_respostas_anotado=Count('respostas', distinct=True),
         )
+        if getattr(self, 'swagger_fake_view', False):
+            return queryset.none()
         queryset = filtrar_conteudo_demonstrativo(
             queryset, self.request.user, prefixo='comunidade__',
         )
@@ -276,6 +280,8 @@ class RespostaPostagemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        if getattr(self, 'swagger_fake_view', False):
+            return queryset.none()
         queryset = filtrar_conteudo_demonstrativo(
             queryset, self.request.user, prefixo='postagem__comunidade__',
         )

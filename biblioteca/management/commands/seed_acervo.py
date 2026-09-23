@@ -198,7 +198,10 @@ class Command(BaseCommand):
                 criada = not existe
                 categoria = None if criada else Categoria.objects.get(nome=nome)
             else:
-                categoria, criada = Categoria.objects.get_or_create(nome=nome)
+                categoria, criada = Categoria.objects.get_or_create(
+                    nome=nome,
+                    defaults={'disponivel_publicamente': nome != 'Infantis'},
+                )
 
             if criada:
                 cat_criadas += 1

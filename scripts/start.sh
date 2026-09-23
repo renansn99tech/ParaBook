@@ -9,15 +9,21 @@ if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     fi
 fi
 
-# No plano Free, o Render não oferece pre-deploy command. A credencial
-# proprietária não é herdada pelo Gunicorn depois que a migration termina.
-unset MIGRATION_DATABASE_URL
-
 if [ "${RUN_SEED_DEMONSTRATIVO:-false}" = "true" ]; then
     # Dados de visualização são preservados no banco e controlados pela
-    # feature flag conteudo_demonstrativo. O seed só completa itens ausentes.
-    python manage.py seed_demonstrativo --if-needed
+    # feature flag conteudo_demonstrativo. A role de runtime é barrada pelo
+    # RLS do Supabase; a credencial proprietária fica restrita a este processo.
+    if [ -n "${MIGRATION_DATABASE_URL:-}" ]; then
+        DATABASE_URL="$MIGRATION_DATABASE_URL" MIGRATION_DATABASE_URL= \
+            python manage.py seed_demonstrativo --if-needed
+    else
+        python manage.py seed_demonstrativo --if-needed
+    fi
 fi
+
+# No plano Free, o Render não oferece pre-deploy command. A credencial
+# proprietária não é herdada pelo Gunicorn depois das tarefas de inicialização.
+unset MIGRATION_DATABASE_URL
 
 if [ "${RUN_SEED_ADMIN:-false}" = "true" ]; then
     # seed_admin valida as três SEED_ADMIN_* e falha explicitamente se a

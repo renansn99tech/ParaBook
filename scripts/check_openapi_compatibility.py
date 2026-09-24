@@ -69,6 +69,18 @@ def comparar_esquema(
 
     props_base = base.get('properties', {})
     props_candidato = candidato.get('properties', {})
+    if direcao == 'request':
+        # OpenAPI applies required readOnly properties only to responses. The
+        # schema may be shared by request and response bodies, so exclude them
+        # when checking whether clients must send a request property.
+        props_base = {
+            nome: propriedade for nome, propriedade in props_base.items()
+            if not propriedade.get('readOnly', False)
+        }
+        props_candidato = {
+            nome: propriedade for nome, propriedade in props_candidato.items()
+            if not propriedade.get('readOnly', False)
+        }
     for nome in sorted(set(props_base) - set(props_candidato)):
         erros.append(f'{caminho}.{nome}: propriedade removida')
     for nome in sorted(set(props_base) & set(props_candidato)):
@@ -79,6 +91,9 @@ def comparar_esquema(
 
     obrigatorios_base = set(base.get('required', []))
     obrigatorios_candidato = set(candidato.get('required', []))
+    if direcao == 'request':
+        obrigatorios_base.intersection_update(props_base)
+        obrigatorios_candidato.intersection_update(props_candidato)
     alterados = (
         obrigatorios_candidato - obrigatorios_base
         if direcao == 'request'

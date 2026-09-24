@@ -71,7 +71,11 @@
                         <label>Senha</label>
                     </div>
 
-                    <a href="{% url 'usuarios:password_reset' %}" class="auth-forgot-link">Esqueceu a senha?</a>
+                    <span class="auth-forgot-unavailable" title="A recuperação de senha ainda não está disponível.">
+                        <button type="button" class="auth-forgot-link" disabled aria-label="Esqueceu sua senha? A recuperação ainda não está disponível.">
+                            Esqueceu sua senha?
+                        </button>
+                    </span>
 
                     <button type="submit" class="auth-btn-submit">Acessar Conta</button>
 

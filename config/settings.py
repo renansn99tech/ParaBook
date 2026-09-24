@@ -388,6 +388,7 @@ LEGAL_JURISDICTION = 'Brasil'
 # Em produção, usa SMTP com as variáveis de ambiente.
 
 EMAIL_ENABLED = config('EMAIL_ENABLED', default=DEBUG, cast=bool)
+PASSWORD_RESET_ENABLED = config('PASSWORD_RESET_ENABLED', default=False, cast=bool)
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

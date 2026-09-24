@@ -3,7 +3,7 @@ name: ParaBook CI
 on:
   pull_request:
   push:
-    branches: [develop]
+    branches: [develop, main]
 
 jobs:
   backend:

@@ -4,9 +4,9 @@ services:
     runtime: docker
     plan: free
     repo: https://github.com/renansn99tech/ParaBook
-    # O ambiente de validação acompanha exclusivamente a branch desenvolvida
-    # pela equipe. A promoção para main continua sendo uma decisão explícita.
-    branch: develop
+    # Produção acompanha a branch promovida. O deploy continua manual para
+    # preservar o gate operacional e o rollback explícito no plano Free.
+    branch: main
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health/
@@ -68,6 +68,8 @@ services:
       - key: PAYMENTS_ENABLED
         value: "False"
       - key: EMAIL_ENABLED
+        value: "False"
+      - key: PASSWORD_RESET_ENABLED
         value: "False"
       - key: JWT_COOKIE_SECURE
         value: "True"

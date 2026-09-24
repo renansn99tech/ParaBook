@@ -16,7 +16,6 @@ import { AuthorsScreen } from '../screens/AuthorsScreen';
 import { PublicProfileScreen } from '../screens/PublicProfileScreen';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { AchievementsScreen } from '../screens/AchievementsScreen';
-import { ForgotPasswordScreen } from '../screens/ForgotPasswordScreen';
 import { CreateCommunityScreen } from '../screens/CreateCommunityScreen';
 import { TabNavigator } from './TabNavigator';
 import { useAuth } from '../context/AuthContext';
@@ -79,7 +78,6 @@ export const AppNavigator = () => {
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         </>
       )}
     </Stack.Navigator>

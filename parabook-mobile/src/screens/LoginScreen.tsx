@@ -100,8 +100,15 @@ export const LoginScreen = ({ navigation }: Props) => {
                 </>
               )}
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} activeOpacity={0.7}>
-              <Text style={styles.forgotText}>Esqueci minha senha</Text>
+            <TouchableOpacity
+              disabled
+              style={styles.forgotDisabled}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: true }}
+              accessibilityLabel="Esqueci minha senha"
+              accessibilityHint="A recuperação de senha ainda não está disponível."
+            >
+              <Text style={styles.forgotDisabledText}>Esqueci minha senha</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -198,9 +205,19 @@ const styles = StyleSheet.create({
     minHeight: 44,
     justifyContent: 'center',
   },
+  forgotDisabled: {
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  forgotDisabledText: {
+    color: colors.textMuted,
+    opacity: 0.5,
+    fontSize: 13,
+    fontWeight: '600',
+  },
   footerLink: {
     color: colors.primary,
     fontWeight: 'bold',
   },
-  forgotText: { color: colors.primary, textAlign: 'right', fontSize: 13, fontWeight: '600', marginTop: 2 },
 });

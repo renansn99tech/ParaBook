@@ -758,20 +758,38 @@
     box-shadow:var(--pa-btn-shadow-h);
 }
 
+.auth-forgot-unavailable{
+    display:flex;
+    justify-content:flex-end;
+    min-height:44px;
+    margin:-6px 0 10px;
+    cursor:help;
+}
+
 .auth-forgot-link{
     display:flex;
     align-items:center;
     justify-content:flex-end;
+    width:100%;
     min-height:44px;
-    margin:-6px 0 10px;
+    padding:0;
+    border:0;
+    background:transparent;
     text-align:right;
     font-size:.85rem;
     color:var(--pa-link);
-    text-decoration:none;
+    font-family:inherit;
+    cursor:inherit;
+    transition:opacity .2s ease;
 }
 
-.auth-forgot-link:hover{
-    text-decoration:underline;
+.auth-forgot-link:disabled{
+    opacity:.48;
+}
+
+.auth-forgot-unavailable:hover .auth-forgot-link:disabled,
+.auth-forgot-unavailable:focus-within .auth-forgot-link:disabled{
+    opacity:.65;
 }
 
 .auth-footer-text{

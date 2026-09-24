@@ -65,10 +65,10 @@ cria apenas os itens ausentes. Ele nunca remove nem atualiza livros existentes.
 cadastre `SEED_ADMIN_USERNAME`, `SEED_ADMIN_EMAIL` e `SEED_ADMIN_PASSWORD` no
 Render, ative a flag por um deploy e torne a desativá-la depois.
 
-O Blueprint mantém pagamentos e e-mail desligados. O Render gratuito bloqueia
-as portas SMTP usuais; portanto, recuperação por e-mail não será entregue nesta
-fase. Quando necessário, adote um provedor com API HTTPS e ligue
-`EMAIL_ENABLED=True` com a configuração correspondente.
+O Blueprint mantém pagamentos, e-mail e recuperação de senha desligados. O Render
+gratuito bloqueia as portas SMTP usuais; portanto, recuperação por e-mail não será
+entregue nesta fase. Quando necessário, adote um provedor com API HTTPS e habilite
+`EMAIL_ENABLED=True` e `PASSWORD_RESET_ENABLED=True` somente após validar o envio.
 
 ## 3. Criar o frontend na Vercel
 

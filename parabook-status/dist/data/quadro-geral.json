@@ -1,0 +1,153 @@
+{
+  "revisadoEm": "2026-09-24",
+  "atividades": [
+    {
+      "area": "Plataforma",
+      "atividade": "Frontend web desacoplado",
+      "status": "concluida",
+      "evidencia": "Aplicação React publicada e utilizada como experiência web principal.",
+      "proximaAcao": "Manter revisão visual, acessibilidade e desempenho.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Operação",
+      "atividade": "Pipeline de publicação",
+      "status": "concluida",
+      "evidencia": "Validações automatizadas e ambientes produtivos alinhados à branch principal.",
+      "proximaAcao": "Preservar a promoção controlada e registrar evidências de cada release.",
+      "prioridade": "P0"
+    },
+    {
+      "area": "Apresentação",
+      "atividade": "Conteúdo demonstrativo",
+      "status": "concluida",
+      "evidencia": "Livros e comunidades de exemplo podem ser exibidos ou ocultados sem exclusão de dados.",
+      "proximaAcao": "Ativar somente durante demonstrações e revisar o acervo periodicamente.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Acesso",
+      "atividade": "Login, sessão e autenticação em duas etapas",
+      "status": "parcial",
+      "evidencia": "Login e sessões estão operacionais; a autenticação em duas etapas possui base técnica implementada.",
+      "proximaAcao": "Concluir a experiência de autogestão e a homologação ponta a ponta.",
+      "prioridade": "P0"
+    },
+    {
+      "area": "Catálogo",
+      "atividade": "Acervo, busca e categorias",
+      "status": "parcial",
+      "evidencia": "Catálogo e filtros estão funcionais, com suporte a acervo demonstrativo.",
+      "proximaAcao": "Homologar conteúdo editorial, capas, amostras e critérios de curadoria.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Leitura",
+      "atividade": "Estante, progresso e mídia privada",
+      "status": "parcial",
+      "evidencia": "Estante e estados de leitura estão implementados com controle de limites.",
+      "proximaAcao": "Homologar leitura de arquivos privados e experiência em dispositivos reais.",
+      "prioridade": "P0"
+    },
+    {
+      "area": "Comunidade",
+      "atividade": "Comunidades, postagens e moderação",
+      "status": "parcial",
+      "evidencia": "Jornadas essenciais e mecanismos de denúncia estão disponíveis.",
+      "proximaAcao": "Formalizar operação, responsáveis e prazos de resposta.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Autores",
+      "atividade": "Publicação moderada de obras",
+      "status": "parcial",
+      "evidencia": "Envio, análise e histórico de decisões possuem fluxo técnico.",
+      "proximaAcao": "Concluir homologação documental, proteção de arquivos e procedimento de retirada.",
+      "prioridade": "P0"
+    },
+    {
+      "area": "Engajamento",
+      "atividade": "Gamificação e notificações",
+      "status": "parcial",
+      "evidencia": "Pontuação, conquistas e notificações internas possuem base funcional.",
+      "proximaAcao": "Ampliar métricas, preferências e controles contra uso indevido.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Mobile",
+      "atividade": "Aplicativo Expo",
+      "status": "parcial",
+      "evidencia": "Cliente mobile utiliza o contrato atual da API e passa pela validação de tipos.",
+      "proximaAcao": "Homologar em aparelhos Android e iOS representativos.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Confiança",
+      "atividade": "Privacidade e governança de dados",
+      "status": "pendente",
+      "evidencia": "Controles técnicos e documentos-base existem, mas o fechamento formal ainda depende de validações externas.",
+      "proximaAcao": "Concluir revisão jurídica, responsabilidades, inventário e política de retenção.",
+      "prioridade": "P0"
+    },
+    {
+      "area": "Operação",
+      "atividade": "Observabilidade e recuperação",
+      "status": "pendente",
+      "evidencia": "Health checks e registros operacionais estão disponíveis.",
+      "proximaAcao": "Definir metas, alertas e realizar ensaio de recuperação em ambiente isolado.",
+      "prioridade": "P0"
+    },
+    {
+      "area": "Dados",
+      "atividade": "Analytics de produto",
+      "status": "pendente",
+      "evidencia": "Iniciativa mapeada, ainda sem coleta externa habilitada.",
+      "proximaAcao": "Definir eventos, consentimento, minimização, retenção e ferramenta.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Autores",
+      "atividade": "Painel de valor para autores",
+      "status": "pendente",
+      "evidencia": "Visão de produto definida em alto nível.",
+      "proximaAcao": "Definir métricas após a aprovação da estratégia de analytics.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Conta",
+      "atividade": "Recuperação pública de senha",
+      "status": "indisponivel",
+      "evidencia": "Recurso mantido desligado enquanto não há canal transacional homologado.",
+      "proximaAcao": "Selecionar provedor, validar segurança e acompanhar entregabilidade.",
+      "prioridade": "P1"
+    },
+    {
+      "area": "Monetização",
+      "atividade": "Assinaturas e pagamentos",
+      "status": "indisponivel",
+      "evidencia": "Integração-base existe, porém transações comerciais permanecem desativadas.",
+      "proximaAcao": "Homologar operador, planos, conciliação e políticas comerciais.",
+      "prioridade": "P0"
+    }
+  ],
+  "gates": [
+    { "id": "G1", "nome": "Jurídico e controlador", "status": "aberto", "resumo": "Revisão jurídica e identificação institucional ainda pendentes." },
+    { "id": "G2", "nome": "Idade e controle de acesso", "status": "parcial", "resumo": "Controles implementados; falta completar a homologação operacional." },
+    { "id": "G3", "nome": "Moderação e governança", "status": "parcial", "resumo": "Fluxos técnicos existem; operação e prazos precisam ser formalizados." },
+    { "id": "G4", "nome": "Publicação e direitos", "status": "parcial", "resumo": "Fluxo implementado; proteções e documentação ainda precisam de homologação." },
+    { "id": "G5", "nome": "Privacidade e segurança", "status": "parcial", "resumo": "Base técnica avançada; evidências jurídicas e operacionais seguem abertas." },
+    { "id": "G6", "nome": "Contratos web e mobile", "status": "parcial", "resumo": "Contratos automatizados; falta validação abrangente em dispositivos reais." },
+    { "id": "G7", "nome": "Release e operação", "status": "parcial", "resumo": "Publicação controlada em funcionamento; teste formal e acompanhamento continuam pendentes." }
+  ],
+  "prioridades": [
+    { "titulo": "Fechar segurança e recuperação", "resumo": "Executar teste formal em ambiente isolado, validar alertas e comprovar restauração." },
+    { "titulo": "Concluir o pacote jurídico e de privacidade", "resumo": "Resolver documentos, responsabilidades, operadores e retenção antes da abertura comercial." },
+    { "titulo": "Homologar leitura e mobile", "resumo": "Validar arquivos privados, interrupções de rede e aparelhos representativos." },
+    { "titulo": "Definir a estratégia de dados", "resumo": "Aprovar analytics com governança antes de construir métricas avançadas para autores." }
+  ],
+  "historico": [
+    { "data": "2026-09-24", "titulo": "Controle demonstrativo consolidado", "resumo": "A vitrine de exemplos passou a ser ativável e desativável sem exclusão de conteúdo." },
+    { "data": "2026-09-24", "titulo": "Publicação principal alinhada", "resumo": "Frontend, backend e validações automatizadas foram promovidos para a linha principal." },
+    { "data": "2026-09-23", "titulo": "Acervo de apresentação preparado", "resumo": "Livros e comunidades de exemplo foram preparados sem arquivos privados nem atividade simulada de usuários." }
+  ]
+}

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="description" content="Quadro público e sanitizado de evolução do ParaBook." />
+    <meta name="theme-color" content="#08111f" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308111f'/%3E%3Cpath d='M14 16h15c4 0 7 3 7 7v27c-2-4-5-6-10-6H14V16Zm36 0H35c-4 0-7 3-7 7v27c2-4 5-6 10-6h12V16Z' fill='none' stroke='%23f5b942' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <title>Quadro Geral · ParaBook</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+    <header class="topbar">
+      <a class="brand" href="#visao-geral" aria-label="Quadro Geral do ParaBook">
+        <span class="brand__mark" aria-hidden="true">P</span>
+        <span><strong>ParaBook</strong><small>Quadro Geral</small></span>
+      </a>
+      <div class="topbar__meta">
+        <span id="data-revisao">Carregando revisão…</span>
+        <a class="button button--primary" href="https://parabook-01.vercel.app" rel="noopener">Abrir ParaBook <span aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+
+    <main id="conteudo">
+      <section class="overview" id="visao-geral" aria-labelledby="titulo-painel">
+        <div class="overview__intro">
+          <p class="eyebrow">Acompanhamento público sanitizado</p>
+          <h1 id="titulo-painel">Situação geral do produto</h1>
+          <p>Uma leitura objetiva do que já está entregue, do que avançou parcialmente e do que ainda depende de decisão, operação ou fornecedor.</p>
+        </div>
+        <div class="overview__signal" aria-label="Indicador de prontidão formal">
+          <span class="signal__label">Gates formalmente encerrados</span>
+          <strong><span id="gates-fechados">0</span><small>/7</small></strong>
+          <span class="signal__note">Implementação parcial não é contabilizada como gate fechado.</span>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="Resumo por situação">
+        <article class="metric metric--done"><span>Concluídas</span><strong id="total-concluidas">—</strong><small>entregues e comprovadas</small></article>
+        <article class="metric metric--partial"><span>Parciais</span><strong id="total-parciais">—</strong><small>funcionais com próximos passos</small></article>
+        <article class="metric metric--pending"><span>Pendentes</span><strong id="total-pendentes">—</strong><small>ainda exigem implementação</small></article>
+        <article class="metric metric--unavailable"><span>Indisponíveis</span><strong id="total-indisponiveis">—</strong><small>dependem de ativação externa</small></article>
+      </section>
+
+      <section class="workspace" aria-labelledby="matriz-titulo">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Matriz de atividades</p>
+            <h2 id="matriz-titulo">Escopo acompanhado</h2>
+          </div>
+          <p id="resultado-contagem" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="filters" aria-label="Filtros da matriz">
+          <label>
+            <span>Buscar</span>
+            <input id="filtro-busca" type="search" placeholder="Área, atividade ou próxima ação" autocomplete="off" />
+          </label>
+          <label>
+            <span>Situação</span>
+            <select id="filtro-status">
+              <option value="todos">Todas</option>
+              <option value="concluida">Concluídas</option>
+              <option value="parcial">Parciais</option>
+              <option value="pendente">Pendentes</option>
+              <option value="indisponivel">Temporariamente indisponíveis</option>
+            </select>
+          </label>
+          <label>
+            <span>Prioridade</span>
+            <select id="filtro-prioridade">
+              <option value="todas">Todas</option>
+              <option value="P0">P0 · Crítica</option>
+              <option value="P1">P1 · Alta</option>
+              <option value="P2">P2 · Evolução</option>
+            </select>
+          </label>
+          <button class="button button--ghost" id="limpar-filtros" type="button">Limpar filtros</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Área / atividade</th>
+                <th scope="col">Situação</th>
+                <th scope="col">Evidência pública</th>
+                <th scope="col">Próximo passo</th>
+                <th scope="col">Prioridade</th>
+              </tr>
+            </thead>
+            <tbody id="matriz-corpo"></tbody>
+          </table>
+          <div class="empty-state" id="estado-vazio" hidden>
+            <strong>Nenhuma atividade encontrada</strong>
+            <span>Ajuste os filtros para ampliar a consulta.</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="lower-grid">
+        <section class="panel" aria-labelledby="gates-titulo">
+          <div class="section-heading section-heading--compact">
+            <div><p class="eyebrow">Governança</p><h2 id="gates-titulo">Gates G1–G7</h2></div>
+          </div>
+          <div class="gates" id="gates-lista"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="prioridades-titulo">
+          <div class="section-heading section-heading--compact">
+            <div><p class="eyebrow">Próximo ciclo</p><h2 id="prioridades-titulo">Prioridades executivas</h2></div>
+          </div>
+          <ol class="priorities" id="prioridades-lista"></ol>
+        </section>
+      </div>
+
+      <section class="panel timeline-panel" aria-labelledby="historico-titulo">
+        <div class="section-heading section-heading--compact">
+          <div><p class="eyebrow">Revisões semanais</p><h2 id="historico-titulo">Histórico recente</h2></div>
+          <span class="legend-note">Somente informações adequadas à exposição pública.</span>
+        </div>
+        <div class="timeline" id="historico-lista"></div>
+      </section>
+    </main>
+
+    <footer>
+      <div><strong>ParaBook</strong><span>Economia criativa literária e comunidade de leitura.</span></div>
+      <p>Este painel não contém credenciais, dados pessoais, detalhes de vulnerabilidades ou documentos internos.</p>
+    </footer>
+
+    <template id="linha-template">
+      <tr>
+        <td data-label="Área / atividade"><strong data-campo="atividade"></strong><span data-campo="area"></span></td>
+        <td data-label="Situação"><span class="status-badge" data-campo="status"></span></td>
+        <td data-label="Evidência pública" data-campo="evidencia"></td>
+        <td data-label="Próximo passo" data-campo="proximaAcao"></td>
+        <td data-label="Prioridade"><span class="priority" data-campo="prioridade"></span></td>
+      </tr>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

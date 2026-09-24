@@ -27,7 +27,7 @@ function LivroInfo() {
         const resResenhas = await api.get(`/biblioteca/livros/${id}/resenhas/`);
         setAvaliacoes(resResenhas.data);
 
-        if (user && !user.suspensao?.ativa) {
+        if (user && !user.suspensao?.ativa && !resLivro.data.demonstrativo) {
           const resEstante = await api.get(`/biblioteca/estante/`);
           const estanteData = resEstante.data.results || resEstante.data;
           const userEntry = estanteData.find(item => item.livro === parseInt(id));
@@ -147,7 +147,9 @@ function LivroInfo() {
     ? `Ação bloqueada até ${new Date(suspensao.termina_em).toLocaleString('pt-BR')}.`
     : '';
   let acaoLeitura;
-  if (acesso.pode_ler) {
+  if (livro.demonstrativo) {
+    acaoLeitura = null;
+  } else if (acesso.pode_ler) {
     acaoLeitura = { to: `/leitura/${livro.id}`, icone: 'fa-book-open-reader', texto: 'Ler obra' };
   } else if (acesso.pode_ler_amostra) {
     acaoLeitura = { to: `/leitura/${livro.id}?amostra=1`, icone: 'fa-book-open', texto: 'Ler amostra' };
@@ -198,15 +200,16 @@ function LivroInfo() {
                 <i className="fa-solid fa-pen-nib"></i> {livro.autor}
               </p>
               <div className="livro-selos" aria-label="Classificação e acesso da obra">
+                {livro.demonstrativo && <span className="livro-selo">Ficha demonstrativa · sem leitura ou avaliação</span>}
                 {livro.selo_independente && <span className="livro-selo livro-selo--independente"><i className="fa-solid fa-feather-pointed"></i> Autor independente</span>}
                 {livro.origem === 'licenciado' && <span className="livro-selo"><i className="fa-solid fa-certificate"></i> Acervo licenciado</span>}
                 <span className="livro-selo">{livro.modelo_acesso_label}</span>
                 {livro.territorio_cultural && <span className="livro-selo"><i className="fa-solid fa-location-dot"></i> {livro.territorio_cultural}</span>}
               </div>
             </div>
-            <button onClick={abrirDenuncia} className="btn-denuncia" title={tituloSuspensao || 'Relatar um problema à moderação'}>
+            {!livro.demonstrativo && <button onClick={abrirDenuncia} className="btn-denuncia" title={tituloSuspensao || 'Relatar um problema à moderação'}>
               <i className="fa-solid fa-flag"></i> Relatar Problema
-            </button>
+            </button>}
           </div>
 
           <div className="metadata-grid">
@@ -265,7 +268,7 @@ function LivroInfo() {
           <i className="fa-solid fa-comments"></i> Avaliações da Comunidade
         </h2>
 
-        {user && !suspensao && (
+        {user && !suspensao && !livro.demonstrativo && (
           <div className="minha-avaliacao-card glass-card" data-revelar>
             {minhaAvaliacao ? (
               <div className="minha-avaliacao-header">
@@ -359,7 +362,7 @@ function LivroInfo() {
             <div className="empty-avaliacoes" data-revelar>
               <i className="fa-solid fa-star-half-stroke"></i>
               <p>
-                Nenhuma avaliação para esta obra ainda. Seja o primeiro a avaliar!
+                {livro.demonstrativo ? 'Ficha demonstrativa, sem avaliações.' : 'Nenhuma avaliação para esta obra ainda. Seja o primeiro a avaliar!'}
               </p>
             </div>
           )}

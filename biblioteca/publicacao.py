@@ -239,6 +239,8 @@ def denunciar(user, livro_id, motivo, evidencias, referencia_externa=''):
     elif not user.is_authenticated:
         raise PermissionDenied()
     livro = _livro_bloqueado(livro_id)
+    if livro.demonstrativo:
+        raise PermissionDenied('Ficha demonstrativa não recebe denúncias de obra.')
     if livro.status != 'publicado':
         raise ConflitoPublicacao('A obra não está publicada.')
     motivo = exigir_motivo(motivo)

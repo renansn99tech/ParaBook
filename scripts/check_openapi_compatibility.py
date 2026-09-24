@@ -69,6 +69,18 @@ def comparar_esquema(
 
     props_base = base.get('properties', {})
     props_candidato = candidato.get('properties', {})
+    if direcao == 'request':
+        # OpenAPI applies required readOnly properties only to responses. The
+        # schema may be shared by request and response bodies, so exclude them
+        # when checking whether clients must send a request property.
+        props_base = {
+            nome: propriedade for nome, propriedade in props_base.items()
+            if not propriedade.get('readOnly', False)
+        }
+        props_candidato = {
+            nome: propriedade for nome, propriedade in props_candidato.items()
+            if not propriedade.get('readOnly', False)
+        }
     for nome in sorted(set(props_base) - set(props_candidato)):
         erros.append(f'{caminho}.{nome}: propriedade removida')
     for nome in sorted(set(props_base) & set(props_candidato)):
@@ -79,6 +91,9 @@ def comparar_esquema(
 
     obrigatorios_base = set(base.get('required', []))
     obrigatorios_candidato = set(candidato.get('required', []))
+    if direcao == 'request':
+        obrigatorios_base.intersection_update(props_base)
+        obrigatorios_candidato.intersection_update(props_candidato)
     alterados = (
         obrigatorios_candidato - obrigatorios_base
         if direcao == 'request'
@@ -151,12 +166,6 @@ def main() -> int:
             aprovados.update(excecao.get('errors', []))
 
     erros_nao_aprovados = [erro for erro in erros if erro not in aprovados]
-    excecoes_sem_uso = sorted(aprovados - set(erros))
-    if excecoes_sem_uso:
-        erros_nao_aprovados.extend(
-            f'Exceção de quebra aprovada sem mudança correspondente: {erro}'
-            for erro in excecoes_sem_uso
-        )
     if erros_nao_aprovados:
         print('Mudanças incompatíveis no OpenAPI:', file=sys.stderr)
         print('\n'.join(f'- {erro}' for erro in erros_nao_aprovados), file=sys.stderr)

@@ -32,8 +32,11 @@ Uso:
     venv\\Scripts\\python.exe manage.py seed_acervo --dry-run
 """
 
+from hashlib import sha256
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.db.models import Q
 
 from biblioteca.models import Categoria, Livro
 
@@ -141,6 +144,11 @@ PARES_ACERVO = {
     for titulo, autor, *_ in livros
 }
 
+
+def chave_demonstrativa_livro(titulo, autor):
+    identidade = f'{titulo}\0{autor}'.encode('utf-8')
+    return f'acervo-{sha256(identidade).hexdigest()[:24]}'
+
 # Ano de referência do cálculo de domínio público. Constante explícita
 # para o comando não mudar de comportamento sozinho na virada do ano.
 ANO_CORRENTE = 2026
@@ -198,7 +206,10 @@ class Command(BaseCommand):
                 criada = not existe
                 categoria = None if criada else Categoria.objects.get(nome=nome)
             else:
-                categoria, criada = Categoria.objects.get_or_create(nome=nome)
+                categoria, criada = Categoria.objects.get_or_create(
+                    nome=nome,
+                    defaults={'disponivel_publicamente': nome != 'Infantis'},
+                )
 
             if criada:
                 cat_criadas += 1
@@ -219,7 +230,10 @@ class Command(BaseCommand):
 
                 # O título sozinho não identifica a obra: "Confissões" é
                 # de Agostinho e de Rousseau. A chave é título + autor.
-                ja_existe = Livro.objects.filter(titulo=titulo, autor=autor).exists()
+                chave = chave_demonstrativa_livro(titulo, autor)
+                ja_existe = Livro.objects.filter(
+                    Q(chave_demonstrativa=chave) | Q(titulo=titulo, autor=autor)
+                ).exists()
                 if ja_existe:
                     livros_existentes += 1
                     continue
@@ -238,6 +252,7 @@ class Command(BaseCommand):
                 Livro.objects.create(
                     titulo=titulo,
                     autor=autor,
+                    chave_demonstrativa=chave,
                     ano_publicacao=ano_obra if ano_obra > 0 else None,
                     categoria=categoria,
                     origem='dominio_publico',
@@ -258,9 +273,9 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'  ! {alerta}'))
             self.stdout.write('')
             self.stdout.write(
-                '  As fichas foram criadas SEM arquivo. Anexe os PDFs pelo painel\n'
-                '  (Admin > Livros), usando Domínio Público (MEC), Gutenberg ou\n'
-                '  Wikisource — e confira a licença da tradução antes de subir.'
+                '  As fichas são demonstrativas e permanecem SEM PDF.\n'
+                '  Uma publicação real exigirá cadastro e curadoria próprios,\n'
+                '  inclusive verificação de direitos da tradução.'
             )
 
         if simulacao:

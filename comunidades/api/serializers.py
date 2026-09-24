@@ -90,6 +90,7 @@ class PostagemComunidadeSerializer(serializers.ModelSerializer):
         return _identidade(self, obj.autor)['perfil_clicavel']
 
 class ComunidadeSerializer(serializers.ModelSerializer):
+    demonstrativo = serializers.BooleanField(read_only=True)
     criador_nome = serializers.SerializerMethodField()
     criador_perfil_clicavel = serializers.SerializerMethodField()
     total_membros = serializers.SerializerMethodField()
@@ -99,14 +100,14 @@ class ComunidadeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comunidade
         fields = [
-            'id', 'nome', 'descricao', 'data_criacao', 'criador', 'criador_nome', 'criador_perfil_clicavel',
+            'id', 'nome', 'descricao', 'demonstrativo', 'data_criacao', 'criador', 'criador_nome', 'criador_perfil_clicavel',
             'criada_por_sistema', 'em_manutencao', 'max_participantes',
             'total_denuncias', 'total_membros', 'usuario_participa', 'usuario_e_dono'
         ]
         # Lotação, manutenção e governança são definidas pelo servidor (REGRAS 3, 8 e 9),
         # nunca pelo payload do cliente.
         read_only_fields = [
-            'id', 'data_criacao', 'criador', 'criada_por_sistema',
+            'id', 'demonstrativo', 'data_criacao', 'criador', 'criada_por_sistema',
             'total_denuncias', 'em_manutencao', 'max_participantes',
         ]
 

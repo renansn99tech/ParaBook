@@ -32,6 +32,12 @@ def verificar_acesso_obra(user, livro, agora=None):
         autenticado and eh_admin_parabook(user)
     )
 
+    if livro.demonstrativo:
+        return DecisaoAcessoObra(
+            False, False, 'demonstrativo',
+            'Ficha demonstrativa sem arquivo de leitura.',
+        )
+
     if administrador:
         return DecisaoAcessoObra(True, bool(livro.pdf_amostra), 'administrador', 'Acesso de curadoria.')
 

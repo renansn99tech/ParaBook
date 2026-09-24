@@ -3,7 +3,9 @@ from django.db import migrations, models
 
 def ocultar_categoria_infantis(apps, schema_editor):
     Categoria = apps.get_model('biblioteca', 'Categoria')
-    Categoria.objects.filter(nome__iexact='Infantis').update(disponivel_publicamente=False)
+    Categoria.objects.using(schema_editor.connection.alias).filter(
+        nome__iexact='Infantis'
+    ).update(disponivel_publicamente=False)
 
 
 class Migration(migrations.Migration):

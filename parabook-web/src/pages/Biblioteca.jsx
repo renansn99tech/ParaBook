@@ -13,6 +13,7 @@ const OPCOES_ORIGEM = [['todas', 'Todas'], ['autor_independente', 'Autores indep
 const OPCOES_ACESSO = [['todos', 'Todos'], ['gratuito', 'Gratuitos'], ['assinante', 'Incluídos no plano'], ['amostra', 'Com amostra']];
 
 export function resolverAcaoLivro(livro) {
+  if (livro?.demonstrativo) return { tipo: 'inerte', rotulo: 'Ficha demonstrativa', tom: 'inerte' };
   const acesso = livro?.acesso || {};
   if (acesso.pode_ler) return { tipo: 'link', rotulo: 'Ler obra', destino: `/leitura/${livro.id}`, tom: 'primario' };
   if (acesso.codigo === 'requer_autenticacao') return { tipo: 'link', rotulo: 'Entrar para ler', destino: '/login', tom: 'neutro' };
@@ -77,6 +78,7 @@ function CapaLivro({ livro, compacta = false }) {
 }
 
 function SeloOrigem({ livro }) {
+  if (livro.demonstrativo) return <span className="bib-selo bib-selo--amostra">Demonstrativo</span>;
   if (livro.selo_independente || livro.origem === 'autor_independente') return <span className="bib-selo bib-selo--independente"><i className="fa-solid fa-feather-pointed" aria-hidden="true"></i>Independente</span>;
   if (livro.origem === 'licenciado') return <span className="bib-selo bib-selo--licenciado"><i className="fa-solid fa-certificate" aria-hidden="true"></i>Licenciado</span>;
   return null;

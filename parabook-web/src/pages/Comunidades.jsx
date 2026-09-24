@@ -148,6 +148,9 @@ function Comunidades() {
 
   // Rodapé por hierarquia: um gradiente por card, só no "você já está aqui".
   const renderRodape = (comunidade) => {
+    if (comunidade.demonstrativo) {
+      return <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-ghost w-100">Ver exemplo</Link>;
+    }
     if (admin) {
       return (
         <Link to={`/comunidade/${comunidade.id}/conteudo`} className="btn-ghost w-100">

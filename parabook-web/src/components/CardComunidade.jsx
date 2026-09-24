@@ -32,7 +32,9 @@ function CardComunidade({ comunidade, children, user, ...rest }) {
   // desativada → oficial.
   const temDenuncia = Boolean(user?.is_superuser) && (comunidade.total_denuncias || 0) > 0;
   let selo = null;
-  if (temDenuncia) {
+  if (comunidade.demonstrativo) {
+    selo = <span className="comunidade-selo comunidade-selo--oficial">Demonstrativo</span>;
+  } else if (temDenuncia) {
     selo = (
       <span className="comunidade-selo comunidade-selo--denuncia">
         <i className="fa-solid fa-flag" aria-hidden="true"></i>

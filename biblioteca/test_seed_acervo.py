@@ -4,12 +4,25 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
+from django.urls import reverse
 
 from biblioteca.management.commands.seed_acervo import ACERVO, CATEGORIAS
 from biblioteca.models import Categoria, Livro
+from dashboard.models import FeatureFlag
 
 
 class SeedAcervoTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        FeatureFlag.objects.update_or_create(
+            chave='conteudo_demonstrativo',
+            defaults={
+                'descricao': 'Conteúdo de exemplo',
+                'habilitada': True,
+                'disponivel': True,
+            },
+        )
+
     def executar_seed(self, **options):
         saida = StringIO()
         call_command('seed_acervo', stdout=saida, **options)
@@ -43,6 +56,10 @@ class SeedAcervoTests(TestCase):
         self.assertEqual(Categoria.objects.count(), 11)
         self.assertEqual(Livro.objects.count(), 55)
         self.assertEqual(Livro.objects.filter(status='publicado').count(), 55)
+        self.assertFalse(
+            Categoria.objects.get(nome='Infantis').disponivel_publicamente
+        )
+        self.assertEqual(len(self.client.get(reverse('livro-list')).json()), 50)
 
         self.executar_seed()
 

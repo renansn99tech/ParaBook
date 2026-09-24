@@ -130,7 +130,19 @@ function Login() {
                 />
               </div>
 
-              <Link to="/esqueci-senha" className="auth-forgot-link">Esqueceu a senha?</Link>
+              <span
+                className="auth-forgot-unavailable"
+                title="A recuperação de senha ainda não está disponível."
+              >
+                <button
+                  type="button"
+                  className="auth-forgot-link"
+                  disabled
+                  aria-label="Esqueceu sua senha? A recuperação ainda não está disponível."
+                >
+                  Esqueceu sua senha?
+                </button>
+              </span>
 
               <button type="submit" className="auth-btn-submit">{requires2fa ? 'Verificar e entrar' : 'Acessar Conta'}</button>
 

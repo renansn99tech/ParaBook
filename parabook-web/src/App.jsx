@@ -41,8 +41,6 @@ const CentralConta = lazy(() => import('./pages/CentralConta'))
 const Notificacoes = lazy(() => import('./pages/Notificacoes'))
 const Planos = lazy(() => import('./pages/Planos'))
 const MinhaAssinatura = lazy(() => import('./pages/MinhaAssinatura'))
-const EsqueciSenha = lazy(() => import('./pages/EsqueciSenha'))
-const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha'))
 const AceitarTermos = lazy(() => import('./pages/AceitarTermos'))
 const OnboardingAutor = lazy(() => import('./pages/OnboardingAutor'))
 const RecomendacaoIA = lazy(() => import('./pages/RecomendacaoIA'))
@@ -57,7 +55,7 @@ const AdminFeatureFlags = lazy(() => import('./pages/admin/AdminFeatureFlags'))
 
 // Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
 const ROTAS_LEGAIS = ['/diretrizes', '/termos', '/privacidade', '/publicacao-e-licenca', '/direitos-autorais'];
-const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', ...ROTAS_LEGAIS, '/login', '/register', '/esqueci-senha'];
+const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', ...ROTAS_LEGAIS, '/login', '/register'];
 const ROTAS_PUBLICAS_SUSPENSAO = ['/', '/biblioteca', '/comunidades', '/autores', '/sobre', '/backlog', ...ROTAS_LEGAIS, '/para-leitores', '/para-autores', '/planos'];
 const ROTAS_ISENTAS_IDADE = [
   '/elegibilidade',
@@ -67,7 +65,6 @@ const ROTAS_ISENTAS_IDADE = [
   ...ROTAS_LEGAIS,
   '/login',
   '/register',
-  '/esqueci-senha',
 ];
 
 const rotaPermitidaDuranteSuspensao = (pathname) => {
@@ -100,8 +97,7 @@ function App() {
     '/perfil/configuracoes/feature-flags',
   ].includes(location.pathname);
   // Telas do fluxo de autenticação: sem navbar/rodapé/banner, já que o usuário não está logado.
-  const isAuthPage = ['/login', '/register', '/esqueci-senha'].includes(location.pathname)
-    || location.pathname.startsWith('/redefinir-senha/');
+  const isAuthPage = ['/login', '/register'].includes(location.pathname);
   const hideNavAndFooter = isDashboard || isAdminAvancado || isAuthPage;
   const exibirBannerAnuncios = flagsPublicas.banner_anuncios && !hideNavAndFooter;
   const suspensao = user?.suspensao?.ativa ? user.suspensao : null;
@@ -127,8 +123,7 @@ function App() {
   const precisaAceitarTermos = !loading
     && user
     && user.termos_aceitos === false
-    && !ROTAS_ISENTAS_TERMOS.includes(location.pathname)
-    && !location.pathname.startsWith('/redefinir-senha/');
+    && !ROTAS_ISENTAS_TERMOS.includes(location.pathname);
 
   if (precisaAceitarTermos) {
     return <Navigate to="/aceitar-termos" replace />;
@@ -210,10 +205,6 @@ function App() {
           <Route path="/notificacoes" element={<Notificacoes />} />
           <Route path="/planos" element={<Planos />} />
           <Route path="/minha-assinatura" element={<MinhaAssinatura />} />
-
-          {/* Recuperação de senha (fluxo público, fora do login) */}
-          <Route path="/esqueci-senha" element={<EsqueciSenha />} />
-          <Route path="/redefinir-senha/:uid/:token" element={<RedefinirSenha />} />
 
           {/* Compliance, onboarding e recursos de leitura */}
           <Route path="/aceitar-termos" element={<AceitarTermos />} />

@@ -4,7 +4,7 @@
 > Django/Gunicorn no Render e usar o PostgreSQL e o Storage do Supabase.
 >
 > Estado esperado do produto: pagamentos e envio de e-mail desativados,
-> `PAYMENTS_ENABLED=False` e `EMAIL_ENABLED=False`.
+> `PAYMENTS_ENABLED=False`, `EMAIL_ENABLED=False` e `PASSWORD_RESET_ENABLED=False`.
 
 ## 1. Visão geral
 
@@ -243,6 +243,7 @@ SUPABASE_STORAGE_ENABLED=True
 SUPABASE_STORAGE_BUCKET_NAME=parabook-media
 PAYMENTS_ENABLED=False
 EMAIL_ENABLED=False
+PASSWORD_RESET_ENABLED=False
 JWT_COOKIE_SECURE=True
 CSRF_COOKIE_SECURE=True
 JWT_COOKIE_SAMESITE=None
@@ -545,9 +546,10 @@ Observe os logs por `Out of memory`. Não aumente workers sem medir o consumo.
 
 ### E-mail não chega
 
-É esperado nesta fase. `EMAIL_ENABLED=False` usa backend dummy, e o Render
+É esperado nesta fase. `EMAIL_ENABLED=False` usa backend dummy e
+`PASSWORD_RESET_ENABLED=False` mantém a recuperação de senha desligada. O Render
 gratuito bloqueia as portas SMTP 25, 465 e 587. Quando necessário, integre um
-provedor por API HTTPS e crie testes antes de habilitar e-mail.
+provedor por API HTTPS e só então habilite os dois sinalizadores.
 
 ## 12. Atualizações e rollback
 

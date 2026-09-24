@@ -1019,6 +1019,16 @@
                             }
                         },
                         "description": ""
+                    },
+                    "503": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailResponse"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
                 }
             }
@@ -1061,6 +1071,26 @@
                 ],
                 "responses": {
                     "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "503": {
                         "content": {
                             "application/json": {
                                 "schema": {

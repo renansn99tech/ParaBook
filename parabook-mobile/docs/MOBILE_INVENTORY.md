@@ -8,7 +8,7 @@ Levantamento feito a partir de `parabook-web/src/App.jsx`, das chamadas em `para
 | --- | --- | --- | --- |
 | Home | destaques de livros e comunidades | `GET /biblioteca/livros/`, `GET /comunidades/comunidades/` | Home |
 | Login/cadastro | cookie HttpOnly no Web; JWT Bearer no app nativo | `POST /auth/mobile-login/`, `POST /auth/mobile-register/` | Login, Cadastro |
-| Recuperacao de senha | email com link para o front Web | `POST /auth/recuperar-senha/` | Recuperar senha |
+| Recuperacao de senha | desativada temporariamente | endpoints respondem indisponibilidade enquanto `PASSWORD_RESET_ENABLED=False` | fora da navegacao |
 | Biblioteca/catalogo | busca, categorias, adicionar a estante | livros, categorias e estante | Explorar, Detalhes do livro |
 | Minha biblioteca | quero ler, lendo, lido, favoritos e avaliacoes | CRUD `/biblioteca/estante/` | Minha Biblioteca e filtros do Perfil |
 | Livro/resenhas | detalhes, nota e resenha | detalhe, `resenhas/`, estante | Detalhes do livro |
@@ -34,7 +34,7 @@ Levantamento feito a partir de `parabook-web/src/App.jsx`, das chamadas em `para
 - PDF autenticado.
 - Comunidades, associacao, feed e criacao de postagens/comunidades.
 - Autores, notificacoes, conquistas e ranking.
-- Solicitacao de recuperacao de senha.
+- Recuperacao de senha temporariamente desativada na navegacao e na API.
 
 ## Implementado, aguardando backend
 

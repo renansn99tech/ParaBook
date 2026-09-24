@@ -5,8 +5,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
@@ -805,8 +807,13 @@ class ChangePasswordAPIView(APIView):
         if not user.check_password(senha_antiga):
             return Response({"error": "Senha antiga incorreta."}, status=400)
 
+        try:
+            validate_password(nova_senha, user=user)
+        except DjangoValidationError as exc:
+            return Response({'nova_senha': exc.messages}, status=400)
+
         user.set_password(nova_senha)
-        user.save()
+        user.save(update_fields=['password'])
         registrar_acao(
             ator=user,
             acao='senha.alterada',
@@ -830,10 +837,25 @@ class PasswordResetRequestAPIView(APIView):
         "redefinição de senha em instantes."
     )
 
-    @extend_schema(request=PasswordResetRequestSerializer, responses={200: DetailResponseSerializer})
+    @extend_schema(
+        request=PasswordResetRequestSerializer,
+        responses={200: DetailResponseSerializer, 503: DetailResponseSerializer},
+    )
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        if not settings.PASSWORD_RESET_ENABLED or not settings.EMAIL_ENABLED:
+            return Response(
+                {
+                    'detail': (
+                        'A recuperação de senha está temporariamente desativada. '
+                        'Altere sua senha após entrar na conta ou contate o suporte.'
+                    )
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
         email = serializer.validated_data['email']
 
         usuario = User.objects.filter(email__iexact=email, is_active=True).first()
@@ -864,8 +886,21 @@ class PasswordResetConfirmAPIView(APIView):
     """Valida o par uid/token do email e efetiva a nova senha."""
     permission_classes = [permissions.AllowAny]
 
-    @extend_schema(request=PasswordResetConfirmSerializer, responses={200: DetailResponseSerializer})
+    @extend_schema(
+        request=PasswordResetConfirmSerializer,
+        responses={
+            200: DetailResponseSerializer,
+            400: DetailResponseSerializer,
+            503: DetailResponseSerializer,
+        },
+    )
     def post(self, request):
+        if not settings.PASSWORD_RESET_ENABLED or not settings.EMAIL_ENABLED:
+            return Response(
+                {'detail': 'A recuperação de senha está temporariamente desativada.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         dados = serializer.validated_data
@@ -882,8 +917,13 @@ class PasswordResetConfirmAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        usuario.set_password(dados['nova_senha'])
-        usuario.save()
+        with transaction.atomic():
+            usuario.set_password(dados['nova_senha'])
+            usuario.save(update_fields=['password'])
+            SessaoDispositivo.objects.filter(
+                usuario=usuario,
+                revogada_em__isnull=True,
+            ).update(revogada_em=timezone.now())
 
         return Response({"detail": "Senha redefinida com sucesso! Você já pode entrar na sua conta."})
 

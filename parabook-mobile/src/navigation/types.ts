@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Register: undefined;
+  /** Mantido para a tela legada, que permanece fora do navegador enquanto a recuperação está desligada. */
   ForgotPassword: undefined;
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   BookDetail: { bookId: string; title?: string };

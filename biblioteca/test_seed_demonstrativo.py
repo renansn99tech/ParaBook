@@ -57,6 +57,10 @@ class ConteudoDemonstrativoTests(TestCase):
         self.assertEqual(Comunidade.objects.count(), 4)
 
         self.client.force_login(self.admin)
+        self.assertEqual(len(self.client.get(reverse('livro-list')).json()), 0)
+        self.assertEqual(len(self.client.get(reverse('comunidade-list')).json()), 0)
+
+        FeatureFlag.objects.filter(chave='conteudo_demonstrativo').update(habilitada=True)
         self.assertEqual(len(self.client.get(reverse('livro-list')).json()), 55)
         self.assertEqual(len(self.client.get(reverse('comunidade-list')).json()), 4)
 
@@ -80,6 +84,7 @@ class ConteudoDemonstrativoTests(TestCase):
         self.assertFalse(PostagemComunidade.objects.exists())
 
     def test_admin_alterna_flag_com_auditoria_e_leitor_nao_pode(self):
+        self.seed()
         url = reverse('api-dashboard-feature-flags')
         self.client.force_login(self.leitor)
         self.assertEqual(
@@ -97,8 +102,18 @@ class ConteudoDemonstrativoTests(TestCase):
         )
         self.assertEqual(resposta.status_code, 200)
         self.assertFalse(FeatureFlag.objects.get(chave='conteudo_demonstrativo').habilitada)
+        self.assertEqual(len(self.client.get(reverse('livro-list')).json()), 0)
+        self.assertEqual(len(self.client.get(reverse('comunidade-list')).json()), 0)
         self.assertTrue(AuditoriaAcao.objects.filter(
             ator=self.admin,
             acao='feature_flag.alterada',
             metadados__chave='conteudo_demonstrativo',
         ).exists())
+
+        resposta = self.client.patch(
+            url, {'chave': 'conteudo_demonstrativo', 'habilitada': True},
+            content_type='application/json',
+        )
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(len(self.client.get(reverse('livro-list')).json()), 55)
+        self.assertEqual(len(self.client.get(reverse('comunidade-list')).json()), 4)

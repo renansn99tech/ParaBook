@@ -71,7 +71,7 @@ function renderizarGates(gates) {
     artigo.querySelector('strong').textContent = gate.nome;
     artigo.querySelector('small').textContent = gate.resumo;
     const estado = artigo.querySelector('.gate__status');
-    estado.textContent = gate.status === 'parcial' ? 'Parcial' : 'Aberto';
+    estado.textContent = gate.status === 'concluido' ? 'Aprovado' : gate.status === 'parcial' ? 'Parcial' : 'Aberto';
     estado.dataset.status = gate.status;
     return artigo;
   }));

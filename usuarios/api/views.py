@@ -127,7 +127,6 @@ class GovernancaLegalAPIView(APIView):
     def get(self, request):
         controller_ready = all([
             settings.LEGAL_CONTROLLER_NAME,
-            settings.LEGAL_CONTROLLER_DOCUMENT,
             settings.LEGAL_CONTROLLER_ADDRESS,
             settings.LEGAL_PRIVACY_CONTACT,
         ]) and settings.LEGAL_CONTROLLER_NAME != settings.LEGAL_CONTROLLER_PLACEHOLDER

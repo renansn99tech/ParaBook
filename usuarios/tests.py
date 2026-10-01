@@ -400,21 +400,18 @@ class AceiteTermosVersionadoTests(TestCase):
 
     @override_settings(
         LEGAL_CONTROLLER_NAME='Controlador Teste',
-        LEGAL_CONTROLLER_DOCUMENT='documento-secreto',
         LEGAL_CONTROLLER_ADDRESS='Endereço público',
         LEGAL_PRIVACY_CONTACT='privacidade@example.com',
         LEGAL_DOCUMENTS_REVIEWED=True,
     )
-    def test_governanca_sinaliza_prontidao_sem_expor_documento(self):
+    def test_governanca_sinaliza_prontidao_sem_exigir_documento_civil(self):
         response = self.client.get('/api/v1/auth/governanca/')
 
         self.assertTrue(response.data['pronto_para_publicacao'])
         self.assertTrue(response.data['documentos_revisados'])
-        self.assertNotContains(response, 'documento-secreto')
 
     @override_settings(
         LEGAL_CONTROLLER_NAME='ParaBook — projeto em validação',
-        LEGAL_CONTROLLER_DOCUMENT='documento-secreto',
         LEGAL_CONTROLLER_ADDRESS='Endereço público',
         LEGAL_PRIVACY_CONTACT='privacidade@example.com',
         LEGAL_DOCUMENTS_REVIEWED=True,
@@ -424,11 +421,9 @@ class AceiteTermosVersionadoTests(TestCase):
 
         self.assertFalse(response.data['controlador']['identificacao_completa'])
         self.assertFalse(response.data['pronto_para_publicacao'])
-        self.assertNotContains(response, 'documento-secreto')
 
     @override_settings(
         LEGAL_CONTROLLER_NAME='Controlador ainda não aprovado',
-        LEGAL_CONTROLLER_DOCUMENT='documento-secreto',
         LEGAL_CONTROLLER_ADDRESS='Endereço ainda não aprovado',
         LEGAL_PRIVACY_CONTACT='privacidade-nao-aprovada@example.com',
         LEGAL_DOCUMENTS_REVIEWED=False,
@@ -446,7 +441,6 @@ class AceiteTermosVersionadoTests(TestCase):
         self.assertNotContains(response, 'Controlador ainda não aprovado')
         self.assertNotContains(response, 'Endereço ainda não aprovado')
         self.assertNotContains(response, 'privacidade-nao-aprovada@example.com')
-        self.assertNotContains(response, 'documento-secreto')
 
 
 class RecursosContaTests(TestCase):

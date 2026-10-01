@@ -362,7 +362,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = config(
 # A versão é parte da evidência de aceite. Alterá-la força novo aceite nos
 # clientes web e legado; não reutilize uma versão para textos materialmente
 # diferentes.
-TERMS_VERSION = config('TERMS_VERSION', default='2026-09-09')
+TERMS_VERSION = config('TERMS_VERSION', default='2026-09-30')
 LEGAL_DOCUMENTS_REVIEWED = config('LEGAL_DOCUMENTS_REVIEWED', default=False, cast=bool)
 
 # Identificação pública do agente de tratamento. Os valores definitivos devem
@@ -378,7 +378,6 @@ if LEGAL_CONTROLLER_TYPE not in {'pessoa_fisica', 'pessoa_juridica'}:
     raise ImproperlyConfigured(
         'LEGAL_CONTROLLER_TYPE deve ser pessoa_fisica ou pessoa_juridica.'
     )
-LEGAL_CONTROLLER_DOCUMENT = config('LEGAL_CONTROLLER_DOCUMENT', default='')
 LEGAL_CONTROLLER_ADDRESS = config('LEGAL_CONTROLLER_ADDRESS', default='')
 LEGAL_PRIVACY_CONTACT = config('LEGAL_PRIVACY_CONTACT', default='')
 LEGAL_JURISDICTION = 'Brasil'

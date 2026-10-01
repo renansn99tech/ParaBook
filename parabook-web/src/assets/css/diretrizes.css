@@ -146,9 +146,62 @@
     color: var(--text);
 }
 
+.glass-rule-card a {
+    color: var(--info);
+    text-underline-offset: 3px;
+}
+
+.legal-table-wrap {
+    margin-top: 18px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.legal-table-wrap:focus-visible {
+    outline: 3px solid rgba(var(--purple-rgb), .45);
+    outline-offset: 3px;
+}
+
+.legal-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    color: var(--text-secondary);
+    font-size: .9rem;
+    line-height: 1.5;
+}
+
+.legal-table th,
+.legal-table td {
+    padding: 14px;
+    vertical-align: top;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.legal-table thead th {
+    color: var(--text);
+    background: rgba(var(--purple-rgb), .12);
+}
+
+.legal-table tbody th {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.legal-table tbody tr:last-child th,
+.legal-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
 @media (max-width: 768px) {
     .glass-rule-card {
         flex-direction: column;
         padding: 25px;
+    }
+
+    .legal-table-wrap {
+        width: 100%;
     }
 }

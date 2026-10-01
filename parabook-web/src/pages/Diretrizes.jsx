@@ -4,6 +4,8 @@ import useRevelacao from '../hooks/useRevelacao';
 import api from '../services/api';
 import '../assets/css/diretrizes.css';
 
+const VERSAO_PADRAO = '2026-09-30';
+
 function Diretrizes() {
   const paginaRef = useRevelacao([]);
   const [governanca, setGovernanca] = useState(null);
@@ -16,111 +18,91 @@ function Diretrizes() {
 
   return (
     <main className="guidelines-main" ref={paginaRef}>
-
-      {/* Hero Section */}
-      <div className="hero-guidelines" data-revelar>
-        <h1 className="gradient-text">Termos e Políticas</h1>
+      <header className="hero-guidelines" data-revelar>
+        <span className="guidelines-kicker">Documento 05</span>
+        <h1 className="gradient-text">Diretrizes da Comunidade</h1>
         <p className="guidelines-lead">
-          Governança, privacidade e regras comunitárias da plataforma ParaBook. Conheça seus direitos e deveres antes de criar sua conta.
+          Regras de convivência, moderação, medidas e recursos aplicáveis às áreas sociais do ParaBook.
         </p>
         <small className="guidelines-updated">
-          Versão vigente: {governanca?.versao_termos || '2026-09-09'}
+          Versão do pacote: {governanca?.versao_termos || VERSAO_PADRAO}
         </small>
-      </div>
+      </header>
 
       <nav className="guidelines-nav" aria-label="Documentos legais" data-revelar>
         <Link to="/termos">Termos</Link>
         <Link to="/privacidade">Privacidade</Link>
         <Link to="/publicacao-e-licenca">Publicação</Link>
         <Link to="/direitos-autorais">Direitos autorais</Link>
+        <Link to="/diretrizes">Comunidade</Link>
       </nav>
 
-      {/* Container dos Cards */}
       <div className="guidelines-container" data-revelar-cascata>
+        {!governanca?.pronto_para_publicacao && (
+          <aside className="guidelines-status" role="status" data-revelar>
+            <strong>Minuta revisada para aprovação do controlador.</strong>
+            <span>A versão somente entrará em vigor após o registro de aprovação e a publicação controlada.</span>
+          </aside>
+        )}
 
-        {/* CARD 01: PRIVACIDADE */}
-        <div className="glass-rule-card" data-revelar>
+        <article className="glass-rule-card" data-revelar>
           <div className="rule-number">01</div>
           <div className="card-legal-content">
-            <h3>Política de Privacidade e Proteção de Dados (LGPD)</h3>
-            <p>Esta política descreve como os dados pessoais são usados para autenticação, perfis, leitura, publicação, comunidades, pagamentos, segurança e cumprimento de obrigações legais.</p>
-            
-            <h4>Coleta e Uso das Informações</h4>
-            <p>Podemos tratar dados cadastrais, credenciais protegidas, histórico de leitura, estante, avaliações, publicações, registros de segurança e dados necessários a assinaturas. Cada tratamento deve possuir finalidade, necessidade e base legal documentadas.</p>
-            
-            <h4>Política de Retenção e Exclusão de Dados (LGPD)</h4>
-            <p>O titular pode solicitar confirmação, acesso, correção, portabilidade quando aplicável, informação, oposição, revogação de consentimento e eliminação nos limites da LGPD. A exclusão da conta remove os dados ativos vinculados, ressalvadas retenções legalmente obrigatórias, prevenção a fraude, exercício regular de direitos e ciclos técnicos de backup.</p>
-
-            <h4>Controlador e Canal de Privacidade</h4>
-            <p>A identificação civil completa do controlador, um endereço empresarial ou profissional juridicamente adequado e o canal responsável por solicitações LGPD deverão ser publicados antes da abertura do ParaBook em produção. O endereço pessoal do fundador não será usado enquanto não houver solução adequada. Fornecedores de infraestrutura somente serão classificados como operadores ou agentes independentes após análise do contrato e das decisões efetivamente tomadas por cada parte.</p>
-            {governanca?.controlador?.identificacao_completa && (
-              <p>
-                <strong>Controlador:</strong> {governanca.controlador.nome}.{' '}
-                <strong>Endereço:</strong> {governanca.controlador.endereco}.{' '}
-                <strong>Privacidade:</strong> {governanca.controlador.contato_privacidade}.
-              </p>
-            )}
+            <h2>Convivência e participação</h2>
+            <p>O ParaBook busca promover leitura, criação literária e convivência respeitosa. Cada pessoa responde pelo conteúdo que publica e deve respeitar direitos autorais, privacidade, segurança e as regras aplicáveis à comunidade.</p>
+            <p>As áreas autenticadas destinam-se a pessoas com 18 anos ou mais nesta versão. Contas em Modo Restrito etário mantêm os meios necessários para suporte, correção, segurança e exercício de direitos, sem acesso às funções sociais autenticadas.</p>
           </div>
-        </div>
+        </article>
 
-        {/* CARD 02: TERMOS DE USO */}
-        <div className="glass-rule-card" data-revelar>
+        <article className="glass-rule-card" data-revelar>
           <div className="rule-number">02</div>
           <div className="card-legal-content">
-            <h3>Termos de Uso e Propriedade Intelectual</h3>
-            <p>Ao se cadastrar e utilizar o ParaBook, você concorda explicitamente com as regras operacionais vigentes para a preservação de um ambiente saudável e seguro.</p>
-            
-            <h4>Regras de Utilização da Plataforma</h4>
-            <p>Cada conta é pessoal, individual e intransferível. O usuário compromete-se a fornecer informações verídicas no ato do cadastro e assume total responsabilidade por todas as ações executadas sob suas credenciais de acesso.</p>
-
-            <h4>Participação de Adolescentes</h4>
-            <p>A possibilidade de aceitar usuários a partir de 14 anos ainda será avaliada. Essa abertura depende de política específica, controles proporcionais e validação jurídica; não está autorizada por esta versão.</p>
-            
-            <h4>Publicação de Livros, Comentários e Avaliações</h4>
-            <p>A plataforma permite a catalogação de obras, inserção de resenhas literárias e notas textuais. Você retém a propriedade intelectual e direitos autorais dos textos originais das suas resenhas, mas concede ao ParaBook uma licença não exclusiva, mundial e gratuita para hospedar, exibir e processar esse conteúdo estritamente dentro da plataforma.</p>
-            
-            <h4>Direitos Autorais e Tratamento de Denúncias</h4>
-            <p>Ao enviar uma obra, o <strong>Autor Independente declara possuir os direitos ou autorizações necessários</strong>. A obra permanece pendente até aprovação administrativa de moderador autorizado no Dashboard; essa aprovação não certifica autoria. Denúncias serão protocoladas, avaliadas e poderão gerar restrição cautelar proporcional ao risco. O autor terá oportunidade de apresentar esclarecimentos e recurso, salvo quando uma ordem válida ou risco urgente exigir providência imediata. Dados somente serão entregues a autoridades mediante base legal e solicitação válida.</p>
+            <h2>Condutas proibidas</h2>
+            <ul>
+              <li><strong>Violação autoral:</strong> publicar obra, trecho, resenha ou material de terceiro sem direito ou autorização aplicável.</li>
+              <li><strong>Assédio e discriminação:</strong> perseguir, ameaçar, humilhar ou atacar pessoas ou grupos por características pessoais ou protegidas.</li>
+              <li><strong>Conteúdo ilegal ou abusivo:</strong> divulgar material ilícito, exploração, fraude, ameaça, invasão de privacidade ou incentivo a dano.</li>
+              <li><strong>Spam e manipulação:</strong> automatizar abuso, publicar mensagens repetitivas, publicidade não autorizada ou manipular avaliações e interações.</li>
+              <li><strong>Contorno de segurança:</strong> explorar falhas, acessar conteúdo privado sem autorização ou tentar superar controles técnicos e de moderação.</li>
+            </ul>
           </div>
-        </div>
+        </article>
 
-        {/* CARD 03: DIRETRIZES DA COMUNIDADE */}
-        <div className="glass-rule-card" data-revelar>
+        <article className="glass-rule-card" data-revelar>
           <div className="rule-number">03</div>
           <div className="card-legal-content">
-            <h3>Diretrizes da Comunidade e Responsabilidades</h3>
-            <p>Nossa comunidade visa conectar leitores de forma harmoniosa. Comportamentos inadequados que prejudiquem a experiência coletiva sofrerão sanções administrativas e moderação ativa.</p>
-            
-            <h4>Condutas Proibidas</h4>
-            <ul>
-              <li><strong>Plágio:</strong> Copiar de forma integral ou parcial resenhas, críticas ou sinopses literárias de terceiros sem a devida atribuição de crédito.</li>
-              <li><strong>Spam e Publicidade:</strong> Publicar anúncios não autorizados, links de afiliados repetitivos ou mensagens em massa nos comentários de livros ou perfis.</li>
-              <li><strong>Discurso de Ódio e Assédio:</strong> Ofensas, discriminação de qualquer natureza, linchamento virtual de autores ou perseguição a membros da plataforma.</li>
-              <li><strong>Conteúdo Ilegal:</strong> Divulgar material ilícito, pornográfico, abusivo ou manifestamente inadequado sob a legislação brasileira.</li>
-            </ul>
-            
-            <h4>Responsabilidades do Usuário e do ParaBook</h4>
-            <p>O usuário responde pelo conteúdo que publica. O ParaBook mantém deveres próprios de segurança, transparência e cumprimento de ordens válidas, além de processo de moderação com motivo, registro, proporcionalidade e possibilidade de revisão quando cabível.</p>
-            
-            <h4>Atualizações desta Política</h4>
-            <p>Cada versão possui identificador próprio. Mudanças materiais serão informadas e exigirão novo aceite antes da continuidade de uso das áreas autenticadas.</p>
+            <h2>Protocolo, prioridade e prazos</h2>
+            <p>Denúncias recebem protocolo imediato e são classificadas conforme o risco. P0 cobre risco imediato e recebe confirmação humana e triagem em até 6 horas; P1 cobre risco grave e recebe confirmação e triagem em até 1 dia útil; P2 cobre os demais casos e recebe confirmação e triagem em até 3 dias úteis.</p>
+            <p>A decisão fundamentada é prevista em até 7 dias úteis para P0/P1 e até 15 dias úteis para P2. Os prazos contam no horário de Brasília: segunda a sexta, das 9h às 18h; sábado, das 10h às 15h; domingos e feriados sem atendimento regular. P0 admite escalonamento excepcional, sem promessa de plantão 24 horas. Diligências, ordens válidas ou preservação de evidências podem exigir ajuste comunicado quando possível.</p>
           </div>
-        </div>
+        </article>
 
-        <div className="glass-rule-card" data-revelar>
+        <article className="glass-rule-card" data-revelar>
           <div className="rule-number">04</div>
           <div className="card-legal-content">
-            <h3>Legislação Aplicável e Solução de Controvérsias</h3>
-            <p>Os serviços destinados ao público brasileiro são regidos pela legislação da República Federativa do Brasil, incluindo, quando aplicáveis, o Marco Civil da Internet, a LGPD, o Código de Defesa do Consumidor e a legislação de direitos autorais.</p>
-
-            <h4>Jurisdição e Foro</h4>
-            <p>As partes buscarão primeiro uma solução pelos canais oficiais, sem impedir o acesso ao Judiciário ou às autoridades competentes. Relações de consumo preservam o foro e os direitos assegurados ao consumidor. Nas demais hipóteses, será competente o foro brasileiro determinado pela legislação processual aplicável; estes termos não impõem foro estrangeiro nem afastam competência legal obrigatória.</p>
-
-            <h4>Infraestrutura Internacional</h4>
-            <p>A localização de servidores ou fornecedores não altera, por si só, a legislação aplicável ao serviço. Eventual transferência internacional de dados dependerá de mecanismo permitido pela LGPD, transparência e salvaguardas contratuais adequadas.</p>
+            <h2>Medidas e proporcionalidade</h2>
+            <p>Uma denúncia não determina culpa nem remoção automática. A equipe pode orientar, advertir, limitar conteúdo, arquivar, restaurar ou aplicar contenção cautelar proporcional ao risco. Suspensões temporárias usam exclusivamente 3, 7, 15 ou 30 dias. Exclusões definitivas exigem a autoridade e o procedimento aplicáveis.</p>
+            <p>Casos P0 podem receber contenção reversível imediata. Reincidências são consideradas junto com gravidade, contexto, tempo transcorrido, histórico e medidas anteriores, sem aumento automático de sanção. A decisão registra a regra aplicada, o fato resumido, a medida, sua duração, o responsável e a possibilidade de revisão, sem exposição pública do histórico disciplinar.</p>
           </div>
-        </div>
+        </article>
 
+        <article className="glass-rule-card" data-revelar>
+          <div className="rule-number">05</div>
+          <div className="card-legal-content">
+            <h2>Resposta, recurso e privacidade</h2>
+            <p>A pessoa afetada poderá apresentar esclarecimentos, contranotificação ou recurso quando cabível. A análise preservará apenas as evidências necessárias e limitará o acesso a moderadores e administradores autorizados.</p>
+            <p>A identidade e os dados de contato do denunciante permanecem confidenciais perante a pessoa denunciada por padrão. Eventual revelação exige obrigação legal, ordem válida ou necessidade estritamente demonstrada para a defesa, com decisão registrada e divulgação limitada ao mínimo necessário.</p>
+            <p>O ParaBook poderá agir antes da manifestação em caso de risco imediato, segurança, proteção de pessoa vulnerável ou ordem válida, sem eliminar o direito de revisão posterior quando juridicamente possível.</p>
+          </div>
+        </article>
+
+        <article className="glass-rule-card" data-revelar>
+          <div className="rule-number">06</div>
+          <div className="card-legal-content">
+            <h2>Documentos relacionados</h2>
+            <p>Estas diretrizes complementam os <Link to="/termos">Termos de Uso</Link>, a <Link to="/privacidade">Política de Privacidade</Link>, os <Link to="/publicacao-e-licenca">Termos de Publicação e Licença</Link> e a política de <Link to="/direitos-autorais">Direitos Autorais e Denúncias</Link>.</p>
+          </div>
+        </article>
       </div>
     </main>
   );

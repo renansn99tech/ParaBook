@@ -35,8 +35,6 @@ services:
         value: pessoa_fisica
       - key: LEGAL_CONTROLLER_NAME
         sync: false
-      - key: LEGAL_CONTROLLER_DOCUMENT
-        sync: false
       - key: LEGAL_CONTROLLER_ADDRESS
         sync: false
       - key: LEGAL_PRIVACY_CONTACT

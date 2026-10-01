@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "version": "2026-09-30",
+  "status": "approved_by_controller_pending_publication",
+  "approval": {
+    "approver": "Renan S. Nascimento",
+    "role": "controlador e responsável final pelo projeto ParaBook",
+    "approved_at": "2026-09-30",
+    "scope": "operação gratuita, destinada a maiores de 18 anos e com os recursos declarados como desligados",
+    "external_legal_opinion": false,
+    "second_internal_approver_applicable": false,
+    "notes": "Aprovação interna das cinco minutas. Publicação, configuração do ambiente e homologação pública continuam necessárias para a vigência."
+  },
+  "controller_public_identity": {
+    "name": "Renan S. Nascimento",
+    "type": "pessoa_fisica",
+    "location": "Belém/PA, Brasil",
+    "privacy_contact": "privacidadeparabook@gmail.com"
+  },
+  "documents": [
+    {
+      "id": "terms",
+      "title": "Termos de Uso",
+      "route": "/termos",
+      "artifact": "DocumentoLegal",
+      "content_selector": "DOCUMENTOS.termos"
+    },
+    {
+      "id": "privacy",
+      "title": "Política de Privacidade",
+      "route": "/privacidade",
+      "artifact": "DocumentoLegal",
+      "content_selector": "DOCUMENTOS.privacidade, MAPA_PRIVACIDADE e FORNECEDORES_ATUAIS"
+    },
+    {
+      "id": "publication-license",
+      "title": "Termos de Publicação e Licença",
+      "route": "/publicacao-e-licenca",
+      "artifact": "DocumentoLegal",
+      "content_selector": "DOCUMENTOS.publicacao"
+    },
+    {
+      "id": "copyright-reports",
+      "title": "Direitos Autorais e Denúncias",
+      "route": "/direitos-autorais",
+      "artifact": "DocumentoLegal",
+      "content_selector": "DOCUMENTOS.direitos"
+    },
+    {
+      "id": "community-guidelines",
+      "title": "Diretrizes da Comunidade",
+      "route": "/diretrizes",
+      "artifact": "Diretrizes",
+      "content_selector": "Diretrizes"
+    }
+  ],
+  "artifacts": {
+    "DocumentoLegal": {
+      "path": "parabook-web/src/pages/DocumentoLegal.jsx",
+      "sha256": "96200f67a47e8e1383482d01fe72f3cd5e6bd1987dbfdbc27bb7b9bc580d05e7"
+    },
+    "Diretrizes": {
+      "path": "parabook-web/src/pages/Diretrizes.jsx",
+      "sha256": "064a2b6d701b62ee28f7b0f67b2a9cc6e0ea60f1e1f9b11fed44e387928b6cb2"
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "rule": "Qualquer alteração em um artefato invalida os hashes desta aprovação e exige nova versão ou nova aprovação explícita."
+  }
+}

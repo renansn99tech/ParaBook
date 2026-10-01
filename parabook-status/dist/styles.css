@@ -179,6 +179,7 @@ td:first-child span { display: block; margin-top: 4px; color: var(--muted); font
 .gate small { margin-top: 4px; color: var(--muted); line-height: 1.4; }
 .gate__status { color: var(--gold); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
 .gate__status[data-status="parcial"] { color: var(--blue); }
+.gate__status[data-status="concluido"] { color: var(--green); }
 .priorities { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; counter-reset: priority; }
 .priorities li { counter-increment: priority; display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: start; color: var(--soft); line-height: 1.5; }
 .priorities li::before { content: counter(priority, decimal-leading-zero); display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line-strong); border-radius: 50%; color: var(--gold); font-size: 0.78rem; font-weight: 850; }

@@ -1,5 +1,5 @@
 {
-  "revisadoEm": "2026-09-29",
+  "revisadoEm": "2026-10-01",
   "atividades": [
     {
       "area": "Plataforma",
@@ -84,9 +84,9 @@
     {
       "area": "Confiança",
       "atividade": "Privacidade e governança de dados",
-      "status": "pendente",
-      "evidencia": "Controles técnicos e documentos-base existem, mas o fechamento formal ainda depende de validações externas.",
-      "proximaAcao": "Concluir revisão jurídica, responsabilidades, inventário e política de retenção.",
+      "status": "parcial",
+      "evidencia": "O pacote jurídico, o controlador e o canal de privacidade foram publicados e verificados; inventário, RIPD, operadores e retenção permanecem no G5.",
+      "proximaAcao": "Concluir o inventário, o RIPD, a avaliação de operadores e a política detalhada de retenção do G5.",
       "prioridade": "P0"
     },
     {
@@ -131,7 +131,7 @@
     }
   ],
   "gates": [
-    { "id": "G1", "nome": "Jurídico e controlador", "status": "aberto", "resumo": "Revisão jurídica e identificação institucional ainda pendentes." },
+    { "id": "G1", "nome": "Jurídico e controlador", "status": "concluido", "resumo": "Aprovado: documentos, controlador e canal de privacidade estão publicados e verificados." },
     { "id": "G2", "nome": "Idade e controle de acesso", "status": "parcial", "resumo": "Controles implementados; falta completar a homologação operacional." },
     { "id": "G3", "nome": "Moderação e governança", "status": "parcial", "resumo": "Fluxos técnicos existem; operação e prazos precisam ser formalizados." },
     { "id": "G4", "nome": "Publicação e direitos", "status": "parcial", "resumo": "Fluxo implementado; proteções e documentação ainda precisam de homologação." },
@@ -141,11 +141,12 @@
   ],
   "prioridades": [
     { "titulo": "Homologar idade e moderação", "resumo": "Concluir rollout etário, operação de denúncias, responsáveis, prazos e recurso." },
-    { "titulo": "Concluir o pacote jurídico e de privacidade", "resumo": "Resolver documentos, responsabilidades, operadores e retenção antes da abertura comercial." },
+    { "titulo": "Concluir o inventário e o RIPD do G5", "resumo": "Formalizar tratamentos, operadores, retenção, descarte e acessos excepcionais antes da abertura comercial." },
     { "titulo": "Homologar leitura e mobile", "resumo": "Validar arquivos privados, interrupções de rede e aparelhos representativos." },
     { "titulo": "Definir a estratégia de dados", "resumo": "Aprovar analytics com governança antes de construir métricas avançadas para autores." }
   ],
   "historico": [
+    { "data": "2026-10-01", "titulo": "Gate G1 aprovado", "resumo": "Documentos jurídicos, controlador e canal de privacidade foram publicados e verificados no ambiente de produção." },
     { "data": "2026-09-29", "titulo": "Gate G7 aprovado", "resumo": "Segurança formal, alertas e recuperação foram comprovados em staging isolado com dados sintéticos." },
     { "data": "2026-09-24", "titulo": "Controle demonstrativo consolidado", "resumo": "A vitrine de exemplos passou a ser ativável e desativável sem exclusão de conteúdo." },
     { "data": "2026-09-24", "titulo": "Publicação principal alinhada", "resumo": "Frontend, backend e validações automatizadas foram promovidos para a linha principal." },

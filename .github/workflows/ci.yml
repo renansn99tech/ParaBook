@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15
+        image: postgres:17
         env:
           POSTGRES_DB: parabook_ci
           POSTGRES_USER: parabook
@@ -22,6 +22,7 @@ jobs:
     env:
       DEBUG: 'True'
       DATABASE_URL: postgres://parabook:parabook@127.0.0.1:5432/parabook_ci
+      G5_TEST_DATABASE_URL: postgres://parabook:parabook@127.0.0.1:5432/parabook_ci
       SECRET_KEY: ci-only-secret-not-for-production
     steps:
       - uses: actions/checkout@v4
@@ -60,7 +61,7 @@ jobs:
         env:
           STATICFILES_USE_MANIFEST: 'True'
         run: python manage.py collectstatic --noinput
-      - run: python manage.py test
+      - run: python manage.py test --settings=config.settings_test
       - run: pip-audit -r requirements.txt
 
   web:

@@ -9,13 +9,13 @@
             {% endif %}
 
             <h2 style="margin-top: {% if comunidade.criada_por_sistema %}15px{% else %}0{% endif %};">
-                {{ comunidade.nome }}
+                {{ comunidade.nome_publico }}
             </h2>
             
         </div>
 
         <div class="card-body">
-            <p>{{ comunidade.descricao }}</p>
+            <p>{{ comunidade.descricao_publica }}</p>
         </div>
 
         <div class="card-footer">

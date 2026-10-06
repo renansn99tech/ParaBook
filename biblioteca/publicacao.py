@@ -13,6 +13,7 @@ from rest_framework.exceptions import APIException, PermissionDenied, Validation
 
 from notificacoes.models import Notificacao
 from usuarios.models import AuditoriaAcao
+from usuarios.eventos import AUDITORIA, filtrar_metadados
 from usuarios.permissions import eh_admin_parabook
 from .models import (
     BloqueioPublicacao, DeclaracaoAutoria, Denuncia, EventoPublicacao, Livro,
@@ -60,10 +61,11 @@ def _registrar(user, livro, acao, anterior, motivo='', denuncia=None):
     # Não usar o helper best-effort: falha de auditoria deve reverter a transição.
     AuditoriaAcao.objects.create(
         ator=user, acao=f'publicacao.{acao}', recurso='Livro', recurso_id=str(livro.pk),
-        metadados={'evento_id': evento.pk, 'anterior': anterior, 'posterior': livro.status},
+        metadados=filtrar_metadados(AUDITORIA, f'publicacao.{acao}',
+                                  {'evento_id': evento.pk, 'anterior': anterior, 'posterior': livro.status}),
     )
     solicitacao = SolicitacaoPublicacao.objects.filter(livro=livro).first()
-    destinatarios = {solicitacao.usuario_id} if solicitacao else set()
+    destinatarios = {solicitacao.usuario_id} if solicitacao and solicitacao.usuario_id else set()
     if denuncia and denuncia.usuario_id:
         destinatarios.add(denuncia.usuario_id)
     for usuario_id in destinatarios:
@@ -110,6 +112,8 @@ def enviar_obra(user, dados, ip=None):
     livro = Livro.objects.create(**dados, autor=user.get_full_name() or user.username,
                                  origem='autor_independente', status='pendente')
     solicitacao = SolicitacaoPublicacao.objects.create(usuario=user, livro=livro)
+    from .quarentena import registrar_quarentena
+    registrar_quarentena(livro.pdf)
     DeclaracaoAutoria.objects.create(
         solicitacao=solicitacao, cpf_digest=salted_hmac('parabook.declaracao.cpf', cpf).hexdigest(),
         cpf_final=cpf[-4:], registro_autoral=registro, numero_registro=numero,
@@ -160,6 +164,8 @@ def enviar_revisao(user, livro_id, dados, reenviar=False):
         pdf=dados.get('pdf', livro.pdf.name or ''), capa=dados.get('capa', livro.capa.name or ''),
         status='aprovado' if simples else 'pendente', analisada_em=timezone.now() if simples else None,
     )
+    from .quarentena import registrar_quarentena
+    registrar_quarentena(tentativa.pdf)
     if simples:
         livro.titulo = dados['titulo']
         livro.save(update_fields=['titulo'])
@@ -187,6 +193,15 @@ def analisar_publicacao(user, solicitacao_id, acao, motivo='', tentativa_id=None
         raise ConflitoPublicacao()
     if acao == 'recusar':
         motivo = exigir_motivo(motivo)
+    else:
+        from .models import Categoria
+        categoria_id = tentativa.dados.get('categoria_id', livro.categoria_id)
+        if not Categoria.objects.filter(pk=categoria_id, disponivel_publicamente=True).exists():
+            raise ConflitoPublicacao('Categoria indisponível para publicação.')
+        from django.conf import settings
+        if settings.BOOK_FILE_SCAN_REQUIRED:
+            from .quarentena import exigir_arquivo_liberado
+            exigir_arquivo_liberado(tentativa.pdf)
     anterior = livro.status
     tentativa.status = 'aprovado' if acao == 'aprovar' else 'rejeitado'
     tentativa.motivo = motivo
@@ -215,6 +230,8 @@ def _restricoes(livro):
 
 
 def _validar_restauracao(livro):
+    if not livro.categoria.disponivel_publicamente:
+        raise ConflitoPublicacao('Categoria indisponível para restauração.')
     if livro.retirado_em or _restricoes(livro).exists():
         raise ConflitoPublicacao('A obra tem retirada voluntária ou outra restrição vigente.')
     agora = timezone.now()
@@ -225,6 +242,8 @@ def _validar_restauracao(livro):
     arquivo = livro.pdf_amostra if livro.modelo_acesso == 'amostra' else livro.pdf
     if not arquivo:
         raise ConflitoPublicacao('A obra não possui o arquivo necessário para restauração.')
+    from .quarentena import exigir_arquivo_liberado
+    exigir_arquivo_liberado(arquivo)
     try:
         with arquivo.open('rb') as conteudo:
             validar_pdf_livro(conteudo)

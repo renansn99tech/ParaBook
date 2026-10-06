@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Elegibilidade — ParaBook{% endblock %}
+{% block content %}
+<main class="container py-5">
+  <h1>Confirmação de elegibilidade</h1>
+  <p>O ParaBook atende pessoas adultas. A data declarada é privada. Não envie documentos por este formulário.</p>
+  {% if estado.restricao_ativa %}<p role="status">Conta em Modo Restrito. Declare ou corrija a informação, ou procure o suporte.</p>
+  {% else %}<p role="status">Você pode continuar usando as áreas permitidas.</p>{% endif %}
+  {% if estado.prazo_declaracao_em %}<p>Prazo da declaração: {{ estado.prazo_declaracao_em }}.</p>{% endif %}
+  {% if estado.proxima_correcao_permitida_em %}<p>Próxima correção a partir de {{ estado.proxima_correcao_permitida_em }}.</p>{% endif %}
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit" class="btn btn-primary">Registrar declaração</button></form>
+  <nav aria-label="Acesso e direitos" class="mt-4">
+    <a href="{% url 'biblioteca' %}">Catálogo público</a> ·
+    <a href="{% url 'diretrizes' %}">Diretrizes</a> ·
+    <a href="{% url 'api_suporte' %}">Suporte</a> ·
+    <a href="{% url 'api_exportar_dados' %}">Exportar dados próprios</a> ·
+    <a href="{% url 'logout' %}">Sair</a>
+  </nav>
+  <details class="mt-4"><summary>Encerrar conta</summary><p>O acesso será encerrado imediatamente. O descarte segue os prazos de privacidade; provas mínimas podem ser preservadas.</p>
+    <form method="post" action="{% url 'usuarios:excluir_conta' %}">{% csrf_token %}<label for="senha-encerramento">Senha atual</label><input id="senha-encerramento" name="senha_atual" type="password" autocomplete="current-password" required><button type="submit">Encerrar minha conta</button></form>
+  </details>
+</main>
+{% endblock %}

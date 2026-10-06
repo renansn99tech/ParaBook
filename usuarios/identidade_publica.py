@@ -24,6 +24,13 @@ def identidade_publica(user, viewer=None):
     demais pessoas, a conta é apresentada como @admin e não oferece navegação
     para o perfil.
     """
+    if user is None or not user.is_active:
+        return {
+            'username': 'conta_encerrada',
+            'nome_exibicao': 'Conta encerrada',
+            'perfil_clicavel': False,
+            'tipo': None,
+        }
     alvo_admin = conta_administrativa(user)
     viewer_e_titular = bool(viewer and viewer.is_authenticated and viewer.pk == user.pk)
     viewer_admin = eh_admin_parabook(viewer)

@@ -5,9 +5,11 @@ consultam este módulo; nenhum deles calcula idade ou prazo por conta própria.
 """
 
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
@@ -23,13 +25,15 @@ from usuarios.models import (
 def _marco_rollout():
     valor = settings.AGE_POLICY_ROLLOUT_AT
     if not valor:
+        if settings.AGE_POLICY_ACTIVE:
+            raise ImproperlyConfigured('Política etária ativa exige marco de rollout com fuso horário.')
         return None
-    if isinstance(valor, datetime):
-        marco = valor
-    else:
-        marco = datetime.fromisoformat(str(valor).replace('Z', '+00:00'))
+    try:
+        marco = valor if isinstance(valor, datetime) else datetime.fromisoformat(str(valor).replace('Z', '+00:00'))
+    except (TypeError, ValueError) as exc:
+        raise ImproperlyConfigured('Marco etário deve ser uma data ISO 8601 com fuso horário.') from exc
     if timezone.is_naive(marco):
-        marco = timezone.make_aware(marco, timezone.get_current_timezone())
+        raise ImproperlyConfigured('Marco etário exige fuso horário explícito.')
     return marco
 
 
@@ -44,7 +48,11 @@ def prazo_declaracao(usuario):
 
 
 def politica_esta_ativa():
-    return bool(settings.AGE_POLICY_ACTIVE and _marco_rollout())
+    if not settings.AGE_POLICY_ACTIVE:
+        return False
+    if not str(settings.AGE_POLICY_VERSION).strip():
+        raise ImproperlyConfigured('Política etária ativa exige versão.')
+    return timezone.now() >= _marco_rollout()
 
 
 def _obter_usuario_negocio(usuario_auth):
@@ -63,7 +71,7 @@ def obter_estado(usuario_auth, *, bloquear=False):
     if criado:
         EventoEtarioConta.objects.create(
             usuario=usuario_auth,
-            chave_idempotencia=__import__('uuid').uuid4(),
+            chave_idempotencia=uuid4(),
             tipo=EventoEtarioConta.Tipo.CONTA_INICIALIZADA,
             estado_anterior=EstadoEtarioConta.Estado.PENDENTE,
             estado_novo=EstadoEtarioConta.Estado.PENDENTE,
@@ -120,6 +128,8 @@ def registrar_declaracao(*, usuario_auth, data_nascimento, chave_idempotencia, o
     ).first()
     if existente:
         return existente, True
+    if EventoEtarioConta.objects.filter(chave_idempotencia=chave_idempotencia).exists():
+        raise ValidationError({'chave_idempotencia': ['Use uma nova chave para esta tentativa.']})
 
     estado = obter_estado(usuario_auth, bloquear=True)
     agora = timezone.now()
@@ -171,6 +181,12 @@ def registrar_declaracao(*, usuario_auth, data_nascimento, chave_idempotencia, o
         versao_politica=settings.AGE_POLICY_VERSION,
         versao_documentos=settings.TERMS_VERSION,
     )
+    from usuarios.privacidade_provas import registrar_prova
+    registrar_prova(
+        usuario=usuario_auth, classe='R10', evento_ref=evento.protocolo,
+        conteudo={'data_declarada': data_nascimento.isoformat(), 'evento_ref': str(evento.protocolo),
+                  'tipo': evento.tipo, 'versao_politica': evento.versao_politica},
+    )
     if novo == EstadoEtarioConta.Estado.RESTRITO_MENOR:
         ja_aberta = SolicitacaoSuporte.objects.filter(
             usuario=usuario_auth,
@@ -202,5 +218,7 @@ def resumo_estado(usuario_auth):
         'prazo_declaracao_em': prazo_declaracao(usuario_auth),
         'proxima_correcao_permitida_em': estado.proxima_correcao_permitida_em,
         'restricao_ativa': restrita,
+        'politica_ativa': politica_esta_ativa(),
+        'chave_declaracao': uuid4(),
         'versao_politica': estado.versao_politica or settings.AGE_POLICY_VERSION,
     }

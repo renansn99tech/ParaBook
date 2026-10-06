@@ -448,9 +448,9 @@ class PerfilPublicoAPIView(APIView):
     @extend_schema(responses=PerfilPublicoResponseSerializer)
     def get(self, request, username, *args, **kwargs):
         try:
-            dados_usuario = Usuario.objects.get(user_auth__username=username)
+            dados_usuario = Usuario.objects.get(user_auth__username=username, user_auth__is_active=True)
         except Usuario.DoesNotExist:
-            user_auth_obj = get_object_or_404(Usuario.user_auth.field.related_model, username=username)
+            user_auth_obj = get_object_or_404(Usuario.user_auth.field.related_model, username=username, is_active=True)
             if user_auth_obj.is_superuser:
                 perfil, _ = Perfil.objects.get_or_create(usuario=user_auth_obj, defaults={"descricao_perfil": "Administrador do Sistema"})
                 dados_usuario, _ = Usuario.objects.get_or_create(
@@ -777,7 +777,7 @@ class SolicitarAutorAPIView(APIView):
 class AutoresListAPIView(APIView):
     @extend_schema(responses=AutorResumoSerializer(many=True))
     def get(self, request, *args, **kwargs):
-        autores = Usuario.objects.filter(tipo='autor').select_related('user_auth', 'perfil')
+        autores = Usuario.objects.filter(tipo='autor', user_auth__is_active=True).select_related('user_auth', 'perfil')
         data = []
         for autor in autores:
             # Conta obras aprovadas deste autor

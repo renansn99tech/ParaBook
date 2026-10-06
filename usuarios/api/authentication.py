@@ -1,14 +1,18 @@
 from django.conf import settings
-from rest_framework.authentication import CSRFCheck
+from rest_framework.authentication import CSRFCheck, SessionAuthentication
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
+from drf_spectacular.authentication import SessionScheme
 from usuarios.models import SessaoDispositivo
 from usuarios.governanca import dados_suspensao_ativa
 from usuarios.idade import restricao_etaria_ativa, resumo_estado
 
 
 ROTAS_CONTA_SUSPENSA = {
+    '/api/v1/auth/idade/',
+    '/api/v1/auth/logout/',
+    '/api/v1/auth/mobile-logout/',
     '/api/v1/auth/profile/',
     '/api/v1/auth/alterar-senha/',
     '/api/v1/auth/aceitar-termos/',
@@ -48,6 +52,7 @@ ROTAS_CONTA_RESTRITA_ETARIA = {
     '/api/v1/auth/exportar-dados/',
     '/api/v1/auth/suporte/',
     '/api/v1/auth/logout/',
+    '/api/v1/auth/mobile-logout/',
 }
 ROTAS_PUBLICAS_RESTRITA_ETARIA = (
     '/api/v1/biblioteca/livros/',
@@ -68,10 +73,10 @@ class CookieJWTAuthentication(JWTAuthentication):
             resultado = super().authenticate(request)
             if resultado:
                 self._validar_sessao(resultado[1])
-                resultado = self._aplicar_restricao_suspensao(request, resultado)
+                resultado = self._aplicar_restricao_etaria(request, resultado)
                 if resultado is None:
                     return None
-                return self._aplicar_restricao_etaria(request, resultado)
+                return self._aplicar_restricao_suspensao(request, resultado)
             return None
 
         raw_token = request.COOKIES.get(settings.JWT_ACCESS_COOKIE_NAME)
@@ -81,10 +86,10 @@ class CookieJWTAuthentication(JWTAuthentication):
         validated_token = self.get_validated_token(raw_token)
         self._validar_sessao(validated_token)
         resultado = (self.get_user(validated_token), validated_token)
-        resultado = self._aplicar_restricao_suspensao(request, resultado)
+        resultado = self._aplicar_restricao_etaria(request, resultado)
         if resultado is None:
             return None
-        resultado = self._aplicar_restricao_etaria(request, resultado)
+        resultado = self._aplicar_restricao_suspensao(request, resultado)
         if resultado:
             self._enforce_csrf(request)
         return resultado
@@ -105,6 +110,7 @@ class CookieJWTAuthentication(JWTAuthentication):
         if metodo_seguro and any(caminho.startswith(prefixo) for prefixo in ROTAS_PUBLICAS_SUSPENSA):
             # O conteúdo público é calculado exatamente como para um visitante;
             # isso evita vazar estante, associação a comunidades ou privilégios.
+            request.acesso_publico_restrito = True
             return None
 
         raise PermissionDenied({
@@ -127,6 +133,7 @@ class CookieJWTAuthentication(JWTAuthentication):
         if metodo_seguro and any(
             caminho.startswith(prefixo) for prefixo in ROTAS_PUBLICAS_RESTRITA_ETARIA
         ):
+            request.acesso_publico_restrito = True
             return None
         raise PermissionDenied({
             'detail': 'Esta conta está em modo restrito de idade. Informe ou corrija sua declaração para acessar áreas autenticadas.',
@@ -154,6 +161,26 @@ class CookieJWTAuthentication(JWTAuthentication):
             raise PermissionDenied(f"Falha na validação CSRF: {reason}")
 
 
+class SessaoProtegidaAuthentication(SessionAuthentication):
+    """Aplica as mesmas barreiras ao sessionid do Django e ao JWT.
+
+    Não recupera privilégios por fallback após converter JWT em visitante.
+    """
+
+    def authenticate(self, request):
+        if getattr(request, 'acesso_publico_restrito', False):
+            return None
+        user = getattr(request._request, 'user', None)
+        if not user or not user.is_active:
+            return None
+        resultado = CookieJWTAuthentication._aplicar_restricao_etaria(request, (user, None))
+        if resultado:
+            resultado = CookieJWTAuthentication._aplicar_restricao_suspensao(request, resultado)
+        if resultado:
+            self.enforce_csrf(request)
+        return resultado
+
+
 class CookieJWTAuthenticationScheme(OpenApiAuthenticationExtension):
     target_class = 'usuarios.api.authentication.CookieJWTAuthentication'
     name = 'cookieJwtAuth'
@@ -165,3 +192,7 @@ class CookieJWTAuthenticationScheme(OpenApiAuthenticationExtension):
             'name': settings.JWT_ACCESS_COOKIE_NAME,
             'description': 'JWT de acesso em cookie HttpOnly; escritas também exigem X-CSRFToken.',
         }
+
+
+class SessaoProtegidaScheme(SessionScheme):
+    target_class = 'usuarios.api.authentication.SessaoProtegidaAuthentication'

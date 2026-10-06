@@ -121,27 +121,19 @@ def logout_view(request):
 @require_POST
 @transaction.atomic # <-- IMPEDE A FALHA PARCIAL
 def excluir_conta(request):
-    user = request.user
-    
+    from rest_framework.exceptions import APIException
+    from usuarios.privacidade_conta import encerrar_conta
+    if not request.user.check_password(request.POST.get('senha_atual', '')):
+        messages.error(request, 'Confirme a senha atual para encerrar a conta nas configurações.')
+        return redirect('home')
     try:
-        usuario_custom = Usuario.objects.get(user_auth=user)
-        perfil_vinculado = usuario_custom.perfil
-        
-        usuario_custom.delete()
-        if perfil_vinculado:
-            perfil_vinculado.delete()
-            
-    except Usuario.DoesNotExist:
-        pass 
-
-    user.delete() # Se isso falhar, TUDO acima é desfeito automaticamente!
-    
+        encerrar_conta(request.user)
+    except APIException as exc:
+        messages.error(request, str(exc.detail))
+        return redirect('home')
     logout(request)
-    
-    messages.success(request, 'Sua conta foi excluída com sucesso. Esperamos te ver novamente no futuro!')
-    
-    # Substitua 'home' pela rota que desejar
-    return redirect('home')  # Redireciona para a página inicial do ParaBook
+    messages.success(request, 'Conta encerrada. O acesso foi bloqueado e o descarte seguirá os prazos de privacidade.')
+    return redirect('home')
 
 @login_required
 def aceitar_termos(request):

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-{{ comunidade.nome }}
+{{ comunidade.nome_publico }}
 {% endblock %}
 
 {% block extra_css %}
@@ -35,7 +35,7 @@
             <h1 id="welcome-text">
 
                 Bem-vindo à comunidade
-                {{ comunidade.nome }}
+                {{ comunidade.nome_publico }}
 
             </h1>
 
@@ -47,11 +47,11 @@
     <section class="banner-comunidade">
 
         <h2>
-            {{ comunidade.nome }}
+            {{ comunidade.nome_publico }}
         </h2>
 
         <p>
-            {{ comunidade.descricao }}
+            {{ comunidade.descricao_publica }}
         </p>
 
     </section>
@@ -116,9 +116,11 @@
                 <div class="post-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
 
                 <div>
-                    <h4 class="post-title">{{ post.titulo }}</h4>
+                    <h4 class="post-title">{% if post.retirada_privacidade %}Conteúdo removido{% else %}{{ post.titulo }}{% endif %}</h4>
                     <p class="post-author">
-                        {% if not request.user.is_staff and post.autor.is_staff %}
+                        {% if post.retirada_privacidade or not post.autor or not post.autor.is_active %}
+                            <span>Conta encerrada</span>
+                        {% elif not request.user.is_staff and post.autor.is_staff %}
                             <span title="Conta administrativa do ParaBook">@admin</span>
                         {% else %}
                             <a href="{% url 'perfis:perfil_publico' post.autor.username %}" style="color: #c4b5fd; text-decoration: none;">
@@ -146,10 +148,10 @@
             </div>
 
                 <div class="post-content">
-                    {{ post.conteudo }}
+                    {% if not post.retirada_privacidade %}{{ post.conteudo }}{% endif %}
                 </div>
 
-                {% if post.imagem %}
+                {% if post.imagem and not post.retirada_privacidade %}
                     <img
                         src="{{ post.imagem.url }}"
                         style="
@@ -267,7 +269,7 @@
     function abrirDenunciaComunidade() {
         Swal.fire({
             title: 'Relatar Problema',
-            text: 'Selecione o motivo da denúncia para a comunidade "{{ comunidade.nome }}":',
+            text: 'Selecione o motivo da denúncia para a comunidade "{{ comunidade.nome_publico }}":',
             input: 'select',
             inputOptions: {
                 'ofensivo': 'Conteúdo Ofensivo / Discurso de Ódio',

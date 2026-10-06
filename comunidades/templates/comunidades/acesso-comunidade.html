@@ -17,8 +17,8 @@
         {% for comunidade in comunidades %}
             <div class="card">
                 <div class="card-content">
-                    <h3>{{ comunidade.nome }}</h3>
-                    <p>{{ comunidade.descricao }}</p>
+                    <h3>{{ comunidade.nome_publico }}</h3>
+                    <p>{{ comunidade.descricao_publica }}</p>
 
                     <a href="{% url 'conteudo_comunidade' comunidade.id %}" class="btn">
                         Acessar

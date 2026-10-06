@@ -39,10 +39,10 @@ class Perfil(models.Model):
         choices=Tipografia.choices,
         default=Tipografia.PADRAO,
     )
-    exibir_idade = models.BooleanField(default=True)
-    exibir_data_nascimento = models.BooleanField(default=True)
+    exibir_idade = models.BooleanField(default=False)
+    exibir_data_nascimento = models.BooleanField(default=False)
     exibir_aniversario_sem_ano = models.BooleanField(default=False)
-    exibir_email = models.BooleanField(default=True)
+    exibir_email = models.BooleanField(default=False)
 
     # --- NOVO CAMPO: CONTROLE DE PRIVACIDADE ---
     perfil_privado = models.BooleanField(default=False)

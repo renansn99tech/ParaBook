@@ -38,7 +38,9 @@ def novidade(request):
 
 def biblioteca(request):
     categorias = ['filosofia', 'literatura', 'religiosos', 'exatas', 'infantis']
-    livros = filtrar_conteudo_demonstrativo(livros_por_categorias(categorias), request.user)
+    livros = filtrar_conteudo_demonstrativo(
+        livros_por_categorias(categorias).filter(categoria__disponivel_publicamente=True), request.user,
+    )
     livros_map = {cat: [] for cat in categorias}
 
     for livro in livros:
@@ -93,7 +95,7 @@ def adicionar_a_biblioteca(request, livro_id):
                         msg_extra = f" Você subiu para o Nível {res_xp['nivel_atual']}!"
                     messages.success(request, f"Livro adicionado com sucesso! (+10 XP){msg_extra}")
                 except Exception as e:
-                    logger.error(f"Erro na gamificação ao adicionar livro {livro_id} para {request.user}: {str(e)}")
+                    logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
                     messages.success(request, "Livro adicionado com sucesso!")
             elif criado:
                 messages.success(request, "Livro adicionado com sucesso!")
@@ -132,6 +134,10 @@ def leitura(request):
         return redirect('biblioteca')
 
     livro = get_object_or_404(Livro, pk=livro_id, status='publicado', chave_demonstrativa__isnull=True)
+    from biblioteca.services import verificar_acesso_obra
+    if not verificar_acesso_obra(request.user, livro).pode_ler:
+        messages.error(request, 'Esta obra não está disponível para leitura nesta conta.')
+        return redirect('biblioteca')
     return render(request, 'biblioteca/leitura.html', {'livro': livro})
 
 
@@ -148,7 +154,7 @@ def iniciar_leitura(request, livro_id):
         try:
             GamificacaoService.atualizar_streak(request.user)
         except Exception as e:
-            logger.error(f"Erro na gamificação ao iniciar leitura do livro {livro_id} para {request.user}: {str(e)}")
+            logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
 
     url_leitura = reverse('leitura')
     return redirect(f"{url_leitura}?id={livro_id}")
@@ -187,7 +193,7 @@ def concluir_leitura(request, livro_id):
                     if conquista:
                         msg_adicional += f" Conquista desbloqueada: {conquista.nome}!"
                 except Exception as e:
-                    logger.error(f"Erro ao processar gamificação na leitura do livro {livro_id} para {request.user}: {str(e)}")
+                    logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
 
             return JsonResponse({
                 "success": True,
@@ -356,7 +362,7 @@ def avaliar_livro(request, livro_id):
                     GamificacaoService.adicionar_xp(request.user, 30)
                     GamificacaoService.conceder_conquista(request.user, 'primeira_avaliacao')
                 except Exception as e:
-                    logger.error(f"Erro na gamificação ao avaliar livro {livro_id} para {request.user}: {str(e)}")
+                    logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
 
             return JsonResponse({"success": True, "message": f"Avaliado com {nova_nota} estrelas!"})
         except Exception as e:
@@ -387,7 +393,7 @@ def favoritar_livro(request, livro_id):
                 try:
                     GamificacaoService.adicionar_xp(request.user, 5)
                 except Exception as e:
-                    logger.error(f"Erro na gamificação ao favoritar livro {livro_id} para {request.user}: {str(e)}")
+                    logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
 
             return JsonResponse({"success": True, "is_favorito": registro.favorito})
         except Exception as e:
@@ -429,7 +435,7 @@ def livro_info(request, id):
                     if conquista:
                         msg_extra += f" Conquista desbloqueada: {conquista.nome}!"
                 except Exception as e:
-                    logger.error(f"Erro na gamificação ao publicar resenha do livro {id} para {request.user}: {str(e)}")
+                    logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
 
             messages.success(request, f"Sua avaliação foi publicada!{msg_extra}")
 
@@ -571,7 +577,7 @@ def recomendacao_ia_view(request):
     #                 
     #         motivo_geral = "✨ Nossa IA analisou sua estante e preparou recomendações personalizadas exclusivas para você!"
     #     except Exception as e:
-    #         logger.error(f"Erro na API Gemini: {str(e)}")
+    #         logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
 
     context = {
         'recomendacoes': recomendacoes,

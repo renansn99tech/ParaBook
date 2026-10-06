@@ -125,6 +125,14 @@ class PerfilSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def validate_localizacao(self, value):
+        import re
+        if value and (re.search(r'\d', value) or re.search(
+            r'\b(rua|avenida|av\.|travessa|rodovia|cep|latitude|longitude|quadra|lote)\b', value, re.IGNORECASE
+        )):
+            raise serializers.ValidationError('Informe apenas cidade, estado ou região, sem endereço ou coordenadas.')
+        return value
+
     class Meta:
         model = Perfil
         fields = ['id', 'usuario', 'username', 'email', 'nome', 'tipo', 'date_joined', 'is_staff', 'is_superuser', 'exibir_aniversario_sem_ano', 'exibir_email', 'termos_aceitos', 'versao_termos_aceita', 'onboarding_pendente', 'is_premium', 'historico', 'descricao_perfil', 'foto', 'capa', 'bio', 'localizacao', 'perfil_privado', 'meta_leitura_anual', 'tipografia', 'tipografia_efetiva', 'tipografia_nome', 'tipografias_disponiveis', 'suspensao']

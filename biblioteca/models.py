@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
+from . import caminhos
 
 
 class Categoria(models.Model):
@@ -21,6 +22,25 @@ class Categoria(models.Model):
 
     def __str__(self):
         return self.nome
+
+
+class VerificacaoArquivo(models.Model):
+    class Estado(models.TextChoices):
+        QUARENTENA = 'quarentena', 'Quarentena'
+        VERIFICANDO = 'verificando', 'Verificando'
+        LIMPO = 'limpo', 'Limpo'
+        REJEITADO = 'rejeitado', 'Rejeitado'
+        ERRO = 'erro', 'Erro de verificação'
+
+    arquivo_nome = models.CharField(max_length=255, unique=True)
+    sha256 = models.CharField(max_length=64)
+    estado = models.CharField(max_length=12, choices=Estado.choices, default=Estado.QUARENTENA)
+    tentativa = models.UUIDField(default=uuid.uuid4)
+    motor_versao = models.CharField(max_length=160, blank=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'biblioteca_verificacoes_arquivos'
 
 
 class Livro(models.Model):
@@ -54,9 +74,9 @@ class Livro(models.Model):
     paginas = models.PositiveIntegerField(null=True, blank=True, verbose_name="Quantidade de Páginas")
     edicao = models.CharField(max_length=100, null=True, blank=True, help_text="Ex: 1ª Edição, Traduzido por...", verbose_name="Edição")
     capa = models.ImageField(upload_to='capas/', null=True, blank=True, verbose_name="Imagem de Capa")
-    pdf = models.FileField(upload_to='livros/', null=True, blank=True, verbose_name="Arquivo PDF")
+    pdf = models.FileField(upload_to=caminhos.pdf_livro, null=True, blank=True, verbose_name="Arquivo PDF")
     pdf_amostra = models.FileField(
-        upload_to='livros/amostras/', null=True, blank=True, verbose_name="PDF da amostra"
+        upload_to=caminhos.pdf_amostra, null=True, blank=True, verbose_name="PDF da amostra"
     )
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='livros', verbose_name="Categoria")
     origem = models.CharField(max_length=25, choices=ORIGEM_CHOICES, default="dominio_publico", verbose_name="Origem da Obra")
@@ -296,7 +316,8 @@ class SolicitacaoPublicacao(models.Model):
 
     usuario = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
         related_name='solicitacoes_publicacao',
         verbose_name='Autor Solicitante'
     )
@@ -391,7 +412,7 @@ class TentativaPublicacao(models.Model):
     solicitacao = models.ForeignKey(SolicitacaoPublicacao, on_delete=models.CASCADE, related_name='tentativas')
     status = models.CharField(max_length=20, choices=SolicitacaoPublicacao.STATUS_CHOICES, default='pendente')
     dados = models.JSONField(default=dict)
-    pdf = models.FileField(upload_to='livros/revisoes/', blank=True)
+    pdf = models.FileField(upload_to=caminhos.pdf_revisao, blank=True)
     capa = models.ImageField(upload_to='capas/revisoes/', blank=True)
     criada_em = models.DateTimeField(auto_now_add=True)
     analisada_em = models.DateTimeField(null=True, blank=True)

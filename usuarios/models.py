@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils import timezone
 from perfis.models import Perfil
+from datetime import timedelta
 import uuid
 
 class Usuario(models.Model):
@@ -315,7 +316,7 @@ class EventoGovernancaConta(models.Model):
         SUSPENSAO_EXPIRADA = 'suspensao_expirada', 'Suspensão expirada'
         PAPEL_ALTERADO = 'papel_alterado', 'Papel alterado'
 
-    usuario = models.ForeignKey(User, on_delete=models.PROTECT, related_name='eventos_governanca')
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='eventos_governanca')
     ator = models.ForeignKey(
         User,
         null=True,
@@ -335,6 +336,8 @@ class EventoGovernancaConta(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             raise RuntimeError('Eventos de governança são imutáveis.')
+        from usuarios.eventos import GOVERNANCA, filtrar_metadados
+        self.metadados = filtrar_metadados(GOVERNANCA, self.tipo, self.metadados)
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -348,7 +351,7 @@ class SolicitacaoSuporte(models.Model):
         RESPONDIDA = 'respondida', 'Respondida'
         ENCERRADA = 'encerrada', 'Encerrada'
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='solicitacoes_suporte')
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='solicitacoes_suporte')
     categoria = models.CharField(max_length=40, default='conta')
     assunto = models.CharField(max_length=120)
     mensagem = models.TextField(max_length=4000)
@@ -364,6 +367,7 @@ class SolicitacaoSuporte(models.Model):
     )
     criada_em = models.DateTimeField(auto_now_add=True, db_index=True)
     atualizada_em = models.DateTimeField(auto_now=True)
+    encerrada_em = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'usuarios_solicitacoes_suporte'
@@ -401,3 +405,73 @@ class AutenticacaoDoisFatores(models.Model):
 
     class Meta:
         db_table = 'autenticacao_dois_fatores'
+
+
+class EncerramentoConta(models.Model):
+    """R08: referência mínima para execução e reconciliação de cópias.
+
+    Não representa que Storage, Gmail ou backups tenham sido expurgados.
+    A combinação ID/data de criação evita atingir uma conta diferente no restore.
+    """
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    usuario = models.OneToOneField(User, null=True, on_delete=models.SET_NULL, related_name='encerramento')
+    conta_id_original = models.PositiveBigIntegerField()
+    conta_criada_em = models.DateTimeField()
+    encerrada_em = models.DateTimeField(default=timezone.now)
+    descarte_ate = models.DateTimeField()
+    prova_ate = models.DateTimeField()
+    descartada_em = models.DateTimeField(null=True, blank=True)
+
+
+class ProvaPrivacidade(models.Model):
+    """Evidência segregada cifrada; não registrada no Django Admin/API geral."""
+    usuario = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='provas_privacidade')
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    evento_ref = models.UUIDField(unique=True)
+    classe = models.CharField(max_length=3, choices=[('R09', 'Prova mínima'), ('R10', 'Declaração etária'), ('R13', 'Preservação seletiva')])
+    encerramento = models.ForeignKey(EncerramentoConta, null=True, on_delete=models.SET_NULL, related_name='provas')
+    chave_id = models.CharField(max_length=40)
+    recurso = models.CharField(max_length=100, blank=True)
+    recurso_ref = models.CharField(max_length=100, blank=True)
+    conteudo_cifrado = models.TextField()
+    registrada_em = models.DateTimeField(default=timezone.now)
+    expira_em = models.DateTimeField(null=True, blank=True)
+
+
+class PreservacaoDados(models.Model):
+    """R13: uma causa e um recurso exatos, nunca uma retenção genérica da conta."""
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    destino = models.CharField(max_length=24)
+    recurso = models.CharField(max_length=100)
+    recurso_ref = models.CharField(max_length=100)
+    motivo_codigo = models.CharField(max_length=40)
+    iniciada_em = models.DateTimeField(default=timezone.now)
+    revisar_em = models.DateTimeField()
+    liberada_em = models.DateTimeField(null=True, blank=True)
+
+    def clean(self):
+        if not self.motivo_codigo or not self.recurso_ref:
+            raise ValidationError('Informe causa e referência específica da preservação.')
+        if self.revisar_em > self.iniciada_em + timedelta(days=90):
+            raise ValidationError('A primeira revisão da preservação deve ocorrer em até 90 dias.')
+
+
+class DestinoDescarte(models.Model):
+    """Fila por objeto/destino; estados residuais permanecem após excluir User."""
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    encerramento = models.ForeignKey(EncerramentoConta, on_delete=models.PROTECT, related_name='destinos')
+    destino = models.CharField(max_length=24)
+    classe = models.CharField(max_length=3)
+    recurso = models.CharField(max_length=100)
+    recurso_ref = models.CharField(max_length=100)
+    objeto = models.TextField(blank=True)
+    evento_em = models.DateTimeField(null=True)
+    limite_em = models.DateTimeField(null=True)
+    estado = models.CharField(max_length=20, default='pendente')
+    motivo_codigo = models.CharField(max_length=40, blank=True)
+    concluido_em = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(
+            fields=['encerramento', 'destino', 'recurso', 'recurso_ref'], name='descarte_destino_recurso_unico',
+        )]

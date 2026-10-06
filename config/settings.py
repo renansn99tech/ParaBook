@@ -142,6 +142,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'usuarios.middleware.RestricaoEtariaMiddleware',
     'usuarios.middleware.ForcarAceiteTermosMiddleware',
     'assinaturas.middleware.PremiumRequiredMiddleware',
 ]
@@ -352,6 +353,8 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
 MAX_BOOK_UPLOAD_SIZE = config('MAX_BOOK_UPLOAD_SIZE', default=5 * 1024 * 1024, cast=int)
+PRIVACY_EVIDENCE_KEY = config('PRIVACY_EVIDENCE_KEY', default='')
+PRIVACY_EVIDENCE_KEY_ID = config('PRIVACY_EVIDENCE_KEY_ID', default='v1')
 MAX_BOOK_PAGES = config('MAX_BOOK_PAGES', default=5000, cast=int)
 DATA_UPLOAD_MAX_MEMORY_SIZE = config(
     'DATA_UPLOAD_MAX_MEMORY_SIZE', default=6 * 1024 * 1024, cast=int
@@ -419,7 +422,7 @@ CORS_ALLOW_CREDENTIALS = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'usuarios.api.authentication.CookieJWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'usuarios.api.authentication.SessaoProtegidaAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -444,6 +447,12 @@ REST_FRAMEWORK = {
 AGE_POLICY_ACTIVE = config('AGE_POLICY_ACTIVE', default=False, cast=bool)
 AGE_POLICY_ROLLOUT_AT = config('AGE_POLICY_ROLLOUT_AT', default='')
 AGE_POLICY_VERSION = config('AGE_POLICY_VERSION', default='idade-v1')
+
+# G4: preparação local; ativação hospedada exige pedido próprio. Quando exigida,
+# a ausência de scanner ou de resultado limpo impede qualquer entrega de PDF.
+BOOK_FILE_SCAN_REQUIRED = config('BOOK_FILE_SCAN_REQUIRED', default=False, cast=bool)
+BOOK_CLAMSCAN_PATH = config('BOOK_CLAMSCAN_PATH', default='')
+BOOK_SCAN_TIMEOUT_SECONDS = config('BOOK_SCAN_TIMEOUT_SECONDS', default=30, cast=int)
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -507,4 +516,10 @@ LOGGING = {
         'console': {'class': 'logging.StreamHandler', 'formatter': 'json'},
     },
     'root': {'handlers': ['console'], 'level': LOG_LEVEL},
+    'loggers': {
+        'django': {'handlers': ['console'], 'level': LOG_LEVEL, 'propagate': False},
+        'django.server': {'handlers': ['console'], 'level': LOG_LEVEL, 'propagate': False},
+        'django.request': {'handlers': ['console'], 'level': LOG_LEVEL, 'propagate': False},
+        'django.security': {'handlers': ['console'], 'level': LOG_LEVEL, 'propagate': False},
+    },
 }

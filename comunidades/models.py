@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 
 class Comunidade(models.Model):
+    retirada_privacidade = models.BooleanField(default=False)
     nome = models.CharField(max_length=100)
     chave_demonstrativa = models.CharField(
         max_length=80, unique=True, null=True, blank=True, editable=False,
@@ -39,8 +40,17 @@ class Comunidade(models.Model):
     def demonstrativo(self):
         return bool(self.chave_demonstrativa)
 
+    @property
+    def nome_publico(self):
+        return 'Comunidade' if self.retirada_privacidade else self.nome
+
+    @property
+    def descricao_publica(self):
+        return '' if self.retirada_privacidade else self.descricao
+
 
 class PostagemComunidade(models.Model):
+    retirada_privacidade = models.BooleanField(default=False)
     comunidade = models.ForeignKey(
         Comunidade,
         on_delete=models.CASCADE,
@@ -49,7 +59,9 @@ class PostagemComunidade(models.Model):
 
     autor = models.ForeignKey(
         User,
-        on_delete=models.CASCADE
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
 
     titulo = models.CharField(
@@ -80,6 +92,7 @@ class PostagemComunidade(models.Model):
 
 
 class RespostaPostagem(models.Model):
+    retirada_privacidade = models.BooleanField(default=False)
     postagem = models.ForeignKey(
         PostagemComunidade,
         on_delete=models.CASCADE,
@@ -87,7 +100,9 @@ class RespostaPostagem(models.Model):
     )
     autor = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='respostas_comunidade',
     )
     conteudo = models.TextField(max_length=1200)

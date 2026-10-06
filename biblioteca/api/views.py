@@ -107,6 +107,9 @@ class LivroViewSet(viewsets.ModelViewSet):
         if origem not in {'dominio_publico', 'licenciado'}:
             raise ApiValidationError({'origem': 'O Dashboard cadastra somente domínio público ou acervo licenciado.'})
         livro = serializer.save(status='publicado')
+        from biblioteca.quarentena import registrar_quarentena
+        registrar_quarentena(livro.pdf)
+        registrar_quarentena(livro.pdf_amostra)
         fluxo._registrar(self.request.user, livro, 'acervo_cadastrado', '')
 
     @transaction.atomic
@@ -121,6 +124,9 @@ class LivroViewSet(viewsets.ModelViewSet):
         serializer.instance = livro
         anterior = livro.status
         livro = serializer.save()
+        from biblioteca.quarentena import registrar_quarentena
+        registrar_quarentena(livro.pdf)
+        registrar_quarentena(livro.pdf_amostra)
         fluxo._registrar(self.request.user, livro, 'acervo_editado', anterior)
 
     def perform_destroy(self, instance):
@@ -150,9 +156,12 @@ class LivroViewSet(viewsets.ModelViewSet):
             return Response({"detail": "PDF não encontrado para este livro."}, status=status.HTTP_404_NOT_FOUND)
         
         try:
-            return FileResponse(livro.pdf.open('rb'), content_type='application/pdf')
+            from biblioteca.quarentena import abrir_pdf_verificado
+            return FileResponse(abrir_pdf_verificado(livro.pdf), content_type='application/pdf')
+        except PermissionDenied:
+            raise
         except Exception:
-            logger.exception('Falha ao abrir PDF do livro %s', livro.pk)
+            logger.error('pdf_abertura_falhou', extra={'evento_codigo': 'pdf_abertura_falhou'})
             return Response(
                 {"detail": "Não foi possível abrir este livro."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -168,9 +177,12 @@ class LivroViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
         try:
-            return FileResponse(livro.pdf_amostra.open('rb'), content_type='application/pdf')
+            from biblioteca.quarentena import abrir_pdf_verificado
+            return FileResponse(abrir_pdf_verificado(livro.pdf_amostra), content_type='application/pdf')
+        except PermissionDenied:
+            raise
         except Exception:
-            logger.exception('Falha ao abrir a amostra do livro %s', livro.pk)
+            logger.error('pdf_abertura_falhou', extra={'evento_codigo': 'pdf_abertura_falhou'})
             return Response(
                 {"detail": "Não foi possível abrir a amostra desta obra."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -240,7 +252,7 @@ class EstanteViewSet(viewsets.ModelViewSet):
                     if res_xp and res_xp.get('subiu_nivel'):
                         msg_extra.append(f"Você subiu para o Nível {res_xp['nivel_atual']}!")
                 except Exception as e:
-                    logger.error(f"Erro na gamificação (adicionar): {str(e)}")
+                    logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
 
             headers = self.get_success_headers(serializer.data)
             response_data = serializer.data
@@ -344,7 +356,7 @@ class EstanteViewSet(viewsets.ModelViewSet):
                     GamificacaoService.conceder_conquista(request.user, 'primeiro_favorito')
 
         except Exception as e:
-            logger.error(f"Erro na gamificação (update): {str(e)}")
+            logger.error('gamificacao_falhou', extra={'evento_codigo': 'gamificacao_falhou'})
 
         response_data = serializer.data
         if msg_extra:

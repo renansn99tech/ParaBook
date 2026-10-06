@@ -17,6 +17,8 @@ class EstadoEtarioResponseSerializer(serializers.Serializer):
     prazo_declaracao_em = serializers.DateTimeField(allow_null=True)
     proxima_correcao_permitida_em = serializers.DateTimeField(allow_null=True)
     restricao_ativa = serializers.BooleanField()
+    politica_ativa = serializers.BooleanField()
+    chave_declaracao = serializers.UUIDField()
     versao_politica = serializers.CharField()
 
 

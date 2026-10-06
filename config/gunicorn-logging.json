@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {"privacy": {"()": "config.logging.JsonFormatter"}},
+  "handlers": {"privacy_console": {"class": "logging.StreamHandler", "formatter": "privacy", "stream": "ext://sys.stderr"}},
+  "root": {"handlers": ["privacy_console"], "level": "WARNING"},
+  "loggers": {
+    "gunicorn.error": {"handlers": ["privacy_console"], "level": "INFO", "propagate": false},
+    "gunicorn.access": {"handlers": ["privacy_console"], "level": "INFO", "propagate": false}
+  }
+}

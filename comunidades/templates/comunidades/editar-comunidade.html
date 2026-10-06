@@ -27,7 +27,7 @@ Editar Comunidade
             <input
                 type="text"
                 name="nome"
-                value="{{ comunidade.nome }}"
+                value="{{ comunidade.nome_publico }}"
                 required
             >
         </div>
@@ -38,7 +38,7 @@ Editar Comunidade
             <textarea
                 name="descricao"
                 required
-            >{{ comunidade.descricao }}</textarea>
+            >{{ comunidade.descricao_publica }}</textarea>
         </div>
 
         <button

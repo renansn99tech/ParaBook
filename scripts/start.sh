@@ -40,4 +40,5 @@ exec gunicorn config.wsgi:application \
     --threads "${GUNICORN_THREADS:-2}" \
     --timeout "${GUNICORN_TIMEOUT:-60}" \
     --access-logfile - \
+    --log-config-json config/gunicorn-logging.json \
     --error-logfile -

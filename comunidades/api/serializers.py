@@ -50,6 +50,14 @@ class MembroComunidadeSerializer(serializers.ModelSerializer):
         return _identidade(self, obj)['perfil_clicavel']
 
 class RespostaPostagemSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        dados = super().to_representation(instance)
+        if instance.retirada_privacidade:
+            dados.update(autor=None, conteudo='', autor_nome='conta_encerrada', autor_perfil_clicavel=False)
+        if instance.postagem.retirada_privacidade:
+            dados['postagem_titulo'] = 'Conteúdo removido'
+        return dados
+
     autor_nome = serializers.SerializerMethodField()
     autor_perfil_clicavel = serializers.SerializerMethodField()
     postagem_titulo = serializers.CharField(source='postagem.titulo', read_only=True)
@@ -70,6 +78,13 @@ class RespostaPostagemSerializer(serializers.ModelSerializer):
 
 
 class PostagemComunidadeSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        dados = super().to_representation(instance)
+        if instance.retirada_privacidade:
+            dados.update(autor=None, titulo='Conteúdo removido', conteudo='', imagem=None,
+                         autor_nome='conta_encerrada', autor_perfil_clicavel=False)
+        return dados
+
     autor_nome = serializers.SerializerMethodField()
     autor_perfil_clicavel = serializers.SerializerMethodField()
     total_respostas = serializers.SerializerMethodField()
@@ -90,6 +105,13 @@ class PostagemComunidadeSerializer(serializers.ModelSerializer):
         return _identidade(self, obj.autor)['perfil_clicavel']
 
 class ComunidadeSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        dados = super().to_representation(instance)
+        if instance.retirada_privacidade:
+            dados.update(nome='Comunidade', descricao='', criador=None,
+                         criador_nome=None, criador_perfil_clicavel=False)
+        return dados
+
     demonstrativo = serializers.BooleanField(read_only=True)
     criador_nome = serializers.SerializerMethodField()
     criador_perfil_clicavel = serializers.SerializerMethodField()

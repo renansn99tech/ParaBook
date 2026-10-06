@@ -185,7 +185,7 @@ class EstatisticasDashboardAPIView(APIView):
                 'categoria': 'publicacao',
                 'fila': 'aprovacoes',
                 'titulo': item.livro.titulo if item.livro else 'Publicação sem título',
-                'detalhe': f'Publicação enviada por @{item.usuario.username}',
+                'detalhe': f'Publicação enviada por @{item.usuario.username if item.usuario else "conta_encerrada"}',
                 'criado_em': item.data_envio,
                 'data_aproximada': False,
                 'acao': 'aprovar',
@@ -370,7 +370,11 @@ class _DashboardSuporteOperacoes:
         item.resposta = resposta
         item.status = novo_status
         item.atendida_por = request.user
-        item.save(update_fields=['resposta', 'status', 'atendida_por', 'atualizada_em'])
+        if novo_status == SolicitacaoSuporte.Status.ENCERRADA and not item.encerrada_em:
+            item.encerrada_em = timezone.now()
+        elif novo_status != SolicitacaoSuporte.Status.ENCERRADA:
+            item.encerrada_em = None
+        item.save(update_fields=['resposta', 'status', 'atendida_por', 'atualizada_em', 'encerrada_em'])
         registrar_acao(
             ator=request.user,
             acao='suporte.solicitacao_atualizada',
@@ -386,7 +390,7 @@ class _DashboardSuporteOperacoes:
             'id': item.pk,
             'protocolo': str(item.protocolo),
             'usuario_id': item.usuario_id,
-            'username': item.usuario.username,
+            'username': item.usuario.username if item.usuario else 'conta_encerrada',
             'categoria': item.categoria,
             'assunto': item.assunto,
             'mensagem': item.mensagem,
@@ -461,7 +465,7 @@ class DashboardAprovacoesAPIView(APIView):
             "livro_id": s.livro_id,
             "tentativa_id": s.tentativas.filter(status='pendente').values_list('id', flat=True).first(),
             "titulo_livro": s.livro.titulo if s.livro else 'Sem Título',
-            "autor": s.usuario.username,
+            "autor": s.usuario.username if s.usuario else 'conta_encerrada',
             "data_envio": s.data_envio,
             "categoria": s.livro.categoria.nome if s.livro and s.livro.categoria else 'Não informada',
             "isbn": s.livro.isbn if s.livro else None,

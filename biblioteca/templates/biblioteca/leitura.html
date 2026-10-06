@@ -81,16 +81,7 @@ ParaBook{% endblock %} {% block extra_css %}
   data-url-concluir="{% url 'concluir_leitura' livro.id %}"
   data-url-avaliar="{% url 'avaliar_livro' livro.id %}"
   data-url-favoritar="{% url 'favoritar_livro' livro.id %}"
-  data-caminho="{% if livro.pdf %}{{ livro.pdf.url }}{% else %}{% static livro.url_pdf_estatico %}{% endif %}"
-></div>
-  <div
-  class="livro-info"
-  id="dados-livro"
-  data-id="{{ livro.id }}"
-  data-url-concluir="{% url 'concluir_leitura' livro.id %}"
-  data-url-avaliar="{% url 'avaliar_livro' livro.id %}"
-  data-url-favoritar="{% url 'favoritar_livro' livro.id %}"
-  data-caminho="{% static livro.url_pdf_estatico %}"
+  data-caminho="{% url 'livro-ler-pdf' livro.id %}"
 ></div>
 
 

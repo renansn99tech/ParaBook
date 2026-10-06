@@ -23,7 +23,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 # pyrefly: ignore [missing-import]
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from config.views import health, readiness
+from config.views import health, readiness, midia_publica
 
 urlpatterns = [
     path('health/', health, name='health'),
@@ -78,4 +78,4 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, view=midia_publica, document_root=settings.MEDIA_ROOT)

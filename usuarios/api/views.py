@@ -427,7 +427,7 @@ class EstadoEtarioContaAPIView(APIView):
 
     @extend_schema(responses=EstadoEtarioResponseSerializer)
     def get(self, request):
-        return Response(resumo_estado(request.user))
+        return Response(resumo_estado(request.user), headers={'Cache-Control': 'no-store'})
 
     @extend_schema(
         request=DeclaracaoEtariaRequestSerializer,
@@ -443,7 +443,7 @@ class EstadoEtarioContaAPIView(APIView):
             chave_idempotencia=serializer.validated_data['chave_idempotencia'],
             origem=origem,
         )
-        return Response(resumo_estado(request.user))
+        return Response(resumo_estado(request.user), headers={'Cache-Control': 'no-store'})
 
 
 class SessoesDispositivoAPIView(APIView):
@@ -677,64 +677,17 @@ class ExportarDadosAPIView(APIView):
         }
     )
     def get(self, request):
-        usuario = obter_ou_criar_usuario_customizado(request.user)
-        perfil = getattr(request.user, 'perfil', None)
-        dados = {
-            'exportado_em': timezone.now().isoformat(),
-            'conta': {
-                'id': request.user.pk,
-                'username': request.user.username,
-                'email': request.user.email,
-                'data_cadastro': request.user.date_joined.isoformat(),
-                'nome': usuario.nome,
-                'tipo': usuario.tipo,
-                'cpf': usuario.cpf,
-                'telefone': usuario.telefone,
-                'termos_aceitos': usuario.termos_aceitos,
-                'versao_termos_aceita': usuario.versao_termos_aceita,
-            },
-            'perfil': {
-                'bio': getattr(perfil, 'bio', None),
-                'localizacao': getattr(perfil, 'localizacao', None),
-                'descricao': getattr(perfil, 'descricao_perfil', None),
-                'privado': getattr(perfil, 'perfil_privado', False),
-                'meta_leitura_anual': getattr(perfil, 'meta_leitura_anual', 12),
-            },
-            'biblioteca': [
-                {
-                    'livro_id': item.livro_id,
-                    'titulo': item.livro.titulo,
-                    'status': item.status,
-                    'favorito': item.favorito,
-                    'nota': item.nota,
-                    'resenha': item.resenha,
-                    'pagina_atual': item.pagina_atual,
-                    'adicionado_em': item.data_adicao.isoformat(),
-                    'concluido_em': item.data_conclusao.isoformat() if item.data_conclusao else None,
-                }
-                for item in request.user.itens_biblioteca.select_related('livro').all()
-            ],
-            'comunidades': [
-                {'id': comunidade.pk, 'nome': comunidade.nome}
-                for comunidade in request.user.comunidades_inscritas.all()
-            ],
-            'notificacoes': [
-                {
-                    'titulo': item.titulo,
-                    'mensagem': item.mensagem,
-                    'tipo': item.tipo,
-                    'lida': item.lida,
-                    'criada_em': item.data_criacao.isoformat(),
-                }
-                for item in request.user.notificacoes.all()
-            ],
-        }
+        from django.core.serializers.json import DjangoJSONEncoder
+        from usuarios.privacidade_exportacao import exportar_dados
+        dados = exportar_dados(request.user)
         registrar_acao(ator=request.user, acao='lgpd.dados_exportados', recurso='User', recurso_id=request.user.pk)
         response = HttpResponse(
-            json.dumps(dados, ensure_ascii=False, indent=2),
+            json.dumps(dados, cls=DjangoJSONEncoder, ensure_ascii=False, indent=2),
             content_type='application/json; charset=utf-8',
         )
         response['Content-Disposition'] = 'attachment; filename="parabook-meus-dados.json"'
+        response['Cache-Control'] = 'no-store, private'
+        response['X-Content-Type-Options'] = 'nosniff'
         return response
 
 
@@ -742,9 +695,9 @@ class ExcluirContaAPIView(APIView):
     """
     Versão DRF de `usuarios.views.excluir_conta`.
 
-    Mantém a exclusão transacional (REGRA 2 do projeto): ou o Usuario, o Perfil
-    e o User caem juntos, ou nada é apagado. Admin não se autoexclui pela API
-    para não deixar a plataforma sem responsável por engano.
+    Encerra acesso e exposição em transação, preservando contexto de terceiros.
+    O descarte físico segue a fila por destino, com limite R01 de 30 dias.
+    Contas administrativas exigem o procedimento de continuidade operacional.
     """
 
     permission_classes = [permissions.IsAuthenticated]
@@ -767,28 +720,12 @@ class ExcluirContaAPIView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        with transaction.atomic():
-            try:
-                usuario_custom = Usuario.objects.get(user_auth=user)
-                perfil_vinculado = usuario_custom.perfil
+        from usuarios.privacidade_conta import encerrar_conta
+        encerramento = encerrar_conta(user)
 
-                usuario_custom.delete()
-                if perfil_vinculado:
-                    perfil_vinculado.delete()
-            except Usuario.DoesNotExist:
-                pass
-
-            user_id = user.pk
-            user.delete()
-
-        registrar_acao(
-            ator=None,
-            acao='conta.excluida',
-            recurso='User',
-            recurso_id=user_id,
-        )
-
-        return _clear_auth_cookies(Response(status=status.HTTP_204_NO_CONTENT))
+        response = _clear_auth_cookies(Response(status=status.HTTP_204_NO_CONTENT))
+        response['X-Privacy-Protocol'] = str(encerramento.protocolo)
+        return response
 
 
 class ChangePasswordAPIView(APIView):

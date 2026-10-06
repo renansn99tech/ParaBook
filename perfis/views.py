@@ -122,7 +122,7 @@ def virar_autor(request):
     return redirect('perfis:perfil_pessoal')
 
 def perfil_publico(request, username_alvo):
-    dados_usuario = get_object_or_404(Usuario, user_auth__username=username_alvo)
+    dados_usuario = get_object_or_404(Usuario, user_auth__username=username_alvo, user_auth__is_active=True)
     user_auth_obj = dados_usuario.user_auth
     
     if request.user.is_authenticated and user_auth_obj == request.user:

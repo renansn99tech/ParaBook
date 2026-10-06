@@ -293,8 +293,9 @@
                             <a href="{% url 'perfis:alterar_senha' %}" class="btn-outline">Alterar Senha</a> 
                             <form action="{% url 'usuarios:excluir_conta' %}" method="POST" id="form-excluir-conta">
                                 {% csrf_token %}
+                                <input type="hidden" name="senha_atual" id="senha-encerramento-conta">
                                 <button type="button" class="btn-danger-outline" onclick="confirmarExclusao()">
-                                    <i class="fa-solid fa-trash"></i> Excluir conta
+                                    <i class="fa-solid fa-trash"></i> Encerrar conta
                                 </button>
                             </form>
                         </div>
@@ -351,18 +352,23 @@
     <script>
         function confirmarExclusao() {
             Swal.fire({
-                title: 'Você tem certeza?',
-                text: "Esta ação é irreversível!",
+                title: 'Confirme sua senha',
+                text: 'O acesso será encerrado agora. O descarte seguirá os prazos de privacidade, com tratamento separado de cópias e provas necessárias.',
                 icon: 'warning',
+                input: 'password',
+                inputLabel: 'Senha atual',
+                inputAttributes: { autocomplete: 'current-password' },
+                inputValidator: (value) => !value && 'Informe sua senha atual.',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#374151',
-                confirmButtonText: 'Sim, excluir!',
+                confirmButtonText: 'Encerrar conta',
                 cancelButtonText: 'Cancelar',
                 background: '#0f172a',
                 color: '#fff'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    document.getElementById('senha-encerramento-conta').value = result.value;
                     document.getElementById('form-excluir-conta').submit();
                 }
             })

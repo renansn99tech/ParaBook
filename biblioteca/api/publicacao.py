@@ -219,7 +219,8 @@ class RevisaoAdminAPIView(APIView):
         if request.query_params.get('arquivo') == 'pdf':
             if not tentativa.pdf:
                 return Response({'detail': 'PDF não disponível.'}, status=404)
-            response = FileResponse(tentativa.pdf.open('rb'), content_type='application/pdf')
+            from biblioteca.quarentena import abrir_pdf_verificado
+            response = FileResponse(abrir_pdf_verificado(tentativa.pdf), content_type='application/pdf')
             response['Cache-Control'] = 'private, no-store'
             return response
         return Response({'id': tentativa.pk, 'dados': tentativa.dados, 'status': tentativa.status,

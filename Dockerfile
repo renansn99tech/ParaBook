@@ -39,6 +39,7 @@ COPY --chown=parabook:parabook . .
 
 RUN mkdir -p /app/staticfiles /app/media \
     && chown -R parabook:parabook /app/staticfiles /app/media \
+    && sed -i 's/\r$//' /app/scripts/start.sh /app/scripts/render-start.sh \
     && chmod +x /app/scripts/start.sh /app/scripts/render-start.sh
 
 USER parabook

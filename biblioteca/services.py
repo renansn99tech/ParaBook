@@ -28,9 +28,17 @@ def verificar_acesso_obra(user, livro, agora=None):
     """Decide acesso ao conteúdo sem confiar no cliente ou na URL do arquivo."""
     agora = agora or timezone.now()
     autenticado = bool(user and user.is_authenticated)
+    if autenticado:
+        from usuarios.idade import restricao_etaria_ativa
+        restrita, _estado = restricao_etaria_ativa(user)
+        if restrita:
+            autenticado = False
     administrador = bool(
         autenticado and eh_admin_parabook(user)
     )
+    from .quarentena import arquivo_liberado
+    from django.conf import settings
+    tem_amostra = arquivo_liberado(livro.pdf_amostra, conferir_conteudo=False)
 
     if livro.demonstrativo:
         return DecisaoAcessoObra(
@@ -38,8 +46,15 @@ def verificar_acesso_obra(user, livro, agora=None):
             'Ficha demonstrativa sem arquivo de leitura.',
         )
 
+    if settings.BOOK_FILE_SCAN_REQUIRED and not arquivo_liberado(livro.pdf, conferir_conteudo=False):
+        amostra_disponivel = (tem_amostra and livro.status == 'publicado'
+                             and (not livro.disponivel_de or agora >= livro.disponivel_de)
+                             and (not livro.disponivel_ate or agora < livro.disponivel_ate))
+        return DecisaoAcessoObra(False, bool(amostra_disponivel),
+                                 'arquivo_em_quarentena', 'Arquivo aguardando verificação de segurança.')
+
     if administrador:
-        return DecisaoAcessoObra(True, bool(livro.pdf_amostra), 'administrador', 'Acesso de curadoria.')
+        return DecisaoAcessoObra(True, tem_amostra, 'administrador', 'Acesso de curadoria.')
 
     if livro.status != 'publicado':
         return DecisaoAcessoObra(False, False, 'indisponivel', 'Esta obra não está publicada.')
@@ -48,7 +63,6 @@ def verificar_acesso_obra(user, livro, agora=None):
     if livro.disponivel_ate and agora >= livro.disponivel_ate:
         return DecisaoAcessoObra(False, False, 'licenca_encerrada', 'O período de disponibilidade desta obra terminou.')
 
-    tem_amostra = bool(livro.pdf_amostra)
     if livro.modelo_acesso == 'gratuito':
         if not autenticado:
             return DecisaoAcessoObra(
@@ -57,7 +71,7 @@ def verificar_acesso_obra(user, livro, agora=None):
         return DecisaoAcessoObra(True, tem_amostra, 'gratuito', 'Leitura integral gratuita.')
 
     if livro.modelo_acesso == 'assinante':
-        if usuario_eh_premium(user):
+        if autenticado and usuario_eh_premium(user):
             return DecisaoAcessoObra(True, tem_amostra, 'assinante', 'Incluído na sua assinatura.')
         return DecisaoAcessoObra(
             False,

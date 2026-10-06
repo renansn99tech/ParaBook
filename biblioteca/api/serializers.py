@@ -38,7 +38,7 @@ class LivroSerializer(serializers.ModelSerializer):
         read_only_fields = ['avaliacao', 'status']
 
     def get_capa_url(self, obj) -> str | None:
-        if obj.capa:
+        if obj.capa and obj.status != 'retirado':
             return obj.capa.url
         return None
 

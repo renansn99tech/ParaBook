@@ -1,5 +1,34 @@
 # Changelog
 
+## Sessão 020 — 05/10/2026
+
+### Idade, operação e arquivos privados
+
+- G2: validado o marco etário com fuso/versão, prazo de sete dias e proteção comum de JWT, cookie, sessionid, templates e Django Admin. Catálogo público não recupera privilégios pelo fallback de sessão; suporte, direitos e saída permanecem acessíveis.
+- Adicionados censo somente leitura, formulário legado e fluxo Expo de elegibilidade/direitos; React e Expo consultam a decisão do backend ao prazo/retorno. Retentativas de declaração preservam idempotência.
+- G3: entregues fila mínima somente leitura, calendário explícito de atendimento e checagens preparatórias de ficha/Conselho. Persistência de triagem/SLA, canal externo e retorno efetivo continuam pendentes.
+- G4: adicionadas duas migrations de verificação/quarentena, adaptador local ClamAV e gates de aprovação/restauração/entrega por conteúdo. PDF é servido pelos mesmos bytes verificados; mídia privada direta bloqueada no desenvolvimento e leitor legado alinhado à API.
+- Backend: 291/291 testes (+39), check/migrations aprovados. Web: 172/172, lint/build. Mobile: TypeScript e 14/14 testes; aparelhos reais pendentes. OpenAPI estrito e 135 operações consumidas compatíveis.
+- G1/G7 e aceite G5 da Sessão 019 preservados. G2/G3/G4 seguem parciais no critério integral: rollout hospedado, operação real e antimalware/cofre/licenças ainda não homologados. Flags reais não ativadas; sem commit, push, deploy ou purga.
+
+## Sessão 019 — 03–05/10/2026
+
+### G5 — privacidade e segurança
+
+- Aceite final registrado em 05/10: etapa encerrada no escopo de desenvolvimento, com ressalvas de operação. A métrica ponderada original avançou de 36,25% para 90%; fornecedores permanecem em 2/4. O fechamento não certifica produção ou conformidade integral.
+- Consolidadas governança, retenção por destino, incidentes, acesso excepcional e RIPD, preservando as decisões anteriores e a continuidade sem investimento ou espera por fornecedores.
+- Implementados exportação própria T01–T13, encerramento transacional com revogação imediata, preservação de contexto de terceiros, provas cifradas com chave dedicada e descarte controlado de banco/arquivos. A prévia CLI permanece sem escrita.
+- Adicionados procedimentos operacionais, minimização de eventos/logs, restrições RLS e sete migrations, aplicadas somente em bancos sintéticos isolados.
+- Ajustadas as configurações avançadas React para exportação JSON e encerramento; corrigidos CRLF no build Linux e configuração de logs Gunicorn.
+
+### Validação e limites
+
+- Backend: 252/252 testes; `check` aprovado e verificação de migrations sem mudanças.
+- Web: 172/172 testes, lint/build e contrato de 129 operações aprovados; temas e larguras de 390/875/1280 px conferidos. Fontes web/contratos inalteradas na homologação ampliada.
+- Homologação local sintética com Linux, Django 6.0.8, PostgreSQL 17, Gunicorn, HTTPS verificado, banco com TLS, filesystem persistente, backup cifrado e restauração com reaplicação de revogações, fila e preservações.
+- Aplicação hospedada, instrumentos de fornecedores, expurgo externo, ciclo efetivo de cópias e recuperação independente mantêm condições abertas. Operação e revisão continuam manuais.
+- Código e migrations permanecem locais, sem commit, push ou deploy. Sessão 020 preparada para G2, G3 e G4, com G6 ainda dependente de homologação dos clientes e acessibilidade.
+
 ## Sessão 010 — 06/09/2026
 
 ### Publicação e moderação de obras

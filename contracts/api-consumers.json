@@ -40,6 +40,10 @@
       },
       {
         "method": "GET",
+        "path": "/api/v1/auth/exportar-dados/"
+      },
+      {
+        "method": "GET",
         "path": "/api/v1/auth/governanca/"
       },
       {
@@ -413,6 +417,22 @@
     ],
     "mobile": [
       {
+        "method": "DELETE",
+        "path": "/api/v1/auth/excluir-conta/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/exportar-dados/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/idade/"
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/auth/idade/"
+      },
+      {
         "method": "POST",
         "path": "/api/v1/auth/mobile-login/"
       },
@@ -451,6 +471,14 @@
       {
         "method": "PATCH",
         "path": "/api/v1/biblioteca/estante/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/biblioteca/livros/{id}/ler_amostra/"
       },
       {
         "method": "GET",

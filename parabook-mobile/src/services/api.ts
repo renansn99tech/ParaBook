@@ -36,6 +36,7 @@ let sessionGeneration = 0;
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let unauthorizedHandler: (() => void) | null = null;
+let ageRestrictionHandler: (() => void) | null = null;
 let tokenRefreshGeneration = -1;
 let tokenRefreshPromise: Promise<boolean> | null = null;
 
@@ -159,6 +160,9 @@ api.interceptors.response.use(
 
     const config = error.config as RetryableRequestConfig | undefined;
     if (config && config._sessionGeneration !== sessionGeneration) return Promise.reject(error);
+    if (error.response?.status === 403
+      && (error.response.data as { codigo?: string })?.codigo === 'conta_restrita_etaria'
+      && requestUrl !== '/perfis/meu-perfil/') ageRestrictionHandler?.();
     const transient = !error.response || [502, 503, 504].includes(error.response.status);
     if (config && config.method?.toLowerCase() === 'get' && transient && !axios.isCancel(error) && !config._readRetried) {
       config._readRetried = true;
@@ -199,6 +203,10 @@ export const getRefreshToken = () => refreshToken;
 
 export const setUnauthorizedHandler = (handler: (() => void) | null) => {
   unauthorizedHandler = handler;
+};
+
+export const setAgeRestrictionHandler = (handler: (() => void) | null) => {
+  ageRestrictionHandler = handler;
 };
 
 export const resolveDjangoUrl = (path?: string | null) => {

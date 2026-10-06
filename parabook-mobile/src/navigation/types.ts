@@ -17,6 +17,7 @@ export type RootStackParamList = {
   Notifications: undefined;
   Achievements: undefined;
   CreateCommunity: undefined;
+  AgeEligibility: undefined;
 };
 
 export type MainTabParamList = {

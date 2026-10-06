@@ -175,6 +175,9 @@ export const ProfileScreen = () => {
           </TouchableOpacity>
         </View>
 
+        <TouchableOpacity accessibilityRole="button" style={styles.menuItem} onPress={() => navigation.navigate('AgeEligibility')}>
+          <Text style={styles.menuItemText}>Elegibilidade, suporte e direitos</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.logoutButton} onPress={() => void logout()}>
           <Ionicons name="log-out-outline" size={18} color={colors.error} />
           <Text style={styles.logoutText}>Sair da conta</Text>

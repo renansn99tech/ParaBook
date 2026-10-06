@@ -1,8 +1,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import { authService, AuthenticatedUser, CurrentUserProfile, RegisterPayload, extractApiErrorMessage } from '../services/authService';
-import { clearAuthTokens, setAuthTokens, setUnauthorizedHandler } from '../services/api';
+import { clearAuthTokens, setAuthTokens, setUnauthorizedHandler, setAgeRestrictionHandler } from '../services/api';
+import { AppState } from 'react-native';
 import { authStorage } from '../services/authStorage';
+import { ageService, AgeEligibility } from '../services/ageService';
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated' | 'error';
 
@@ -18,6 +20,7 @@ type AuthContextValue = {
   user: CurrentUserProfile | null;
   authenticatedUser: AuthenticatedUser | null;
   sessionError: string | null;
+  eligibility: AgeEligibility | null;
   login: (username: string, password: string, twoFactorCode?: string) => Promise<AuthActionResult>;
   register: (payload: RegisterPayload) => Promise<AuthActionResult>;
   logout: () => Promise<void>;
@@ -52,6 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<CurrentUserProfile | null>(null);
   const [authenticatedUser, setAuthenticatedUser] = useState<AuthenticatedUser | null>(null);
   const [sessionError, setSessionError] = useState<string | null>(null);
+  const [eligibility, setEligibility] = useState<AgeEligibility | null>(null);
   const sessionOperationRef = useRef(0);
 
   const resetSession = useCallback(async () => {
@@ -59,6 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     clearAuthTokens();
     setAuthenticatedUser(null);
     setUser(null);
+    setEligibility(null);
     setSessionError(null);
     setStatus('unauthenticated');
 
@@ -70,17 +75,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const fetchCurrentSession = useCallback(async () => Promise.all([
-      authService.getAuthenticatedUser(),
-      authService.getCurrentUserProfile(),
-    ]), []);
+  const fetchCurrentSession = useCallback(async (): Promise<[AuthenticatedUser, CurrentUserProfile | null, AgeEligibility]> => {
+    const [account, age] = await Promise.all([authService.getAuthenticatedUser(), ageService.get()]);
+    if (age.restricao_ativa) return [account, null, age];
+    try {
+      return [account, await authService.getCurrentUserProfile(), age];
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data?.codigo === 'conta_restrita_etaria') {
+        return [account, null, await ageService.get()];
+      }
+      throw error;
+    }
+  }, []);
 
   const applyCurrentSession = useCallback(([
     accountData,
     profileData,
-  ]: [AuthenticatedUser, CurrentUserProfile]) => {
+    ageData,
+  ]: [AuthenticatedUser, CurrentUserProfile | null, AgeEligibility]) => {
     setAuthenticatedUser(accountData);
     setUser(profileData);
+    setEligibility(ageData);
     setSessionError(null);
     setStatus('authenticated');
     return profileData;
@@ -179,8 +194,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [applyCurrentSession, fetchCurrentSession, resetSession]);
 
   const refreshUser = useCallback(async () => {
+    const operation = sessionOperationRef.current;
     try {
       const sessionData = await withTimeout(fetchCurrentSession(), 125000);
+      if (operation !== sessionOperationRef.current) return null;
       return applyCurrentSession(sessionData);
     } catch {
       return null;
@@ -197,18 +214,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [resetSession]);
 
+  useEffect(() => {
+    setAgeRestrictionHandler(() => { void refreshUser(); });
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active' && status === 'authenticated') void refreshUser();
+    });
+    return () => { setAgeRestrictionHandler(null); subscription.remove(); };
+  }, [refreshUser, status]);
+
+  useEffect(() => {
+    if (status !== 'authenticated' || !eligibility?.politica_ativa
+        || eligibility.estado !== 'pendente' || eligibility.restricao_ativa
+        || !eligibility.prazo_declaracao_em) return;
+    const delay = Math.max(30000, new Date(eligibility.prazo_declaracao_em).getTime() - Date.now());
+    if (!Number.isFinite(delay)) return;
+    // Pede a decisão atual ao servidor; não calcula elegibilidade no cliente.
+    const timer = setTimeout(() => { void refreshUser(); }, delay);
+    return () => clearTimeout(timer);
+  }, [eligibility, refreshUser, status]);
+
   const value = useMemo<AuthContextValue>(() => ({
     status,
     isAuthenticated: status === 'authenticated',
     user,
     authenticatedUser,
     sessionError,
+    eligibility,
     login,
     register,
     logout,
     refreshUser,
     retrySession: bootstrapSession,
-  }), [authenticatedUser, bootstrapSession, login, logout, refreshUser, register, sessionError, status, user]);
+  }), [authenticatedUser, bootstrapSession, eligibility, login, logout, refreshUser, register, sessionError, status, user]);
 
   return (
     <AuthContext.Provider value={value}>

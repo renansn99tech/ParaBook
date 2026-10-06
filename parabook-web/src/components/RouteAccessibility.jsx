@@ -25,6 +25,7 @@ const TITULOS = new Map([
   ['/diretrizes', 'Diretrizes'],
   ['/termos', 'Termos de Uso'],
   ['/privacidade', 'Política de Privacidade'],
+  ['/elegibilidade', 'Elegibilidade etária'],
   ['/publicacao-e-licenca', 'Termos de Publicação e Licença'],
   ['/direitos-autorais', 'Direitos Autorais e Denúncias'],
 ]);

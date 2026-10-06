@@ -20,12 +20,13 @@ function ElegibilidadeEtaria() {
   const [confirmado, setConfirmado] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState('');
+  const [chave, setChave] = useState(null);
 
   useEffect(() => {
     if (!user) return;
     api.get('/auth/idade/')
       .then(({ data }) => setEstado(data))
-      .catch(() => {});
+      .catch(() => setErro('Não foi possível consultar o estado. Tente novamente antes de enviar.'));
   }, [user]);
 
   if (loading) {
@@ -44,15 +45,19 @@ function ElegibilidadeEtaria() {
 
   const enviarDeclaracao = async (evento) => {
     evento.preventDefault();
-    if (!confirmado || !dataNascimento || enviando || bloqueadaParaCorrecao) return;
+    if (!estado || !confirmado || !dataNascimento || enviando || bloqueadaParaCorrecao) return;
     setEnviando(true);
     setErro('');
     try {
+      const chaveTentativa = chave || crypto.randomUUID();
+      setChave(chaveTentativa);
       const { data } = await api.put('/auth/idade/', {
         data_nascimento: dataNascimento,
-        chave_idempotencia: crypto.randomUUID(),
+        chave_idempotencia: chaveTentativa,
       });
       setDataNascimento('');
+      setChave(null);
+      setConfirmado(false);
       setEstado(data);
       if (!data.restricao_ativa) {
         await recarregarUsuario();
@@ -60,10 +65,7 @@ function ElegibilidadeEtaria() {
       }
     } catch (requestError) {
       const dados = requestError.response?.data;
-      const mensagens = [
-        ...(dados?.data_nascimento || []),
-        ...(dados?.proxima_correcao_permitida_em || []),
-      ];
+      const mensagens = [dados?.data_nascimento, dados?.proxima_correcao_permitida_em].flat().filter(Boolean);
       setErro(mensagens.join(' ') || dados?.detail || 'Não foi possível registrar a declaração. Tente novamente.');
     } finally {
       setEnviando(false);
@@ -82,6 +84,9 @@ function ElegibilidadeEtaria() {
               A data informada é privada e não aparecerá no seu perfil.
             </p>
           </div>
+          {estado?.prazo_declaracao_em && estado.estado === 'pendente' && (
+            <p role="status">{estado.restricao_ativa ? 'Informe a declaração para continuar nas áreas autenticadas.' : 'O preenchimento é opcional durante o prazo inicial.'} Prazo: {formatarDataHora(estado.prazo_declaracao_em)}.</p>
+          )}
 
           {estado?.estado === 'restrito_menor' && (
             <div className="surface-inset mb-4" role="status">
@@ -102,7 +107,7 @@ function ElegibilidadeEtaria() {
                 type="date"
                 className="form-control mb-3"
                 value={dataNascimento}
-                onChange={(evento) => setDataNascimento(evento.target.value)}
+                onChange={(evento) => { setDataNascimento(evento.target.value); setChave(null); }}
                 max={new Date().toISOString().slice(0, 10)}
                 required
               />
@@ -130,6 +135,8 @@ function ElegibilidadeEtaria() {
           )}
 
           <div className="d-flex flex-wrap gap-3 justify-content-center mt-4">
+            <Link to="/biblioteca">Catálogo público</Link>
+            <Link to="/perfil/configuracoes">Meus dados e encerramento</Link>
             <Link to="/perfil/configuracoes/suporte">Falar com o suporte</Link>
             <Link to="/privacidade">Política de privacidade</Link>
             <button type="button" className="btn btn-link p-0" onClick={logout}>Sair</button>

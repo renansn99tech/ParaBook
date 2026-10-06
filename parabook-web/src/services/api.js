@@ -51,6 +51,10 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (error.response?.data?.codigo === 'conta_restrita_etaria'
+      && error.config?.url !== '/perfis/meu-perfil/') {
+      window.dispatchEvent(new Event('parabook:conta-restrita-etaria'));
+    }
     const originalRequest = error.config;
     
     // Se o erro for 401 (Não autorizado) e ainda não tentamos dar retry

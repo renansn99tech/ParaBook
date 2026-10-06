@@ -873,6 +873,14 @@
     }
 }
 
+#elegibilidade-data{
+    color-scheme:dark;
+}
+
+:root[data-tema="claro"] #elegibilidade-data{
+    color-scheme:light;
+}
+
 @media(max-width:520px){
     .auth-body{
         padding:16px 12px;

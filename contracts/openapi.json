@@ -463,7 +463,7 @@
         "/api/v1/auth/excluir-conta/": {
             "delete": {
                 "operationId": "v1_auth_excluir_conta_destroy",
-                "description": "Versão DRF de `usuarios.views.excluir_conta`.\n\nMantém a exclusão transacional (REGRA 2 do projeto): ou o Usuario, o Perfil\ne o User caem juntos, ou nada é apagado. Admin não se autoexclui pela API\npara não deixar a plataforma sem responsável por engano.",
+                "description": "Versão DRF de `usuarios.views.excluir_conta`.\n\nEncerra acesso e exposição em transação, preservando contexto de terceiros.\nO descarte físico segue a fila por destino, com limite R01 de 30 dias.\nContas administrativas exigem o procedimento de continuidade operacional.",
                 "tags": [
                     "v1"
                 ],
@@ -6506,13 +6506,22 @@
                     "restricao_ativa": {
                         "type": "boolean"
                     },
+                    "politica_ativa": {
+                        "type": "boolean"
+                    },
+                    "chave_declaracao": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
                     "versao_politica": {
                         "type": "string"
                     }
                 },
                 "required": [
+                    "chave_declaracao",
                     "declaracoes_sucesso",
                     "estado",
+                    "politica_ativa",
                     "prazo_declaracao_em",
                     "proxima_correcao_permitida_em",
                     "restricao_ativa",
@@ -8421,7 +8430,8 @@
                     },
                     "autor": {
                         "type": "integer",
-                        "readOnly": true
+                        "readOnly": true,
+                        "nullable": true
                     },
                     "autor_nome": {
                         "type": "string",
@@ -8510,7 +8520,8 @@
                     },
                     "autor": {
                         "type": "integer",
-                        "readOnly": true
+                        "readOnly": true,
+                        "nullable": true
                     },
                     "autor_nome": {
                         "type": "string",
@@ -8872,7 +8883,8 @@
                     },
                     "autor": {
                         "type": "integer",
-                        "readOnly": true
+                        "readOnly": true,
+                        "nullable": true
                     },
                     "autor_nome": {
                         "type": "string",
@@ -9359,7 +9371,8 @@
                     },
                     "autor": {
                         "type": "integer",
-                        "readOnly": true
+                        "readOnly": true,
+                        "nullable": true
                     },
                     "autor_nome": {
                         "type": "string",

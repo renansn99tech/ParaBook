@@ -62,6 +62,9 @@ const ROTAS_ISENTAS_IDADE = [
   '/aceitar-termos',
   '/perfil/alterar-senha',
   '/perfil/configuracoes/suporte',
+  '/perfil/configuracoes',
+  '/',
+  '/biblioteca',
   ...ROTAS_LEGAIS,
   '/login',
   '/register',
@@ -129,7 +132,8 @@ function App() {
     return <Navigate to="/aceitar-termos" replace />;
   }
 
-  if (!loading && restricaoEtaria && !ROTAS_ISENTAS_IDADE.includes(location.pathname)) {
+  if (!loading && restricaoEtaria && !ROTAS_ISENTAS_IDADE.includes(location.pathname)
+    && !/^\/livro\/[^/]+$/.test(location.pathname)) {
     return <Navigate to="/elegibilidade" replace />;
   }
 
@@ -145,6 +149,13 @@ function App() {
       <RouteAccessibility />
       {!hideNavAndFooter && <Navbar />}
       {suspensao && <SuspensionNotice suspensao={suspensao} />}
+      {user?.restricao_etaria?.politica_ativa && user.restricao_etaria.estado === 'pendente'
+        && location.pathname !== '/elegibilidade' && (
+        <aside className="surface-inset container my-3" aria-label="Elegibilidade etária">
+          <p>Você pode declarar sua data de nascimento nas configurações. O preenchimento é opcional até o prazo informado; depois, será necessário para acessar as áreas autenticadas.</p>
+          <Link to="/elegibilidade">Consultar prazo e declarar</Link>
+        </aside>
+      )}
 
       {exibirBannerAnuncios && (
         <div className="container my-3 ad-container">

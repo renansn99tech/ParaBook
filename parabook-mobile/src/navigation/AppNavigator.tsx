@@ -20,11 +20,12 @@ import { CreateCommunityScreen } from '../screens/CreateCommunityScreen';
 import { TabNavigator } from './TabNavigator';
 import { useAuth } from '../context/AuthContext';
 import { colors } from '../theme/colors';
+import { AgeEligibilityScreen } from '../screens/AgeEligibilityScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator = () => {
-  const { status, isAuthenticated, user, logout, retrySession, sessionError } = useAuth();
+  const { status, isAuthenticated, user, logout, retrySession, sessionError, eligibility } = useAuth();
   const suspenso = Boolean(user?.suspensao?.ativa);
 
   if (status === 'loading') {
@@ -51,6 +52,8 @@ export const AppNavigator = () => {
     );
   }
 
+  if (isAuthenticated && eligibility?.restricao_ativa) return <AgeEligibilityScreen />;
+
   return (
     <Stack.Navigator
       key={isAuthenticated ? 'authenticated' : 'guest'}
@@ -62,6 +65,7 @@ export const AppNavigator = () => {
       {isAuthenticated ? (
         <>
           <Stack.Screen name="MainTabs" component={TabNavigator} />
+          <Stack.Screen name="AgeEligibility" component={AgeEligibilityScreen} />
           <Stack.Screen name="BookDetail" component={BookDetailScreen} />
           {!suspenso && <Stack.Screen name="Reader" component={ReaderScreen} />}
           {!suspenso && <Stack.Screen name="MyLibrary" component={MyLibraryScreen} />}

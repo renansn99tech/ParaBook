@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import { Link } from 'react-router-dom';
 
-function ItemConfiguracao({ icone, titulo, estado, to, externo = false, indisponivel = false, tooltip = '' }) {
+function ItemConfiguracao({ icone, titulo, estado, to, onClick, ocupado = false, externo = false, indisponivel = false, tooltip = '' }) {
   const tooltipId = useId();
   const conteudo = (
     <>
@@ -42,6 +42,10 @@ function ItemConfiguracao({ icone, titulo, estado, to, externo = false, indispon
     );
   }
 
+  if (onClick) {
+    return <button type="button" className="config-avancado-item" onClick={onClick} disabled={ocupado} aria-busy={ocupado}>{conteudo}</button>;
+  }
+
   return <Link className="config-avancado-item" to={to}>{conteudo}</Link>;
 }
 
@@ -62,7 +66,7 @@ function GrupoConfiguracao({ titulo, descricao, admin = false, children }) {
   );
 }
 
-function ConfiguracoesAvancadas({ user, mostrarAtalhoPagina = false }) {
+function ConfiguracoesAvancadas({ user, mostrarAtalhoPagina = false, onExportarDados, exportando = false }) {
   const adminAutorizado = ['moderador', 'admin'].includes(user?.tipo) && Boolean(user?.is_staff || user?.is_superuser);
 
   return (
@@ -106,7 +110,9 @@ function ConfiguracoesAvancadas({ user, mostrarAtalhoPagina = false }) {
             to="/perfil?tab=configuracoes"
           />
         )}
-        <ItemConfiguracao icone="fa-file-export" titulo="Exportar meus dados (LGPD)" indisponivel />
+        <ItemConfiguracao icone="fa-file-export" titulo="Exportar meus dados (LGPD)"
+          estado={exportando ? 'Preparando arquivo...' : 'Dados disponíveis e cobertura do atendimento'}
+          onClick={onExportarDados} ocupado={exportando} to="/perfil/configuracoes#exportar-dados-titulo" />
         <ItemConfiguracao icone="fa-bell" titulo="Notificações e e-mails" to="/perfil/configuracoes/notificacoes" />
       </GrupoConfiguracao>
 

@@ -92,7 +92,8 @@ test('configurações avançadas usam card estático e rota própria', () => {
   assert.doesNotMatch(centralConta, /\/auth\/exportar-dados\//);
   assert.match(configuracoes, /titulo="Sessões e dispositivos" indisponivel/);
   assert.match(configuracoes, /titulo="Verificação em duas etapas" indisponivel/);
-  assert.match(configuracoes, /titulo="Exportar meus dados \(LGPD\)" indisponivel/);
+  assert.doesNotMatch(configuracoes, /titulo="Exportar meus dados \(LGPD\)" indisponivel/);
+  assert.match(paginaConfiguracoes, /\/auth\/exportar-dados\//);
   assert.match(configuracoes, />EM BREVE</);
   assert.match(configuracoes, /estado="Perfil Administrativo · Visualização totalmente privativa"/);
   assert.match(configuracoes, /tooltip="Somente outros administradores podem visualizar o perfil\."/);

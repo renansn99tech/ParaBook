@@ -1,16 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
@@ -96,8 +87,8 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={23} color={colors.textPrimary} />
+        <TouchableOpacity accessibilityLabel="Voltar" style={styles.iconButton} onPress={() => navigation.goBack()}>
+          <Ionicons accessible={false} name="arrow-back" size={23} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
           {communityName || 'Postagem'}
@@ -111,7 +102,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
         </View>
       ) : errorMessage || !post ? (
         <View style={styles.center}>
-          <Ionicons name="alert-circle-outline" size={46} color={colors.textMuted} />
+          <Ionicons accessible={false} name="alert-circle-outline" size={46} color={colors.textMuted} />
           <Text style={styles.errorText}>{errorMessage || 'Postagem nao encontrada.'}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => void loadPost()}>
             <Text style={styles.retryText}>Tentar novamente</Text>
@@ -131,7 +122,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
             </View>
 
             <View style={styles.composer}>
-              <TextInput
+              <TextInput accessibilityLabel="Comentário"
                 style={styles.commentInput}
                 value={replyContent}
                 onChangeText={setReplyContent}
@@ -141,7 +132,7 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
                 textAlignVertical="top"
                 maxLength={1200}
               />
-              <TouchableOpacity
+              <TouchableOpacity accessibilityLabel="Enviar comentário" accessibilityState={{ busy: publishingReply }}
                 style={styles.sendButton}
                 onPress={submitReply}
                 disabled={publishingReply}
@@ -150,14 +141,14 @@ export const PostDetailScreen = ({ route, navigation }: Props) => {
                 {publishingReply ? (
                   <ActivityIndicator size="small" color={colors.textPrimary} />
                 ) : (
-                  <Ionicons name="send-outline" size={19} color={colors.textPrimary} />
+                  <Ionicons accessible={false} name="send-outline" size={19} color={colors.textPrimary} />
                 )}
               </TouchableOpacity>
             </View>
 
             {repliesErrorMessage ? (
               <View style={styles.inlineError}>
-                <Ionicons name="alert-circle-outline" size={20} color={colors.textMuted} />
+                <Ionicons accessible={false} name="alert-circle-outline" size={20} color={colors.textMuted} />
                 <Text style={styles.inlineErrorText}>{repliesErrorMessage}</Text>
               </View>
             ) : replies.length === 0 ? (

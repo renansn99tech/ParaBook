@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -93,12 +84,12 @@ export const RegisterScreen = ({ navigation }: Props) => {
           showsVerticalScrollIndicator={false}
         >
         <View style={styles.header}>
-          <TouchableOpacity
+          <TouchableOpacity accessibilityLabel="Voltar"
             onPress={() => navigation.goBack()}
             style={styles.backButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+            <Ionicons accessible={false} name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Criar conta</Text>
           <View style={styles.headerPlaceholder} />
@@ -119,16 +110,18 @@ export const RegisterScreen = ({ navigation }: Props) => {
 
             <TouchableOpacity
               style={styles.termsRow}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: acceptedTerms }}
               onPress={() => setAcceptedTerms((current) => !current)}
               activeOpacity={0.8}
             >
               <View style={[styles.checkbox, acceptedTerms && styles.checkboxActive]}>
-                {acceptedTerms && <Ionicons name="checkmark" size={16} color={colors.textPrimary} />}
+                {acceptedTerms && <Ionicons accessible={false} name="checkmark" size={16} color={colors.textPrimary} />}
               </View>
               <Text style={styles.termsText}>Li e aceito os termos de uso vigentes.</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            <TouchableOpacity accessibilityLabel="Cadastrar" accessibilityState={{ busy: loading }}
               style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
               onPress={handleRegister}
               disabled={loading}
@@ -139,7 +132,7 @@ export const RegisterScreen = ({ navigation }: Props) => {
               ) : (
                 <>
                   <Text style={styles.primaryButtonText}>Cadastrar</Text>
-                  <Ionicons name="arrow-forward" size={18} color={colors.textPrimary} />
+                  <Ionicons accessible={false} name="arrow-forward" size={18} color={colors.textPrimary} />
                 </>
               )}
             </TouchableOpacity>
@@ -260,7 +253,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   footerLink: {
-    color: colors.primary,
+    color: colors.link,
     fontWeight: 'bold',
   },
 });

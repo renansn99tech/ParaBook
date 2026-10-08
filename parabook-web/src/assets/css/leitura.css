@@ -9,6 +9,10 @@
     padding-top: 80px; /* navbar offset */
 }
 
+.leitura-page .texto-pagina-leitura { padding: 1.25rem; margin-block: 1rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow-wrap: anywhere; }
+.leitura-page .texto-pagina-leitura p { white-space: pre-wrap; line-height: 1.7; }
+.leitura-page .texto-pagina-leitura h2 { font-size: 1.1rem; }
+
 .leitura-page .leitura-container {
     max-width: 1100px;
     margin: 0 auto;
@@ -136,6 +140,9 @@
     box-shadow: 0 25px 70px rgba(var(--black-rgb),.38);
     transition: max-width 0.3s ease;
 }
+
+.leitura-page #pdf-canvas[hidden] { display: none; }
+.leitura-page .leitor-pdf.leitor-sem-imagem { display: none; }
 
 .leitura-page .leitor-pdf::before {
     content: "";

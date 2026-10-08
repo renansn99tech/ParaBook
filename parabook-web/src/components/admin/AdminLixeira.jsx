@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import swal from '../../services/swal';
+import { useNavigate } from 'react-router-dom';
+import { prepararPedidoConselho } from '../../services/pedidoConselho';
 
 export default function AdminLixeira({ onFilaAlterada, onNotificar }) {
+  const navigate = useNavigate();
   const [dados, setDados] = useState({ obras: [], denuncias: [] });
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(true);
@@ -29,10 +32,10 @@ export default function AdminLixeira({ onFilaAlterada, onNotificar }) {
     finally { setProcessando(false); }
   };
   return <section className="secao dash-fila-page"><h1>Lixeira e restrições</h1>
-    <p>Histórico preservado. A exclusão definitiva aguarda a definição da política de retenção.</p>
+    <p>Histórico preservado. Remoção definitiva e restauração excepcional exigem pedido ao Conselho, duas aprovações e travas de retenção.</p>
     {erro && <p role="alert">{erro}</p>}
     {loading ? <p role="status">Carregando…</p> : <div className="dash-fila-lista">
-      {dados.obras.map((item) => <article className="dash-fila-card" key={`obra-${item.id}`}><h2>{item.titulo}</h2><p>Fora do catálogo público.</p><button type="button" disabled={processando} onClick={() => agir(item, 'restaurar_livro')}>Restaurar</button></article>)}
+      {dados.obras.map((item) => <article className="dash-fila-card" key={`obra-${item.id}`}><h2>{item.titulo}</h2><p>Fora do catálogo público.</p><button type="button" disabled={processando} onClick={() => agir(item, 'restaurar_livro')}>Restaurar pelo rito ordinário</button><button type="button" disabled={processando} onClick={async () => { if (await prepararPedidoConselho('livro', item.id)) navigate('/dashboard?aba=operacao'); }}>Solicitar decisão do Conselho</button></article>)}
       {dados.denuncias.map((item) => <article className="dash-fila-card" key={`denuncia-${item.id}`}><h2>{item.livro}</h2><p>{item.motivo}</p><button type="button" disabled={processando} onClick={() => agir(item, 'reabrir_denuncia')}>Reabrir denúncia</button></article>)}
       {!dados.obras.length && !dados.denuncias.length && <p>Nenhuma obra restrita ou denúncia arquivada.</p>}
     </div>}

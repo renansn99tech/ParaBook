@@ -1,16 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Modal,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Modal, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
@@ -104,7 +95,7 @@ export const CommunityDetailScreen = ({ route, navigation }: Props) => {
 
   if (errorMessage || !community) {
     return <SafeAreaView style={[styles.container, styles.centerState]}>
-      <Ionicons name="alert-circle-outline" size={46} color={colors.textMuted} />
+      <Ionicons accessible={false} name="alert-circle-outline" size={46} color={colors.textMuted} />
       <Text style={styles.errorText}>{errorMessage || 'Comunidade nao encontrada.'}</Text>
       <TouchableOpacity style={styles.retryButton} onPress={loadCommunity}><Text style={styles.retryText}>Tentar novamente</Text></TouchableOpacity>
       <TouchableOpacity style={styles.backTextButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Voltar</Text></TouchableOpacity>
@@ -114,7 +105,7 @@ export const CommunityDetailScreen = ({ route, navigation }: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton} onPress={() => navigation.goBack()}><Ionicons name="arrow-back" size={23} color={colors.textPrimary} /></TouchableOpacity>
+        <TouchableOpacity accessibilityLabel="Voltar" style={styles.iconButton} onPress={() => navigation.goBack()}><Ionicons accessible={false} name="arrow-back" size={23} color={colors.textPrimary} /></TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>{community.name || title || 'Comunidade'}</Text>
         <View style={styles.headerSpacer} />
       </View>
@@ -126,32 +117,32 @@ export const CommunityDetailScreen = ({ route, navigation }: Props) => {
         refreshing={loading}
         ListHeaderComponent={<>
           <View style={styles.communitySummary}>
-            <View style={styles.summaryIcon}><Ionicons name="people" size={28} color={colors.primary} /></View>
+            <View style={styles.summaryIcon}><Ionicons accessible={false} name="people" size={28} color={colors.primary} /></View>
             <View style={styles.summaryText}><Text style={styles.communityName}>{community.name}</Text><Text style={styles.members}>{community.members}</Text></View>
           </View>
           <Text style={styles.description}>{community.description}</Text>
-          <TouchableOpacity style={[styles.membershipButton, community.isJoined ? styles.leaveButton : styles.joinButton]} onPress={toggleMembership} disabled={updatingMembership || community.maintenance}>
+          <TouchableOpacity accessibilityLabel={community.isJoined ? "Sair da comunidade" : "Entrar na comunidade"} accessibilityState={{ busy: updatingMembership }} style={[styles.membershipButton, community.isJoined ? styles.leaveButton : styles.joinButton]} onPress={toggleMembership} disabled={updatingMembership || community.maintenance}>
             {updatingMembership ? <ActivityIndicator size="small" color={colors.textPrimary} /> : <Text style={styles.membershipText}>{community.maintenance ? 'Em manutencao' : community.isJoined ? 'Sair da comunidade' : 'Entrar na comunidade'}</Text>}
           </TouchableOpacity>
           <View style={styles.postsHeading}>
             <Text style={styles.postsTitle}>Postagens</Text>
-            {community.isJoined && <TouchableOpacity style={styles.newPostButton} onPress={() => setShowComposer(true)}><Ionicons name="add" size={18} color={colors.textPrimary} /><Text style={styles.newPostText}>Nova</Text></TouchableOpacity>}
+            {community.isJoined && <TouchableOpacity style={styles.newPostButton} onPress={() => setShowComposer(true)}><Ionicons accessible={false} name="add" size={18} color={colors.textPrimary} /><Text style={styles.newPostText}>Nova</Text></TouchableOpacity>}
           </View>
         </>}
-        ListEmptyComponent={<View style={styles.emptyPosts}><Ionicons name="chatbubbles-outline" size={42} color={colors.textMuted} /><Text style={styles.emptyText}>Ainda nao ha postagens nesta comunidade.</Text></View>}
+        ListEmptyComponent={<View style={styles.emptyPosts}><Ionicons accessible={false} name="chatbubbles-outline" size={42} color={colors.textMuted} /><Text style={styles.emptyText}>Ainda nao ha postagens nesta comunidade.</Text></View>}
         renderItem={({ item }) => <TouchableOpacity style={styles.postCard} activeOpacity={0.8} onPress={() => navigation.navigate('PostDetail', { postId: item.id, communityName: community.name })}>
           <Text style={styles.postTitle} numberOfLines={2}>{item.title}</Text>
           <Text style={styles.postMeta}>@{item.authorName}  |  {formatDate(item.createdAt)}</Text>
           <Text style={styles.postContent} numberOfLines={3}>{item.content}</Text>
-          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} style={styles.postChevron} />
+          <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.textMuted} style={styles.postChevron} />
         </TouchableOpacity>}
       />
       <Modal visible={showComposer} animationType="slide" transparent onRequestClose={() => setShowComposer(false)}>
         <View style={styles.modalBackdrop}><View style={styles.modalContent}>
-          <View style={styles.modalHeader}><Text style={styles.modalTitle}>Nova postagem</Text><TouchableOpacity onPress={() => setShowComposer(false)}><Ionicons name="close" size={24} color={colors.textPrimary} /></TouchableOpacity></View>
-          <TextInput style={styles.input} value={postTitle} onChangeText={setPostTitle} placeholder="Titulo" placeholderTextColor={colors.textMuted} maxLength={200} />
-          <TextInput style={[styles.input, styles.contentInput]} value={postContent} onChangeText={setPostContent} placeholder="Compartilhe uma ideia com a comunidade" placeholderTextColor={colors.textMuted} multiline textAlignVertical="top" />
-          <TouchableOpacity style={styles.publishButton} disabled={publishing} onPress={submitPost}>{publishing ? <ActivityIndicator size="small" color={colors.textPrimary} /> : <Text style={styles.publishText}>Publicar</Text>}</TouchableOpacity>
+          <View style={styles.modalHeader}><Text style={styles.modalTitle}>Nova postagem</Text><TouchableOpacity accessibilityLabel="Fechar nova postagem" onPress={() => setShowComposer(false)}><Ionicons accessible={false} name="close" size={24} color={colors.textPrimary} /></TouchableOpacity></View>
+          <TextInput accessibilityLabel="Título da postagem" style={styles.input} value={postTitle} onChangeText={setPostTitle} placeholder="Titulo" placeholderTextColor={colors.textMuted} maxLength={200} />
+          <TextInput accessibilityLabel="Conteúdo da postagem" style={[styles.input, styles.contentInput]} value={postContent} onChangeText={setPostContent} placeholder="Compartilhe uma ideia com a comunidade" placeholderTextColor={colors.textMuted} multiline textAlignVertical="top" />
+          <TouchableOpacity accessibilityLabel="Publicar postagem" accessibilityState={{ busy: publishing }} style={styles.publishButton} disabled={publishing} onPress={submitPost}>{publishing ? <ActivityIndicator size="small" color={colors.textPrimary} /> : <Text style={styles.publishText}>Publicar</Text>}</TouchableOpacity>
         </View></View>
       </Modal>
     </SafeAreaView>

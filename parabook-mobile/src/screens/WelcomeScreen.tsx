@@ -1,14 +1,9 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-} from 'react-native';
+import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
 import { RootStackParamList } from '../navigation/types';
 
@@ -59,7 +54,7 @@ export const WelcomeScreen = () => {
           <Text style={styles.buttonArrow}>→</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleLogin} activeOpacity={0.7}>
+        <TouchableOpacity accessibilityLabel="Entrar" onPress={handleLogin} activeOpacity={0.7}>
           <Text style={styles.loginText}>
             Já tem uma conta? <Text style={styles.loginLink}>Entrar</Text>
           </Text>
@@ -181,7 +176,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   loginLink: {
-    color: colors.primary,
+    color: colors.link,
     fontWeight: 'bold',
   },
 });

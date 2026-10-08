@@ -1,4 +1,4 @@
-import { lazy, Suspense, useContext, useEffect, useState } from 'react'
+import { lazy, Suspense, useContext, useEffect, useRef, useState } from 'react'
 import { Routes, Route, useLocation, Navigate, Link } from 'react-router-dom'
 import { AuthContext } from './context/auth-context'
 import { useViewTransitionLocation } from './hooks/useViewTransitionLocation'
@@ -45,6 +45,7 @@ const AceitarTermos = lazy(() => import('./pages/AceitarTermos'))
 const OnboardingAutor = lazy(() => import('./pages/OnboardingAutor'))
 const RecomendacaoIA = lazy(() => import('./pages/RecomendacaoIA'))
 const ElegibilidadeEtaria = lazy(() => import('./pages/ElegibilidadeEtaria'))
+const Denunciar = lazy(() => import('./pages/Denunciar'))
 const MinhasComunidades = lazy(() => import('./pages/MinhasComunidades'))
 const CriarComunidade = lazy(() => import('./pages/CriarComunidade'))
 const Ranking = lazy(() => import('./pages/Ranking'))
@@ -54,7 +55,7 @@ const AdminAuditoria = lazy(() => import('./pages/admin/AdminAuditoria'))
 const AdminFeatureFlags = lazy(() => import('./pages/admin/AdminFeatureFlags'))
 
 // Rotas liberadas para quem ainda não aceitou os termos, para não criar loop de redirecionamento.
-const ROTAS_LEGAIS = ['/diretrizes', '/termos', '/privacidade', '/publicacao-e-licenca', '/direitos-autorais'];
+const ROTAS_LEGAIS = ['/diretrizes', '/termos', '/privacidade', '/publicacao-e-licenca', '/direitos-autorais', '/denunciar'];
 const ROTAS_ISENTAS_TERMOS = ['/aceitar-termos', ...ROTAS_LEGAIS, '/login', '/register'];
 const ROTAS_PUBLICAS_SUSPENSAO = ['/', '/biblioteca', '/comunidades', '/autores', '/sobre', '/backlog', ...ROTAS_LEGAIS, '/para-leitores', '/para-autores', '/planos'];
 const ROTAS_ISENTAS_IDADE = [
@@ -91,7 +92,9 @@ function App() {
   // continuam presos à location real, para não "piscar" durante a
   // transição (ver hooks/useViewTransitionLocation.js).
   const displayLocation = useViewTransitionLocation(location);
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, sessionError, retrySession } = useContext(AuthContext);
+  const erroSessaoRef = useRef(null);
+  useEffect(() => { if (sessionError) erroSessaoRef.current?.focus(); }, [sessionError]);
   const [flagsPublicas, setFlagsPublicas] = useState({ banner_anuncios: false });
   const isDashboard = location.pathname.startsWith('/dashboard');
   const isAdminAvancado = [
@@ -175,12 +178,19 @@ function App() {
       )}
 
       <div id="conteudo-principal" className="route-content" tabIndex="-1">
+        {sessionError ? (
+          <section ref={erroSessaoRef} tabIndex="-1" className="surface-inset container my-4 p-4" aria-label="Validação da sessão">
+            <p role="alert">{sessionError}</p>
+            <button className="btn secondary" onClick={retrySession} disabled={loading}>{loading ? 'Verificando sessão…' : 'Tentar novamente'}</button>
+          </section>
+        ) : (
         <Suspense fallback={<div className="text-center p-5" role="status" aria-live="polite">Carregando página...</div>}>
         <Routes location={displayLocation}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/elegibilidade" element={<RotaAutenticada><ElegibilidadeEtaria /></RotaAutenticada>} />
+          <Route path="/denunciar" element={<Denunciar />} />
           <Route path="/perfil" element={<RotaAutenticada><Profile /></RotaAutenticada>} />
           <Route path="/perfil/alterar-senha" element={<AlterarSenha />} />
           <Route path="/perfil/configuracoes" element={<RotaAutenticada><ConfiguracoesAvancadas /></RotaAutenticada>} />
@@ -232,6 +242,7 @@ function App() {
           <Route path="*" element={<main className="text-center mt-5"><h1 className="text-white">Página não encontrada</h1></main>} />
         </Routes>
         </Suspense>
+        )}
       </div>
       {!hideNavAndFooter && <Footer />}
     </div>

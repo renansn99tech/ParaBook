@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from './AccessibleAction';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, controlHeight, radii, spacing } from '../theme/colors';
 
@@ -18,9 +19,11 @@ export const FormField = ({ label, icon, error, isPassword = false, onFocus, onB
     <View>
       <Text style={styles.label}>{label}</Text>
       <View style={[styles.container, focused && styles.focused, Boolean(error) && styles.errored]}>
-        <Ionicons name={icon} size={20} color={focused ? colors.primary : colors.textMuted} />
+        <Ionicons accessible={false} name={icon} size={20} color={focused ? colors.primary : colors.textMuted} />
         <TextInput
           {...inputProps}
+          accessibilityLabel={inputProps.accessibilityLabel || label}
+          accessibilityHint={error || inputProps.accessibilityHint}
           style={styles.input}
           placeholderTextColor={colors.textMuted}
           secureTextEntry={isPassword && !passwordVisible}
@@ -39,12 +42,15 @@ export const FormField = ({ label, icon, error, isPassword = false, onFocus, onB
             onPress={() => setPasswordVisible((current) => !current)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             accessibilityLabel={passwordVisible ? 'Ocultar senha' : 'Mostrar senha'}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: passwordVisible }}
+            style={styles.passwordButton}
           >
-            <Ionicons name={passwordVisible ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textMuted} />
+            <Ionicons accessible={false} name={passwordVisible ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textMuted} />
           </TouchableOpacity>
         ) : null}
       </View>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
     </View>
   );
 };
@@ -60,7 +66,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: controlHeight,
+    minHeight: controlHeight,
     paddingHorizontal: spacing.md,
     borderRadius: radii.md,
     borderWidth: 1,
@@ -75,7 +81,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: '100%',
+    minHeight: controlHeight,
+    paddingVertical: spacing.sm,
     color: colors.textPrimary,
     fontSize: 15,
     marginHorizontal: spacing.sm,
@@ -87,4 +94,5 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     marginLeft: spacing.xs,
   },
+  passwordButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 });

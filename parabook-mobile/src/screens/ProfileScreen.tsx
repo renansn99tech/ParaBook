@@ -1,13 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, View, ScrollView } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radii, spacing } from '../theme/colors';
@@ -61,7 +54,7 @@ export const ProfileScreen = () => {
   if (!user) {
     return (
       <SafeAreaView style={[styles.container, styles.centerState]}>
-        <Ionicons name="person-outline" size={42} color={colors.textMuted} />
+        <Ionicons accessible={false} name="person-outline" size={42} color={colors.textMuted} />
         <Text style={styles.statusText}>Faça login para ver seu perfil.</Text>
       </SafeAreaView>
     );
@@ -81,7 +74,7 @@ export const ProfileScreen = () => {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Perfil</Text>
           <TouchableOpacity style={styles.iconButton} onPress={() => void loadProfile()} activeOpacity={0.7} accessibilityLabel="Atualizar perfil">
-            <Ionicons name="refresh-outline" size={22} color={colors.textPrimary} />
+            <Ionicons accessible={false} name="refresh-outline" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
 
@@ -89,7 +82,7 @@ export const ProfileScreen = () => {
           {fullProfile?.perfil?.foto || user.foto ? (
             <Image source={{ uri: fullProfile?.perfil?.foto || user.foto || undefined }} style={styles.avatarContainer} />
           ) : (
-            <View style={styles.avatarContainer}><Ionicons name="person" size={36} color={colors.primary} /></View>
+            <View style={styles.avatarContainer}><Ionicons accessible={false} name="person" size={36} color={colors.primary} /></View>
           )}
           <Text style={styles.userName} numberOfLines={2}>{displayName}</Text>
           <Text style={styles.userTag}>@{displayUsername}</Text>
@@ -115,15 +108,15 @@ export const ProfileScreen = () => {
 
         <View style={styles.goalCard}>
           <View style={styles.infoRow}>
-            <Ionicons name="location-outline" size={18} color={colors.primary} />
+            <Ionicons accessible={false} name="location-outline" size={18} color={colors.primary} />
             <Text style={styles.infoText} numberOfLines={2}>{fullProfile?.perfil?.localizacao || user.localizacao || 'Localização não informada'}</Text>
           </View>
           <View style={styles.infoRow}>
-            <Ionicons name="mail-outline" size={18} color={colors.primary} />
+            <Ionicons accessible={false} name="mail-outline" size={18} color={colors.primary} />
             <Text style={styles.infoText} numberOfLines={2}>{user.email}</Text>
           </View>
           <View style={styles.infoRow}>
-            <Ionicons name="shield-checkmark-outline" size={18} color={colors.primary} />
+            <Ionicons accessible={false} name="shield-checkmark-outline" size={18} color={colors.primary} />
             <Text style={styles.infoText}>{user.termos_aceitos ? 'Termos aceitos' : 'Termos pendentes'}</Text>
           </View>
           {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
@@ -137,41 +130,41 @@ export const ProfileScreen = () => {
             onPress={() => navigation.navigate('MyLibrary', { initialStatus: 'quero_ler' })}
           >
             <View style={styles.menuItemLeft}>
-              <Ionicons name="bookmark-outline" size={20} color={colors.primary} />
+              <Ionicons accessible={false} name="bookmark-outline" size={20} color={colors.primary} />
               <Text style={styles.menuItemText}>Salvos para Ler</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+            <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('MyLibrary', { initialStatus: 'lido' })}>
             <View style={styles.menuItemLeft}>
-              <Ionicons name="time-outline" size={20} color={colors.primary} />
+              <Ionicons accessible={false} name="time-outline" size={20} color={colors.primary} />
               <Text style={styles.menuItemText}>Histórico de Leitura</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+            <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Authors')}>
-            <View style={styles.menuItemLeft}><Ionicons name="create-outline" size={20} color={colors.primary} /><Text style={styles.menuItemText}>Autores</Text></View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+            <View style={styles.menuItemLeft}><Ionicons accessible={false} name="create-outline" size={20} color={colors.primary} /><Text style={styles.menuItemText}>Autores</Text></View>
+            <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Notifications')}>
-            <View style={styles.menuItemLeft}><Ionicons name="notifications-outline" size={20} color={colors.primary} /><Text style={styles.menuItemText}>Notificações</Text></View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+            <View style={styles.menuItemLeft}><Ionicons accessible={false} name="notifications-outline" size={20} color={colors.primary} /><Text style={styles.menuItemText}>Notificações</Text></View>
+            <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Achievements')}>
-            <View style={styles.menuItemLeft}><Ionicons name="trophy-outline" size={20} color={colors.primary} /><Text style={styles.menuItemText}>Conquistas e ranking</Text></View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+            <View style={styles.menuItemLeft}><Ionicons accessible={false} name="trophy-outline" size={20} color={colors.primary} /><Text style={styles.menuItemText}>Conquistas e ranking</Text></View>
+            <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('MyLibrary', { reviewedOnly: true })}>
             <View style={styles.menuItemLeft}>
-              <Ionicons name="heart-outline" size={20} color={colors.primary} />
+              <Ionicons accessible={false} name="heart-outline" size={20} color={colors.primary} />
               <Text style={styles.menuItemText}>Avaliações e Resenhas</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+            <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
 
@@ -179,7 +172,7 @@ export const ProfileScreen = () => {
           <Text style={styles.menuItemText}>Elegibilidade, suporte e direitos</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.logoutButton} onPress={() => void logout()}>
-          <Ionicons name="log-out-outline" size={18} color={colors.error} />
+          <Ionicons accessible={false} name="log-out-outline" size={18} color={colors.error} />
           <Text style={styles.logoutText}>Sair da conta</Text>
         </TouchableOpacity>
       </ScrollView>

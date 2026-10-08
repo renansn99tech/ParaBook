@@ -4,7 +4,7 @@ import api from '../services/api';
 import swal from '../services/swal';
 import '../assets/css/publicacao-gestao.css';
 
-const ESTADOS = { pendente: 'Em análise', aprovado: 'Aprovada', publicado: 'Publicado', rejeitado: 'Rejeitado', retirado: 'Retirado por você', suspenso: 'Suspenso cautelarmente', removido: 'Removido pela moderação' };
+const ESTADOS = { pendente: 'Em análise', aprovado: 'Aprovada', publicado: 'Publicado', rejeitado: 'Rejeitado', retirado: 'Retirado por você', suspenso: 'Suspenso cautelarmente', removido: 'Removido pela moderação', manutencao: 'Em manutenção de direitos', expirado: 'Direitos expirados' };
 const mensagemErro = (erro) => Object.values(erro.response?.data || {}).flat().join(' ') || 'Não foi possível concluir a operação.';
 
 export default function MinhasPublicacoes() {
@@ -118,7 +118,7 @@ export default function MinhasPublicacoes() {
     {carregando ? <p role="status">Carregando publicações…</p> : <>
       {!obras.length && <p>Nenhuma obra enviada ainda.</p>}
       <div className="publicacao-obras">{obras.map((obra) => <article key={obra.id} className="content-glass-card">
-        <h2>{obra.titulo}</h2><p>{ESTADOS[obra.status] || 'Indisponível'}</p>
+        <h2>{obra.titulo}</h2><p>{ESTADOS[obra.status] || 'Indisponível'}</p><p>Direitos: {obra.direitos_estado === 'conferida' ? 'conferidos para esta edição' : obra.direitos_estado === 'legado' ? 'política aguardando ativação' : 'pendentes ou indisponíveis; acompanhe a análise'}.</p>
         <button type="button" className="btn-outline" disabled={processando} onClick={() => { setSelecionada(obra); setPaginaHistorico(1); setPaginaVersoes(1); }}>Editar e acompanhar</button>
         {obra.status !== 'retirado' && <button type="button" className="btn-outline" disabled={processando} onClick={() => retirar(obra)}>Retirar obra</button>}
       </article>)}</div>
@@ -126,7 +126,7 @@ export default function MinhasPublicacoes() {
     </>}
     {selecionada && <section ref={editorRef} tabIndex={-1} className="content-glass-card" aria-label={`Gerenciar ${selecionada.titulo}`}>
       <h2>{selecionada.titulo}</h2><button type="button" onClick={() => setSelecionada(null)}>Fechar edição</button>
-      <p>PDF e alterações editoriais passam por análise. A versão publicada permanece disponível. Editar uma obra retirada não a republica.</p>
+      <p>PDF e alterações editoriais passam por análise. A edição publicada permanece disponível enquanto os direitos e as demais verificações estiverem válidos. Editar uma obra retirada não a republica.</p>
       <form key={selecionada.id} onSubmit={revisar} className="publicacao-form">
         <label>Título<input name="titulo" defaultValue={selecionada.titulo} maxLength={255} required /></label>
         <label>Categoria<select name="categoria" defaultValue={selecionada.categoria}>{categorias.map((c) => <option value={c.id} key={c.id}>{c.nome}</option>)}</select></label>

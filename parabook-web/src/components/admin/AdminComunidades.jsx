@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import swal, { BOTAO } from '../../services/swal';
+import swal from '../../services/swal';
+import { useNavigate } from 'react-router-dom';
+import { prepararPedidoConselho } from '../../services/pedidoConselho';
 import api from '../../services/api';
-import CriadorDesconhecido, { EXPLICACAO_CRIADOR_DESCONHECIDO } from '../CriadorDesconhecido';
+import CriadorDesconhecido from '../CriadorDesconhecido';
 
-// Espelha MIN_DENUNCIAS_PARA_EXCLUSAO da API: aqui é só para o aviso ao admin;
-// quem barra de fato a exclusão é o servidor.
+// Contagem contextual de denúncias; não autoriza remoção nem substitui o Conselho.
 const MIN_DENUNCIAS_EXCLUSAO = 10;
 
 function AdminComunidades() {
+  const navigate = useNavigate();
   const [comunidades, setComunidades] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState('todas'); // todas, sistema, usuarios
@@ -63,68 +65,7 @@ function AdminComunidades() {
   };
 
   const handleExcluir = async (comunidade) => {
-    // Sala oficial é da casa: basta a confirmação do admin.
-    if (comunidade.criada_por_sistema) {
-      const confirmacao = await swal.fire({
-        icon: 'warning',
-        title: 'Excluir comunidade oficial?',
-        html: `<strong>${comunidade.nome}</strong> e todas as suas postagens serão removidas. Esta ação não pode ser desfeita.`,
-        showCancelButton: true,
-        confirmButtonText: 'Sim, excluir',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: BOTAO.perigo
-      });
-
-      if (!confirmacao.isConfirmed) return;
-      await executarExclusao(comunidade);
-      return;
-    }
-
-    // Sala de usuário exige lastro de denúncias: mostramos o placar antes.
-    const denuncias = comunidade.total_denuncias || 0;
-    const faltam = MIN_DENUNCIAS_EXCLUSAO - denuncias;
-    const atingiuMinimo = faltam <= 0;
-
-    const confirmacao = await swal.fire({
-      icon: atingiuMinimo ? 'warning' : 'info',
-      title: atingiuMinimo ? 'Excluir comunidade denunciada?' : 'Denúncias insuficientes',
-      html: `
-        <p style="margin-bottom:14px"><strong>${comunidade.nome}</strong> — criado por ${comunidade.criador_nome ? `@${comunidade.criador_nome}` : `<span class="criador-desconhecido" tabindex="0" data-tooltip="${EXPLICACAO_CRIADOR_DESCONHECIDO}">Desconhecido</span>`}</p>
-        <p style="margin-bottom:6px">Denúncias registradas:
-          <strong style="color:${atingiuMinimo ? '#fca5a5' : '#fcd34d'}">${denuncias}</strong> de ${MIN_DENUNCIAS_EXCLUSAO}
-        </p>
-        ${atingiuMinimo
-          ? '<p style="color:#fca5a5;margin:0">A comunidade atingiu o limite e pode ser removida.</p>'
-          : `<p style="color:#94a3b8;margin:0">Faltam <strong>${faltam}</strong> denúncia(s) para liberar a exclusão.</p>`}
-      `,
-      showCancelButton: atingiuMinimo,
-      confirmButtonText: atingiuMinimo ? 'Sim, excluir' : 'Entendi',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: atingiuMinimo ? BOTAO.perigo : BOTAO.padrao
-    });
-
-    if (atingiuMinimo && confirmacao.isConfirmed) {
-      await executarExclusao(comunidade);
-    }
-  };
-
-  const executarExclusao = async (comunidade) => {
-    try {
-      await api.delete(`/comunidades/comunidades/${comunidade.id}/`);
-      setComunidades(comunidades.filter(c => c.id !== comunidade.id));
-      swal.fire({
-        icon: 'success',
-        title: 'Comunidade excluída',
-        text: `"${comunidade.nome}" foi removida da plataforma.`
-      });
-    } catch (error) {
-      console.error("Erro ao excluir comunidade", error);
-      swal.fire({
-        icon: 'error',
-        title: 'Erro',
-        text: error.response?.data?.detail || 'Não foi possível excluir a comunidade.'
-      });
-    }
+    if (await prepararPedidoConselho('comunidade', comunidade.id)) navigate('/dashboard?aba=operacao');
   };
 
   const filtradas = comunidades.filter(c => {
@@ -220,8 +161,8 @@ function AdminComunidades() {
                     <button
                       className="admin-table-acao"
                       onClick={() => handleExcluir(comum)}
-                      title={`Excluir ${comum.nome}`}
-                      aria-label={`Excluir ${comum.nome}`}
+                      title={`Solicitar decisão do Conselho: ${comum.nome}`}
+                      aria-label={`Solicitar decisão do Conselho: ${comum.nome}`}
                     >
                       <i className="fa-solid fa-trash"></i>
                     </button>

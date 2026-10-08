@@ -25,11 +25,16 @@ function carregarPdfJs() {
   if (!carregamentoPdfJs) {
     carregamentoPdfJs = new Promise((resolve, reject) => {
       const script = document.createElement('script');
+      const timeout = window.setTimeout(() => {
+        script.remove(); carregamentoPdfJs = null;
+        reject(new Error('O leitor não respondeu. Tente novamente.'));
+      }, 15000);
       script.src = PDF_JS_URL;
       script.async = true;
       script.crossOrigin = 'anonymous';
-      script.onload = () => resolve(window.pdfjsLib);
+      script.onload = () => { window.clearTimeout(timeout); resolve(window.pdfjsLib); };
       script.onerror = () => {
+        window.clearTimeout(timeout); script.remove();
         carregamentoPdfJs = null;
         reject(new Error('Não foi possível carregar o leitor de PDF.'));
       };
@@ -60,6 +65,20 @@ function Leitura() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [tituloLivro, setTituloLivro] = useState('Obra');
+  const [textoPagina, setTextoPagina] = useState('');
+  const [modoTexto, setModoTexto] = useState(false);
+  const [versaoLeitura, setVersaoLeitura] = useState(0);
+  const [janelaAtiva, setJanelaAtiva] = useState(document.visibilityState !== 'hidden');
+  const [erroSync, setErroSync] = useState('');
+  const [salvando, setSalvando] = useState(false);
+  const salvandoRef = useRef(false);
+  const tarefaRenderRef = useRef(null);
+
+  useEffect(() => {
+    const atualizar = () => setJanelaAtiva(document.visibilityState !== 'hidden');
+    document.addEventListener('visibilitychange', atualizar);
+    return () => document.removeEventListener('visibilitychange', atualizar);
+  }, []);
   
   // Estante states
   const [idEstante, setIdEstante] = useState(null);
@@ -82,7 +101,7 @@ function Leitura() {
       pagina,
       sessao_id: sessaoLeituraRef.current,
       duracao_segundos: duracaoSegundos,
-    }).catch((error) => console.error('Erro ao registrar evento de leitura', error));
+    }).catch(() => {});
   }, [id, loading, modoAmostra, pdfDoc, user]);
 
   // Só a moldura do leitor entra animada: o <article> do canvas fica de
@@ -93,13 +112,21 @@ function Leitura() {
   // Initial load
   useEffect(() => {
     if (authLoading) return;
-
+    let ativo = true;
+    const controller = new AbortController();
+    const options = { signal: controller.signal };
+    let documento = null;
+    const canvasAtual = canvasRef.current;
+    setPdfDoc(null); setTextoPagina(''); setIdEstante(null);
+    setTotalPaginas(0); setPaginaAtual(1); setErroSync('');
+    if (!janelaAtiva) return;
     setLoading(true);
     setErro(null);
 
     const fetchData = async () => {
       try {
-        const resLivro = await api.get(`/biblioteca/livros/${id}/`);
+        const resLivro = await api.get(`/biblioteca/livros/${id}/`, options);
+        if (!ativo) return;
         const livro = resLivro.data;
         const acesso = livro.acesso || {};
         setTituloLivro(livro.titulo || 'Obra');
@@ -116,16 +143,31 @@ function Leitura() {
         }
 
         const pdfjsLib = await carregarPdfJs();
+        if (!ativo) return;
         if (!pdfjsLib) {
           throw new Error("Biblioteca PDF.js não encontrada.");
         }
         
         pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 
+        const endpointLeitura = modoAmostra ? 'ler_amostra' : 'ler_pdf';
+        // openapi-contract: GET /biblioteca/livros/{id}/ler_pdf/
+        // openapi-contract: GET /biblioteca/livros/{id}/ler_amostra/
+        // openapi-contract-ignore: endpointLeitura é restrito às duas operações declaradas acima.
+        const response = await api.get(`/biblioteca/livros/${id}/${endpointLeitura}/`, {
+          responseType: 'arraybuffer', ...options,
+        });
+        if (!ativo) return;
+        documento = await pdfjsLib.getDocument({ data: response.data, isEvalSupported: false }).promise;
+        if (!ativo) { void documento.destroy(); return; }
+        const pdf = documento;
+
         let entry = null;
         if (user && !modoAmostra) {
           // A amostra pública não altera estante, progresso, gamificação ou analytics.
-          const resEstante = await api.get('/biblioteca/estante/');
+          try {
+          const resEstante = await api.get('/biblioteca/estante/', { ...options, params: { livro: id } });
+          if (!ativo) return;
           const estanteData = resEstante.data.results || resEstante.data;
           entry = estanteData.find(e => e.livro === parseInt(id));
           if (entry) {
@@ -138,23 +180,16 @@ function Leitura() {
                 livro: parseInt(id),
                 status: 'lendo',
                 pagina_atual: 1,
-              });
+              }, options);
+              if (!ativo) return;
               setIdEstante(criada.data.id);
-            } catch (erroEstante) {
-              console.warn('Leitura aberta sem sincronização na estante', erroEstante);
+            } catch {
+              if (ativo) setErroSync('A estante não foi sincronizada. Confira o resultado antes de repetir a alteração.');
             }
           }
+          } catch { if (ativo) setErroSync('A estante está indisponível. Você pode continuar a leitura autorizada.'); }
         }
-
-        const endpointLeitura = modoAmostra ? 'ler_amostra' : 'ler_pdf';
-        // openapi-contract: GET /biblioteca/livros/{id}/ler_pdf/
-        // openapi-contract: GET /biblioteca/livros/{id}/ler_amostra/
-        // openapi-contract-ignore: endpointLeitura é restrito às duas operações declaradas acima.
-        const response = await api.get(`/biblioteca/livros/${id}/${endpointLeitura}/`, {
-          responseType: 'arraybuffer'
-        });
-
-        const pdf = await pdfjsLib.getDocument({ data: response.data }).promise;
+        if (!ativo) return;
         setPdfDoc(pdf);
         setTotalPaginas(pdf.numPages);
         
@@ -164,7 +199,7 @@ function Leitura() {
         const pagSalva = localStorage.getItem(chavePagina);
         if (paginaServidor > 0 && paginaServidor <= pdf.numPages) {
           setPaginaAtual(paginaServidor);
-        } else if (pagSalva && parseInt(pagSalva) <= pdf.numPages) {
+        } else if (pagSalva && parseInt(pagSalva) >= 1 && parseInt(pagSalva) <= pdf.numPages) {
           setPaginaAtual(parseInt(pagSalva));
         } else {
           setPaginaAtual(1);
@@ -172,7 +207,7 @@ function Leitura() {
 
         setLoading(false);
       } catch (err) {
-        console.error(err);
+        if (!ativo || err.code === 'ERR_CANCELED') return;
         if (err.response?.status === 403) {
           setErro("Acesso Negado: Você não tem permissão para ler este livro.");
         } else {
@@ -183,17 +218,28 @@ function Leitura() {
     };
 
     fetchData();
-  }, [authLoading, id, modoAmostra, user]);
+    return () => {
+      ativo = false; controller.abort();
+      tarefaRenderRef.current?.cancel(); tarefaRenderRef.current = null;
+      if (documento) void documento.destroy();
+      if (canvasAtual) { canvasAtual.width = 0; canvasAtual.height = 0; }
+    };
+  }, [authLoading, id, modoAmostra, user, versaoLeitura, janelaAtiva]);
 
   // Render page when pdfDoc, page or zoom changes
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current) return;
 
     let isRenderCancelled = false;
+    let tarefa = null;
 
     const renderPage = async () => {
       try {
         const page = await pdfDoc.getPage(paginaAtual);
+        if (isRenderCancelled || !canvasRef.current) return;
+        const conteudo = await page.getTextContent();
+        if (isRenderCancelled || !canvasRef.current) return;
+        setTextoPagina(conteudo.items.map(item => typeof item.str === 'string' ? item.str : '').join(' '));
         const viewport = page.getViewport({ scale: zoomAtual });
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
@@ -206,14 +252,15 @@ function Leitura() {
           viewport: viewport
         };
 
-        await page.render(renderContext).promise;
+        tarefa = page.render(renderContext); tarefaRenderRef.current = tarefa;
+        await tarefa.promise;
         
         if (!isRenderCancelled) {
           const chavePagina = modoAmostra ? `pagina_amostra_${id}` : `pagina_${id}`;
           localStorage.setItem(chavePagina, paginaAtual);
         }
       } catch (err) {
-        console.error("Render error:", err);
+        if (!isRenderCancelled && err.name !== 'RenderingCancelledException') setErro('Não foi possível renderizar esta página. Tente novamente.');
       }
     };
 
@@ -221,6 +268,8 @@ function Leitura() {
 
     return () => {
       isRenderCancelled = true;
+      tarefa?.cancel();
+      if (tarefaRenderRef.current === tarefa) tarefaRenderRef.current = null;
     };
   }, [pdfDoc, paginaAtual, zoomAtual, id, modoAmostra]);
 
@@ -228,7 +277,7 @@ function Leitura() {
     if (!idEstante || !pdfDoc || loading) return undefined;
     const timer = window.setTimeout(() => {
       api.patch(`/biblioteca/estante/${idEstante}/`, { pagina_atual: paginaAtual })
-        .catch((error) => console.error('Erro ao sincronizar progresso de leitura', error));
+        .catch(() => setErroSync('Progresso não sincronizado. Confira a estante antes de repetir a alteração.'));
     }, 700);
     return () => window.clearTimeout(timer);
   }, [idEstante, loading, paginaAtual, pdfDoc]);
@@ -268,6 +317,9 @@ function Leitura() {
 
   // Actions
   const syncEstante = async (dados) => {
+    if (salvandoRef.current) return false;
+    salvandoRef.current = true;
+    setSalvando(true); setErroSync('');
     try {
       if (idEstante) {
         await api.patch(`/biblioteca/estante/${idEstante}/`, dados);
@@ -279,8 +331,13 @@ function Leitura() {
         });
         setIdEstante(res.data.id);
       }
-    } catch (error) {
-      console.error("Erro ao sincronizar estante", error);
+      return true;
+    } catch {
+      setErroSync('Alteração não confirmada. Confira a estante antes de tentar novamente.');
+      return false;
+    } finally {
+      salvandoRef.current = false;
+      setSalvando(false);
     }
   };
 
@@ -297,7 +354,7 @@ function Leitura() {
       color: '#f8fafc'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await syncEstante({ status: 'lido' });
+        if (!await syncEstante({ status: 'lido' })) return;
         setLido(true);
         swal.fire({
           title: 'Parabéns! 🎉',
@@ -311,7 +368,7 @@ function Leitura() {
 
   const handleFavoritar = async () => {
     const novoStatus = !favorito;
-    await syncEstante({ favorito: novoStatus });
+    if (!await syncEstante({ favorito: novoStatus })) return;
     setFavorito(novoStatus);
     
     if (novoStatus) {
@@ -358,7 +415,7 @@ function Leitura() {
       }
     }).then(async (result) => {
       if (result.isConfirmed && result.value) {
-        await syncEstante({ nota: parseInt(result.value) });
+        if (!await syncEstante({ nota: parseInt(result.value) })) return;
         swal.fire({
           title: 'Avaliação Salva!',
           text: 'Sua nota foi registrada com sucesso.',
@@ -405,41 +462,49 @@ function Leitura() {
 
           <div className="grupo-controle">
             <span className="label-controle" id="label-acessibilidade">Acessibilidade Visual:</span>
-            <button className="btn-tool" onClick={() => setAltoContraste(!altoContraste)} title="Alternar Alto Contraste">
+            <button className="btn-tool" aria-pressed={altoContraste} onClick={() => setAltoContraste(!altoContraste)} title="Alternar Alto Contraste">
               <i className="fa-solid fa-circle-half-stroke" aria-hidden="true"></i> Contraste
             </button>
-            <button className="btn-tool" onClick={() => setModoInvertido(!modoInvertido)} title="Inverter cores da página">
+            <button className="btn-tool" aria-pressed={modoInvertido} onClick={() => setModoInvertido(!modoInvertido)} title="Inverter cores da página">
               <i className="fa-solid fa-eye-dropper" aria-hidden="true"></i> Inverter Cores
             </button>
           </div>
 
           <div className="grupo-controle">
             <span className="label-controle" id="label-layout">Layout do Leitor:</span>
-            <button className="btn-tool" onClick={() => setExpandir(!expandir)} title="Alternar largura expandida">
+            <button className="btn-tool" aria-pressed={expandir} onClick={() => setExpandir(!expandir)} title="Alternar largura expandida">
               <i className="fa-solid fa-arrows-left-right" aria-hidden="true"></i> Expandir Tela
             </button>
           </div>
+          <button className="btn-tool" aria-pressed={modoTexto} aria-controls="texto-pagina" onClick={() => setModoTexto(!modoTexto)}>Texto da página</button>
         </nav>
 
-        {loading && <div className="loading-state">Carregando PDF imersivo... aguarde.</div>}
-        {erro && <div className="loading-state" style={{ color: '#f87171' }}>⚠️ {erro}</div>}
+        {loading && <div className="loading-state" role="status">Carregando PDF imersivo... aguarde.</div>}
+        {erro && <div className="loading-state" role="alert">{erro} <button className="btn secondary" onClick={() => setVersaoLeitura(v => v + 1)}>Tentar novamente</button></div>}
+        {erroSync && <p role="status">{erroSync}</p>}
         {modoAmostra && !erro && (
           <div className="loading-state" role="status">Você está lendo a amostra pública de {tituloLivro}.</div>
         )}
 
         <article 
-          className={`leitor-pdf ${altoContraste ? 'alto-contraste-filtro' : ''} ${modoInvertido ? 'modo-invertido-filtro' : ''}`}
+          className={`leitor-pdf ${altoContraste ? 'alto-contraste-filtro' : ''} ${modoInvertido ? 'modo-invertido-filtro' : ''} ${modoTexto || erro || loading || !pdfDoc ? 'leitor-sem-imagem' : ''}`}
           style={{ maxWidth: expandir ? '100%' : '900px' }}
         >
           <canvas
             ref={canvasRef}
             id="pdf-canvas"
-            role="document"
+            role="img"
+            hidden={Boolean(erro) || loading || !pdfDoc || modoTexto}
             aria-label={`Visualizador do livro contendo a página ${paginaAtual} de ${totalPaginas}`}
           ></canvas>
         </article>
+        {modoTexto && !erro && !loading && <section id="texto-pagina" className="texto-pagina-leitura" aria-label={`Texto da página ${paginaAtual}`} tabIndex="0">
+          <h2>Texto da página {paginaAtual}</h2>
+          <p>{textoPagina || 'Esta página não possui texto extraível. A imagem original está no visualizador; solicite uma edição acessível pelo suporte.'}</p>
+          <small>A ordem do texto depende da estrutura do PDF. Não é uma descrição de imagens.</small>
+        </section>}
 
-        <div className="progresso-container" role="progressbar" aria-valuemin="1" aria-valuemax="100" aria-valuenow={Math.round(progressoSeguro)}>
+        <div className="progresso-container" role="progressbar" aria-label="Progresso da leitura" aria-valuemin="0" aria-valuemax="100" aria-valuenow={Math.round(progressoSeguro)}>
           <div id="barra-progresso" style={{ width: `${progressoSeguro}%` }}></div>
         </div>
 
@@ -448,13 +513,14 @@ function Leitura() {
             <i className="fa-solid fa-arrow-left" aria-hidden="true"></i> Anterior
           </button>
           
-          <span id="pagina-info" aria-live="assertive" role="status">
+          <span id="pagina-info" aria-live="polite" role="status">
             {totalPaginas > 0 ? `Página ${paginaAtual} de ${totalPaginas}` : 'Carregando...'}
           </span>
 
           <div className="navegacao-rapida">
             <input
               type="number"
+              aria-label="Ir para a página"
               className="input-pagina-moderno"
               min="1"
               placeholder="Ir para..."
@@ -489,25 +555,27 @@ function Leitura() {
               borderColor: 'transparent',
             }}
             onClick={handleMarcarLido}
-            disabled={lido}
+            disabled={lido || loading || Boolean(erro) || salvando}
           >
-            <i className="fa-solid fa-check-double"></i> {lido ? 'Concluído!' : 'Marcar como Lido'}
+            <i aria-hidden="true" className="fa-solid fa-check-double"></i> {lido ? 'Concluído!' : 'Marcar como Lido'}
           </button>
 
           <button
             className="btn"
             style={{ backgroundColor: favorito ? '#db2777' : '#ec4899', color: 'white' }}
             onClick={handleFavoritar}
+            disabled={loading || Boolean(erro) || salvando}
           >
-            {favorito ? <><i className="fa-solid fa-heart-crack"></i> Desfavoritar</> : <><i className="fa-solid fa-heart"></i> Favoritar</>}
+            {favorito ? <><i aria-hidden="true" className="fa-solid fa-heart-crack"></i> Desfavoritar</> : <><i aria-hidden="true" className="fa-solid fa-heart"></i> Favoritar</>}
           </button>
 
           <button
             className="btn"
             style={{ backgroundColor: '#f59e0b', color: 'white' }}
             onClick={handleAvaliar}
+            disabled={loading || Boolean(erro) || salvando}
           >
-            <i className="fa-solid fa-star"></i> Avaliar
+            <i aria-hidden="true" className="fa-solid fa-star"></i> Avaliar
           </button>
             </>
           )}

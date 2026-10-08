@@ -10,21 +10,43 @@ export const API_BASE_URL = import.meta.env.DEV
   ? '/api/v1'
   : (import.meta.env.VITE_API_URL?.trim() || PRODUCTION_API_BASE_URL);
 let csrfToken = null;
+let csrfPromise = null;
 let refreshPromise = null;
+let sessionGeneration = 0;
+
+export const invalidateSessionRequests = () => {
+  sessionGeneration += 1;
+  csrfToken = null;
+  csrfPromise = null;
+  refreshPromise = null;
+};
+
+const requireCurrentSession = (config) => {
+  if (config?._sessionGeneration !== undefined && config._sessionGeneration !== sessionGeneration) {
+    throw new axios.CanceledError('Sessão alterada.');
+  }
+};
 
 export const ensureCsrfToken = async () => {
   if (csrfToken) return csrfToken;
-  const response = await axios.get(`${API_BASE_URL}/auth/csrf/`, {
-    withCredentials: true,
-  });
-  csrfToken = response.data.csrfToken;
-  return csrfToken;
+  if (!csrfPromise) {
+    const generation = sessionGeneration;
+    csrfPromise = axios.get(`${API_BASE_URL}/auth/csrf/`, {
+      withCredentials: true, timeout: 30000,
+    }).then((response) => {
+      requireCurrentSession({ _sessionGeneration: generation });
+      csrfToken = response.data.csrfToken;
+      return csrfToken;
+    }).finally(() => { if (generation === sessionGeneration) csrfPromise = null; });
+  }
+  return csrfPromise;
 };
 
 // Instância base do Axios apontando para a API do Django
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -34,9 +56,12 @@ const api = axios.create({
 // token CSRF retornado pelo backend vive apenas em memória.
 api.interceptors.request.use(
   async (config) => {
+    requireCurrentSession(config);
+    config._sessionGeneration = sessionGeneration;
     const method = (config.method || 'get').toLowerCase();
     if (!['get', 'head', 'options'].includes(method)) {
       config.headers['X-CSRFToken'] = await ensureCsrfToken();
+      requireCurrentSession(config);
     }
     return config;
   },
@@ -48,34 +73,51 @@ api.interceptors.request.use(
 // Interceptor para lidar com Token Expirado automaticamente (Refresh)
 api.interceptors.response.use(
   (response) => {
+    requireCurrentSession(response.config);
     return response;
   },
   async (error) => {
+    const originalRequest = error.config;
+    requireCurrentSession(originalRequest);
     if (error.response?.data?.codigo === 'conta_restrita_etaria'
       && error.config?.url !== '/perfis/meu-perfil/') {
       window.dispatchEvent(new Event('parabook:conta-restrita-etaria'));
     }
-    const originalRequest = error.config;
+    const transient = !error.response || [502, 503, 504].includes(error.response.status);
+    if (originalRequest?.method?.toLowerCase() === 'get' && transient
+        && !axios.isCancel(error) && !originalRequest.signal?.aborted && !originalRequest._readRetried) {
+      originalRequest._readRetried = true;
+      await new Promise((resolve) => setTimeout(resolve, 750));
+      requireCurrentSession(originalRequest);
+      return api(originalRequest);
+    }
     
     // Se o erro for 401 (Não autorizado) e ainda não tentamos dar retry
     const isAuthEndpoint = originalRequest?.url?.includes('/auth/login/')
       || originalRequest?.url?.includes('/auth/refresh/')
       || originalRequest?.url?.includes('/auth/register/');
 
-    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
       
       try {
         if (!refreshPromise) {
+          const generation = sessionGeneration;
           refreshPromise = ensureCsrfToken().then((token) => axios.post(
             `${API_BASE_URL}/auth/refresh/`,
             {},
-            { withCredentials: true, headers: { 'X-CSRFToken': token } },
-          )).finally(() => { refreshPromise = null; });
+            { withCredentials: true, timeout: 30000, headers: { 'X-CSRFToken': token } },
+          )).finally(() => { if (generation === sessionGeneration) refreshPromise = null; });
         }
         await refreshPromise;
+        requireCurrentSession(originalRequest);
         return api(originalRequest);
       } catch (refreshError) {
+        requireCurrentSession(originalRequest);
+        if ([400, 401].includes(refreshError.response?.status)) {
+          invalidateSessionRequests();
+          window.dispatchEvent(new Event('parabook:sessao-expirada'));
+        }
         return Promise.reject(refreshError);
       }
     }

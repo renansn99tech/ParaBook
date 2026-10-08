@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
-import { Alert, Linking, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Linking, ScrollView, Share, StyleSheet, Text, TextInput } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
-import { ageService } from '../services/ageService';
+import { ageService, type AgeReview } from '../services/ageService';
 import { api, API_BASE_URL } from '../services/api';
 import { extractApiErrorMessage } from '../services/authService';
 import { colors } from '../theme/colors';
@@ -14,11 +15,26 @@ export const AgeEligibilityScreen = () => {
   const { eligibility, refreshUser, logout } = useAuth();
   const [birthDate, setBirthDate] = useState('');
   const attemptKey = useRef<string | null>(null);
+  const reviewKey = useRef<string | null>(null);
+  const [reviews, setReviews] = useState<AgeReview[]>([]);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
   const [books, setBooks] = useState<Array<{ id: number; titulo: string; acesso: { pode_ler_amostra: boolean } }>>([]);
+  useEffect(() => {
+    let active = true;
+    ageService.reviews().then(data => { if (active) setReviews(data); })
+      .catch(failure => { if (active) setError(extractApiErrorMessage(failure, 'Não foi possível consultar os protocolos.')); });
+    return () => { active = false; };
+  }, []);
+  const updateReviews = async () => {
+    if (busy) return;
+    setBusy(true); setError('');
+    try { setReviews(await ageService.reviews()); await refreshUser(); }
+    catch (failure) { setError(extractApiErrorMessage(failure, 'Não foi possível atualizar o atendimento.')); }
+    finally { setBusy(false); }
+  };
   const exportData = async () => {
     if (busy) return;
     setBusy(true); setError('');
@@ -78,8 +94,12 @@ export const AgeEligibilityScreen = () => {
     if (busy || !message.trim()) return;
     setBusy(true); setError('');
     try {
-      const { data } = await api.post('/auth/suporte/', { categoria: 'idade', assunto: 'Revisão de elegibilidade etária', mensagem: message.trim() });
+      // A chave fornecida pelo backend é UUID; permanece estável na retentativa.
+      if (!reviewKey.current) reviewKey.current = (await ageService.get()).chave_declaracao;
+      const data = await ageService.requestReview(message.trim(), reviewKey.current);
+      reviewKey.current = null;
       setMessage('');
+      setReviews(await ageService.reviews());
       Alert.alert('Solicitação registrada', `Protocolo: ${data.protocolo}. O recebimento não representa decisão.`);
     } catch (failure) { setError(extractApiErrorMessage(failure, 'Não foi possível registrar a solicitação.')); }
     finally { setBusy(false); }
@@ -88,6 +108,7 @@ export const AgeEligibilityScreen = () => {
     <Text accessibilityRole="header" style={styles.title}>Elegibilidade etária</Text>
     <Text style={styles.text}>{eligibility?.restricao_ativa ? 'Sua conta está em Modo Restrito. O acesso às áreas autenticadas exige uma declaração compatível com o público adulto.' : 'Durante o prazo inicial, a declaração é opcional.'}</Text>
     <Text style={styles.text}>A data é privada. Não envie documentos, fotos ou biometria por este formulário.</Text>
+    {eligibility?.estado === 'em_revisao' && <Text style={styles.text}>Sua elegibilidade está em análise. Uma correção respeita o intervalo existente e não encerra a revisão.</Text>}
     {eligibility?.prazo_declaracao_em && <Text style={styles.text}>Prazo: {new Date(eligibility.prazo_declaracao_em).toLocaleString('pt-BR')}.</Text>}
     {eligibility?.proxima_correcao_permitida_em && <Text style={styles.text}>Próxima correção: {new Date(eligibility.proxima_correcao_permitida_em).toLocaleString('pt-BR')}.</Text>}
     <Text style={styles.text}>Data de nascimento (AAAA-MM-DD)</Text>
@@ -99,9 +120,17 @@ export const AgeEligibilityScreen = () => {
       void Linking.openURL(`${API_BASE_URL}/biblioteca/livros/${book.id}/ler_amostra/`).catch(() => setError('Não foi possível abrir a amostra.'));
     }}><Text style={styles.text}>Abrir amostra pública</Text></TouchableOpacity>}</React.Fragment>)}
     <Text accessibilityRole="header" style={styles.title}>Suporte e direitos</Text>
-    <Text style={styles.text}>Solicite revisão, exportação assistida ou orientação de privacidade. O recebimento fica no protocolo; não há envio automático de e-mail.</Text>
-    <TextInput accessibilityLabel="Mensagem ao suporte" style={styles.input} value={message} onChangeText={setMessage} multiline maxLength={4000} />
-    <TouchableOpacity accessibilityRole="button" disabled={busy || !message.trim()} style={styles.button} onPress={() => void support()}><Text style={styles.text}>Registrar solicitação</Text></TouchableOpacity>
+    <Text style={styles.text}>Solicite revisão sem enviar documentos ou a data completa na mensagem. O recebimento fica no protocolo; não há envio automático de e-mail.</Text>
+    {reviews.map(review => <React.Fragment key={review.id}>
+      <Text style={styles.text}>Protocolo: {review.protocolo}. Estado: {review.status.replace(/_/g, ' ')}.</Text>
+      {!!review.resposta && <Text style={styles.text}>{review.resposta}</Text>}
+      {!!review.encerrada_em && <Text style={styles.text}>Encerrado em {new Date(review.encerrada_em).toLocaleString('pt-BR')}.</Text>}
+    </React.Fragment>)}
+    {reviews.some(review => ['aberta', 'em_analise'].includes(review.status)) ? <Text style={styles.text}>Você já tem um protocolo em andamento. Acompanhe a resposta aqui.</Text> : <>
+      <TextInput accessibilityLabel="Mensagem ao suporte" editable={!busy} style={styles.input} value={message} onChangeText={value => { reviewKey.current = null; setMessage(value); }} multiline maxLength={4000} />
+      <TouchableOpacity accessibilityRole="button" disabled={busy || message.trim().length < 20} style={styles.button} onPress={() => void support()}><Text style={styles.text}>Solicitar revisão</Text></TouchableOpacity>
+    </>}
+    <TouchableOpacity accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void updateReviews()}><Text style={styles.text}>Atualizar protocolo e elegibilidade</Text></TouchableOpacity>
     <TouchableOpacity accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void exportData()}><Text style={styles.text}>Exportar meus dados para um destino que eu escolher</Text></TouchableOpacity>
     <Text style={styles.text}>Senha atual para encerramento</Text>
     <TextInput accessibilityLabel="Senha atual" style={styles.input} value={password} onChangeText={setPassword} secureTextEntry autoComplete="current-password" />

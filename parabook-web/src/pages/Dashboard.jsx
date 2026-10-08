@@ -8,6 +8,7 @@ import AdminLivros from '../components/admin/AdminLivros';
 import AdminComunidades from '../components/admin/AdminComunidades';
 import AdminUsuarios from '../components/admin/AdminUsuarios';
 import AdminSuporte from '../components/admin/AdminSuporte';
+import AdminOperacao from '../components/admin/AdminOperacao';
 import AdminAprovacoes from '../components/admin/AdminAprovacoes';
 import AdminDenuncias from '../components/admin/AdminDenuncias';
 import AdminLixeira from '../components/admin/AdminLixeira';
@@ -33,7 +34,7 @@ const ACOES_AMIGAVEIS = {
   'moderacao.comunidade.recusar': 'arquivou uma denúncia de comunidade',
 };
 
-const ABAS_DASHBOARD = ['dashboard', 'livros', 'comunidades', 'usuarios', 'suporte', 'aprovacoes', 'denuncias', 'lixeira'];
+const ABAS_DASHBOARD = ['dashboard', 'livros', 'comunidades', 'usuarios', 'suporte', 'operacao', 'aprovacoes', 'denuncias', 'lixeira'];
 
 function useMovimentoReduzido() {
   const [reduzir, setReduzir] = useState(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -191,6 +192,7 @@ function Dashboard() {
     { id: 'comunidades', icon: 'fa-users', label: 'Comunidades' },
     { id: 'usuarios', icon: 'fa-user-group', label: 'Usuários' },
     { id: 'suporte', icon: 'fa-headset', label: 'Suporte' },
+    { id: 'operacao', icon: 'fa-list-check', label: 'Operação e Conselho' },
     { id: 'aprovacoes', icon: 'fa-clipboard-check', label: 'Aprovações', contador: resumo.pendencias.aprovacoes },
     { id: 'denuncias', icon: 'fa-flag', label: 'Denúncias', warning: true, contador: resumo.pendencias.denuncias },
     { id: 'lixeira', icon: 'fa-trash-can', label: 'Lixeira', danger: true, contador: resumo.pendencias.lixeira },
@@ -288,6 +290,7 @@ function Dashboard() {
         {abaAtiva === 'comunidades' && <AdminComunidades />}
         {abaAtiva === 'usuarios' && <AdminUsuarios {...propsFila} />}
         {abaAtiva === 'suporte' && <AdminSuporte {...propsFila} />}
+        {abaAtiva === 'operacao' && <AdminOperacao {...propsFila} />}
         {abaAtiva === 'aprovacoes' && <AdminAprovacoes {...propsFila} />}
         {abaAtiva === 'denuncias' && <AdminDenuncias {...propsFila} />}
         {abaAtiva === 'lixeira' && <AdminLixeira {...propsFila} />}

@@ -68,6 +68,7 @@ function Footer() {
           <Link to="/publicacao-e-licenca">Publicação e licença</Link>
           <Link to="/direitos-autorais">Direitos autorais</Link>
           <Link to="/diretrizes">Diretrizes</Link>
+          <Link to="/denunciar">Denunciar e acompanhar</Link>
         </div>
 
         <div className="footer-column">

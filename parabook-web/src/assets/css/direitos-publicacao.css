@@ -1,0 +1,10 @@
+.direitos-publicacao { padding: 1rem; margin: 1rem 0; border: 1px solid var(--border); border-radius: .75rem; background: var(--bg-card); color: var(--text-main); overflow-wrap: anywhere; }
+.direitos-publicacao h3 { font-size: 1.05rem; }
+.direitos-publicacao form, .direitos-publicacao label { display: grid; gap: .6rem; margin-block: .75rem; }
+.direitos-publicacao input { width: 100%; min-width: 0; padding: .6rem; border: 1px solid var(--border); border-radius: .5rem; color: inherit; background: var(--bg-card); }
+.direitos-publicacao button, .direitos-publicacao summary { min-height: 44px; margin: .3rem; cursor: pointer; }
+.direitos-publicacao summary { display: list-item; padding: .5rem; }
+.direitos-publicacao button:disabled { cursor: not-allowed; opacity: .55; }
+.direitos-publicacao :focus-visible { outline: 3px solid var(--purple, #8b5cf6); outline-offset: 3px; }
+.direitos-publicacao [role=alert] { color: var(--text-main); border-left: 3px solid #dc3545; padding-left: .6rem; }
+.admin-table-acao.admin-direitos-acao { width: auto; min-width: 9rem; min-height: 44px; height: auto; padding: .5rem .75rem; white-space: normal; word-break: normal; overflow-wrap: normal; }

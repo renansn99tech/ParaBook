@@ -1,0 +1,25 @@
+.g3-page { width: min(1100px, calc(100% - 32px)); margin: 32px auto; color: var(--text-primary, inherit); }
+.g3-page header { margin-bottom: 24px; }
+.g3-colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.g3-card { padding: 24px; margin-bottom: 20px; border: 1px solid var(--border-color, #7778); border-radius: 18px; background: var(--surface-bg, var(--bg-card, #85858512)); }
+.g3-card label { display: grid; gap: 8px; margin: 14px 0; }
+.g3-card input, .g3-card textarea, .g3-card select { width: 100%; min-width: 0; min-height: 44px; padding: 10px; border: 1px solid #80808080; border-radius: 8px; background: var(--input-bg, var(--surface-bg, transparent)); color: inherit; font: inherit; }
+.g3-card textarea { min-height: 100px; resize: vertical; }
+.g3-card select option { background: var(--bg-primary, #181828); color: var(--text-primary, #fff); }
+.g3-card fieldset { border: 0; padding: 0; min-width: 0; }
+.g3-card button, .g3-acoes button { min-height: 44px; padding: 10px 16px; border: 1px solid var(--accent-color, #9d78dd); border-radius: 10px; background: var(--surface-bg, #9070cc22); color: inherit; font: inherit; margin: 4px 8px 4px 0; }
+.g3-card button:disabled { opacity: .6; cursor: wait; }
+.g3-card :focus-visible { outline: 3px solid #b08af5; outline-offset: 3px; }
+.g3-card .g3-check { display: flex; align-items: center; gap: 12px; }
+.g3-card .g3-check input { width: 24px; min-height: 24px; }
+.g3-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.g3-protocolo { border-top: 1px solid #80808060; padding-top: 16px; margin-top: 20px; overflow-wrap: anywhere; }
+.g3-protocolo dt { font-weight: 600; }.g3-protocolo dd { margin: 4px 0 14px; }
+.g3-resposta { white-space: pre-wrap; }
+.g3-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.g3-prazos { display: flex; flex-wrap: wrap; gap: 10px; }
+.g3-prazo { padding: 8px; border: 1px solid #80808060; border-radius: 8px; }
+.g3-prazo--atrasado { border-color: #e77; }
+.g3-lista { list-style: none; margin: 0; padding: 0; }.g3-lista li { margin-bottom: 12px; }
+.g3-operacao .g3-card { overflow-wrap: anywhere; }.g3-operacao pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9rem; }
+@media (max-width: 760px) { .g3-colunas { grid-template-columns: 1fr; }.g3-card { padding: 16px; }.g3-page { margin-top: 20px; } }

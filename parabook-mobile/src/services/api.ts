@@ -113,6 +113,15 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  // A autenticação não acompanha links de mídia/paginação ou URLs externas.
+  const base = new URL(`${API_BASE_URL}/`);
+  const target = new URL((config.url || '').replace(/^\/(?!\/)/, ''), `${config.baseURL || API_BASE_URL}/`);
+  if (!['https:', 'http:'].includes(base.protocol) || (!isDevelopmentRuntime() && base.protocol !== 'https:')
+      || target.origin !== base.origin || target.username || target.password || target.hash
+      || !target.pathname.startsWith(`${base.pathname.replace(/\/$/, '')}/`)
+      || !base.pathname.replace(/\/$/, '').endsWith('/api/v1')) {
+    throw new axios.CanceledError('Destino da API não autorizado.');
+  }
   const scoped = config as RetryableRequestConfig;
   if (scoped._sessionGeneration !== undefined && scoped._sessionGeneration !== sessionGeneration) {
     throw new axios.CanceledError('Sessão alterada.');

@@ -1,14 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -205,7 +197,7 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
   if (!book) {
     return (
       <SafeAreaView style={[styles.container, styles.centerContent]}>
-        <Ionicons name={error?.icon || 'alert-circle-outline'} size={46} color={colors.textMuted} />
+        <Ionicons accessible={false} name={error?.icon || 'alert-circle-outline'} size={46} color={colors.textMuted} />
         <Text style={styles.errorTitle}>{error?.title || 'Livro não encontrado'}</Text>
         <Text style={styles.errorText}>{error?.message || 'Volte ao catálogo e tente novamente.'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={() => void fetchBookDetails()}>
@@ -218,22 +210,22 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
+        <TouchableOpacity accessibilityLabel="Voltar"
           onPress={() => navigation.goBack()}
           style={styles.backButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+          <Ionicons accessible={false} name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
           {book.title || initialTitle || 'Detalhes do Livro'}
         </Text>
-        <TouchableOpacity
+        <TouchableOpacity accessibilityLabel="Favoritar obra" accessibilityState={{ selected: favorite }}
           onPress={handleToggleFavorite}
           style={styles.favoriteHeaderButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons
+          <Ionicons accessible={false}
             name={favorite ? 'heart' : 'heart-outline'}
             size={22}
             color={favorite ? '#EC4899' : colors.textPrimary}
@@ -265,7 +257,7 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
         {book.pdfAvailable ? (
           <TouchableOpacity style={styles.readButton} onPress={handleStartReading} activeOpacity={0.8}>
-            <Ionicons name="reader-outline" size={20} color={colors.textPrimary} />
+            <Ionicons accessible={false} name="reader-outline" size={20} color={colors.textPrimary} />
             <Text style={styles.readButtonText}>Ler agora</Text>
           </TouchableOpacity>
         ) : (
@@ -281,12 +273,13 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
               return (
                 <TouchableOpacity
                   key={option.status}
+                  accessibilityLabel={getStatusLabel(option.status)} accessibilityState={{ selected: active }}
                   style={[styles.statusButton, active && styles.statusButtonActive]}
                   disabled={updatingStatus}
                   onPress={() => handleUpdateStatus(option.status)}
                   activeOpacity={0.7}
                 >
-                  <Ionicons
+                  <Ionicons accessible={false}
                     name={option.icon}
                     size={18}
                     color={active ? colors.textPrimary : colors.textSecondary}
@@ -301,6 +294,8 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
           {selectedStatus && (
             <TouchableOpacity
               style={styles.removeButton}
+              accessibilityLabel="Remover da biblioteca"
+              accessibilityState={{ busy: removingFromLibrary }}
               onPress={removeFromLibrary}
               disabled={removingFromLibrary}
             >
@@ -315,9 +310,9 @@ export const BookDetailScreen = ({ route, navigation }: Props) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sua avaliacao</Text>
-          <View style={styles.starsRow}>{[1, 2, 3, 4, 5].map((value) => <TouchableOpacity key={value} onPress={() => setMyRating(value)} hitSlop={6}><Ionicons name={value <= myRating ? 'star' : 'star-outline'} size={28} color={colors.starYellow} /></TouchableOpacity>)}</View>
-          <TextInput style={styles.reviewInput} value={myReview} onChangeText={setMyReview} placeholder="Escreva uma resenha (opcional)" placeholderTextColor={colors.textMuted} multiline textAlignVertical="top" />
-          <TouchableOpacity style={styles.saveReviewButton} onPress={handleSaveReview} disabled={savingReview}>{savingReview ? <ActivityIndicator color={colors.textPrimary} /> : <Text style={styles.saveReviewText}>Salvar avaliacao</Text>}</TouchableOpacity>
+          <View style={styles.starsRow}>{[1, 2, 3, 4, 5].map((value) => <TouchableOpacity accessibilityLabel={`Avaliar com ${value} estrela${value === 1 ? "" : "s"}`} accessibilityState={{ selected: value === myRating }} key={value} onPress={() => setMyRating(value)} hitSlop={6}><Ionicons accessible={false} name={value <= myRating ? 'star' : 'star-outline'} size={28} color={colors.starYellow} /></TouchableOpacity>)}</View>
+          <TextInput accessibilityLabel="Resenha da obra" style={styles.reviewInput} value={myReview} onChangeText={setMyReview} placeholder="Escreva uma resenha (opcional)" placeholderTextColor={colors.textMuted} multiline textAlignVertical="top" />
+          <TouchableOpacity accessibilityLabel="Salvar avaliação" accessibilityState={{ busy: savingReview }} style={styles.saveReviewButton} onPress={handleSaveReview} disabled={savingReview}>{savingReview ? <ActivityIndicator color={colors.textPrimary} /> : <Text style={styles.saveReviewText}>Salvar avaliacao</Text>}</TouchableOpacity>
         </View>
 
         <View style={styles.section}>

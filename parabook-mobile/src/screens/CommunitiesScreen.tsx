@@ -1,13 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -82,20 +75,22 @@ export const CommunitiesScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Comunidades</Text>
-        <TouchableOpacity style={styles.createButton} onPress={() => navigation.navigate('CreateCommunity')}>
-          <Ionicons name="add" size={20} color={colors.textPrimary} />
+        <TouchableOpacity accessibilityLabel="Criar comunidade" style={styles.createButton} onPress={() => navigation.navigate('CreateCommunity')}>
+          <Ionicons accessible={false} name="add" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tabButton, activeTab === 'explorar' && styles.tabButtonActive]}
+          accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'explorar' }}
           onPress={() => setActiveTab('explorar')}
         >
           <Text style={[styles.tabText, activeTab === 'explorar' && styles.tabTextActive]}>Descobrir</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, activeTab === 'minhas' && styles.tabButtonActive]}
+          accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'minhas' }}
           onPress={() => setActiveTab('minhas')}
         >
           <Text style={[styles.tabText, activeTab === 'minhas' && styles.tabTextActive]}>Minhas</Text>
@@ -126,23 +121,26 @@ export const CommunitiesScreen = () => {
             </View>
           }
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
+            <View style={styles.card}>
+            <TouchableOpacity accessibilityLabel={`Abrir comunidade ${item.name}`}
               activeOpacity={0.8}
               onPress={() => navigation.navigate('CommunityDetail', { communityId: item.id, title: item.name })}
             >
               <View style={styles.cardHeader}>
-                <View style={styles.avatarPlaceholder}><Ionicons name="people" size={22} color={colors.primary} /></View>
+                <View style={styles.avatarPlaceholder}><Ionicons accessible={false} name="people" size={22} color={colors.primary} /></View>
                 <View style={styles.headerInfo}>
                   <Text style={styles.communityName} numberOfLines={2}>{item.name}</Text>
                   <Text style={styles.communityMembers}>{item.members}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+                <Ionicons accessible={false} name="chevron-forward" size={20} color={colors.textMuted} />
               </View>
               <Text style={styles.description} numberOfLines={3}>{item.description}</Text>
+            </TouchableOpacity>
               <View style={styles.cardFooter}>
                 <Text style={styles.category}>{item.maintenance ? 'Em manutenção' : item.category}</Text>
                 <TouchableOpacity
+                  accessibilityLabel={`${item.isJoined ? 'Sair de' : 'Entrar em'} ${item.name}`}
+                  accessibilityState={{ busy: membershipId === item.id }}
                   style={[styles.actionButton, item.isJoined ? styles.leaveButton : styles.joinButton, (membershipId === item.id || item.maintenance) && styles.actionButtonDisabled]}
                   disabled={membershipId === item.id || item.maintenance}
                   onPress={() => toggleMembership(item)}
@@ -152,7 +150,7 @@ export const CommunitiesScreen = () => {
                   )}
                 </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
           )}
         />
       )}

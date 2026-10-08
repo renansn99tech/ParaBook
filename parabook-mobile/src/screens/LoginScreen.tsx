@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -60,12 +51,12 @@ export const LoginScreen = ({ navigation }: Props) => {
           showsVerticalScrollIndicator={false}
         >
         <View style={styles.header}>
-          <TouchableOpacity
+          <TouchableOpacity accessibilityLabel="Voltar"
             onPress={() => navigation.goBack()}
             style={styles.backButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+            <Ionicons accessible={false} name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
           <View style={styles.logoBadge}>
             <Text style={styles.logoBadgeText}>P</Text>
@@ -85,7 +76,7 @@ export const LoginScreen = ({ navigation }: Props) => {
 
             <FormField label="Senha" icon="lock-closed-outline" placeholder="Sua senha" isPassword autoComplete="current-password" value={password} onChangeText={setPassword} onSubmitEditing={() => void handleLogin()} returnKeyType="done" />
 
-            <TouchableOpacity
+            <TouchableOpacity accessibilityLabel="Entrar" accessibilityState={{ busy: loading }}
               style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
               onPress={handleLogin}
               disabled={loading}
@@ -96,7 +87,7 @@ export const LoginScreen = ({ navigation }: Props) => {
               ) : (
                 <>
                   <Text style={styles.primaryButtonText}>Entrar</Text>
-                  <Ionicons name="arrow-forward" size={18} color={colors.textPrimary} />
+                  <Ionicons accessible={false} name="arrow-forward" size={18} color={colors.textPrimary} />
                 </>
               )}
             </TouchableOpacity>
@@ -217,7 +208,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   footerLink: {
-    color: colors.primary,
+    color: colors.link,
     fontWeight: 'bold',
   },
 });

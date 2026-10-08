@@ -157,7 +157,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (response.requiresTwoFactor) {
         return { success: false, requiresTwoFactor: true, error: response.detail };
       }
+      if (operation !== sessionOperationRef.current) return { success: false, error: 'A tentativa de login foi cancelada.' };
       await withTimeout(authStorage.save(response.tokens), 5000);
+      if (operation !== sessionOperationRef.current) return { success: false, error: 'A tentativa de login foi cancelada.' };
       const sessionData = await withTimeout(fetchCurrentSession(), 125000);
       if (operation !== sessionOperationRef.current) {
         return { success: false, error: 'A tentativa de login foi cancelada.' };
@@ -165,6 +167,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       applyCurrentSession(sessionData);
       return { success: true };
     } catch (error) {
+      if (operation !== sessionOperationRef.current) return { success: false, error: 'A tentativa de login foi cancelada.' };
       await resetSession();
       return {
         success: false,
@@ -177,7 +180,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const operation = ++sessionOperationRef.current;
     try {
       const tokens = await authService.register(payload);
+      if (operation !== sessionOperationRef.current) return { success: false, error: 'A tentativa de cadastro foi cancelada.' };
       await withTimeout(authStorage.save(tokens), 5000);
+      if (operation !== sessionOperationRef.current) return { success: false, error: 'A tentativa de cadastro foi cancelada.' };
       const sessionData = await withTimeout(fetchCurrentSession(), 125000);
       if (operation !== sessionOperationRef.current) {
         return { success: false, error: 'A tentativa de cadastro foi cancelada.' };
@@ -185,6 +190,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       applyCurrentSession(sessionData);
       return { success: true };
     } catch (error) {
+      if (operation !== sessionOperationRef.current) return { success: false, error: 'A tentativa de cadastro foi cancelada.' };
       await resetSession();
       return {
         success: false,
@@ -205,13 +211,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [applyCurrentSession, fetchCurrentSession]);
 
   const logout = useCallback(async () => {
-    try {
-      await withTimeout(authService.logout(), 5000);
-    } catch {
+    const revoke = withTimeout(authService.logout(), 5000).catch(() => {
       // O logout local deve concluir mesmo se o servidor estiver indisponivel.
-    } finally {
-      await resetSession();
-    }
+    });
+    await resetSession();
+    await revoke;
   }, [resetSession]);
 
   useEffect(() => {

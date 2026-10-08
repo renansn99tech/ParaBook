@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, ScrollView, TextInput } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, controlHeight, radii, spacing } from '../theme/colors';
@@ -104,8 +97,8 @@ export const HomeScreen = () => {
 
         {/* Barra de Pesquisa */}
         <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={20} color={colors.textMuted} />
-          <TextInput
+          <Ionicons accessible={false} name="search-outline" size={20} color={colors.textMuted} />
+          <TextInput accessibilityLabel="Buscar por título ou autor"
             style={styles.searchInput}
             placeholder="Buscar por título ou autor..."
             placeholderTextColor={colors.textMuted}
@@ -120,7 +113,7 @@ export const HomeScreen = () => {
             accessibilityRole="button"
             accessibilityLabel="Buscar livros"
           >
-            <Ionicons name="arrow-forward-circle-outline" size={22} color={colors.primary} />
+            <Ionicons accessible={false} name="arrow-forward-circle-outline" size={22} color={colors.primary} />
           </TouchableOpacity>
         </View>
 
@@ -131,10 +124,10 @@ export const HomeScreen = () => {
           accessibilityRole="button"
         >
           <View style={styles.libraryShortcutLeft}>
-            <Ionicons name="bookmark-outline" size={22} color={colors.primary} />
+            <Ionicons accessible={false} name="bookmark-outline" size={22} color={colors.primary} />
             <Text style={styles.libraryShortcutText}>Acessar Minha Biblioteca</Text>
           </View>
-          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+          <Ionicons accessible={false} name="chevron-forward" size={18} color={colors.textMuted} />
         </TouchableOpacity>
 
         {/* Banner do acervo */}
@@ -188,7 +181,7 @@ export const HomeScreen = () => {
                   accessibilityLabel={`Ver livros da categoria ${category.name}`}
                   activeOpacity={0.78}
                 >
-                  <Ionicons name="book-outline" size={24} color={iconColors[index] || colors.primary} />
+                  <Ionicons accessible={false} name="book-outline" size={24} color={iconColors[index] || colors.primary} />
                   <Text style={styles.categoryTitle} numberOfLines={1}>
                     {category.name}
                   </Text>
@@ -342,7 +335,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   bannerBadge: {
-    color: colors.primary,
+    color: colors.link,
     fontSize: 12,
     fontWeight: 'bold',
     letterSpacing: 1,
@@ -401,7 +394,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   seeAllText: {
-    color: colors.primary,
+    color: colors.link,
     fontSize: 14,
     fontWeight: '600',
   },

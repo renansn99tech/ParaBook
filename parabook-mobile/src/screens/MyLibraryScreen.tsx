@@ -1,13 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { CompositeNavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -73,12 +66,12 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         {showBackButton ? (
-          <TouchableOpacity
+          <TouchableOpacity accessibilityLabel="Voltar"
             onPress={onBack}
             style={styles.backButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+            <Ionicons accessible={false} name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
         ) : <View style={styles.headerPlaceholder} />}
         <Text style={styles.headerTitle} numberOfLines={1}>{params?.favoritesOnly ? 'Favoritos' : params?.reviewedOnly ? 'Avaliações' : 'Minha Biblioteca'}</Text>
@@ -89,6 +82,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
       {!params?.favoritesOnly && !params?.reviewedOnly && <View style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'lendo' && styles.activeTab]}
+          accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'lendo' }}
           onPress={() => setActiveTab('lendo')}
           activeOpacity={0.7}
         >
@@ -99,6 +93,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
 
         <TouchableOpacity
           style={[styles.tab, activeTab === 'quero_ler' && styles.activeTab]}
+          accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'quero_ler' }}
           onPress={() => setActiveTab('quero_ler')}
           activeOpacity={0.7}
         >
@@ -109,6 +104,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
 
         <TouchableOpacity
           style={[styles.tab, activeTab === 'lido' && styles.activeTab]}
+          accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'lido' }}
           onPress={() => setActiveTab('lido')}
           activeOpacity={0.7}
         >
@@ -169,7 +165,7 @@ const LibraryContent = ({ params, showBackButton, onBack, onOpenBook }: LibraryC
                 )}
               </View>
 
-              <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+              <Ionicons accessible={false} name="chevron-forward" size={20} color={colors.textMuted} />
             </TouchableOpacity>
           )}
         />

@@ -36,7 +36,7 @@ export const BookCover = ({ uri, width, height, title }: Props) => {
       accessibilityRole="image"
       accessibilityLabel={title ? `Livro sem capa: ${title}` : 'Livro sem capa'}
     >
-      <Ionicons name="book-outline" size={Math.min(30, width * 0.42)} color={colors.primary} />
+      <Ionicons accessible={false} name="book-outline" size={Math.min(30, width * 0.42)} color={colors.primary} />
     </View>
   );
 };

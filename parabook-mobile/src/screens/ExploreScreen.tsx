@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, controlHeight, radii, spacing } from '../theme/colors';
@@ -70,8 +63,8 @@ export const ExploreScreen = () => {
       </View>
 
       <View style={[styles.searchContainer, searchFocused && styles.searchContainerFocused]}>
-        <Ionicons name="search-outline" size={20} color={colors.textMuted} />
-        <TextInput
+        <Ionicons accessible={false} name="search-outline" size={20} color={colors.textMuted} />
+        <TextInput accessibilityLabel="Buscar por título ou autor"
           style={styles.searchInput}
           placeholder="Pesquisar por título ou autor..."
           placeholderTextColor={colors.textMuted}
@@ -82,15 +75,15 @@ export const ExploreScreen = () => {
           returnKeyType="search"
         />
         {search.length > 0 ? (
-          <TouchableOpacity onPress={() => setSearch('')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+          <TouchableOpacity accessibilityLabel="Limpar busca" onPress={() => setSearch('')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Ionicons accessible={false} name="close-circle" size={20} color={colors.textMuted} />
           </TouchableOpacity>
         ) : null}
       </View>
 
       {categoryId ? (
         <View style={styles.activeFilter}>
-          <Ionicons name="funnel-outline" size={15} color={colors.primary} />
+          <Ionicons accessible={false} name="funnel-outline" size={15} color={colors.primary} />
           <Text style={styles.activeFilterText} numberOfLines={1}>{categoryName || 'Categoria selecionada'}</Text>
           <TouchableOpacity
             onPress={() => navigation.navigate('MainTabs', { screen: 'Catalogo' })}
@@ -98,7 +91,7 @@ export const ExploreScreen = () => {
             accessibilityRole="button"
             accessibilityLabel="Remover filtro de categoria"
           >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
+            <Ionicons accessible={false} name="close" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
       ) : null}
@@ -156,7 +149,7 @@ export const ExploreScreen = () => {
                   {item.category || 'Acervo ParaBook'}
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+              <Ionicons accessible={false} name="chevron-forward" size={20} color={colors.textMuted} />
             </TouchableOpacity>
           )}
         />
@@ -288,7 +281,7 @@ const styles = StyleSheet.create({
   },
   bookCategory: {
     fontSize: 11,
-    color: colors.primary,
+    color: colors.link,
     marginTop: 4,
     fontWeight: '600',
   },

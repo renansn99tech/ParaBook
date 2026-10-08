@@ -1,4 +1,5 @@
 import React from 'react';
+import { useWindowDimensions } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -16,6 +17,7 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const TabNavigator = () => {
     const insets = useSafeAreaInsets();
+    const { fontScale } = useWindowDimensions();
     const { user } = useAuth();
     const suspenso = Boolean(user?.suspensao?.ativa);
 
@@ -28,7 +30,7 @@ export const TabNavigator = () => {
             backgroundColor: colors.cardBackground,
             borderTopColor: colors.border,
             borderTopWidth: 1,
-            height: 58 + insets.bottom,
+            height: Math.max(58, Math.ceil(40 + 18 * fontScale)) + insets.bottom,
             paddingBottom: Math.max(insets.bottom, 8),
             paddingTop: 8,
             },
@@ -40,7 +42,7 @@ export const TabNavigator = () => {
             tabBarItemStyle: {
               paddingHorizontal: 2,
             },
-            tabBarActiveTintColor: colors.primary,
+            tabBarActiveTintColor: colors.link,
             tabBarInactiveTintColor: colors.textMuted,
             tabBarIcon: ({ color, focused }) => {
             let iconName: keyof typeof Ionicons.glyphMap = 'help-outline';
@@ -57,7 +59,7 @@ export const TabNavigator = () => {
                 iconName = focused ? 'person' : 'person-outline';
             }
 
-            return <Ionicons name={iconName} size={focused ? 23 : 22} color={color} />;
+            return <Ionicons accessible={false} name={iconName} size={focused ? 23 : 22} color={color} />;
             },
         })}
         >

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import DireitosPublicacao from './DireitosPublicacao';
+import '../../assets/css/direitos-publicacao.css';
 
 function AdminLivros() {
   const [livros, setLivros] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [guiaAberto, setGuiaAberto] = useState(false);
+  const [direitosLivro, setDireitosLivro] = useState(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -76,7 +79,7 @@ function AdminLivros() {
       setCapa(null);
       setPdf(null);
       setPdfAmostra(null);
-      alert('Livro adicionado com sucesso!');
+      alert(res.data.status === 'pendente' ? 'Obra enviada para conferência de direitos, segurança e revisão editorial.' : 'Livro adicionado com sucesso!');
     } catch (error) {
       console.error(error);
       alert('Erro ao adicionar livro.');
@@ -210,6 +213,7 @@ function AdminLivros() {
                   <td>{livro.origem_label}</td>
                   <td>{livro.modelo_acesso_label}</td>
                   <td>
+                    <button type="button" className="admin-table-acao admin-direitos-acao" aria-expanded={direitosLivro === livro.id} aria-controls="direitos-acervo" onClick={() => setDireitosLivro(direitosLivro === livro.id ? null : livro.id)}>Direitos e segurança</button>
                     <button className="admin-table-acao" disabled title="Remoção exige decisão na fila de moderação" aria-label={`Excluir ${livro.titulo}`}>
                       <i className="fa-solid fa-trash"></i>
                     </button>
@@ -222,6 +226,7 @@ function AdminLivros() {
           <p className="admin-estado">Nenhum livro cadastrado no banco de dados ainda.</p>
         )}
       </div>
+      {direitosLivro && <div id="direitos-acervo"><DireitosPublicacao livroId={direitosLivro} /></div>}
     </section>
   );
 }

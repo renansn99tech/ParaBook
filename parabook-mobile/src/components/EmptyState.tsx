@@ -14,9 +14,9 @@ type Props = {
 export const EmptyState = ({ icon, title, description, compact = false, action }: Props) => (
   <View style={[styles.container, compact && styles.compact]}>
     <View style={styles.iconContainer}>
-      <Ionicons name={icon} size={compact ? 22 : 26} color={colors.textMuted} />
+      <Ionicons accessible={false} name={icon} size={compact ? 22 : 26} color={colors.textMuted} />
     </View>
-    <Text style={styles.title}>{title}</Text>
+    <Text accessibilityRole="header" style={styles.title}>{title}</Text>
     {description ? <Text style={styles.description}>{description}</Text> : null}
     {action}
   </View>

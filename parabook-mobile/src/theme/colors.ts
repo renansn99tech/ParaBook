@@ -6,13 +6,14 @@ export const colors = {
   
   // Ações e Destaques
   primary: '#0066FF',
+  link: '#82B4FF',
   primaryGradientStart: '#0052CC',
   primaryGradientEnd: '#007BFF',
   
   // Textos
   textPrimary: '#FFFFFF',
   textSecondary: '#94A3B8',
-  textMuted: '#64748B',
+  textMuted: '#94A3B8',
   
   // Elementos secundários / Badges
   accentBlue: '#2563EB',

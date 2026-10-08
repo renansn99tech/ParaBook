@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import api from '../services/api';
+import RevisaoEtaria from '../components/RevisaoEtaria';
 import '../assets/css/tela-login.css';
 
 const formatarDataHora = (valor) => {
@@ -94,6 +95,8 @@ function ElegibilidadeEtaria() {
               Se houver erro, use o suporte; não envie documentos por este formulário.
             </div>
           )}
+          {estado?.estado === 'em_revisao' && <p role="status">Sua elegibilidade está em análise. Uma correção respeita o intervalo existente e não encerra a revisão. Acompanhe o protocolo abaixo.</p>}
+          {erro && <p className="text-danger" role="alert">{erro}</p>}
 
           {bloqueadaParaCorrecao ? (
             <div className="surface-inset mb-4" role="status">
@@ -123,7 +126,6 @@ function ElegibilidadeEtaria() {
                   Confirmo que a informação é correta.
                 </label>
               </div>
-              {erro && <p className="text-danger" role="alert">{erro}</p>}
               <button
                 type="submit"
                 className="btn-primary w-100"
@@ -133,6 +135,12 @@ function ElegibilidadeEtaria() {
               </button>
             </form>
           )}
+
+          <RevisaoEtaria aoAtualizarEstado={async () => {
+            const { data } = await api.get('/auth/idade/');
+            setEstado(data);
+            await recarregarUsuario();
+          }} />
 
           <div className="d-flex flex-wrap gap-3 justify-content-center mt-4">
             <Link to="/biblioteca">Catálogo público</Link>

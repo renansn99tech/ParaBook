@@ -116,7 +116,7 @@ function CentralConta() {
   const [titulo, Conteudo, exigeAdmin] = pagina;
   const admin = ['moderador', 'admin'].includes(user.tipo) && Boolean(user.is_staff || user.is_superuser);
   if (exigeAdmin && !admin) return <Navigate to="/perfil/configuracoes" replace />;
-  return <main className="central-conta-page"><header><Link to="/perfil/configuracoes"><i className="fa-solid fa-arrow-left" aria-hidden="true"></i> Configurações</Link><h1>{titulo}</h1><p>Configurações protegidas da sua conta ParaBook.</p></header><section className="content-glass-card"><Conteudo /></section></main>;
+  return <main className="central-conta-page"><header><Link to="/perfil/configuracoes"><i className="fa-solid fa-arrow-left" aria-hidden="true"></i> Configurações</Link><h1>{titulo}</h1><p>Configurações protegidas da sua conta ParaBook.</p><Link to="/denunciar#meus">Atendimentos de moderação e recursos</Link></header><section className="content-glass-card"><Conteudo /></section></main>;
 }
 
 export default CentralConta;

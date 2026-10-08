@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { AccessibleAction as TouchableOpacity } from '../components/AccessibleAction';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
@@ -21,8 +23,8 @@ export const AuthorsScreen = ({ navigation }: Props) => {
   useEffect(() => { void load(); }, [load]);
 
   return <SafeAreaView style={styles.container}>
-    <View style={styles.header}><TouchableOpacity style={styles.icon} onPress={() => navigation.goBack()}><Ionicons name="arrow-back" size={23} color={colors.textPrimary} /></TouchableOpacity><Text style={styles.title}>Autores</Text><View style={styles.icon} /></View>
-    {loading ? <View style={styles.center}><ActivityIndicator size="large" color={colors.primary} /></View> : error ? <View style={styles.center}><Ionicons name="cloud-offline-outline" size={44} color={colors.textMuted} /><Text style={styles.state}>{error}</Text><TouchableOpacity style={styles.retry} onPress={load}><Text style={styles.retryText}>Tentar novamente</Text></TouchableOpacity></View> : <FlatList data={authors} keyExtractor={(item) => String(item.id)} contentContainerStyle={styles.list} ListEmptyComponent={<Text style={styles.state}>Nenhum autor publicado no momento.</Text>} renderItem={({ item }) => <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('PublicProfile', { username: item.username })}>{item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : <View style={styles.avatar}><Ionicons name="person" size={25} color={colors.primary} /></View>}<View style={styles.info}><Text style={styles.name}>{item.name}</Text><Text style={styles.username}>@{item.username} · {item.totalBooks} obras</Text><Text style={styles.bio} numberOfLines={2}>{item.biography || 'Sem biografia cadastrada.'}</Text></View><Ionicons name="chevron-forward" size={19} color={colors.textMuted} /></TouchableOpacity>} />}
+    <View style={styles.header}><TouchableOpacity accessibilityLabel="Voltar" style={styles.icon} onPress={() => navigation.goBack()}><Ionicons accessible={false} name="arrow-back" size={23} color={colors.textPrimary} /></TouchableOpacity><Text style={styles.title}>Autores</Text><View style={styles.icon} /></View>
+    {loading ? <View style={styles.center}><ActivityIndicator size="large" color={colors.primary} /></View> : error ? <View style={styles.center}><Ionicons accessible={false} name="cloud-offline-outline" size={44} color={colors.textMuted} /><Text style={styles.state}>{error}</Text><TouchableOpacity style={styles.retry} onPress={load}><Text style={styles.retryText}>Tentar novamente</Text></TouchableOpacity></View> : <FlatList data={authors} keyExtractor={(item) => String(item.id)} contentContainerStyle={styles.list} ListEmptyComponent={<Text style={styles.state}>Nenhum autor publicado no momento.</Text>} renderItem={({ item }) => <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('PublicProfile', { username: item.username })}>{item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : <View style={styles.avatar}><Ionicons accessible={false} name="person" size={25} color={colors.primary} /></View>}<View style={styles.info}><Text style={styles.name}>{item.name}</Text><Text style={styles.username}>@{item.username} · {item.totalBooks} obras</Text><Text style={styles.bio} numberOfLines={2}>{item.biography || 'Sem biografia cadastrada.'}</Text></View><Ionicons accessible={false} name="chevron-forward" size={19} color={colors.textMuted} /></TouchableOpacity>} />}
   </SafeAreaView>;
 };
 

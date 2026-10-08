@@ -70,6 +70,7 @@
 
 .logo {
     display:inline-flex;
+    white-space:nowrap;
     align-items:center;
     font-size: 2rem;
     line-height:1;
@@ -550,13 +551,19 @@
         gap:8px;
     }
 
+    .btn-nav.btn-nav-icone{
+        width:44px;
+        padding-inline:0;
+        flex:0 0 44px;
+    }
+
     .nav-notificacoes{
         display:none;
     }
 
     .btn-nav.nav-entrar{
         min-width:auto;
-        padding-inline:16px;
+        padding-inline:10px;
     }
 
     .nav-account-drawer,

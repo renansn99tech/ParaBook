@@ -1,32 +1,56 @@
-import { useState, useEffect } from 'react';
-import api from '../services/api';
+import { useState, useEffect, useRef } from 'react';
+import api, { invalidateSessionRequests } from '../services/api';
 import { aplicarTipografia, TIPOGRAFIA_PADRAO } from '../services/tipografia';
 import { AuthContext } from './auth-context';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sessionError, setSessionError] = useState('');
+  const operationRef = useRef(0);
+  const signedOutRef = useRef(false);
 
   const carregarUsuario = async () => {
+    if (signedOutRef.current) return null;
+    const operation = operationRef.current;
+    const consultarIdade = async () => {
+      try { return await api.get('/auth/idade/'); }
+      catch (error) {
+        if (operation === operationRef.current && !signedOutRef.current
+          && error.code !== 'ERR_CANCELED' && (!error.response || error.response.status >= 500)) {
+          setSessionError('Não foi possível validar sua sessão. Confira a conexão e tente novamente.');
+        }
+        throw error;
+      }
+    };
     try {
       const response = await api.get('/perfis/meu-perfil/');
-      const idadeResponse = await api.get('/auth/idade/');
+      const idadeResponse = await consultarIdade();
       const usuario = { ...response.data, restricao_etaria: idadeResponse.data };
+      if (operation !== operationRef.current || signedOutRef.current) return null;
+      setSessionError('');
       setUser(usuario);
       return usuario;
     } catch (error) {
+      if (operation !== operationRef.current || signedOutRef.current || error.code === 'ERR_CANCELED') return null;
+      if (!error.response || error.response.status >= 500) {
+        setSessionError('Não foi possível validar sua sessão. Confira a conexão e tente novamente.');
+        throw error;
+      }
       // Quando a política está ativa, /meu-perfil/ é propositalmente bloqueado
       // até que a pessoa conclua a declaração. Mantemos uma sessão mínima, sem
       // tentar inferir idade, carregar CPF ou armazenar a data no navegador.
       if (error.response?.data?.codigo === 'conta_restrita_etaria') {
-        const idadeResponse = await api.get('/auth/idade/');
+        const idadeResponse = await consultarIdade();
+        if (operation !== operationRef.current || signedOutRef.current) return null;
+        setSessionError('');
         const usuarioRestrito = {
           restricao_etaria: idadeResponse.data,
         };
         setUser(usuarioRestrito);
         return usuarioRestrito;
       }
-      setUser(null);
+      if (error.response && error.response.status < 500) setUser(null);
       throw error;
     }
   };
@@ -45,9 +69,12 @@ export const AuthProvider = ({ children }) => {
     const atualizar = () => { carregarUsuario().catch(() => {}); };
     const aoFocar = () => { if (document.visibilityState === 'visible') atualizar(); };
     window.addEventListener('parabook:conta-restrita-etaria', atualizar);
+    const expirar = () => { operationRef.current += 1; signedOutRef.current = true; setSessionError(''); setUser(null); };
+    window.addEventListener('parabook:sessao-expirada', expirar);
     document.addEventListener('visibilitychange', aoFocar);
     return () => {
       window.removeEventListener('parabook:conta-restrita-etaria', atualizar);
+      window.removeEventListener('parabook:sessao-expirada', expirar);
       document.removeEventListener('visibilitychange', aoFocar);
     };
   }, []);
@@ -69,6 +96,9 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   const login = async (username, password, codigo2fa = '') => {
+    const operation = ++operationRef.current;
+    signedOutRef.current = false;
+    invalidateSessionRequests();
     try {
       // Cria a sessão HttpOnly e carrega o perfil autenticado.
       const resposta = await api.post('/auth/login/', {
@@ -76,31 +106,38 @@ export const AuthProvider = ({ children }) => {
         password,
         ...(codigo2fa ? { codigo_2fa: codigo2fa } : {}),
       });
+      if (operation !== operationRef.current) return { success: false, error: 'Tentativa cancelada.' };
       if (resposta.status === 202 && resposta.data?.requires_2fa) {
         return { success: false, requires2fa: true };
       }
 
       await carregarUsuario();
-      
+      if (operation !== operationRef.current) return { success: false, error: 'Tentativa cancelada.' };
       return { success: true };
     } catch (error) {
-      console.error("Erro no login", error);
+      if (operation !== operationRef.current) return { success: false, error: 'Tentativa cancelada.' };
       const data = error.response?.data;
-      const mensagem = data?.codigo_2fa?.[0] || data?.detail || 'Credenciais inválidas. Tente novamente.';
+      const mensagem = data?.codigo_2fa?.[0] || data?.detail || (!error.response || error.response.status >= 500
+        ? 'Conexão interrompida. Tente novamente; a sessão não foi confirmada.'
+        : 'Credenciais inválidas. Tente novamente.');
       return { success: false, error: mensagem };
     }
   };
 
   const register = async (userData) => {
+    const operation = ++operationRef.current;
+    signedOutRef.current = false;
+    invalidateSessionRequests();
     try {
       await api.post('/auth/register/', userData);
+      if (operation !== operationRef.current) return { success: false, error: 'Tentativa cancelada.' };
 
       // Busca os dados do perfil do usuário recém-criado
       await carregarUsuario();
-
+      if (operation !== operationRef.current) return { success: false, error: 'Tentativa cancelada.' };
       return { success: true };
     } catch (error) {
-      console.error("Erro no cadastro", error);
+      if (operation !== operationRef.current) return { success: false, error: 'Tentativa cancelada.' };
       const data = error.response?.data;
       let errorMsg = 'Erro ao realizar o cadastro.';
 
@@ -118,6 +155,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    operationRef.current += 1;
+    signedOutRef.current = true;
+    invalidateSessionRequests();
+    setSessionError('');
+    setUser(null);
     try {
       await api.post('/auth/logout/');
     } catch {
@@ -131,14 +173,20 @@ export const AuthProvider = ({ children }) => {
   const recarregarUsuario = async () => {
     try {
       return await carregarUsuario();
-    } catch (error) {
-      console.error("Erro ao recarregar o usuário", error);
+    } catch {
       return null;
     }
   };
 
+  const retrySession = async () => {
+    setLoading(true);
+    try { return await carregarUsuario(); }
+    catch { return null; }
+    finally { setLoading(false); }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, recarregarUsuario }}>
+    <AuthContext.Provider value={{ user, loading, sessionError, retrySession, login, register, logout, recarregarUsuario }}>
       {children}
     </AuthContext.Provider>
   );

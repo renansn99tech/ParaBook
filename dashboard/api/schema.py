@@ -111,6 +111,7 @@ class AlterarPapelResponseSerializer(ProtocoloResponseSerializer):
 
 
 class SuporteAdminSerializer(serializers.Serializer):
+    idade_em_revisao = serializers.BooleanField()
     id = serializers.IntegerField()
     protocolo = serializers.UUIDField()
     usuario_id = serializers.IntegerField()

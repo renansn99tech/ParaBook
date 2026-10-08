@@ -32,6 +32,11 @@ def limpar_id_seguro(valor_id):
 @login_required
 @user_passes_test(apenas_superuser, login_url='home', redirect_field_name=None)
 def painel_admin(request):
+    if request.method == 'POST' and any(chave in request.POST for chave in (
+        'btn_deletar_comunidade', 'btn_toggle_manutencao', 'btn_ignorar_denuncia_comunidade',
+    )):
+        from django.http import JsonResponse
+        return JsonResponse({'detail': 'Use a fila de operação/Conselho do Dashboard React para decisões auditadas.'}, status=409)
     # ==========================================================
     # PROCESSAMENTO DE COMUNIDADES
     # ==========================================================

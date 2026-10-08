@@ -36,6 +36,11 @@ GOVERNANCA = {
 GOVERNANCA['suspensao_aplicada']['duracao_dias'] = lambda valor: type(valor) is int and valor in {3, 7, 15, 30}
 
 AUDITORIA = {
+    'idade.revisao_decidida': {
+        'protocolo': protocolo,
+        'acao': enum({'iniciar', 'confirmar_declaracao', 'orientar_correcao'}),
+        'estado': enum({'pendente', 'em_revisao', 'restrito_menor', 'liberado_adulto'}),
+    },
     'sessao.encerrada': {'quantidade': inteiro},
     'seguranca.2fa_habilitada': {}, 'seguranca.2fa_desabilitada': {},
     'suporte.solicitacao_criada': {'protocolo': protocolo, 'categoria': enum(CATEGORIAS)},
@@ -54,17 +59,26 @@ AUDITORIA = {
         'perfil_jornada_leitura', 'moderacao_no_perfil', 'autenticacao_2fa',
     })},
 }
+for acao in ('recebido', 'origem_vinculada', 'complemento_recebido', 'recurso_recebido',
+             'assumir', 'triagem', 'confirmar', 'complemento', 'decidir', 'comunicar', 'encerrar',
+             'recurso_decidir', 'conselho_solicitar', 'conselho_aprovar', 'conselho_executar', 'conselho_cancelar'):
+    AUDITORIA[f'moderacao.caso.{acao}'] = {
+        'protocolo': protocolo, 'prioridade': enum({'', 'P0', 'P1', 'P2'}),
+        'estado': enum({'aguarda_triagem', 'em_analise', 'aguarda_complemento', 'decidido', 'encerrado'}),
+    }
+
 for categoria in ('usuario', 'autor', 'livro', 'comunidade'):
     for acao in ('aprovar', 'rejeitar', 'excluir', 'restaurar', 'suspender', 'reativar'):
         AUDITORIA[f'moderacao.{categoria}.{acao}'] = {'observacao_informada': booleano}
 for acao in ('enviada', 'retirada', 'correcao_simples', 'revisao_enviada', 'aprovada', 'rejeitada',
              'acervo_cadastrado', 'acervo_editado',
+             'direitos_conferidos', 'direitos_revogada', 'direitos_disputa', 'direitos_expirados',
              'denuncia_recebida', 'denuncia_acolhida', 'denuncia_arquivada', 'denuncia_reaberta',
              'suspensa', 'restaurada', 'recurso_recebido', 'recurso_acolhido', 'recurso_recusado'):
     AUDITORIA[f'publicacao.{acao}'] = {
         'evento_id': inteiro,
-        'anterior': enum({'', 'pendente', 'publicado', 'rejeitado', 'removido', 'suspenso', 'retirado'}),
-        'posterior': enum({'pendente', 'publicado', 'rejeitado', 'removido', 'suspenso', 'retirado'}),
+        'anterior': enum({'', 'pendente', 'publicado', 'rejeitado', 'removido', 'suspenso', 'retirado', 'manutencao', 'expirado'}),
+        'posterior': enum({'pendente', 'publicado', 'rejeitado', 'removido', 'suspenso', 'retirado', 'manutencao', 'expirado'}),
     }
 
 

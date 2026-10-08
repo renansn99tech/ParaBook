@@ -347,7 +347,7 @@ class _DashboardSuporteOperacoes:
 
     def _listar(self, request):
         status_filtro = request.query_params.get('status')
-        itens = SolicitacaoSuporte.objects.select_related('usuario', 'atendida_por')
+        itens = SolicitacaoSuporte.objects.select_related('usuario', 'atendida_por', 'usuario__estado_etario')
         if status_filtro in SolicitacaoSuporte.Status.values:
             itens = itens.filter(status=status_filtro)
         return Response([self._serializar(item) for item in itens[:100]])
@@ -357,6 +357,8 @@ class _DashboardSuporteOperacoes:
         item = SolicitacaoSuporte.objects.select_for_update().filter(pk=item_id).first()
         if not item:
             return Response({'detail': 'Solicitação não encontrada.'}, status=404)
+        if item.categoria == 'idade':
+            return Response({'detail': 'Use o fluxo de revisão etária para analisar e decidir este protocolo.'}, status=400)
         resposta = str(request.data.get('resposta', '')).strip()[:4000]
         novo_status = request.data.get('status', SolicitacaoSuporte.Status.RESPONDIDA)
         if len(resposta) < 10:
@@ -392,6 +394,10 @@ class _DashboardSuporteOperacoes:
             'usuario_id': item.usuario_id,
             'username': item.usuario.username if item.usuario else 'conta_encerrada',
             'categoria': item.categoria,
+            'idade_em_revisao': bool(
+                item.categoria == 'idade' and item.usuario
+                and getattr(getattr(item.usuario, 'estado_etario', None), 'estado', None) == 'em_revisao'
+            ),
             'assunto': item.assunto,
             'mensagem': item.mensagem,
             'status': item.status,
@@ -612,6 +618,8 @@ class DashboardModeracaoAPIView(APIView):
             recurso = usuario
 
         elif categoria == 'comunidade':
+            from usuarios.moderacao import conferir_rota_legada
+            conferir_rota_legada('comunidade', item_id)
             denuncia = DenunciaComunidade.objects.select_for_update(of=('self',)).select_related('comunidade').filter(
                 pk=item_id,
                 status='pendente',

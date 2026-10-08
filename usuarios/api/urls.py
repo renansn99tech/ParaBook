@@ -1,4 +1,6 @@
 from django.urls import path
+from .revisao_etaria import RevisaoEtariaAPIView
+from .moderacao import MeusCasosAPIView
 from .views import (
     RegisterAPIView,
     UserProfileAPIView,
@@ -38,6 +40,7 @@ urlpatterns = [
     path('mobile-register/', MobileRegisterAPIView.as_view(), name='api_mobile_register'),
     path('profile/', UserProfileAPIView.as_view(), name='api_profile'),
     path('idade/', EstadoEtarioContaAPIView.as_view(), name='api_idade'),
+    path('idade/revisao/', RevisaoEtariaAPIView.as_view(), name='api_idade_revisao'),
     path('alterar-senha/', ChangePasswordAPIView.as_view(), name='api_alterar_senha'),
     path('recuperar-senha/', PasswordResetRequestAPIView.as_view(), name='api_recuperar_senha'),
     path('redefinir-senha/', PasswordResetConfirmAPIView.as_view(), name='api_redefinir_senha'),
@@ -49,4 +52,5 @@ urlpatterns = [
     path('aparencia/', PreferenciaAparenciaAPIView.as_view(), name='api_aparencia'),
     path('exportar-dados/', ExportarDadosAPIView.as_view(), name='api_exportar_dados'),
     path('suporte/', SolicitacoesSuporteAPIView.as_view(), name='api_suporte'),
+    path('moderacao/', MeusCasosAPIView.as_view(), name='api_meus_casos'),
 ]

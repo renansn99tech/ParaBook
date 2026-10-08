@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 
 class Comunidade(models.Model):
+    removida_definitivamente_em = models.DateTimeField(null=True, blank=True)
     retirada_privacidade = models.BooleanField(default=False)
     nome = models.CharField(max_length=100)
     chave_demonstrativa = models.CharField(

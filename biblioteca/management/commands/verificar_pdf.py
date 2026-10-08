@@ -13,8 +13,6 @@ class Command(BaseCommand):
         parser.add_argument('--amostra', action='store_true')
 
     def handle(self, *args, **options):
-        if options['amostra'] and options['tentativa_id']:
-            raise CommandError('Tentativa não possui amostra.')
         modelo = TentativaPublicacao if options['tentativa_id'] else Livro
         registro = modelo.objects.filter(pk=options['tentativa_id'] or options['livro_id']).first()
         arquivo = getattr(registro, 'pdf_amostra' if options['amostra'] else 'pdf', None)

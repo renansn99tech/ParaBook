@@ -106,7 +106,11 @@ class LivroViewSet(viewsets.ModelViewSet):
         origem = serializer.validated_data.get('origem', 'dominio_publico')
         if origem not in {'dominio_publico', 'licenciado'}:
             raise ApiValidationError({'origem': 'O Dashboard cadastra somente domínio público ou acervo licenciado.'})
-        livro = serializer.save(status='publicado')
+        gated = settings.BOOK_RIGHTS_REQUIRED or settings.BOOK_FILE_SCAN_REQUIRED
+        livro = serializer.save(status='pendente' if gated else 'publicado')
+        if gated:
+            solicitacao = SolicitacaoPublicacao.objects.create(livro=livro, usuario=None)
+            fluxo._tentativa_atual(solicitacao)
         from biblioteca.quarentena import registrar_quarentena
         registrar_quarentena(livro.pdf)
         registrar_quarentena(livro.pdf_amostra)
@@ -123,6 +127,28 @@ class LivroViewSet(viewsets.ModelViewSet):
             raise ApiValidationError({'origem': 'Origem não permitida para o acervo administrativo.'})
         serializer.instance = livro
         anterior = livro.status
+        if (settings.BOOK_RIGHTS_REQUIRED or settings.BOOK_FILE_SCAN_REQUIRED or livro.licencas.exists()):
+            solicitacao, _ = SolicitacaoPublicacao.objects.get_or_create(livro=livro)
+            if solicitacao.tentativas.filter(status='pendente').exists():
+                raise fluxo.ConflitoPublicacao('Já existe uma versão aguardando análise.')
+            dados = dict(serializer.validated_data)
+            proposta = fluxo._snapshot(livro)
+            for campo, valor in dados.items():
+                if campo not in {'pdf', 'pdf_amostra', 'capa'}:
+                    if campo in {'disponivel_de', 'disponivel_ate'}:
+                        valor = valor.isoformat() if valor else None
+                    proposta['categoria_id' if campo == 'categoria' else campo] = valor.pk if campo == 'categoria' else valor
+            from biblioteca.models import TentativaPublicacao
+            tentativa = TentativaPublicacao.objects.create(solicitacao=solicitacao, dados=proposta,
+                pdf=dados.get('pdf', livro.pdf.name or ''), capa=dados.get('capa', livro.capa.name or ''),
+                pdf_amostra=dados.get('pdf_amostra', livro.pdf_amostra.name or ''))
+            from biblioteca.quarentena import registrar_quarentena
+            registrar_quarentena(tentativa.pdf)
+            registrar_quarentena(tentativa.pdf_amostra)
+            solicitacao.status = 'pendente'
+            solicitacao.save(update_fields=['status'])
+            fluxo._registrar(self.request.user, livro, 'revisao_enviada', anterior)
+            return
         livro = serializer.save()
         from biblioteca.quarentena import registrar_quarentena
         registrar_quarentena(livro.pdf)
@@ -156,8 +182,10 @@ class LivroViewSet(viewsets.ModelViewSet):
             return Response({"detail": "PDF não encontrado para este livro."}, status=status.HTTP_404_NOT_FOUND)
         
         try:
-            from biblioteca.quarentena import abrir_pdf_verificado
-            return FileResponse(abrir_pdf_verificado(livro.pdf), content_type='application/pdf')
+            from biblioteca.direitos import abrir_arquivo_licenciado
+            response = FileResponse(abrir_arquivo_licenciado(livro), content_type='application/pdf')
+            response['Cache-Control'] = 'private, no-store'
+            return response
         except PermissionDenied:
             raise
         except Exception:
@@ -177,8 +205,10 @@ class LivroViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
         try:
-            from biblioteca.quarentena import abrir_pdf_verificado
-            return FileResponse(abrir_pdf_verificado(livro.pdf_amostra), content_type='application/pdf')
+            from biblioteca.direitos import abrir_arquivo_licenciado
+            response = FileResponse(abrir_arquivo_licenciado(livro, amostra=True), content_type='application/pdf')
+            response['Cache-Control'] = 'private, no-store'
+            return response
         except PermissionDenied:
             raise
         except Exception:

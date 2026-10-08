@@ -23,6 +23,7 @@ from .serializers import (
     RespostaPostagemSerializer,
 )
 from usuarios.audit import registrar_acao
+from usuarios.permissions import eh_admin_parabook
 from notificacoes.models import Notificacao
 from usuarios.identidade_publica import identidade_publica
 from dashboard.demo import filtrar_conteudo_demonstrativo
@@ -53,6 +54,8 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
         if getattr(self, 'swagger_fake_view', False):
             return queryset.none()
         queryset = filtrar_conteudo_demonstrativo(queryset, self.request.user)
+        if not eh_admin_parabook(self.request.user):
+            queryset = queryset.filter(removida_definitivamente_em__isnull=True)
 
         if self.action != 'list':
             return queryset
@@ -80,20 +83,10 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
             raise PermissionDenied('Exemplo demonstrativo: use a feature flag para ocultá-lo.')
         e_dono = comunidade.criador_id == request.user.id
 
-        if request.user.is_superuser and not e_dono and not comunidade.criada_por_sistema:
-            forcar = str(request.query_params.get('forcar', '')).lower() == 'true'
-
-            if not forcar and comunidade.total_denuncias < MIN_DENUNCIAS_PARA_EXCLUSAO:
-                faltam = MIN_DENUNCIAS_PARA_EXCLUSAO - comunidade.total_denuncias
-                raise PermissionDenied({
-                    'detail': (
-                        f"'{comunidade.nome}' tem {comunidade.total_denuncias} de "
-                        f"{MIN_DENUNCIAS_PARA_EXCLUSAO} denúncias necessárias para exclusão."
-                    ),
-                    'total_denuncias': comunidade.total_denuncias,
-                    'minimo_denuncias': MIN_DENUNCIAS_PARA_EXCLUSAO,
-                    'faltam': faltam,
-                })
+        if eh_admin_parabook(request.user) or not e_dono:
+            raise PermissionDenied('Remoção administrativa exige Solicitar decisão do Conselho na fila de operação. Nenhum parâmetro forcar dispensa esse rito.')
+        if comunidade.removida_definitivamente_em:
+            raise PermissionDenied('Comunidade sob decisão definitiva do Conselho; retirada ou restauração exige o rito próprio.')
 
         comunidade_id = comunidade.pk
         forcar = str(request.query_params.get('forcar', '')).lower() == 'true'
@@ -110,6 +103,8 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         if serializer.instance.demonstrativo:
             raise PermissionDenied('Comunidade demonstrativa: controle a visibilidade pela feature flag.')
+        if serializer.instance.removida_definitivamente_em:
+            raise PermissionDenied('Conteúdo definitivamente removido é gerenciado pelo Conselho.')
         serializer.save()
 
     def perform_create(self, serializer):
@@ -188,6 +183,9 @@ class ComunidadeViewSet(viewsets.ModelViewSet):
         """
         comunidade = self.get_object()
 
+        if comunidade.removida_definitivamente_em:
+            raise PermissionDenied('A restauração desta comunidade exige decisão do Conselho.')
+
         if comunidade.demonstrativo:
             raise PermissionDenied('Exemplo demonstrativo: use a feature flag para controlar a visibilidade.')
 
@@ -246,6 +244,7 @@ class PostagemComunidadeViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset().select_related('autor', 'autor__perfil_customizado').annotate(
             total_respostas_anotado=Count('respostas', distinct=True),
         )
+        queryset = queryset.filter(comunidade__removida_definitivamente_em__isnull=True)
         if getattr(self, 'swagger_fake_view', False):
             return queryset.none()
         queryset = filtrar_conteudo_demonstrativo(
@@ -279,7 +278,7 @@ class RespostaPostagemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAutorDaPostagemOuAdmin]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(postagem__comunidade__removida_definitivamente_em__isnull=True)
         if getattr(self, 'swagger_fake_view', False):
             return queryset.none()
         queryset = filtrar_conteudo_demonstrativo(

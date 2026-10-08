@@ -37,6 +37,9 @@ class VerificacaoArquivo(models.Model):
     estado = models.CharField(max_length=12, choices=Estado.choices, default=Estado.QUARENTENA)
     tentativa = models.UUIDField(default=uuid.uuid4)
     motor_versao = models.CharField(max_length=160, blank=True)
+    assinaturas_sha256 = models.CharField(max_length=64, blank=True)
+    verificado_em = models.DateTimeField(null=True, blank=True)
+    valido_ate = models.DateTimeField(null=True, blank=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -61,6 +64,8 @@ class Livro(models.Model):
         ("removido", "Removido na Lixeira"), # NOVO
         ("suspenso", "Suspenso cautelarmente"),
         ("retirado", "Retirado pelo autor"),
+        ("manutencao", "Em manutenção de direitos"),
+        ("expirado", "Direitos expirados"),
     ]
 
     titulo = models.CharField(max_length=255, default="Sem Título", verbose_name="Título")
@@ -98,6 +103,7 @@ class Livro(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="publicado", verbose_name="Status de Publicação")
     data_remocao = models.DateTimeField(null=True, blank=True, verbose_name="Data de Remoção") # NOVO
     retirado_em = models.DateTimeField(null=True, blank=True)
+    removido_definitivamente_em = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'livros'
@@ -413,6 +419,7 @@ class TentativaPublicacao(models.Model):
     status = models.CharField(max_length=20, choices=SolicitacaoPublicacao.STATUS_CHOICES, default='pendente')
     dados = models.JSONField(default=dict)
     pdf = models.FileField(upload_to=caminhos.pdf_revisao, blank=True)
+    pdf_amostra = models.FileField(upload_to=caminhos.pdf_revisao, blank=True)
     capa = models.ImageField(upload_to='capas/revisoes/', blank=True)
     criada_em = models.DateTimeField(auto_now_add=True)
     analisada_em = models.DateTimeField(null=True, blank=True)
@@ -449,3 +456,32 @@ class RecursoPublicacao(models.Model):
     decisao = models.TextField(blank=True, max_length=2000)
     criado_em = models.DateTimeField(auto_now_add=True)
     decidido_em = models.DateTimeField(null=True, blank=True)
+
+
+class LicencaObra(models.Model):
+    """Conferência por edição: nenhum documento ou credencial do cofre no banco."""
+    protocolo = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    livro = models.ForeignKey(Livro, on_delete=models.SET_NULL, null=True, related_name='licencas')
+    origem = models.CharField(max_length=25, choices=Livro.ORIGEM_CHOICES)
+    edicao_sha256 = models.CharField(max_length=64)
+    pdf_sha256 = models.CharField(max_length=64, blank=True)
+    amostra_sha256 = models.CharField(max_length=64, blank=True)
+    referencia_cofre = models.UUIDField(unique=True)
+    recibo_sha256 = models.CharField(max_length=64, unique=True)
+    chave_id = models.CharField(max_length=60)
+    chave_publica_sha256 = models.CharField(max_length=64, blank=True)
+    versao = models.CharField(max_length=30)
+    territorios = models.JSONField()
+    modelos_acesso = models.JSONField()
+    vigente_de = models.DateTimeField()
+    vigente_ate = models.DateTimeField(null=True, blank=True)
+    estado = models.CharField(max_length=12, choices=[
+        ('conferida', 'Conferida'), ('revogada', 'Revogada'), ('disputa', 'Em disputa'),
+    ], default='conferida')
+    conferida_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    conferida_em = models.DateTimeField(auto_now_add=True)
+    alterada_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        permissions = [('conferir_direitos', 'Conferir e revogar direitos sem acesso a documentos')]
+        indexes = [models.Index(fields=['livro', 'edicao_sha256'], name='licenca_livro_edicao_idx')]

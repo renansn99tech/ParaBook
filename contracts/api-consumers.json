@@ -55,12 +55,28 @@
         "path": "/api/v1/auth/idade/"
       },
       {
+        "method": "GET",
+        "path": "/api/v1/auth/idade/revisao/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/idade/revisao/"
+      },
+      {
         "method": "POST",
         "path": "/api/v1/auth/login/"
       },
       {
         "method": "POST",
         "path": "/api/v1/auth/logout/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/moderacao/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/moderacao/"
       },
       {
         "method": "GET",
@@ -272,11 +288,39 @@
       },
       {
         "method": "GET",
+        "path": "/api/v1/dashboard/calendario-moderacao/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/calendario-moderacao/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/casos/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/casos/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/casos/{param}/"
+      },
+      {
+        "method": "GET",
         "path": "/api/v1/dashboard/denuncias/"
       },
       {
         "method": "GET",
         "path": "/api/v1/dashboard/denuncias/comunidades/{param}/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/dashboard/direitos/{param}/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/dashboard/direitos/{param}/"
       },
       {
         "method": "POST",
@@ -339,6 +383,10 @@
         "path": "/api/v1/dashboard/suporte/{param}/"
       },
       {
+        "method": "POST",
+        "path": "/api/v1/dashboard/suporte/{param}/idade/"
+      },
+      {
         "method": "GET",
         "path": "/api/v1/dashboard/usuarios/"
       },
@@ -353,6 +401,18 @@
       {
         "method": "POST",
         "path": "/api/v1/dashboard/usuarios/{param}/suspensao/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/denuncias/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/denuncias/acompanhamento/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/denuncias/complemento/"
       },
       {
         "method": "GET",
@@ -431,6 +491,14 @@
       {
         "method": "PUT",
         "path": "/api/v1/auth/idade/"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/idade/revisao/"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/idade/revisao/"
       },
       {
         "method": "POST",

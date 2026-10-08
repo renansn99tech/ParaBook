@@ -18,7 +18,7 @@ from usuarios.privacidade_conta import evento_descarte_obra
 
 RECURSOS = {
     'perfis.Perfil': {'foto', 'capa'}, 'comunidades.PostagemComunidade': {'imagem'},
-    'biblioteca.Livro': {'pdf', 'pdf_amostra', 'capa'}, 'biblioteca.TentativaPublicacao': {'pdf', 'capa'},
+    'biblioteca.Livro': {'pdf', 'pdf_amostra', 'capa'}, 'biblioteca.TentativaPublicacao': {'pdf', 'pdf_amostra', 'capa'},
 }
 
 

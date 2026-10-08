@@ -10,6 +10,8 @@ from usuarios.idade import restricao_etaria_ativa, resumo_estado
 
 
 ROTAS_CONTA_SUSPENSA = {
+    '/api/v1/auth/moderacao/',
+    '/api/v1/auth/idade/revisao/',
     '/api/v1/auth/idade/',
     '/api/v1/auth/logout/',
     '/api/v1/auth/mobile-logout/',
@@ -40,6 +42,8 @@ ROTAS_PUBLICAS_SUSPENSA = (
 # continua disponível como visitante; perfil, comunidades e leitura autenticada
 # não entram nesta allowlist.
 ROTAS_CONTA_RESTRITA_ETARIA = {
+    '/api/v1/auth/moderacao/',
+    '/api/v1/auth/idade/revisao/',
     '/api/v1/auth/profile/',
     '/api/v1/auth/idade/',
     '/api/v1/auth/alterar-senha/',

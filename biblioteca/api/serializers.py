@@ -24,13 +24,14 @@ class LivroSerializer(serializers.ModelSerializer):
     modelo_acesso_label = serializers.CharField(source='get_modelo_acesso_display', read_only=True)
     selo_independente = serializers.SerializerMethodField()
     acesso = serializers.SerializerMethodField()
+    direitos_estado = serializers.SerializerMethodField()
 
     class Meta:
         model = Livro
         fields = [
             'id', 'titulo', 'autor', 'demonstrativo', 'categoria', 'categoria_nome',
             'origem', 'origem_label', 'selo_independente', 'status',
-            'modelo_acesso', 'modelo_acesso_label', 'acesso',
+            'modelo_acesso', 'modelo_acesso_label', 'acesso', 'direitos_estado',
             'disponivel_de', 'disponivel_ate', 'territorio_cultural',
             'ano_publicacao', 'paginas', 'edicao', 'avaliacao', 'isbn',
             'capa', 'capa_url', 'pdf', 'pdf_amostra', 'pdf_disponivel',
@@ -52,6 +53,10 @@ class LivroSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = request.user if request else None
         return verificar_acesso_obra(user, obj).para_api()
+
+    def get_direitos_estado(self, obj) -> str:
+        from biblioteca.direitos import estado_direitos
+        return estado_direitos(obj)
 
     def validate_pdf(self, value):
         return validar_pdf_livro(value) if value else value

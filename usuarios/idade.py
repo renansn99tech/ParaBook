@@ -103,6 +103,13 @@ def restricao_etaria_ativa(usuario_auth):
         return False, None
 
     estado = obter_estado(usuario_auth)
+    if estado.estado == EstadoEtarioConta.Estado.RESTRITO_MENOR:
+        try:
+            estado = atualizar_maioridade(usuario_auth, estado)
+        except ValidationError:
+            # Sem prova cifrada válida a transição não é efetivada; o acesso
+            # continua restrito e o suporte permanece disponível.
+            pass
     if estado.estado in {
         EstadoEtarioConta.Estado.RESTRITO_MENOR,
         EstadoEtarioConta.Estado.EM_REVISAO,
@@ -127,6 +134,11 @@ def registrar_declaracao(*, usuario_auth, data_nascimento, chave_idempotencia, o
         chave_idempotencia=chave_idempotencia,
     ).first()
     if existente:
+        if existente.tipo not in {
+            EventoEtarioConta.Tipo.DECLARACAO_REGISTRADA,
+            EventoEtarioConta.Tipo.CORRECAO_REGISTRADA,
+        }:
+            raise ValidationError({'chave_idempotencia': ['Use uma nova chave para esta tentativa.']})
         return existente, True
     if EventoEtarioConta.objects.filter(chave_idempotencia=chave_idempotencia).exists():
         raise ValidationError({'chave_idempotencia': ['Use uma nova chave para esta tentativa.']})
@@ -150,6 +162,8 @@ def registrar_declaracao(*, usuario_auth, data_nascimento, chave_idempotencia, o
         if faixa == EventoEtarioConta.Faixa.ADULTO
         else EstadoEtarioConta.Estado.RESTRITO_MENOR
     )
+    if anterior == EstadoEtarioConta.Estado.EM_REVISAO:
+        novo = anterior
     ordinal = estado.declaracoes_sucesso + 1
     proxima_correcao = agora + timedelta(days=7) if ordinal >= 2 else None
 
@@ -212,6 +226,7 @@ def registrar_declaracao(*, usuario_auth, data_nascimento, chave_idempotencia, o
 def resumo_estado(usuario_auth):
     estado = obter_estado(usuario_auth)
     restrita, _estado_restrito = restricao_etaria_ativa(usuario_auth)
+    estado = _estado_restrito or estado
     return {
         'estado': estado.estado,
         'declaracoes_sucesso': estado.declaracoes_sucesso,
@@ -222,3 +237,46 @@ def resumo_estado(usuario_auth):
         'chave_declaracao': uuid4(),
         'versao_politica': estado.versao_politica or settings.AGE_POLICY_VERSION,
     }
+
+
+def atualizar_maioridade(usuario_auth, estado):
+    """Reavalia só menoridade declarada; jamais conclui revisão ou suspensão."""
+    data = Usuario.objects.filter(user_auth=usuario_auth).values_list(
+        'data_nascimento_eligibilidade', flat=True,
+    ).first()
+    if not data or faixa_para_data(data) != EventoEtarioConta.Faixa.ADULTO:
+        return estado
+    return _registrar_maioridade(usuario_auth)
+
+
+@transaction.atomic
+def _registrar_maioridade(usuario_auth):
+    usuario_auth = User.objects.select_for_update().get(pk=usuario_auth.pk)
+    estado = obter_estado(usuario_auth, bloquear=True)
+    data = _obter_usuario_negocio(usuario_auth).data_nascimento_eligibilidade
+    if (
+        not usuario_auth.is_active or not politica_esta_ativa()
+        or estado.estado != EstadoEtarioConta.Estado.RESTRITO_MENOR
+        or not data or faixa_para_data(data) != EventoEtarioConta.Faixa.ADULTO
+    ):
+        return estado
+    evento = EventoEtarioConta.objects.create(
+        usuario=usuario_auth, chave_idempotencia=uuid4(),
+        tipo=EventoEtarioConta.Tipo.MUDANCA_DE_FAIXA,
+        estado_anterior=estado.estado,
+        estado_novo=EstadoEtarioConta.Estado.LIBERADO_ADULTO,
+        faixa_resultante=EventoEtarioConta.Faixa.ADULTO,
+        ordinal_declaracao=estado.declaracoes_sucesso,
+        proxima_correcao_permitida_em=estado.proxima_correcao_permitida_em,
+        origem='sistema', versao_politica=settings.AGE_POLICY_VERSION,
+        versao_documentos=settings.TERMS_VERSION,
+    )
+    from usuarios.privacidade_provas import registrar_prova
+    registrar_prova(
+        usuario=usuario_auth, classe='R10', evento_ref=evento.protocolo,
+        conteudo={'data_declarada': data.isoformat(), 'tipo': evento.tipo,
+                  'evento_ref': str(evento.protocolo)},
+    )
+    estado.estado = evento.estado_novo
+    estado.save(update_fields=['estado', 'atualizado_em'])
+    return estado

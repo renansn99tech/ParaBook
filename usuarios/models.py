@@ -158,6 +158,9 @@ class EventoEtarioConta(models.Model):
         DECLARACAO_REGISTRADA = 'declaracao_registrada', 'Declaração registrada'
         CORRECAO_REGISTRADA = 'correcao_registrada', 'Correção registrada'
         MUDANCA_DE_FAIXA = 'mudanca_de_faixa', 'Mudança de faixa'
+        REVISAO_INICIADA = 'revisao_iniciada', 'Revisão iniciada'
+        REVISAO_SOLICITADA = 'revisao_solicitada', 'Revisão solicitada'
+        REVISAO_CONCLUIDA = 'revisao_concluida', 'Revisão concluída'
 
     class Faixa(models.TextChoices):
         DESCONHECIDA = 'desconhecida', 'Desconhecida'
@@ -181,6 +184,10 @@ class EventoEtarioConta(models.Model):
     versao_politica = models.CharField(max_length=40)
     versao_documentos = models.CharField(max_length=40, blank=True, default='')
     criado_em = models.DateTimeField(auto_now_add=True, db_index=True)
+    solicitacao = models.ForeignKey(
+        'SolicitacaoSuporte', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='eventos_etarios',
+    )
 
     class Meta:
         db_table = 'usuarios_eventos_etarios'
@@ -374,6 +381,19 @@ class SolicitacaoSuporte(models.Model):
         ordering = ['-criada_em']
 
 
+class RevisaoEtaria(models.Model):
+    """Vincula o rito etário ao protocolo; status e resposta ficam no suporte."""
+
+    solicitacao = models.OneToOneField(
+        SolicitacaoSuporte, on_delete=models.CASCADE, related_name='revisao_etaria',
+    )
+    chave_solicitacao = models.UUIDField(unique=True)
+    decisao = models.CharField(max_length=24, blank=True, default='', choices=[
+        ('confirmar_declaracao', 'Confirmar declaração atual'),
+        ('orientar_correcao', 'Orientar correção pelo titular'),
+    ])
+
+
 class SessaoDispositivo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sessoes_dispositivo')
@@ -475,3 +495,10 @@ class DestinoDescarte(models.Model):
         constraints = [models.UniqueConstraint(
             fields=['encerramento', 'destino', 'recurso', 'recurso_ref'], name='descarte_destino_recurso_unico',
         )]
+
+
+# Registrados no app usuarios, com contratos próprios de atendimento/moderação.
+from .models_moderacao import (  # noqa: E402,F401
+    AprovacaoConselho, CalendarioModeracao, CasoModeracao, EventoModeracao,
+    ImpedimentoModeracao, LimiteModeracao, PedidoConselho, RecursoModeracao,
+)

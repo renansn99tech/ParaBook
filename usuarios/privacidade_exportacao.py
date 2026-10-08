@@ -115,6 +115,11 @@ def exportar_dados(usuario):
         'T12': registros(Assinatura.objects.filter(usuario=usuario), 'plano__nome', 'ativa', 'data_inicio', 'data_fim'),
         'T13': {'estado': 'consulta_assistida', 'destinos': ['banco', 'storage', 'logs', 'gmail', 'copias'], 'consulta_automatica_externa': False},
     }
+    from django.db.models import Q
+    from usuarios.moderacao import dados_publicos
+    from usuarios.models_moderacao import CasoModeracao
+    categorias['T09']['casos_moderacao_proprios'] = [dados_publicos(caso) for caso in
+        CasoModeracao.objects.filter(Q(usuario=usuario) | Q(alvo_usuario=usuario)).order_by('pk')]
     declaracoes = []
     categorias['T04'] = {'canonico': categorias['T04'],
                          'legado_somente_leitura': registros(perfis_legados, 'id', 'bio', 'localizacao', 'status')}
@@ -132,7 +137,7 @@ def exportar_dados(usuario):
         (perfis_legados, ('foto',), 'perfil_legado'),
         (PostagemComunidade.objects.filter(autor=usuario), ('imagem',), 'postagem'),
         (obras, ('pdf', 'pdf_amostra', 'capa'), 'obra'),
-        (TentativaPublicacao.objects.filter(solicitacao__in=solicitacoes), ('pdf', 'capa'), 'tentativa'),
+        (TentativaPublicacao.objects.filter(solicitacao__in=solicitacoes), ('pdf', 'pdf_amostra', 'capa'), 'tentativa'),
     ):
         for registro in queryset:
             for campo in campos:

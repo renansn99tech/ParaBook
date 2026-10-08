@@ -14,6 +14,13 @@ PAPEIS_PRIVILEGIADOS = {'moderador', 'admin'}
 PAPEIS_EDITAVEIS_DASHBOARD = {'leitor', 'autor'}
 
 
+def _travar_contas(ator, alvo_id):
+    contas = {u.pk: u for u in User.objects.select_for_update().filter(pk__in={ator.pk, alvo_id}).order_by('pk')}
+    if ator.pk not in contas or alvo_id not in contas:
+        raise User.DoesNotExist()
+    return contas[ator.pk], contas[alvo_id]
+
+
 def dados_suspensao_ativa(user):
     if not user or not user.is_authenticated:
         return None
@@ -73,10 +80,11 @@ def _proteger_ultimo_administrador(alvo):
 
 
 @transaction.atomic
-def aplicar_suspensao(*, ator, alvo_id, duracao_dias, categoria, justificativa, senha_atual):
-    ator = User.objects.select_for_update().get(pk=ator.pk)
-    alvo = User.objects.select_for_update().get(pk=alvo_id)
+def aplicar_suspensao(*, ator, alvo_id, duracao_dias, categoria, justificativa, senha_atual, caso_moderacao=None):
+    ator, alvo = _travar_contas(ator, alvo_id)
     _validar_alvo_governanca(ator, alvo)
+    from usuarios.moderacao import exigir_operador
+    exigir_operador(ator, sensivel=True)
     _validar_reautenticacao(ator, senha_atual)
     _proteger_ultimo_administrador(alvo)
 
@@ -130,6 +138,8 @@ def aplicar_suspensao(*, ator, alvo_id, duracao_dias, categoria, justificativa, 
         protocolo=suspensao.protocolo,
         metadados={'duracao_dias': duracao_dias, 'categoria': categoria},
     )
+    from usuarios.moderacao import vincular_suspensao
+    vincular_suspensao(suspensao, ator, caso_moderacao)
     registrar_acao(
         ator=ator,
         acao='conta.suspensa',
@@ -142,9 +152,10 @@ def aplicar_suspensao(*, ator, alvo_id, duracao_dias, categoria, justificativa, 
 
 @transaction.atomic
 def revogar_suspensao(*, ator, alvo_id, justificativa, senha_atual):
-    ator = User.objects.select_for_update().get(pk=ator.pk)
-    alvo = User.objects.select_for_update().get(pk=alvo_id)
+    ator, alvo = _travar_contas(ator, alvo_id)
     _validar_alvo_governanca(ator, alvo)
+    from usuarios.moderacao import exigir_operador
+    exigir_operador(ator, sensivel=True)
     _validar_reautenticacao(ator, senha_atual)
     justificativa = str(justificativa or '').strip()[:2000]
     if len(justificativa) < 10:
@@ -179,8 +190,7 @@ def revogar_suspensao(*, ator, alvo_id, justificativa, senha_atual):
 
 @transaction.atomic
 def alterar_papel(*, ator, alvo_id, novo_papel, justificativa, senha_atual):
-    ator = User.objects.select_for_update().get(pk=ator.pk)
-    alvo = User.objects.select_for_update().get(pk=alvo_id)
+    ator, alvo = _travar_contas(ator, alvo_id)
     _validar_alvo_governanca(ator, alvo)
     _validar_reautenticacao(ator, senha_atual)
     novo_papel = str(novo_papel or '').strip()

@@ -635,6 +635,11 @@ class SolicitacoesSuporteAPIView(APIView):
             return Response({'assunto': ['Informe um assunto com pelo menos 5 caracteres.']}, status=400)
         if len(mensagem) < 20:
             return Response({'mensagem': ['Descreva a solicitação com pelo menos 20 caracteres.']}, status=400)
+        if categoria == 'idade':
+            from uuid import uuid4
+            from usuarios.revisao_etaria import solicitar_revisao
+            item = solicitar_revisao(usuario=request.user, mensagem=mensagem, chave=uuid4())
+            return Response(self._serializar(item), status=201, headers={'Cache-Control': 'no-store'})
         item = SolicitacaoSuporte.objects.create(
             usuario=request.user,
             assunto=assunto,

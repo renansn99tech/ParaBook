@@ -2,6 +2,7 @@ from importlib import import_module
 from types import SimpleNamespace
 
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
@@ -22,6 +23,8 @@ class GovernancaContaTests(TestCase):
             is_staff=True,
         )
         Usuario.objects.create(user_auth=self.moderador, nome='Moderador', tipo='moderador')
+        # Operador administrativo herdado da migração de papéis, não moderador P2 novo.
+        self.moderador.user_permissions.add(Permission.objects.get(codename='operar_risco_grave', content_type__app_label='usuarios'))
         self.alvo = User.objects.create_user(username='leitor-governanca', password='x')
         perfil = Perfil.objects.create(usuario=self.alvo)
         Usuario.objects.create(user_auth=self.alvo, nome='Leitor', tipo='leitor', perfil=perfil)
@@ -131,6 +134,7 @@ class ContaSuspensaContratoTests(TestCase):
         Usuario.objects.create(user_auth=self.usuario, tipo='leitor', perfil=perfil)
         moderador = User.objects.create_user(username='moderador-api', password='x', is_staff=True)
         Usuario.objects.create(user_auth=moderador, tipo='moderador')
+        moderador.user_permissions.add(Permission.objects.get(codename='operar_risco_grave', content_type__app_label='usuarios'))
         aplicar_suspensao(
             ator=moderador,
             alvo_id=self.usuario.pk,

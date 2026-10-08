@@ -28,6 +28,8 @@ def verificar_acesso_obra(user, livro, agora=None):
     """Decide acesso ao conteúdo sem confiar no cliente ou na URL do arquivo."""
     agora = agora or timezone.now()
     autenticado = bool(user and user.is_authenticated)
+    if livro.removido_definitivamente_em:
+        return DecisaoAcessoObra(False, False, 'remocao_definitiva', 'Obra removida por decisão do Conselho.')
     if autenticado:
         from usuarios.idade import restricao_etaria_ativa
         restrita, _estado = restricao_etaria_ativa(user)
@@ -46,7 +48,20 @@ def verificar_acesso_obra(user, livro, agora=None):
             'Ficha demonstrativa sem arquivo de leitura.',
         )
 
-    if settings.BOOK_FILE_SCAN_REQUIRED and not arquivo_liberado(livro.pdf, conferir_conteudo=False):
+    from .direitos import estado_direitos
+    direitos = estado_direitos(livro, agora=agora)
+    if direitos not in {'conferida', 'legado'}:
+        return DecisaoAcessoObra(False, False, f'direitos_{direitos}', 'Direitos desta edição indisponíveis para leitura.')
+    if not livro.categoria.disponivel_publicamente:
+        return DecisaoAcessoObra(False, False, 'categoria_indisponivel', 'Categoria indisponível para leitura.')
+    if livro.retirado_em or livro.status in {'retirado', 'suspenso', 'removido', 'manutencao', 'expirado'}:
+        return DecisaoAcessoObra(False, False, 'indisponivel', 'Esta obra não está disponível para leitura.')
+    if livro.disponivel_de and agora < livro.disponivel_de:
+        return DecisaoAcessoObra(False, False, 'ainda_indisponivel', 'Esta obra ainda não está disponível.')
+    if livro.disponivel_ate and agora >= livro.disponivel_ate:
+        return DecisaoAcessoObra(False, False, 'licenca_encerrada', 'O período de disponibilidade desta obra terminou.')
+
+    if (settings.BOOK_FILE_SCAN_REQUIRED or livro.pdf) and not arquivo_liberado(livro.pdf, conferir_conteudo=False):
         amostra_disponivel = (tem_amostra and livro.status == 'publicado'
                              and (not livro.disponivel_de or agora >= livro.disponivel_de)
                              and (not livro.disponivel_ate or agora < livro.disponivel_ate))

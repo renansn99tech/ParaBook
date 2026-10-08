@@ -72,6 +72,9 @@ def editar_comunidade(request, id):
 @login_required
 def excluir_comunidade(request, id):
     comunidade = get_object_or_404(Comunidade, id=id)
+    if comunidade.removida_definitivamente_em or comunidade.criador_id != request.user.pk or request.user.is_superuser:
+        from django.http import JsonResponse
+        return JsonResponse({'detail': 'Remoção administrativa exige o Conselho no Dashboard React.'}, status=403)
     if comunidade.demonstrativo:
         messages.error(request, 'Use a feature flag para ocultar este exemplo sem apagá-lo.')
         return redirect('comunidades')
@@ -127,7 +130,7 @@ def conteudo_comunidade(request, id):
     )
 
     # REGRA 3: Manutenção
-    if comunidade.em_manutencao and not request.user.is_superuser:
+    if comunidade.removida_definitivamente_em or (comunidade.em_manutencao and not request.user.is_superuser):
         return render(request, 'comunidades/empty-state.html', {
             'titulo': "Sala em Manutenção",
             'mensagem': f"A comunidade '{comunidade.nome}' foi temporariamente fechada para ajustes pela equipe técnica."

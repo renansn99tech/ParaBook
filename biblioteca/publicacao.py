@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.crypto import salted_hmac
+from django.utils.dateparse import parse_datetime
 from rest_framework.exceptions import APIException, PermissionDenied, ValidationError
 
 from notificacoes.models import Notificacao
@@ -78,9 +79,14 @@ def _registrar(user, livro, acao, anterior, motivo='', denuncia=None):
 
 
 def _snapshot(livro):
-    return {campo: getattr(livro, campo) for campo in (
+    dados = {campo: getattr(livro, campo) for campo in (
         'titulo', 'categoria_id', 'paginas', 'ano_publicacao', 'isbn', 'edicao',
+        'autor', 'origem', 'modelo_acesso',
     )}
+    for campo in ('disponivel_de', 'disponivel_ate'):
+        valor = getattr(livro, campo)
+        dados[campo] = valor.isoformat() if valor else None
+    return dados
 
 
 def _tentativa_atual(solicitacao):
@@ -89,6 +95,7 @@ def _tentativa_atual(solicitacao):
         tentativa = TentativaPublicacao.objects.create(
             solicitacao=solicitacao, status=solicitacao.status, dados=_snapshot(solicitacao.livro),
             pdf=solicitacao.livro.pdf.name or '', capa=solicitacao.livro.capa.name or '',
+            pdf_amostra=solicitacao.livro.pdf_amostra.name or '',
             analisada_em=solicitacao.data_analise, motivo=solicitacao.observacao_admin or '',
         )
     return tentativa
@@ -146,6 +153,8 @@ def retirar_obra(user, livro_id):
 @transaction.atomic
 def enviar_revisao(user, livro_id, dados, reenviar=False):
     livro = _livro_bloqueado(livro_id)
+    if livro.removido_definitivamente_em:
+        raise ConflitoPublicacao('Obra definitivamente removida exige rito de recurso e Conselho.')
     solicitacao = _propria_obra(user, livro)
     atual = _tentativa_atual(solicitacao)
     if atual.status == 'pendente':
@@ -162,6 +171,7 @@ def enviar_revisao(user, livro_id, dados, reenviar=False):
     tentativa = TentativaPublicacao.objects.create(
         solicitacao=solicitacao, dados=proposta,
         pdf=dados.get('pdf', livro.pdf.name or ''), capa=dados.get('capa', livro.capa.name or ''),
+        pdf_amostra=livro.pdf_amostra.name or '',
         status='aprovado' if simples else 'pendente', analisada_em=timezone.now() if simples else None,
     )
     from .quarentena import registrar_quarentena
@@ -185,6 +195,8 @@ def analisar_publicacao(user, solicitacao_id, acao, motivo='', tentativa_id=None
     exigir_admin(user)
     solicitacao = get_object_or_404(SolicitacaoPublicacao, pk=solicitacao_id)
     livro = _livro_bloqueado(solicitacao.livro_id)
+    if livro.removido_definitivamente_em:
+        raise ConflitoPublicacao('Obra definitivamente removida exige rito de recurso e Conselho.')
     solicitacao.refresh_from_db()
     tentativa = _tentativa_atual(solicitacao)
     if tentativa_id is not None and str(tentativa.pk) != str(tentativa_id):
@@ -194,14 +206,17 @@ def analisar_publicacao(user, solicitacao_id, acao, motivo='', tentativa_id=None
     if acao == 'recusar':
         motivo = exigir_motivo(motivo)
     else:
+        from .direitos import exigir_direitos
+        exigir_direitos(livro, tentativa=tentativa)
         from .models import Categoria
         categoria_id = tentativa.dados.get('categoria_id', livro.categoria_id)
         if not Categoria.objects.filter(pk=categoria_id, disponivel_publicamente=True).exists():
             raise ConflitoPublicacao('Categoria indisponível para publicação.')
-        from django.conf import settings
-        if settings.BOOK_FILE_SCAN_REQUIRED:
-            from .quarentena import exigir_arquivo_liberado
+        from .quarentena import exigir_arquivo_liberado
+        if tentativa.pdf or settings.BOOK_FILE_SCAN_REQUIRED:
             exigir_arquivo_liberado(tentativa.pdf)
+        if tentativa.pdf_amostra:
+            exigir_arquivo_liberado(tentativa.pdf_amostra)
     anterior = livro.status
     tentativa.status = 'aprovado' if acao == 'aprovar' else 'rejeitado'
     tentativa.motivo = motivo
@@ -213,10 +228,13 @@ def analisar_publicacao(user, solicitacao_id, acao, motivo='', tentativa_id=None
     solicitacao.save(update_fields=['status', 'observacao_admin', 'data_analise'])
     if acao == 'aprovar':
         for campo, valor in tentativa.dados.items():
+            if campo in {'disponivel_de', 'disponivel_ate'} and valor:
+                valor = parse_datetime(valor)
             setattr(livro, campo, valor)
         livro.pdf = tentativa.pdf.name
+        livro.pdf_amostra = tentativa.pdf_amostra.name
         livro.capa = tentativa.capa.name
-        if livro.status in {'pendente', 'rejeitado'} and not livro.retirado_em and not _restricoes(livro).exists():
+        if livro.status in {'pendente', 'rejeitado', 'manutencao', 'expirado'} and not livro.retirado_em and not _restricoes(livro).exists():
             livro.status = 'publicado'
     elif livro.status == 'pendente':
         livro.status = 'rejeitado'
@@ -230,6 +248,10 @@ def _restricoes(livro):
 
 
 def _validar_restauracao(livro):
+    if livro.removido_definitivamente_em:
+        raise ConflitoPublicacao('Remoção definitiva exige o rito autenticado do Conselho para restauração.')
+    from .direitos import exigir_direitos
+    exigir_direitos(livro)
     if not livro.categoria.disponivel_publicamente:
         raise ConflitoPublicacao('Categoria indisponível para restauração.')
     if livro.retirado_em or _restricoes(livro).exists():
@@ -276,6 +298,8 @@ def denunciar(user, livro_id, motivo, evidencias, referencia_externa=''):
 @transaction.atomic
 def moderar_denuncia(user, denuncia_id, acao, motivo):
     exigir_admin(user)
+    from usuarios.moderacao import conferir_rota_legada
+    conferir_rota_legada('obra', denuncia_id)
     motivo = exigir_motivo(motivo)
     denuncia = get_object_or_404(Denuncia, pk=denuncia_id)
     livro = _livro_bloqueado(denuncia.livro_id)
@@ -336,7 +360,8 @@ def recorrer(user, evento_id, fundamento):
     evento = get_object_or_404(EventoPublicacao, pk=evento_id)
     livro = _livro_bloqueado(evento.livro_id)
     _propria_obra(user, livro)
-    if evento.acao not in {'rejeitada', 'suspensa', 'denuncia_acolhida'} or hasattr(evento, 'recurso'):
+    if evento.acao not in {'rejeitada', 'suspensa', 'denuncia_acolhida',
+                           'direitos_revogada', 'direitos_disputa', 'direitos_expirados'} or hasattr(evento, 'recurso'):
         raise ConflitoPublicacao('Este evento não admite outro recurso.')
     recurso = RecursoPublicacao.objects.create(evento=evento, autor=user, fundamento=exigir_motivo(fundamento))
     _registrar(user, livro, 'recurso_recebido', livro.status)
@@ -376,7 +401,8 @@ def analisar_recurso(user, recurso_id, acolher, motivo):
                 raise ConflitoPublicacao('A publicação recebeu uma versão ou decisão posterior.')
             solicitacao = livro.solicitacao_publicacao
             atual = _tentativa_atual(solicitacao)
-            TentativaPublicacao.objects.create(solicitacao=solicitacao, dados=atual.dados, pdf=atual.pdf.name, capa=atual.capa.name)
+            TentativaPublicacao.objects.create(solicitacao=solicitacao, dados=atual.dados, pdf=atual.pdf.name,
+                                               pdf_amostra=atual.pdf_amostra.name, capa=atual.capa.name)
             solicitacao.status = 'pendente'
             solicitacao.save(update_fields=['status'])
             if livro.status == 'rejeitado':

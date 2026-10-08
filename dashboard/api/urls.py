@@ -1,4 +1,6 @@
 from django.urls import path
+from usuarios.api.revisao_etaria import DecidirRevisaoEtariaAPIView
+from usuarios.api.moderacao import CalendariosAdminAPIView, CasoAdminAPIView, CasosAdminAPIView
 from .views import (
     EstatisticasDashboardAPIView,
     DashboardUsuariosAPIView,
@@ -19,8 +21,13 @@ from .views import (
 )
 
 from biblioteca.api.publicacao import RevisaoAdminAPIView, RecursosAdminAPIView
+from biblioteca.api.direitos import DireitosAdminAPIView
 
 urlpatterns = [
+    path('direitos/<int:livro_id>/', DireitosAdminAPIView.as_view(), name='direitos-obra'),
+    path('casos/', CasosAdminAPIView.as_view(), name='api_casos_moderacao'),
+    path('casos/<uuid:protocolo>/', CasoAdminAPIView.as_view(), name='api_caso_moderacao'),
+    path('calendario-moderacao/', CalendariosAdminAPIView.as_view(), name='api_calendario_moderacao'),
     path('publicacoes/<int:solicitacao_id>/revisao/', RevisaoAdminAPIView.as_view(), name='revisao-publicacao'),
     path('recursos-publicacao/', RecursosAdminAPIView.as_view(), name='recursos-publicacao'),
     path('estatisticas/', EstatisticasDashboardAPIView.as_view(), name='api-dashboard-estatisticas'),
@@ -29,6 +36,7 @@ urlpatterns = [
     path('usuarios/<int:item_id>/papel/', DashboardPapelContaAPIView.as_view(), name='api-dashboard-usuario-papel'),
     path('suporte/', DashboardSuporteListaAPIView.as_view(), name='api-dashboard-suporte'),
     path('suporte/<int:item_id>/', DashboardSuporteDetalheAPIView.as_view(), name='api-dashboard-suporte-item'),
+    path('suporte/<int:item_id>/idade/', DecidirRevisaoEtariaAPIView.as_view(), name='api-dashboard-suporte-idade'),
     path('aprovacoes/', DashboardAprovacoesAPIView.as_view(), name='api-dashboard-aprovacoes'),
     path('denuncias/', DashboardDenunciasAPIView.as_view(), name='api-dashboard-denuncias'),
     path('denuncias/comunidades/<int:comunidade_id>/', DashboardDenunciasComunidadeAPIView.as_view(), name='api-dashboard-denuncias-comunidade'),

@@ -18,13 +18,18 @@ from usuarios.retencao import limite_retencao
 
 
 def evento_descarte_obra(livro):
-    if livro.retirado_em is None:
+    evento = livro.retirado_em or livro.removido_definitivamente_em
+    if evento is None:
         return None
     recursos = RecursoPublicacao.objects.filter(evento__livro=livro)
     if recursos.filter(status='pendente').exists() or recursos.filter(decidido_em__isnull=True).exists():
         return None
-    datas = list(recursos.values_list('decidido_em', flat=True))
-    return max([livro.retirado_em, *datas])
+    from usuarios.models_moderacao import RecursoModeracao
+    transversais = RecursoModeracao.objects.filter(caso__alvo_livro=livro)
+    if transversais.filter(estado='pendente').exists() or transversais.filter(decidido_em__isnull=True).exists():
+        return None
+    datas = list(recursos.values_list('decidido_em', flat=True)) + list(transversais.values_list('decidido_em', flat=True))
+    return max([evento, *datas])
 
 
 def _preservacoes(recurso, ref, destino='banco'):
@@ -147,7 +152,7 @@ def encerrar_conta(usuario):
         _registrar_arquivos(encerramento, Livro.objects.filter(pk=livro.pk), ('pdf', 'pdf_amostra', 'capa'),
             classe='R12', evento_em=evento)
         _registrar_arquivos(encerramento, TentativaPublicacao.objects.filter(solicitacao__livro=livro),
-            ('pdf', 'capa'), classe='R12', evento_em=evento)
+            ('pdf', 'pdf_amostra', 'capa'), classe='R12', evento_em=evento)
     _retirar_social(encerramento, posts)
     _retirar_social(encerramento, respostas)
     _retirar_comunidades(encerramento)

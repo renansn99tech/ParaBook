@@ -441,7 +441,8 @@ class MigrationPublicacaoTests(TransactionTestCase):
             executor = MigrationExecutor(connection)
             executor.migrate(atual)
             self.assertEqual(Denuncia.objects.values('protocolo').distinct().count(), 2)
-            tentativa = TentativaPublicacao.objects.get(solicitacao_id=solicitacao.pk)
+            apps_atuais = executor.loader.project_state(atual).apps
+            tentativa = apps_atuais.get_model('biblioteca', 'TentativaPublicacao').objects.get(solicitacao_id=solicitacao.pk)
             self.assertEqual(tentativa.status, 'aprovado')
             self.assertEqual(tentativa.dados['titulo'], 'Legado')
             self.assertEqual(tentativa.pdf.name, 'livros/legado.pdf')

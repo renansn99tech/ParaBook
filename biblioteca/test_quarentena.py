@@ -13,7 +13,7 @@ from rest_framework.test import APIClient
 
 from biblioteca import publicacao as fluxo
 from biblioteca.models import Categoria, Livro, VerificacaoArquivo
-from biblioteca.quarentena import ClamAVScanner, ResultadoVarredura, arquivo_liberado, verificar_arquivo
+from biblioteca.quarentena import ClamAVScanner, ContextoVarredura, ResultadoVarredura, arquivo_liberado, verificar_arquivo
 from biblioteca.services import verificar_acesso_obra
 from biblioteca.test_publicacao import pdf, usuario
 from usuarios.privacidade_arquivos import abrir_arquivo_proprio
@@ -22,6 +22,10 @@ from usuarios.privacidade_arquivos import abrir_arquivo_proprio
 @override_settings(BOOK_FILE_SCAN_REQUIRED=True, BOOK_CLAMSCAN_PATH='')
 class QuarentenaTests(TestCase):
     def setUp(self):
+        self.contexto = ContextoVarredura('motor-sintetico/assinatura-901', 'a' * 64)
+        self.context_patch = patch('biblioteca.quarentena.contexto_atual', return_value=self.contexto)
+        self.context_mock = self.context_patch.start()
+        self.addCleanup(self.context_patch.stop)
         self.categoria = Categoria.objects.create(nome='Quarentena sintética')
         self.autor = usuario('quarentena-autor', 'autor')
         self.admin = usuario('quarentena-admin', 'admin', True)
@@ -68,7 +72,9 @@ class QuarentenaTests(TestCase):
         self.assertFalse(arquivo_liberado(self.livro.pdf))
 
     def test_scanner_ausente_erro_timeout_e_resultado_sem_versao_falham_fechados(self):
+        self.context_mock.return_value = None
         self.assertEqual(verificar_arquivo(self.livro.pdf).estado, 'erro')
+        self.context_mock.return_value = self.contexto
         for resultado in [ResultadoVarredura('limpo'), ResultadoVarredura('desconhecido')]:
             self.scanner.verificar.return_value = resultado
             self.assertEqual(verificar_arquivo(self.livro.pdf, scanner=self.scanner).estado, 'erro')
@@ -77,7 +83,7 @@ class QuarentenaTests(TestCase):
         self.assertEqual(verificar_arquivo(self.livro.pdf, scanner=self.scanner).estado, 'erro')
 
     def test_rejeitado_nao_e_liberado_para_administrador(self):
-        self.scanner.verificar.return_value = ResultadoVarredura('rejeitado', 'motor-sintetico')
+        self.scanner.verificar.return_value = ResultadoVarredura('rejeitado', self.contexto.motor_versao)
         self.assertEqual(verificar_arquivo(self.livro.pdf, scanner=self.scanner).estado, 'rejeitado')
         self.assertFalse(verificar_acesso_obra(self.admin, self.livro).pode_ler)
 
@@ -118,7 +124,8 @@ class QuarentenaTests(TestCase):
                 patch('biblioteca.quarentena.os.path.isfile', return_value=True), \
                 patch('biblioteca.quarentena.subprocess.run') as run:
             for codigo, estado in [(0, 'limpo'), (1, 'rejeitado'), (2, 'erro')]:
-                run.side_effect = [SimpleNamespace(stdout='ClamAV sintético/901'), SimpleNamespace(returncode=codigo)]
+                run.side_effect = None
+                run.return_value = SimpleNamespace(returncode=codigo)
                 self.assertEqual(ClamAVScanner().verificar(b'arquivo-sintetico').estado, estado)
             run.side_effect = subprocess.TimeoutExpired('scanner', 30)
             self.assertEqual(ClamAVScanner().verificar(b'arquivo-sintetico').estado, 'erro')

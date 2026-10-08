@@ -56,7 +56,8 @@ class EventoSerializer(serializers.ModelSerializer):
         fields = ['id', 'protocolo', 'acao', 'anterior', 'posterior', 'motivo', 'criado_em', 'pode_recorrer', 'recurso_status']
 
     def get_pode_recorrer(self, obj) -> bool:
-        return obj.acao in {'rejeitada', 'suspensa', 'denuncia_acolhida'} and not hasattr(obj, 'recurso')
+        return obj.acao in {'rejeitada', 'suspensa', 'denuncia_acolhida',
+                           'direitos_revogada', 'direitos_disputa', 'direitos_expirados'} and not hasattr(obj, 'recurso')
 
     def get_recurso_status(self, obj) -> str | None:
         return obj.recurso.status if hasattr(obj, 'recurso') else None
@@ -85,6 +86,7 @@ class TentativaRevisaoSerializer(serializers.Serializer):
     status = serializers.CharField()
     criada_em = serializers.DateTimeField()
     pdf_disponivel = serializers.BooleanField()
+    gates = serializers.JSONField()
 
 
 class RecursoAdminSerializer(serializers.Serializer):
@@ -219,12 +221,14 @@ class RevisaoAdminAPIView(APIView):
         if request.query_params.get('arquivo') == 'pdf':
             if not tentativa.pdf:
                 return Response({'detail': 'PDF não disponível.'}, status=404)
-            from biblioteca.quarentena import abrir_pdf_verificado
-            response = FileResponse(abrir_pdf_verificado(tentativa.pdf), content_type='application/pdf')
+            from biblioteca.direitos import abrir_arquivo_licenciado
+            response = FileResponse(abrir_arquivo_licenciado(tentativa.solicitacao.livro, tentativa=tentativa), content_type='application/pdf')
             response['Cache-Control'] = 'private, no-store'
             return response
+        from biblioteca.api.direitos import gates_edicao
         return Response({'id': tentativa.pk, 'dados': tentativa.dados, 'status': tentativa.status,
-                         'criada_em': tentativa.criada_em, 'pdf_disponivel': bool(tentativa.pdf)})
+                         'criada_em': tentativa.criada_em, 'pdf_disponivel': bool(tentativa.pdf),
+                         'gates': gates_edicao(tentativa.solicitacao.livro, tentativa)})
 
 
 class RecursosAdminAPIView(APIView):

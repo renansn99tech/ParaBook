@@ -19,7 +19,7 @@ def abrir_arquivo_proprio(*, titular, tipo, recurso_id, campo):
         'perfil_legado': (PerfilLegado.objects.filter(user=titular), {'foto'}),
         'postagem': (PostagemComunidade.objects.filter(autor=titular, retirada_privacidade=False), {'imagem'}),
         'obra': (Livro.objects.filter(solicitacao_publicacao__usuario=titular), {'pdf', 'pdf_amostra', 'capa'}),
-        'tentativa': (TentativaPublicacao.objects.filter(solicitacao__usuario=titular), {'pdf', 'capa'}),
+        'tentativa': (TentativaPublicacao.objects.filter(solicitacao__usuario=titular), {'pdf', 'pdf_amostra', 'capa'}),
     }
     selecao = recursos.get(tipo)
     if selecao is None or campo not in selecao[1] or type(recurso_id) is not int or recurso_id <= 0:

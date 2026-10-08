@@ -46,7 +46,12 @@ class ForcarAceiteTermosMiddleware:
                 reverse('usuarios:excluir_conta'),
                 reverse('usuarios:logout'),
                 reverse('api_idade'),
+                reverse('api_idade_revisao'),
                 reverse('api_suporte'),
+                reverse('api_meus_casos'),
+                reverse('api_denuncia_publica'),
+                reverse('api_denuncia_acompanhamento'),
+                reverse('api_denuncia_complemento'),
                 reverse('api_exportar_dados'),
                 reverse('api_excluir_conta'),
             ]

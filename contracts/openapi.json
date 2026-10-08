@@ -611,6 +611,83 @@
                 }
             }
         },
+        "/api/v1/auth/idade/revisao/": {
+            "get": {
+                "operationId": "v1_auth_idade_revisao_list",
+                "tags": [
+                    "v1"
+                ],
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RevisaoResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1_auth_idade_revisao_create",
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SolicitarRevisao"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SolicitarRevisao"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SolicitarRevisao"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RevisaoResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/auth/login/": {
             "post": {
                 "operationId": "v1_auth_login_create",
@@ -864,6 +941,83 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/MobileLoginResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/moderacao/": {
+            "get": {
+                "operationId": "v1_auth_moderacao_list",
+                "tags": [
+                    "v1"
+                ],
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MeusCasos"
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1_auth_moderacao_create",
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecursoCaso"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecursoCaso"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecursoCaso"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProtocoloModeracao"
                                 }
                             }
                         },
@@ -3827,6 +3981,215 @@
                 }
             }
         },
+        "/api/v1/dashboard/calendario-moderacao/": {
+            "get": {
+                "operationId": "v1_dashboard_calendario_moderacao_list",
+                "tags": [
+                    "v1"
+                ],
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Calendario"
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1_dashboard_calendario_moderacao_create",
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Calendario"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Calendario"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Calendario"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Calendario"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/casos/": {
+            "get": {
+                "operationId": "v1_dashboard_casos_retrieve",
+                "tags": [
+                    "v1"
+                ],
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FilaCasos"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1_dashboard_casos_create",
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PrepararFila"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PrepararFila"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PrepararFila"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Sincronizacao"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/casos/{protocolo}/": {
+            "post": {
+                "operationId": "moderacao_operar_caso",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "protocolo",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OperacaoCaso"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OperacaoCaso"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OperacaoCaso"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CasoOperacional"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/dashboard/denuncias/": {
             "get": {
                 "operationId": "v1_dashboard_denuncias_retrieve",
@@ -3886,6 +4249,100 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ComunidadeDenunciasResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/direitos/{livro_id}/": {
+            "get": {
+                "operationId": "v1_dashboard_direitos_retrieve",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "livro_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "v1"
+                ],
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DireitosEstado"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1_dashboard_direitos_create",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "livro_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DireitosEntrada"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DireitosEntrada"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DireitosEntrada"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DireitosResultado"
                                 }
                             }
                         },
@@ -4447,6 +4904,64 @@
                 }
             }
         },
+        "/api/v1/dashboard/suporte/{item_id}/idade/": {
+            "post": {
+                "operationId": "v1_dashboard_suporte_idade_create",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "item_id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DecidirRevisao"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DecidirRevisao"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DecidirRevisao"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "cookieJwtAuth": []
+                    },
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RevisaoResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/v1/dashboard/usuarios/": {
             "get": {
                 "operationId": "v1_dashboard_usuarios_list",
@@ -4618,6 +5133,135 @@
                 "responses": {
                     "204": {
                         "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/v1/denuncias/": {
+            "post": {
+                "operationId": "v1_denuncias_create",
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EntradaPublica"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EntradaPublica"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EntradaPublica"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProtocoloModeracao"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/denuncias/acompanhamento/": {
+            "post": {
+                "operationId": "v1_denuncias_acompanhamento_create",
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Acompanhar"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Acompanhar"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Acompanhar"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProtocoloModeracao"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/denuncias/complemento/": {
+            "post": {
+                "operationId": "v1_denuncias_complemento_create",
+                "tags": [
+                    "v1"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Complementar"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Complementar"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Complementar"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProtocoloModeracao"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
                 }
             }
@@ -5478,6 +6122,24 @@
                     "versao_termos_aceita"
                 ]
             },
+            "Acompanhar": {
+                "type": "object",
+                "properties": {
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "segredo": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "pattern": "^[a-f0-9]{64}$"
+                    }
+                },
+                "required": [
+                    "protocolo",
+                    "segredo"
+                ]
+            },
             "AlterarPapelResponse": {
                 "type": "object",
                 "properties": {
@@ -5497,6 +6159,15 @@
                     "protocolo",
                     "tipo"
                 ]
+            },
+            "AlvoTipoEnum": {
+                "enum": [
+                    "livro",
+                    "comunidade",
+                    "conta"
+                ],
+                "type": "string",
+                "description": "* `livro` - livro\n* `comunidade` - comunidade\n* `conta` - conta"
             },
             "AnalyticsAutorResponse": {
                 "type": "object",
@@ -5752,6 +6423,205 @@
                     "username"
                 ]
             },
+            "Calendario": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "inicio": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "fim": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "feriados": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "maxItems": 100
+                    },
+                    "referencia": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "minLength": 10
+                    },
+                    "senha_atual": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "maxLength": 128
+                    }
+                },
+                "required": [
+                    "feriados",
+                    "fim",
+                    "id",
+                    "inicio",
+                    "referencia",
+                    "senha_atual"
+                ]
+            },
+            "CasoOperacional": {
+                "type": "object",
+                "properties": {
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "estado": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "recebido_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "confirmado_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "decidido_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "resposta": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "retorno_estado": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "encerrado_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "pode_complementar": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "origem": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "categoria": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "prioridade": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "responsavel": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "decisor": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "prazos": {
+                        "readOnly": true
+                    },
+                    "regra": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "evidencia_ref": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "medida": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "dados_atendimento": {
+                        "readOnly": true
+                    },
+                    "alvo_livro": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "alvo_comunidade": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "alvo_usuario": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "eventos": {
+                        "readOnly": true
+                    },
+                    "conselho": {
+                        "readOnly": true
+                    },
+                    "conselho_membros_configurados": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "operador_admin": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "operador_conselho": {
+                        "type": "boolean",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "alvo_comunidade",
+                    "alvo_livro",
+                    "alvo_usuario",
+                    "categoria",
+                    "confirmado_em",
+                    "conselho",
+                    "conselho_membros_configurados",
+                    "dados_atendimento",
+                    "decidido_em",
+                    "decisor",
+                    "encerrado_em",
+                    "estado",
+                    "eventos",
+                    "evidencia_ref",
+                    "id",
+                    "medida",
+                    "operador_admin",
+                    "operador_conselho",
+                    "origem",
+                    "pode_complementar",
+                    "prazos",
+                    "prioridade",
+                    "protocolo",
+                    "recebido_em",
+                    "regra",
+                    "responsavel",
+                    "resposta",
+                    "retorno_estado"
+                ]
+            },
             "Categoria": {
                 "type": "object",
                 "properties": {
@@ -5772,16 +6642,6 @@
                     "id",
                     "nome"
                 ]
-            },
-            "CategoriaEnum": {
-                "enum": [
-                    "leitura",
-                    "comunidade",
-                    "assinatura",
-                    "especial"
-                ],
-                "type": "string",
-                "description": "* `leitura` - Leitura\n* `comunidade` - Comunidade/Críticas\n* `assinatura` - Assinatura\n* `especial` - Especial"
             },
             "ChangePasswordRequest": {
                 "type": "object",
@@ -5868,6 +6728,35 @@
                     "obra_id",
                     "quando",
                     "texto"
+                ]
+            },
+            "Complementar": {
+                "type": "object",
+                "properties": {
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "segredo": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "relato": {
+                        "type": "string",
+                        "maxLength": 4000,
+                        "minLength": 20
+                    },
+                    "chave_idempotencia": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "chave_idempotencia",
+                    "protocolo",
+                    "relato",
+                    "segredo"
                 ]
             },
             "Comunidade": {
@@ -6009,7 +6898,7 @@
                         "maxLength": 100
                     },
                     "categoria": {
-                        "$ref": "#/components/schemas/CategoriaEnum"
+                        "$ref": "#/components/schemas/ConquistaCategoriaEnum"
                     },
                     "categoria_display": {
                         "type": "string",
@@ -6042,6 +6931,16 @@
                     "slug"
                 ]
             },
+            "ConquistaCategoriaEnum": {
+                "enum": [
+                    "leitura",
+                    "comunidade",
+                    "assinatura",
+                    "especial"
+                ],
+                "type": "string",
+                "description": "* `leitura` - Leitura\n* `comunidade` - Comunidade/Críticas\n* `assinatura` - Assinatura\n* `especial` - Especial"
+            },
             "ConquistasResponse": {
                 "type": "object",
                 "properties": {
@@ -6071,6 +6970,14 @@
                     "total_desbloqueadas",
                     "xp_conquistado"
                 ]
+            },
+            "ConselhoAcaoEnum": {
+                "enum": [
+                    "remover",
+                    "restaurar"
+                ],
+                "type": "string",
+                "description": "* `remover` - remover\n* `restaurar` - restaurar"
             },
             "ControladorLegal": {
                 "type": "object",
@@ -6157,6 +7064,43 @@
                     "pendencias",
                     "turno"
                 ]
+            },
+            "DecidirRevisao": {
+                "type": "object",
+                "properties": {
+                    "acao": {
+                        "$ref": "#/components/schemas/DecidirRevisaoAcaoEnum"
+                    },
+                    "resposta": {
+                        "type": "string",
+                        "maxLength": 4000,
+                        "minLength": 20
+                    },
+                    "senha_atual": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "maxLength": 128
+                    },
+                    "chave_idempotencia": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "acao",
+                    "chave_idempotencia",
+                    "resposta",
+                    "senha_atual"
+                ]
+            },
+            "DecidirRevisaoAcaoEnum": {
+                "enum": [
+                    "iniciar",
+                    "confirmar_declaracao",
+                    "orientar_correcao"
+                ],
+                "type": "string",
+                "description": "* `iniciar` - iniciar\n* `confirmar_declaracao` - confirmar_declaracao\n* `orientar_correcao` - orientar_correcao"
             },
             "DecisaoRecurso": {
                 "type": "object",
@@ -6394,6 +7338,98 @@
                     "detail"
                 ]
             },
+            "DireitosEntrada": {
+                "type": "object",
+                "properties": {
+                    "acao": {
+                        "$ref": "#/components/schemas/DireitosEntradaAcaoEnum"
+                    },
+                    "recibo": {
+                        "writeOnly": true
+                    },
+                    "tentativa_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "senha_atual": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "maxLength": 128
+                    }
+                },
+                "required": [
+                    "acao",
+                    "senha_atual"
+                ]
+            },
+            "DireitosEntradaAcaoEnum": {
+                "enum": [
+                    "conferir",
+                    "revogar",
+                    "disputa"
+                ],
+                "type": "string",
+                "description": "* `conferir` - conferir\n* `revogar` - revogar\n* `disputa` - disputa"
+            },
+            "DireitosEstado": {
+                "type": "object",
+                "properties": {
+                    "direitos": {
+                        "type": "string"
+                    },
+                    "seguranca_pdf": {
+                        "type": "boolean"
+                    },
+                    "seguranca_amostra": {
+                        "type": "boolean"
+                    },
+                    "editorial": {
+                        "type": "string"
+                    },
+                    "conferencia_permitida": {
+                        "type": "boolean"
+                    },
+                    "contexto_custodia": {
+                        "nullable": true
+                    },
+                    "licencas": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        }
+                    }
+                },
+                "required": [
+                    "conferencia_permitida",
+                    "contexto_custodia",
+                    "direitos",
+                    "editorial",
+                    "licencas",
+                    "seguranca_amostra",
+                    "seguranca_pdf"
+                ]
+            },
+            "DireitosResultado": {
+                "type": "object",
+                "properties": {
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "estado": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "estado",
+                    "protocolo"
+                ]
+            },
             "DoisFatoresConfiguracao": {
                 "type": "object",
                 "properties": {
@@ -6472,6 +7508,81 @@
                 ],
                 "type": "integer",
                 "description": "* `3` - 3\n* `7` - 7\n* `15` - 15\n* `30` - 30"
+            },
+            "EntradaPublica": {
+                "type": "object",
+                "properties": {
+                    "categoria": {
+                        "$ref": "#/components/schemas/EntradaPublicaCategoriaEnum"
+                    },
+                    "relato": {
+                        "type": "string",
+                        "maxLength": 4000,
+                        "minLength": 20
+                    },
+                    "referencia": {
+                        "type": "string",
+                        "maxLength": 500
+                    },
+                    "contato": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "format": "email"
+                            },
+                            {
+                                "type": "string",
+                                "maxLength": 0
+                            }
+                        ]
+                    },
+                    "titularidade": {
+                        "type": "string",
+                        "maxLength": 1000
+                    },
+                    "evidencia": {
+                        "type": "string",
+                        "maxLength": 2000
+                    },
+                    "risco_imediato": {
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "chave_idempotencia": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "segredo": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "website": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "maxLength": 200
+                    }
+                },
+                "required": [
+                    "categoria",
+                    "chave_idempotencia",
+                    "referencia",
+                    "relato",
+                    "segredo"
+                ]
+            },
+            "EntradaPublicaCategoriaEnum": {
+                "enum": [
+                    "protecao_infantojuvenil",
+                    "conteudo_ilegal",
+                    "privacidade",
+                    "direitos_autorais",
+                    "assedio_abuso",
+                    "conta_comprometida",
+                    "falha_seguranca"
+                ],
+                "type": "string",
+                "description": "* `protecao_infantojuvenil` - protecao_infantojuvenil\n* `conteudo_ilegal` - conteudo_ilegal\n* `privacidade` - privacidade\n* `direitos_autorais` - direitos_autorais\n* `assedio_abuso` - assedio_abuso\n* `conta_comprometida` - conta_comprometida\n* `falha_seguranca` - falha_seguranca"
             },
             "EstadoEnum": {
                 "enum": [
@@ -6891,6 +8002,28 @@
                     "banner_anuncios"
                 ]
             },
+            "FilaCasos": {
+                "type": "object",
+                "properties": {
+                    "resultados": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CasoOperacional"
+                        }
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "pagina": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pagina",
+                    "resultados",
+                    "total"
+                ]
+            },
             "GovernancaLegalResponse": {
                 "type": "object",
                 "properties": {
@@ -7113,6 +8246,10 @@
                         "additionalProperties": {},
                         "readOnly": true
                     },
+                    "direitos_estado": {
+                        "type": "string",
+                        "readOnly": true
+                    },
                     "disponivel_de": {
                         "type": "string",
                         "format": "date-time",
@@ -7200,6 +8337,7 @@
                     "categoria",
                     "categoria_nome",
                     "demonstrativo",
+                    "direitos_estado",
                     "id",
                     "modelo_acesso_label",
                     "origem_label",
@@ -7275,6 +8413,10 @@
                     "acesso": {
                         "type": "object",
                         "additionalProperties": {},
+                        "readOnly": true
+                    },
+                    "direitos_estado": {
+                        "type": "string",
                         "readOnly": true
                     },
                     "disponivel_de": {
@@ -7373,6 +8515,7 @@
                     "categoria",
                     "categoria_nome",
                     "demonstrativo",
+                    "direitos_estado",
                     "id",
                     "modelo_acesso_label",
                     "motivo_card",
@@ -7389,10 +8532,12 @@
                     "rejeitado",
                     "removido",
                     "suspenso",
-                    "retirado"
+                    "retirado",
+                    "manutencao",
+                    "expirado"
                 ],
                 "type": "string",
-                "description": "* `pendente` - Pendente\n* `publicado` - Publicado\n* `rejeitado` - Rejeitado\n* `removido` - Removido na Lixeira\n* `suspenso` - Suspenso cautelarmente\n* `retirado` - Retirado pelo autor"
+                "description": "* `pendente` - Pendente\n* `publicado` - Publicado\n* `rejeitado` - Rejeitado\n* `removido` - Removido na Lixeira\n* `suspenso` - Suspenso cautelarmente\n* `retirado` - Retirado pelo autor\n* `manutencao` - Em manutenção de direitos\n* `expirado` - Direitos expirados"
             },
             "LixeiraItem": {
                 "type": "object",
@@ -7498,6 +8643,16 @@
                     "username"
                 ]
             },
+            "MedidaEnum": {
+                "enum": [
+                    "orientacao",
+                    "arquivamento",
+                    "restricao_conteudo",
+                    "suspensao_conta"
+                ],
+                "type": "string",
+                "description": "* `orientacao` - orientacao\n* `arquivamento` - arquivamento\n* `restricao_conteudo` - restricao_conteudo\n* `suspensao_conta` - suspensao_conta"
+            },
             "MetodoEnum": {
                 "enum": [
                     "totp"
@@ -7537,6 +8692,76 @@
                 ],
                 "type": "string",
                 "description": "* `heuristica` - heuristica"
+            },
+            "MeusCasos": {
+                "type": "object",
+                "properties": {
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "estado": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "recebido_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "confirmado_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "decidido_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "resposta": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "retorno_estado": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "encerrado_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "pode_complementar": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "medida": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "pode_recorrer": {
+                        "type": "boolean",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "confirmado_em",
+                    "decidido_em",
+                    "encerrado_em",
+                    "estado",
+                    "medida",
+                    "pode_complementar",
+                    "pode_recorrer",
+                    "protocolo",
+                    "recebido_em",
+                    "resposta",
+                    "retorno_estado"
+                ]
             },
             "MobileLoginResponse": {
                 "type": "object",
@@ -7844,6 +9069,95 @@
                 "required": [
                     "onboarding_lembretes"
                 ]
+            },
+            "OperacaoCaso": {
+                "type": "object",
+                "properties": {
+                    "acao": {
+                        "$ref": "#/components/schemas/OperacaoCasoAcaoEnum"
+                    },
+                    "chave_idempotencia": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "prioridade": {
+                        "$ref": "#/components/schemas/PrioridadeEnum"
+                    },
+                    "calendario_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "resposta": {
+                        "type": "string",
+                        "maxLength": 4000,
+                        "minLength": 20
+                    },
+                    "regra": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "minLength": 3
+                    },
+                    "evidencia_ref": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "minLength": 3
+                    },
+                    "motivo": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "minLength": 20
+                    },
+                    "senha_atual": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "maxLength": 128
+                    },
+                    "medida": {
+                        "$ref": "#/components/schemas/MedidaEnum"
+                    },
+                    "duracao_dias": {
+                        "$ref": "#/components/schemas/DuracaoDiasEnum"
+                    },
+                    "alvo_tipo": {
+                        "$ref": "#/components/schemas/AlvoTipoEnum"
+                    },
+                    "alvo_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "acolher": {
+                        "type": "boolean"
+                    },
+                    "conselho_acao": {
+                        "$ref": "#/components/schemas/ConselhoAcaoEnum"
+                    },
+                    "pedido": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "acao",
+                    "chave_idempotencia"
+                ]
+            },
+            "OperacaoCasoAcaoEnum": {
+                "enum": [
+                    "assumir",
+                    "triagem",
+                    "confirmar",
+                    "complemento",
+                    "decidir",
+                    "comunicar",
+                    "encerrar",
+                    "recurso_decidir",
+                    "conselho_solicitar",
+                    "conselho_aprovar",
+                    "conselho_executar",
+                    "conselho_cancelar"
+                ],
+                "type": "string",
+                "description": "* `assumir` - assumir\n* `triagem` - triagem\n* `confirmar` - confirmar\n* `complemento` - complemento\n* `decidir` - decidir\n* `comunicar` - comunicar\n* `encerrar` - encerrar\n* `recurso_decidir` - recurso_decidir\n* `conselho_solicitar` - conselho_solicitar\n* `conselho_aprovar` - conselho_aprovar\n* `conselho_executar` - conselho_executar\n* `conselho_cancelar` - conselho_cancelar"
             },
             "OrigemEnum": {
                 "enum": [
@@ -8165,6 +9479,10 @@
                     "acesso": {
                         "type": "object",
                         "additionalProperties": {},
+                        "readOnly": true
+                    },
+                    "direitos_estado": {
+                        "type": "string",
                         "readOnly": true
                     },
                     "disponivel_de": {
@@ -9102,6 +10420,57 @@
                     }
                 }
             },
+            "PrepararFila": {
+                "type": "object",
+                "properties": {
+                    "acao": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/PrepararFilaAcaoEnum"
+                            }
+                        ],
+                        "default": "sincronizar"
+                    },
+                    "alvo_tipo": {
+                        "$ref": "#/components/schemas/AlvoTipoEnum"
+                    },
+                    "alvo_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "motivo": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "minLength": 20
+                    },
+                    "senha_atual": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "maxLength": 128
+                    },
+                    "chave_idempotencia": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "PrepararFilaAcaoEnum": {
+                "enum": [
+                    "sincronizar",
+                    "preparar_conselho"
+                ],
+                "type": "string",
+                "description": "* `sincronizar` - sincronizar\n* `preparar_conselho` - preparar_conselho"
+            },
+            "PrioridadeEnum": {
+                "enum": [
+                    "P0",
+                    "P1",
+                    "P2"
+                ],
+                "type": "string",
+                "description": "* `P0` - P0\n* `P1` - P1\n* `P2` - P2"
+            },
             "ProgressoLeitor": {
                 "type": "object",
                 "description": "Linha do ranking: identifica o leitor sem expor dados sensíveis do User.",
@@ -9199,6 +10568,66 @@
                     "posicao",
                     "user_id",
                     "username"
+                ]
+            },
+            "ProtocoloModeracao": {
+                "type": "object",
+                "properties": {
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "estado": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "recebido_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "confirmado_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "decidido_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "resposta": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "retorno_estado": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "encerrado_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "pode_complementar": {
+                        "type": "boolean",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "confirmado_em",
+                    "decidido_em",
+                    "encerrado_em",
+                    "estado",
+                    "pode_complementar",
+                    "protocolo",
+                    "recebido_em",
+                    "resposta",
+                    "retorno_estado"
                 ]
             },
             "PublicacaoPendente": {
@@ -9322,6 +10751,29 @@
                     "titulo"
                 ]
             },
+            "RecursoCaso": {
+                "type": "object",
+                "properties": {
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "fundamento": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "minLength": 20
+                    },
+                    "chave_idempotencia": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "chave_idempotencia",
+                    "fundamento",
+                    "protocolo"
+                ]
+            },
             "Register": {
                 "type": "object",
                 "description": "Serializer para criação de conta: cria User + Perfil + Usuario de forma transacional.",
@@ -9439,6 +10891,60 @@
                     "postagens_relevantes"
                 ]
             },
+            "RevisaoResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/RevisaoResponseStatusEnum"
+                    },
+                    "resposta": {
+                        "type": "string"
+                    },
+                    "criada_em": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "atualizada_em": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "encerrada_em": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "decisao": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "atualizada_em",
+                    "criada_em",
+                    "decisao",
+                    "encerrada_em",
+                    "id",
+                    "protocolo",
+                    "resposta",
+                    "status"
+                ]
+            },
+            "RevisaoResponseStatusEnum": {
+                "enum": [
+                    "aberta",
+                    "em_analise",
+                    "respondida",
+                    "encerrada"
+                ],
+                "type": "string",
+                "description": "* `aberta` - aberta\n* `em_analise` - em_analise\n* `respondida` - respondida\n* `encerrada` - encerrada"
+            },
             "SessaoDispositivo": {
                 "type": "object",
                 "properties": {
@@ -9472,6 +10978,24 @@
                     "expira_em",
                     "id",
                     "ultima_atividade_em"
+                ]
+            },
+            "Sincronizacao": {
+                "type": "object",
+                "properties": {
+                    "criados": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "protocolo": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "criados",
+                    "protocolo"
                 ]
             },
             "SolicitacaoPublicacao": {
@@ -9660,6 +11184,24 @@
                     "tipo"
                 ]
             },
+            "SolicitarRevisao": {
+                "type": "object",
+                "properties": {
+                    "mensagem": {
+                        "type": "string",
+                        "maxLength": 4000,
+                        "minLength": 20
+                    },
+                    "chave_idempotencia": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "chave_idempotencia",
+                    "mensagem"
+                ]
+            },
             "StatsResponse": {
                 "type": "object",
                 "properties": {
@@ -9699,6 +11241,9 @@
             "SuporteAdmin": {
                 "type": "object",
                 "properties": {
+                    "idade_em_revisao": {
+                        "type": "boolean"
+                    },
                     "id": {
                         "type": "integer"
                     },
@@ -9748,6 +11293,7 @@
                     "categoria",
                     "criada_em",
                     "id",
+                    "idade_em_revisao",
                     "mensagem",
                     "protocolo",
                     "resposta",
@@ -9820,11 +11366,13 @@
                     },
                     "pdf_disponivel": {
                         "type": "boolean"
-                    }
+                    },
+                    "gates": {}
                 },
                 "required": [
                     "criada_em",
                     "dados",
+                    "gates",
                     "id",
                     "pdf_disponivel",
                     "status"

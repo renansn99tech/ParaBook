@@ -1,15 +1,35 @@
 # Changelog
 
-## Sessão 020 — 05/10/2026
+## Sessão 020 — 05–07/10/2026
 
-### Idade, operação e arquivos privados
+### Definições e situação dos gates
 
-- G2: validado o marco etário com fuso/versão, prazo de sete dias e proteção comum de JWT, cookie, sessionid, templates e Django Admin. Catálogo público não recupera privilégios pelo fallback de sessão; suporte, direitos e saída permanecem acessíveis.
-- Adicionados censo somente leitura, formulário legado e fluxo Expo de elegibilidade/direitos; React e Expo consultam a decisão do backend ao prazo/retorno. Retentativas de declaração preservam idempotência.
-- G3: entregues fila mínima somente leitura, calendário explícito de atendimento e checagens preparatórias de ficha/Conselho. Persistência de triagem/SLA, canal externo e retorno efetivo continuam pendentes.
-- G4: adicionadas duas migrations de verificação/quarentena, adaptador local ClamAV e gates de aprovação/restauração/entrega por conteúdo. PDF é servido pelos mesmos bytes verificados; mídia privada direta bloqueada no desenvolvimento e leitor legado alinhado à API.
-- Backend: 291/291 testes (+39), check/migrations aprovados. Web: 172/172, lint/build. Mobile: TypeScript e 14/14 testes; aparelhos reais pendentes. OpenAPI estrito e 135 operações consumidas compatíveis.
-- G1/G7 e aceite G5 da Sessão 019 preservados. G2/G3/G4 seguem parciais no critério integral: rollout hospedado, operação real e antimalware/cofre/licenças ainda não homologados. Flags reais não ativadas; sem commit, push, deploy ou purga.
+- Preservados os aceites G1/G7 e as decisões/alterações da Sessão 019, incluindo G5 aceito em desenvolvimento com ressalvas e sua métrica original de 90%.
+- G2, G3, G4 e o pacote técnico G6 foram encerrados em desenvolvimento com ressalvas. Os sete gates já foram trabalhados; G2–G6 mantêm condições de operação integral abertas. Não foi atribuído indicador de 7/7 operacional nem novo aceite integral.
+- Adotada a opção A do G2. Detalhes técnicos resolvidos autonomamente, sem repetir escolhas aprovadas ou condicionar o desenvolvimento a investimentos e respostas de fornecedores.
+
+### Implementação
+
+- **G2 — idade e acesso:** marco etário com fuso/versão, prazo de sete dias, censo somente leitura e barreiras comuns a JWT, cookie, sessionid, templates e Django Admin. Revisão web/Expo idempotente, análise administrativa com RBAC, reautenticação, auditoria e prova R10 transacionais; maioridade reavaliada no acesso. Direitos, suporte e saída preservados no Modo Restrito, sem coleta de documentos ou biometria.
+- **G3 — operação, denúncia e Conselho:** fila persistida com responsáveis, prioridades, calendário e prazos; denúncia pública sem conta, protocolo privado, confirmação, complemento, decisão e retorno. Recursos e suspensão reversível; Conselho exige duas identidades distintas reautenticadas, alvo/arquivos conferidos, auditoria, RLS e travas G5. Painel Operação e Conselho e prévia de retenção; atalhos destrutivos administrativos bloqueados.
+- **G4 — direitos, cofre e upload:** direitos por edição/arquivos, origem, território, modalidade e vigência; recibo Ed25519, conferência restrita e custódia cifrada independente do runtime. Motor/assinaturas com validade e revarredura; PDF e amostra servidos pelos mesmos bytes verificados. Curadoria também passa por revisão; disputa, revogação e expiração bloqueiam acesso. Recurso acolhido não republica nem substitui licença; integração com retenção/exportação G5.
+- **G6 — clientes e acessibilidade:** campos/botões com nomes e estados acessíveis, alvos mobile mínimos, contraste, safe areas e abas adaptadas à fonte. Leitores com texto extraído por página e limites explícitos para PDFs sem texto; conteúdo anterior removido no logout. Timeout, retentativa GET limitada, refresh/CSRF compartilhados e descarte de respostas antigas; falhas de mutação não simulam sucesso. Recuperação de sessão web distingue indisponibilidade de credenciais inválidas.
+- Onze migrations aditivas posteriores à primeira publicação desta sessão: `usuarios.0013–0018`, `biblioteca.0017–0020` e `comunidades.0007`, aplicadas somente em bancos sintéticos. G6 não adicionou migrations/dependências; testes concorrentes G2/G3 fecham as conexões ao terminar, permitindo descarte do banco de testes.
+
+### Validação
+
+- Evolução da suíte backend nesta janela: **291 → 315 → 387 → 421 testes**. Resultado final **421/421**, com saída 0 e banco de testes descartado; `check` e verificação de migrations aprovados.
+- Web final: **182/182**, lint/build aprovados; mobile: **24/24**, TypeScript e versões Expo aprovados, bundles Android/iOS/web exportados. OpenAPI estrito e **152 operações consumidas** compatíveis.
+- Ensaios sintéticos de revisão etária, denúncia/retorno, Conselho, publicação/disputa/recurso, mídia privada, temas e teclado. Navegador final em 360/390/1280px com interrupção/retomada da API e recuperação da mesma sessão; falhas sem falso sucesso.
+- ClamAV 1.5.4 real com base NDB sintética e custódia cifrada com identidades Linux separadas ensaiados. Isso não homologa assinaturas oficiais, licenças reais, hosting ou dispositivos físicos.
+- Manifestos históricos S019/G2/G3/G4 preservados; selo adicional G6 vincula fontes, logs, imagens e bundles ao pacote validado. Código técnico conferido por hash antes dos novos commits.
+
+### Entrega e continuidade
+
+- No início da sessão, publicados os commits `35540507c`, `11e22f1b6` e `43758ab61`, incluindo a implementação herdada da Sessão 019 e a primeira entrega desta janela. Render/Vercel receberam `43758ab61` mediante pedido explícito; essa versão antecede a opção A G2 e os encerramentos G3/G4/G6.
+- No fechamento, autorizados commits e envio dos pacotes posteriores de backend, clientes e deste resumo. O envio ao Git não comprova implantação/homologação hospedada da versão final.
+- Ressalvas remanescentes: configuração/rollout hospedado e revalidação proporcional G7; capacidade humana, Conselho/calendário/canais reais; licenças, cofre/recuperação/storage e distribuição territorial; instrumentos de fornecedores, descarte externo e cópias; aparelhos Android/iOS, tecnologias assistivas, segundo navegador e zoom/motion.
+- Sessão 021 preparada para resolver essas ressalvas com evidências, preservando as definições aprovadas e distinguindo definição, implementação e validação. Documentos internos, prompts, logs e segredos continuam locais e ignorados pelo Git.
 
 ## Sessão 019 — 03–05/10/2026
 

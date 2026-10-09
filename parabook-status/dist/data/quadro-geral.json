@@ -1,5 +1,5 @@
 {
-  "revisadoEm": "2026-10-01",
+  "revisadoEm": "2026-10-09",
   "atividades": [
     {
       "area": "Plataforma",
@@ -132,7 +132,7 @@
   ],
   "gates": [
     { "id": "G1", "nome": "Jurídico e controlador", "status": "concluido", "resumo": "Aprovado: documentos, controlador e canal de privacidade estão publicados e verificados." },
-    { "id": "G2", "nome": "Idade e controle de acesso", "status": "parcial", "resumo": "Controles implementados; falta completar a homologação operacional." },
+    { "id": "G2", "nome": "Idade e controle de acesso", "status": "concluido", "resumo": "100% no escopo web preparado aprovado: ciclo etário homologado em staging e correção de banco consolidada. Ativação pública no lançamento; aparelhos e tecnologias assistivas acompanhados pelo G6." },
     { "id": "G3", "nome": "Moderação e governança", "status": "parcial", "resumo": "Fluxos técnicos existem; operação e prazos precisam ser formalizados." },
     { "id": "G4", "nome": "Publicação e direitos", "status": "parcial", "resumo": "Fluxo implementado; proteções e documentação ainda precisam de homologação." },
     { "id": "G5", "nome": "Privacidade e segurança", "status": "parcial", "resumo": "Base técnica avançada; evidências jurídicas e operacionais seguem abertas." },
@@ -140,12 +140,13 @@
     { "id": "G7", "nome": "Release e operação", "status": "concluido", "resumo": "Aprovado: segurança formal, alertas e recuperação foram validados em staging isolado." }
   ],
   "prioridades": [
-    { "titulo": "Homologar idade e moderação", "resumo": "Concluir rollout etário, operação de denúncias, responsáveis, prazos e recurso." },
+    { "titulo": "Concluir operação de moderação", "resumo": "Formalizar operação de denúncias, responsáveis, prazos e recurso do G3. G2 encerrado no escopo web preparado; ativação etária acompanhada pelo checklist de lançamento." },
     { "titulo": "Concluir o inventário e o RIPD do G5", "resumo": "Formalizar tratamentos, operadores, retenção, descarte e acessos excepcionais antes da abertura comercial." },
     { "titulo": "Homologar leitura e mobile", "resumo": "Validar arquivos privados, interrupções de rede e aparelhos representativos." },
     { "titulo": "Definir a estratégia de dados", "resumo": "Aprovar analytics com governança antes de construir métricas avançadas para autores." }
   ],
   "historico": [
+    { "data": "2026-10-09", "titulo": "Gate G2 encerrado no escopo web preparado", "resumo": "Escopo de encerramento aprovado: ciclo etário homologado em staging, correção de banco consolidada e configuração preparada. Ativação pública permanece no lançamento; homologação física e assistiva pertence ao G6." },
     { "data": "2026-10-01", "titulo": "Gate G1 aprovado", "resumo": "Documentos jurídicos, controlador e canal de privacidade foram publicados e verificados no ambiente de produção." },
     { "data": "2026-09-29", "titulo": "Gate G7 aprovado", "resumo": "Segurança formal, alertas e recuperação foram comprovados em staging isolado com dados sintéticos." },
     { "data": "2026-09-24", "titulo": "Controle demonstrativo consolidado", "resumo": "A vitrine de exemplos passou a ser ativável e desativável sem exclusão de conteúdo." },
